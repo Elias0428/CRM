@@ -10,17 +10,6 @@ from app.models import *
 # Create your views here.
 
 def login_(request):
-    return render(request, 'login.html')
-    
-def motivation(request):
-    randomInt = random.randint(1,174)
-    print(randomInt)
-    motivation = Motivation.objects.filter(id=randomInt).first()
-    context = {'motivation':motivation}
-    print(context)
-    return render (request, 'motivation.html',context)
-
-def index (request):
     if request.user.is_authenticated:
         return redirect('index')
     if request.method == 'POST':
@@ -37,3 +26,12 @@ def index (request):
             return render(request, 'auth/login.html', {'msg':msg})
     else:
         return render(request, 'auth/login.html')
+    
+def motivation(request):
+    randomInt = random.randint(1,174)
+    motivation = Motivation.objects.filter(id=randomInt).first()
+    context = {'motivation':motivation}
+    return render (request, 'motivation.html',context)
+
+def index (request):
+    return render(request, 'index.html')
