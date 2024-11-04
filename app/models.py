@@ -72,6 +72,7 @@ class ObamaCare(models.Model):
     doc_migration = models.BooleanField(default=False)
     status = models.CharField(max_length=50)
     npm = models.BigIntegerField()
+    img = models.FileField()
     date_effective_coverage = models.DateField()
     date_effective_coverage_end = models.DateField()
     observation = models.TextField()
@@ -133,3 +134,10 @@ class Log(models.Model):
 
     class Meta:
         db_table = 'logs'
+
+
+class Motivation(models.Model):
+    content = models.TextField()
+
+    class Meta:
+        db_table = 'motivation'
