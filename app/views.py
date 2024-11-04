@@ -21,7 +21,6 @@ def motivation(request):
     return render (request, 'motivation.html',context)
 
 def index (request):
-    return render(request, 'index.html')
     if request.user.is_authenticated:
         return redirect('index')
     if request.method == 'POST':
