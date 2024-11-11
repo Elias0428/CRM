@@ -21,21 +21,23 @@ class Client(models.Model):
     state = models.CharField(max_length=50)
     country = models.CharField(max_length=100)
     sex = models.CharField(max_length=1)
-    old = models.IntegerField()
+    old = models.IntegerField()    
+    migration_status = models.CharField(max_length=100)
+    type_sales = models.CharField(max_length=100)
     date_birth = models.DateField()
-    status = models.CharField(max_length=50)
 
     class Meta:
         db_table = 'clients'
 
 class Dependent(models.Model):
-    id_client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     apply = models.BooleanField(default=False)
     sex = models.CharField(max_length=1)
     kinship = models.CharField(max_length=100)
     date_birth = models.DateField()
     status = models.CharField(max_length=50)
+    type_police = models.CharField(max_length=50)
 
     class Meta:
         db_table = 'dependents'
@@ -59,29 +61,32 @@ class Typification(models.Model):
         db_table = 'typifications'
 
 class ObamaCare(models.Model):
-    id_profiling_agent = models.BigIntegerField()
-    id_client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    profiling_agent = models.ForeignKey(User, on_delete=models.CASCADE)
+    client = models.OneToOneField(Client, on_delete=models.CASCADE,null=True)
     taxes = models.IntegerField()
     plan_name = models.CharField(max_length=200)
     carrier = models.CharField(max_length=200)
-    profiling_date = models.DateField()
-    ffm = models.BigIntegerField()
-    required_bearing = models.BooleanField(default=False)
+    profiling_date = models.DateField(null=True)
+    subsidy = models.BigIntegerField()
+    ffm = models.BigIntegerField(null=True)
+    required_bearing = models.BooleanField(default=False,null=True)
     date_bearing = models.DateField(null=True)
-    doc_icon = models.BooleanField(default=False)
-    doc_migration = models.BooleanField(default=False)
+    doc_icon = models.BooleanField(default=False,null=True)
+    doc_migration = models.BooleanField(default=False,null=True)
     status = models.CharField(max_length=50)
-    npm = models.BigIntegerField()
-    img = models.FileField()
-    date_effective_coverage = models.DateField()
-    date_effective_coverage_end = models.DateField()
-    observation = models.TextField()
+    work = models.CharField(max_length=50)
+    npm = models.BigIntegerField(null=True)
+    img = models.FileField(null=True)
+    date_effective_coverage = models.DateField(null=True)
+    date_effective_coverage_end = models.DateField(null=True)
+    apply = models.CharField(max_length=50)
+    observation = models.TextField(null=True)
 
     class Meta:
         db_table = 'obamacare'
 
 class Supp(models.Model):
-    id_client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
     effective_date = models.DateField()
     company = models.CharField(max_length=200)
     policy_type = models.CharField(max_length=100)
@@ -89,11 +94,11 @@ class Supp(models.Model):
     preventive = models.CharField(max_length=100)
     coverage = models.IntegerField()
     deducible = models.IntegerField()
-    status = models.CharField(max_length=50)
-    date_effective_coverage = models.DateField()
-    date_effective_coverage_end = models.DateField()
-    payment_type = models.CharField(max_length=50)
-    observation = models.TextField()
+    status = models.CharField(max_length=50,null=True)
+    date_effective_coverage = models.DateField(null=True)
+    date_effective_coverage_end = models.DateField(null=True)
+    payment_type = models.CharField(max_length=50,null=True)
+    observation = models.TextField(null=True)
 
     class Meta:
         db_table = 'supp'

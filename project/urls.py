@@ -25,4 +25,11 @@ urlpatterns = [
 
     path('motivation/', views.motivation, name='motivation'),
     path('index/', views.index, name='index'),
+    path('formCreateClient/', views.formCreateClient, name='formCreateClient'),
+    path('formCreatePlan/<client_id>/', views.formCreatePlan, name='formCreatePlan'),
+
+    # Json
+    path('json/', views.formCreatePlan, name='formCreatePlan'),
+    path('formCreatePlan/<client_id>/', views.formCreatePlan, name='formCreatePlan'),
+
 ]
