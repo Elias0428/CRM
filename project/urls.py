@@ -23,15 +23,15 @@ urlpatterns = [
     path('login/', views.login_, name='login'),
     path('logout/', views.logout_, name='logout'),
 
-    path('motivation/', views.motivation, name='motivation'),
+    path('motivationalPhrase/', views.motivationalPhrase, name='motivationalPhrase'),
     path('index/', views.index, name='index'),
-    path('formCreateClient/', views.formCreateClient, name='formCreateClient'),
-    path('formCreatePlan/<client_id>/', views.formCreatePlan, name='formCreatePlan'),
 
     # Json
-    path('json/', views.formCreatePlan, name='formCreatePlan'),
+    path('formCreateClient/', views.formCreateClient, name='formCreateClient'),
     path('formCreatePlan/<client_id>/', views.formCreatePlan, name='formCreatePlan'),
     path('formCreatePlan/deleteDependent/<int:dependent_id>/', views.delete_dependent, name='delete_dependent'),
     path('formCreatePlan/deleteSupp/<int:supp_id>/', views.delete_supp, name='delete_supp'),
 
+    path('', views.index, name='index'),
+    path('table/', views.table, name='table')
 ]

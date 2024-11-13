@@ -26,7 +26,7 @@ def login_(request):
         if user is not None:
             login(request, user)
             print('Esta vaina logueo marico')
-            return redirect(index)
+            return redirect(motivationalPhrase)
         else:
             msg = 'Datos incorrectos, intente de nuevo'
             return render(request, 'auth/login.html', {'msg':msg})
@@ -37,11 +37,12 @@ def logout_(request):
     logout(request)
     return redirect(index)
     
-def motivation(request):
+@login_required(login_url='/login')
+def motivationalPhrase(request):
     randomInt = random.randint(1,174)
     motivation = Motivation.objects.filter(id=randomInt).first()
     context = {'motivation':motivation}
-    return render (request, 'motivation.html',context)
+    return render (request, 'motivationalPhrase.html',context)
 
 def index(request):
     return render(request, 'index.html')
@@ -240,7 +241,5 @@ def delete_supp(request, supp_id):
             return JsonResponse({'success': False, 'error': 'Dependent not found'})
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
-
-
-
-
+def table(request):
+    return render(request, 'table.html')
