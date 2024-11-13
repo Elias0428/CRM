@@ -32,11 +32,11 @@ class Client(models.Model):
 class Dependent(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
-    apply = models.BooleanField(default=False)
+    apply = models.CharField(max_length=200)
     sex = models.CharField(max_length=1)
-    kinship = models.CharField(max_length=100)
-    date_birth = models.DateField()
-    status = models.CharField(max_length=50)
+    kinship = models.CharField(max_length=100,null=True)
+    date_birth = models.DateField(null=True)
+    migration_status = models.CharField(max_length=50)
     type_police = models.CharField(max_length=50)
 
     class Meta:
@@ -87,6 +87,7 @@ class ObamaCare(models.Model):
 
 class Supp(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    profiling_agent = models.ForeignKey(User, on_delete=models.CASCADE)
     effective_date = models.DateField()
     company = models.CharField(max_length=200)
     policy_type = models.CharField(max_length=100)

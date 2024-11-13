@@ -1130,163 +1130,375 @@
 						  </div>
 						  {% endif %}
 						{% if client.type_sales == 'SUPLEMENTARIO' %}
+						{{ supplementary_plan_data.effective_date }}
+						
 
 						  <div id="test-l-2" role="tabpanel" class="bs-stepper-pane" aria-labelledby="stepper1trigger2">
 
 							<h5 class="mb-1">Account Details</h5>
 							<p class="mb-4">Enter Your Account Details.</p>
 
-							<div class="row g-3">
-								<div class="col-12 col-lg-6">
-									<label for="effectiveDate" class="form-label">Effective Date</label>
-									<input type="date" class="form-control" id="effectiveDate" name="effectiveDate">
-								</div>
-								<div class="col-12 col-lg-6">
-									<label for="carrierSuple" class="form-label">Carrier</label>
-									<select class="form-select" id="carrierSuple" aria-label="Default select example" name="carrierSuple">
-										<option>---</option>
-										<option value="AFLAC"> AFLAC</option>                             
-										<option value="AETNA"> AETNA </option>
-										<option value="ALLSTATE HEALTH SOLUTIONS"> ALLSTATE HEALTH SOLUTIONS </option>  
-										<option value="COMBINED"> COMBINED </option>
-										<option value="CIGNA"> CIGNA </option>    
-										<option value="MANHATTAN_LIFE"> MANHATTAN LIFE </option>
-										<option value="METLIFE"> METLIFE </option>
-										<option value="OSCAR"> OSCAR </option> 
-										<option value="PIVOT">PIVOT</option>  
-										<option value="SUREBRIDGE"> SUREBRIDGE </option>    
-										<option value="UNITED"> UNITED </option>    
-								 	</select>
-								</div>
-								<div class="col-12 col-lg-6">
-									<label for="premium" class="form-label">Premium</label>
-									<input type="number" class="form-control" id="premium" name="premium" >
-								</div>
-								<div class="col-12 col-lg-6">
-									<label for="policyType" class="form-label">Policy Type</label>
-									<select class="form-select" id="policyType" name="policyType" aria-label="Default select example">
-										<option>---</option>
-										<option value="ACCIDENTE" >ACCIDENTE</option>
-                           				<option value="HOSPITALIZACION" >HOSPITALIZACION</option>
-                           				<option value="DENTAL" >DENTAL</option>
-                           				<option value="ENFERMEDADES CRITICAS" >ENFERMEDADES CRITICAS</option>
-                           				<option value="VISUAL" >VISUAL</option>
-                           				<option value="DENTAL Y VISUAL" >DENTAL Y VISUAL</option>
-                           				<option value="PLAN DE DESCUENTO" >PLAN DE DESCUENTO</option>
-                           				<option value="SHORT TERM MEDICAL" >SHORT TERM MEDICAL</option>
-                           				<option value="CANCER" >CANCER</option>
-									  </select>
-								</div>
-								<div class="col-12 col-lg-6">
-									<label for="preventive" class="form-label">Preventive</label>
-									<select class="form-select" id="preventive" name="preventive" aria-label="Default select example">
-										<option>---</option>
-										<option value="60">60% </option>
-                           				<option value="100">100%</option>
-                           				<option value="Sin Espera">Sin Espera</option>
-									</select>
-								</div>
-								<div class="col-12 col-lg-6">
-									<label for="coverage" class="form-label">Coverage</label>
-									<select class="form-select" id="coverage" name="coverage" aria-label="Default select example">
-										<option>---</option>
-										<option value="500" >500</option>
-                           				<option value="750" >750</option>
-                           				<option value="1000" >1000</option>
-                           				<option value="1500" >1500</option>
-                           				<option value="2000" >2000</option>
-                           				<option value="2500" >2500</option>
-                           				<option value="3000" >3000</option>
-                           				<option value="3500" >3500</option>
-                           				<option value="4000" >4000</option>
-                           				<option value="4500" >4500</option>
-                           				<option value="5000" >5000</option>
-                           				<option value="10000" >10000</option>
-									</select>
-								</div>
-								<div class="col-12 col-lg-6">
-									<label for="deducible" class="form-label">Deducible</label>
-									<select class="form-select" id="deducible" name="deducible" aria-label="Default select example">
-										<option>---</option>
-										<option value="100" >100</option>
-                           				<option value="50" >50</option>
-                           				<option value="0" >0</option>
-									</select>
-								</div>
-								<div class="col-12 col-lg-12">
-									<label for="observationSuple" class="form-label">Observation</label>
-									<textarea class="form-control" id="observationSuple" name="observationSuple" rows="3"  placeholder="Supplementary plan remark" style="resize: none"></textarea>
-								</div>
-								<div class="col-12">
-									<div class="d-flex align-items-center gap-3">
-										<button class="btn btn-outline-secondary px-4" onclick="stepper1.previous()"><i class='bx bx-left-arrow-alt me-2'></i>Previous</button>
-										<button class="btn btn-primary px-4" id="buttonSendSupp" onclick="stepper1.next()">Next<i class='bx bx-right-arrow-alt ms-2'></i></button>
+							<div id="repeater1">
+								<!-- Repeater Heading -->
+								<div class="card mb-3">
+									<div class="card-body">
+										<div class="d-flex align-items-center justify-content-between">
+											<h5 class="mb-0">Dependents</h5>
+											<button type="button" class="btn btn-primary repeater-add-btn-1 px-4">Add</button>
+										</div>
 									</div>
 								</div>
-							</div><!---end row-->
+							
+								<!-- Contenedor de SUPLEMENTARIO existentes -->
+								<div id="dependent-container">
+									{% for supp_plan in supplementary_plan_data %}
+									<div class="items repeater1-item supplementaryClassList">
+										<div class="card mb-3">
+											<div class="card-body">
+												<div class="row g-3">
+													<input type="hidden" name="suppId" value="{{ supp_plan.id }}">
+													<div class="col-12 col-lg-6">
+														<label for="effectiveDateSupp" class="form-label">Effective Date</label>
+														{% if supp_plan.effective_date %}
+															<input type="date" class="form-control" value="{{ supp_plan.effective_date|date:'Y-m-d' }}" id="effectiveDateSupp" name="effectiveDateSupp">
+														{% else %}
+															<input type="date" class="form-control" id="effectiveDateSupp" name="effectiveDateSupp">	
+														{% endif %}
+													</div>
+													<div class="col-12 col-lg-6">
+														<label for="carrierSuple" class="form-label">Carrier</label>
+														<select class="form-select" id="carrierSuple" aria-label="Default select example" name="carrierSuple">
+															<option>---</option>
+															<option value="AFLAC" {% if supp_plan.company == 'AFLAC' %}selected{% endif %}> AFLAC</option>                             
+															<option value="AETNA" {% if supp_plan.company == 'AETNA' %}selected{% endif %}> AETNA </option>
+															<option value="ALLSTATE HEALTH SOLUTIONS" {% if supp_plan.company == 'ALLSTATE HEALTH SOLUTIONS' %}selected{% endif %}> ALLSTATE HEALTH SOLUTIONS </option>  
+															<option value="COMBINED" {% if supp_plan.company == 'COMBINED' %}selected{% endif %}> COMBINED </option>
+															<option value="CIGNA" {% if supp_plan.company == 'CIGNA' %}selected{% endif %}> CIGNA </option>    
+															<option value="MANHATTAN LIFE" {% if supp_plan.company == 'MANHATTAN LIFE' %}selected{% endif %}> MANHATTAN LIFE </option>
+															<option value="METLIFE" {% if supp_plan.company == 'METLIFE' %}selected{% endif %}> METLIFE </option>
+															<option value="OSCAR" {% if supp_plan.company == 'OSCAR' %}selected{% endif %}> OSCAR</option> 
+															<option value="PIVOT" {% if supp_plan.company|default:'' == 'PIVOT' %}selected{% endif %}>PIVOT</option>  
+															<option value="SUREBRIDGE" {% if supp_plan.company == 'SUREBRIDGE' %}selected{% endif %}> SUREBRIDGE </option>    
+															<option value="UNITED" {% if supp_plan.company == 'UNITED' %}selected{% endif %}> UNITED </option>    
+														 </select>
+													</div>
+													<div class="col-12 col-lg-6">
+														<label for="premiumSupp" class="form-label">Premium</label>
+														<input type="number" class="form-control" id="premiumSupp" value="{{supp_plan.premium}}"  name="premiumSupp" >
+													</div>
+													<div class="col-12 col-lg-6">
+														<label for="policyTypeSupp" class="form-label">Policy Type</label>
+														<select class="form-select" id="policyTypeSupp" name="policyTypeSupp" aria-label="Default select example">
+															<option>---</option>
+															<option value="ACCIDENTE" {% if supp_plan.policy_type == 'ACCIDENTE' %}selected{% endif %} >ACCIDENTE</option>
+															   <option value="HOSPITALIZACION" {% if supp_plan.policy_type == 'HOSPITALIZACION' %}selected{% endif %} >HOSPITALIZACION</option>
+															   <option value="DENTAL" {% if supp_plan.policy_type == 'DENTAL' %}selected{% endif %} >DENTAL</option>
+															   <option value="ENFERMEDADES CRITICAS" {% if supp_plan.policy_type == 'ENFERMEDADES CRITICAS' %}selected{% endif %} >ENFERMEDADES CRITICAS</option>
+															   <option value="VISUAL" {% if supp_plan.policy_type == 'VISUAL' %}selected{% endif %} >VISUAL</option>
+															   <option value="DENTAL Y VISUAL" {% if supp_plan.policy_type == 'DENTAL Y VISUAL' %}selected{% endif %} >DENTAL Y VISUAL</option>
+															   <option value="PLAN DE DESCUENTO" {% if supp_plan.policy_type == 'PLAN DE DESCUENTO' %}selected{% endif %} >PLAN DE DESCUENTO</option>
+															   <option value="SHORT TERM MEDICAL" {% if supp_plan.policy_type == 'SHORT TERM MEDICAL' %}selected{% endif %} >SHORT TERM MEDICAL</option>
+															   <option value="CANCER" {% if supp_plan.policy_type == 'CANCER' %}selected{% endif %} >CANCER</option>
+														  </select>
+													</div>
+													<div class="col-12 col-lg-6">
+														<label for="preventiveSupp" class="form-label">Preventive</label>
+														<select class="form-select" id="preventiveSupp" name="preventiveSupp" aria-label="Default select example">
+															<option>---</option>
+															<option value="60" {% if supp_plan.preventive == '60' %}selected{% endif %}>60% </option>
+															   <option value="100" {% if supp_plan.preventive == '100' %}selected{% endif %}>100%</option>
+															   <option value="Sin Espera" {% if supp_plan.preventive == 'Sin Espera' %}selected{% endif %}>Sin Espera</option>
+														</select>
+													</div>
+													<div class="col-12 col-lg-6">
+														<label for="coverageSupp" class="form-label">Coverage</label>
+														<select class="form-select" id="coverageSupp" name="coverageSupp" aria-label="Default select example">
+															<option>---</option>
+															<option value="500" {% if supp_plan.coverage == 500 %}selected{% endif %} >500</option>
+															   <option value="750" {% if supp_plan.coverage == 750 %}selected{% endif %} >750</option>
+															   <option value="1000" {% if supp_plan.coverage == 1000 %}selected{% endif %} >1000</option>
+															   <option value="1500" {% if supp_plan.coverage == 1500 %}selected{% endif %} >1500</option>
+															   <option value="2000" {% if supp_plan.coverage == 2000 %}selected{% endif %} >2000</option>
+															   <option value="2500" {% if supp_plan.coverage == 2500 %}selected{% endif %} >2500</option>
+															   <option value="3000" {% if supp_plan.coverage == 3000 %}selected{% endif %} >3000</option>
+															   <option value="3500" {% if supp_plan.coverage == 3500 %}selected{% endif %} >3500</option>
+															   <option value="4000" {% if supp_plan.coverage == 4000 %}selected{% endif %} >4000</option>
+															   <option value="4500" {% if supp_plan.coverage == 4500 %}selected{% endif %} >4500</option>
+															   <option value="5000" {% if supp_plan.coverage == 5000 %}selected{% endif %} >5000</option>
+															   <option value="10000" {% if supp_plan.coverage == 10000 %}selected{% endif %} >10000</option>
+														</select>
+													</div>
+													<div class="col-12 col-lg-6">
+														<label for="deducibleSupp" class="form-label">Deducible</label>
+														<select class="form-select" id="deducibleSupp" name="deducibleSupp" aria-label="Default select example">
+															<option>---</option>
+															<option value="100" {% if supp_plan.deducible == 100 %}selected{% endif %} >100</option>
+															   <option value="50" {% if supp_plan.deducible == 50 %}selected{% endif %} >50</option>
+															   <option value="0" {% if supp_plan.deducible == 0 %}selected{% endif %} >0</option>
+														</select>
+													</div>
+													<div class="col-12 col-lg-12">
+														<label for="observationSuple" class="form-label">Observation</label>
+														<textarea class="form-control" id="observationSuple" name="observationSuple" rows="3" type="text"  value="{{supp_plan.observation}}"  placeholder="Supplementary plan remark" style="resize: none"></textarea>
+													</div>
+													<div class="col-12 d-flex justify-content-end mt-3">
+														<button type="button" class="btn btn-danger remove-btn" onclick="removeSupp(this)">Remove</button>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									{% endfor %}
+								</div>
+							
+								<!-- Plantilla para un nuevo SUPLEMENTARIO -->
+								<template id="supp-template">
+									<div class="items repeater-item">
+										<div class="card mb-3">
+											<div class="card-body">
+												<div class="row g-3">
+													<div class="col-12 col-lg-6">
+														<label for="effectiveDateSupp" class="form-label">Effective Date</label>
+															<input type="date" class="form-control" id="effectiveDateSupp" name="effectiveDateSupp" >	
+													</div>
+													<div class="col-12 col-lg-6">
+														<label for="carrierSuple" class="form-label">Carrier</label>
+														<select class="form-select" id="carrierSuple" aria-label="Default select example" name="carrierSuple">
+															<option>---</option>
+															<option value="AFLAC"> AFLAC</option>                             
+															<option value="AETNA"> AETNA </option>
+															<option value="ALLSTATE HEALTH SOLUTIONS"> ALLSTATE HEALTH SOLUTIONS </option>  
+															<option value="COMBINED"> COMBINED </option>
+															<option value="CIGNA"> CIGNA </option>    
+															<option value="MANHATTAN LIFE"> MANHATTAN LIFE </option>
+															<option value="METLIFE"> METLIFE </option>
+															<option value="OSCAR"> OSCAR</option> 
+															<option value="PIVOT">PIVOT</option>  
+															<option value="SUREBRIDGE"> SUREBRIDGE </option>    
+															<option value="UNITED"> UNITED </option>    
+														 </select>
+													</div>
+													<div class="col-12 col-lg-6">
+														<label for="premiumSupp" class="form-label">Premium</label>
+														<input type="number" class="form-control" id="premiumSupp" value=""  name="premiumSupp" >
+													</div>
+													<div class="col-12 col-lg-6">
+														<label for="policyTypeSupp" class="form-label">Policy Type</label>
+														<select class="form-select" id="policyTypeSupp" name="policyTypeSupp" aria-label="Default select example">
+															<option>---</option>
+															<option value="ACCIDENTE">ACCIDENTE</option>
+															   <option value="HOSPITALIZACION">HOSPITALIZACION</option>
+															   <option value="DENTAL">DENTAL</option>
+															   <option value="ENFERMEDADES CRITICAS">ENFERMEDADES CRITICAS</option>
+															   <option value="VISUAL">VISUAL</option>
+															   <option value="DENTAL Y VISUAL">DENTAL Y VISUAL</option>
+															   <option value="PLAN DE DESCUENTO" >PLAN DE DESCUENTO</option>
+															   <option value="SHORT TERM MEDICAL">SHORT TERM MEDICAL</option>
+															   <option value="CANCER">CANCER</option>
+														  </select>
+													</div>
+													<div class="col-12 col-lg-6">
+														<label for="preventiveSupp" class="form-label">Preventive</label>
+														<select class="form-select" id="preventiveSupp" name="preventiveSupp" aria-label="Default select example">
+															<option>---</option>
+															<option value="60">60% </option>
+															   <option value="100">100%</option>
+															   <option value="Sin Espera">Sin Espera</option>
+														</select>
+													</div>
+													<div class="col-12 col-lg-6">
+														<label for="coverageSupp" class="form-label">Coverage</label>
+														<select class="form-select" id="coverageSupp" name="coverageSupp" aria-label="Default select example">
+															<option>---</option>
+															<option value="500">500</option>
+															   <option value="750">750</option>
+															   <option value="1000">1000</option>
+															   <option value="1500">1500</option>
+															   <option value="2000">2000</option>
+															   <option value="2500">2500</option>
+															   <option value="3000">3000</option>
+															   <option value="3500">3500</option>
+															   <option value="4000">4000</option>
+															   <option value="4500">4500</option>
+															   <option value="5000">5000</option>
+															   <option value="10000">10000</option>
+														</select>
+													</div>
+													<div class="col-12 col-lg-6">
+														<label for="deducibleSupp" class="form-label">Deducible</label>
+														<select class="form-select" id="deducibleSupp" name="deducibleSupp" aria-label="Default select example">
+															<option>---</option>
+															<option value="100">100</option>
+															   <option value="50">50</option>
+															   <option value="0">0</option>
+														</select>
+													</div>
+													<div class="col-12 col-lg-12">
+														<label for="observationSuple" class="form-label">Observation</label>
+														<textarea class="form-control" id="observationSuple" name="observationSuple" rows="3" type="text" value=""   placeholder="Supplementary plan remark" style="resize: none"></textarea>
+													</div>
+													<div class="col-12 d-flex justify-content-end mt-3">
+														<button type="button" class="btn btn-danger remove-btn">Remove</button>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</template>
+							</div>						
+								<div class="col-12 mt-4">
+									<div class="d-flex align-items-center gap-3">
+										<button class="btn btn-outline-secondary px-4" onclick="stepper1.previous()">Previous</button>
+										<button class="btn btn-primary px-4" id="buttonSendSupp" >Next</button>
+									</div>
+								</div>						
+							<!---end row-->							
+							</div>
+							<!---end row-->
 							
 						  </div>
 						  {% endif %}
 						  {% if client.type_sales == 'ACA' or client.type_sales == 'SUPLEMENTARIO'%}
+						  {{ dependents.apply  }}
+						  
 
 						  <div id="test-l-3" role="tabpanel" class="bs-stepper-pane" aria-labelledby="stepper1trigger3">
-							<h5 class="mb-1">Your Education Information</h5>
-							<p class="mb-4">Inform companies about your education life</p>
 
-							<div class="row g-3">
-								<div class="Dependent">
-								</div>
-								<div class="col-12 col-lg-6">
-									<label for="nameDependent" class="form-label">Name of Dependent</label>
-									<input type="text" class="form-control" id="nameDependent"  name="nameDependent">
-								</div>
-								<div class="col-12 col-lg-6">
-									<label for="applyDependent" class="form-label">Apply</label>
-									<select class="form-select" id="applyDependent"  name="applyDependent"  >
-										<option>---</option>
-                           				<option value="SI" >SI</option>
-                           				<option value="NO" >NO</option>
-									</select>
-								</div>
-								<div class="col-12 col-lg-6">
-									<label for="dateBirthDependent" class="form-label">Date Birth</label>
-									<input type="date" nim="1" class="form-control" name ="dateBirthDependent" id="dateBirthDependent" placeholder="Old" >
-								</div>
-								<div class="col-12 col-lg-6">
-									<label for="migrationStatusDependent" class="form-label">Migration Status</label>
-									<select class="form-select" id="migrationStatusDependent"  name="migrationStatusDependent"   >
-										<option>---</option>
-										<option value="Green Card" >Green Card</option>
-										<option value="Autorizacion de Empleo" >Autorizacion de Empleo</option>
-										<option value="Notice of Action (i-797)" >Notice of Action (i-797)</option>
-										<option value="Refugiado" >Refugiado</option>
-										<option value="Asilo" >Asilo</option>
-										<option value="Temporary Protection Status (TPS)" >Temporary Protection Status (TPS)</option>
-										<option value="Violencia Domestica" >Violencia Domestica</option>
-										<option value="Residencia Condicional" >Residencia Condicional</option>
-										<option value="Parole" >Parole</option>
-										<option value="Ciudadano USA (Licencia de Manejo)" >Ciudadano USA (Licencia de Manejo)</option>
-										<option value="Vista de Estudiante (i-120)" >Vista de Estudiante (i-120)</option>
-										<option value="En Proceso actual" >En Proceso actual</option>
-										<option value="Inicio de Proceso Migratorio 3-6 meses" >Inicio de Proceso Migratorio 3-6 meses</option>
-									</select>
-								</div>
-								<div class="col-12 col-lg-6">
-									<label for="sexDependent" class="form-label">Sex</label>
-									<select class="form-select"  name="sexDependent" id="sexDependent" aria-label="Default select example">
-										<option selected>---</option>
-										<option value="MASCULINO">MASCULINO</option>
-										<option value="FEMENINO">FEMENINO</option>
-									</select>
-								</div>
-								<div class="col-12">
-									<div class="d-flex align-items-center gap-3">
-										<button class="btn btn-outline-secondary px-4" onclick="stepper1.previous()">Previous</button>
-										<button class="btn btn-primary px-4" id="buttonSendDepend" onclick="validateAndNext(event, 'test-l-2')">Next</button>
+							<div id="repeater2">
+								<!-- Repeater Heading -->
+								<div class="card mb-3">
+									<div class="card-body">
+										<div class="d-flex align-items-center justify-content-between">
+											<h5 class="mb-0">Dependents</h5>
+											<button type="button" class="btn btn-primary repeater-add-btn-2 px-4">Add</button>
+										</div>
 									</div>
 								</div>
-							</div><!---end row-->
 							
+								<!-- Contenedor de dependientes existentes -->
+								<div id="dependent-container">
+									{% for dependent in dependents %}
+									<div class="items repeater2-item dependentClassList">
+										<div class="card mb-3">
+											<div class="card-body">
+												<div class="row g-3">
+													<input type="hidden" name="dependentId" value="{{ dependent.id }}">
+													<div class="col-12 col-lg-6">
+														<label class="form-label">Name of Dependent</label>
+														<input type="text" class="form-control" name="nameDependent" value="{{ dependent.name }}">
+													</div>
+													<div class="col-12 col-lg-6">
+														<label class="form-label">Apply</label>
+														<select class="form-select" name="applyDependent">
+															<option>---</option>
+															<option value="SI" {% if dependent.apply == "SI" %}selected{% endif %}>SI</option>
+															<option value="NO" {% if dependent.apply == "NO" %}selected{% endif %}>NO</option>
+														</select>
+													</div>
+													<div class="col-12 col-lg-6">
+														<label class="form-label">Date Birth</label>
+														{% if dependent.date_birth %}
+															<input type="date" class="form-control" value="{{ dependent.date_birth|date:'Y-m-d' }}" id="dateBirthDependent" name="dateBirthDependent">
+														{% else %}
+															<input type="date" class="form-control" id="dateBirthDependent" name="dateBirthDependent">	
+														{% endif %}
+													</div>
+													<div class="col-12 col-lg-6">
+														<label class="form-label">Migration Status</label>
+														<select class="form-select" name="migrationStatusDependent">
+															<option>---</option>
+															<option value="Green Card" {% if dependent.migration_status == "Green Card" %}selected{% endif %}>Green Card</option>
+															<option value="Autorizacion de Empleo" {% if dependent.migration_status == "Autorizacion de Empleo" %}selected{% endif %}>Autorizacion de Empleo</option>
+														</select>
+													</div>
+													<div class="col-12 col-lg-6">
+														<label class="form-label">Sex</label>
+														<select class="form-select" name="sexDependent">
+															<option>---</option>
+															<option value="M" {% if dependent.sex == "M" %}selected{% endif %}>MASCULINO</option>
+															<option value="F" {% if dependent.sex == "F" %}selected{% endif %}>FEMENINO</option>
+														</select>
+													</div>
+													<div class="col-12 col-lg-6">
+														<label class="form-label">Type Police</label>
+														<select class="form-select" name="typePolice">
+															<option>---</option>
+															<option value="ACA" {% if dependent.type_police == "ACA" %}selected{% endif %}>ACA</option>
+															<option value="SUPPLEMENTARY" {% if dependent.type_police == "SUPPLEMENTARY" %}selected{% endif %}>SUPPLEMENTARY</option>
+														</select>
+													</div>
+													<div class="col-12 d-flex justify-content-end mt-3">
+														<button type="button" class="btn btn-danger remove-btn" onclick="removeDependent(this)">Remove</button>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									{% endfor %}
+								</div>
+							
+								<!-- Plantilla para un nuevo dependiente -->
+								<template id="dependent-template">
+									<div class="items repeater2-item">
+										<div class="card mb-3">
+											<div class="card-body">
+												<div class="row g-3">
+													<div class="col-12 col-lg-6">
+														<label class="form-label">Name of Dependent</label>
+														<input type="text" class="form-control" name="nameDependent" value="">
+													</div>
+													<div class="col-12 col-lg-6">
+														<label class="form-label">Apply</label>
+														<select class="form-select" name="applyDependent">
+															<option>---</option>
+															<option value="SI">SI</option>
+															<option value="NO">NO</option>
+														</select>
+													</div>
+													<div class="col-12 col-lg-6">
+														<label class="form-label">Date Birth</label>
+														<input type="date" class="form-control" name="dateBirthDependent" value="">
+													</div>
+													<div class="col-12 col-lg-6">
+														<label class="form-label">Migration Status</label>
+														<select class="form-select" name="migrationStatusDependent">
+															<option>---</option>
+															<option value="Green Card">Green Card</option>
+															<option value="Autorizacion de Empleo">Autorizacion de Empleo</option>
+														</select>
+													</div>
+													<div class="col-12 col-lg-6">
+														<label class="form-label">Sex</label>
+														<select class="form-select" name="sexDependent">
+															<option>---</option>
+															<option value="MASCULINO">MASCULINO</option>
+															<option value="FEMENINO">FEMENINO</option>
+														</select>
+													</div>
+													<div class="col-12 col-lg-6">
+														<label class="form-label">Type Police</label>
+														<select class="form-select" name="typePolice">
+															<option>---</option>
+															<option value="ACA">ACA</option>
+															<option value="SUPPLEMENTARY">SUPPLEMENTARY</option>
+														</select>
+													</div>
+													<div class="col-12 d-flex justify-content-end mt-3">
+														<button type="button" class="btn btn-danger remove-btn">Remove</button>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</template>
+							</div>						
+								<div class="col-12 mt-4">
+									<div class="d-flex align-items-center gap-3">
+										<button class="btn btn-outline-secondary px-4" onclick="stepper1.previous()">Previous</button>
+										<button class="btn btn-primary px-4" id="buttonSendDepend" >Next</button>
+									</div>
+								</div>						
+							<!---end row-->							
 						  </div>
 						  {% endif %}
 
@@ -1485,6 +1697,8 @@
 	</script>
 
 	<script src="{% static 'assets/js/validationFormCreatePlan.js' %}"></script>
+	<script src="{% static 'assets/js/repeater.js' %}"></script>
+	<script src="{% static 'assets/js/removeFormDependent.js' %}"></script>
 </body>
 
 

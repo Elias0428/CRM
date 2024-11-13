@@ -31,5 +31,7 @@ urlpatterns = [
     # Json
     path('json/', views.formCreatePlan, name='formCreatePlan'),
     path('formCreatePlan/<client_id>/', views.formCreatePlan, name='formCreatePlan'),
+    path('formCreatePlan/deleteDependent/<int:dependent_id>/', views.delete_dependent, name='delete_dependent'),
+    path('formCreatePlan/deleteSupp/<int:supp_id>/', views.delete_supp, name='delete_supp'),
 
 ]

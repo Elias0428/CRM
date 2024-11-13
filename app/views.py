@@ -103,36 +103,112 @@ def formCreatePlan(request, client_id):
             print(aca_plan, created)
             return JsonResponse({'success': True})
         elif type_sale == 'SUPLEMENTARIO':
-            supplementary_plan, created = Supp.objects.update_or_create(
-                client=client,
-                defaults={
-                    'effective_date': request.POST.get('effectiveDate'),
-                    'company': request.POST.get('carrierSuple'),
-                    'premium': request.POST.get('premium'),
-                    'policy_type': request.POST.get('policyType'),
-                    'preventive': request.POST.get('preventive'),
-                    'coverage': request.POST.get('coverage'),
-                    'deducible': request.POST.get('deducible'),
-                    'observation': request.POST.get('observationSuple')
-                }
-            )
+            supp_data = {}
+
+            # Filtrar solo los datos que corresponden a dependents y organizarlos por índices
+            for key, value in request.POST.items():
+                print(value)
+                if key.startswith('supplementary_plan_data'): #pregunta como inicia el string
+                    # Obtener índice y nombre del campo
+                    try:
+                        index = key.split('[')[1].split(']')[0]  # Extrae el índice del dependiente
+                        field_name = key.split('[')[2].split(']')[0]  # Extrae el nombre del campo
+                    except IndexError:
+                        continue  # Ignora las llaves que no tengan el formato esperado
+                    
+                    # Inicializar un diccionario para el dependiente si no existe
+                    if index not in supp_data:
+                        supp_data[index] = {}
+
+                    # Almacenar el valor del campo en el diccionario correspondiente
+                    supp_data[index][field_name] = value
+
+            # Guardar cada dependiente en la base de datos
+            for sup_data in supp_data.values():
+                if 'carrierSuple' in sup_data:  # Verificar que al menos el nombre esté presente
+                    supp_id = sup_data.get('id')  # Obtener el id si está presente
+
+                    if supp_id:  # Si se proporciona un id, actualizar el registro existente
+                        Supp.objects.filter(id=supp_id).update(
+                            client=client,
+                            profiling_agent=request.user,
+                            effective_date=sup_data.get('effectiveDateSupp'),
+                            company=sup_data.get('carrierSuple'),
+                            premium=sup_data.get('premiumSupp'),
+                            policy_type=sup_data.get('policyTypeSupp'),
+                            preventive=sup_data.get('preventiveSupp'),
+                            coverage=sup_data.get('coverageSupp'),
+                            deducible=sup_data.get('deducibleSupp'),
+                            observation=sup_data.get('observationSuple')
+                        )
+                    else:  # Si no hay id, crear un nuevo registro
+                        Supp.objects.create(
+                            client=client,
+                            profiling_agent=request.user,
+                            effective_date=sup_data.get('effectiveDateSupp'),
+                            company=sup_data.get('carrierSuple'),
+                            premium=sup_data.get('premiumSupp'),
+                            policy_type=sup_data.get('policyTypeSupp'),
+                            preventive=sup_data.get('preventiveSupp'),
+                            coverage=sup_data.get('coverageSupp'),
+                            deducible=sup_data.get('deducibleSupp'),
+                            observation=sup_data.get('observationSuple')
+                        )
+
             return JsonResponse({'success': True})
         elif type_sale == 'DEPENDENTS':
-            dependents, created = Dependent.objects.update_or_create(
-                client=client,
-                name=request.POST.get('nameDependent'),
-                defaults={
-                    'apply': request.POST.get('applyDependent'),
-                    'date_of_birth': request.POST.get('dateBirthDependent'),
-                    'migration_status': request.POST.get('migrationStatusDependent'),
-                    'sex': request.POST.get('sexDependent')
-                }
-            )
+            dependents_data = {}
+
+            # Filtrar solo los datos que corresponden a dependents y organizarlos por índices
+            for key, value in request.POST.items():
+                print(key)
+                if key.startswith('dependent'):
+                    # Obtener índice y nombre del campo
+                    try:
+                        index = key.split('[')[1].split(']')[0]  # Extrae el índice del dependiente
+                        field_name = key.split('[')[2].split(']')[0]  # Extrae el nombre del campo
+                    except IndexError:
+                        continue  # Ignora las llaves que no tengan el formato esperado
+                    
+                    # Inicializar un diccionario para el dependiente si no existe
+                    if index not in dependents_data:
+                        dependents_data[index] = {}
+
+                    # Almacenar el valor del campo en el diccionario correspondiente
+                    dependents_data[index][field_name] = value
+
+            # Guardar cada dependiente en la base de datos
+            for dep_data in dependents_data.values():
+                if 'nameDependent' in dep_data:  # Verificar que al menos el nombre esté presente
+                    dependent_id = dep_data.get('id')  # Obtener el id si está presente
+
+                    if dependent_id:  # Si se proporciona un id, actualizar el registro existente
+                        Dependent.objects.filter(id=dependent_id).update(
+                            client=client,
+                            name=dep_data.get('nameDependent'),
+                            apply=dep_data.get('applyDependent'),
+                            date_birth=dep_data.get('dateBirthDependent'),
+                            migration_status=dep_data.get('migrationStatusDependent'),
+                            sex=dep_data.get('sexDependent'),
+                            type_police=dep_data.get('typePolice')
+                        )
+                    else:  # Si no hay id, crear un nuevo registro
+                        Dependent.objects.create(
+                            client=client,
+                            name=dep_data.get('nameDependent'),
+                            apply=dep_data.get('applyDependent'),
+                            date_birth=dep_data.get('dateBirthDependent'),
+                            migration_status=dep_data.get('migrationStatusDependent'),
+                            sex=dep_data.get('sexDependent'),
+                            type_police=dep_data.get('typePolice')
+                        )
+
             return JsonResponse({'success': True})
 
     aca_plan = ObamaCare.objects.filter(client=client).first()
-    supplementary_plan = Supp.objects.filter(client=client).first()
+    supplementary_plan = Supp.objects.filter(client=client)
     dependents = Dependent.objects.filter(client=client)
+    print(dependents)
 
     return render(request, 'formCreatePlan.html', {
         'client': client,
@@ -140,6 +216,29 @@ def formCreatePlan(request, client_id):
         'supplementary_plan_data': supplementary_plan,
         'dependents': dependents
     })
+
+
+def delete_dependent(request, dependent_id):
+    if request.method == 'POST':
+        try:
+            # Buscar y eliminar el dependiente por ID
+            dependent = Dependent.objects.get(id=dependent_id)
+            dependent.delete()
+            return JsonResponse({'success': True})
+        except Dependent.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Dependent not found'})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
+
+def delete_supp(request, supp_id):
+    if request.method == 'POST':
+        try:
+            # Buscar y eliminar el dependiente por ID
+            supp = Supp.objects.get(id=supp_id)
+            supp.delete()
+            return JsonResponse({'success': True})
+        except Supp.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Dependent not found'})
+    return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
 
 
