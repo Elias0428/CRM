@@ -60,7 +60,7 @@ def formCreateClient(request):
         else:
             return HttpResponse('Mensaje de error en el formulario (Luego lo hacemos)')
     else:   
-        return render(request, 'formCreateClient.html')
+        return render(request, 'forms/formCreateClient.html')
     
         # client = Client()
         # client.agent_usa = request.POST['agent_usa']
@@ -211,7 +211,7 @@ def formCreatePlan(request, client_id):
     dependents = Dependent.objects.filter(client=client)
     print(dependents)
 
-    return render(request, 'formCreatePlan.html', {
+    return render(request, 'forms/formCreatePlan.html', {
         'client': client,
         'aca_plan_data': aca_plan,
         'supplementary_plan_data': supplementary_plan,

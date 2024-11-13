@@ -1,0 +1,200 @@
+{% extends "index.html" %}
+<!doctype html>
+<html lang="en">
+
+{% load static %}
+
+{% block head %}
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!--favicon-->
+	<link rel="icon" href="{% static "assets/images/favicon-32x32.png" %}" type="image/png" />
+	<!--plugins-->
+	<link href="{% static "assets/plugins/simplebar/css/simplebar.css" %}" rel="stylesheet" />
+	<link href="{% static "assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" %}" rel="stylesheet" />
+	<link href="{% static "assets/plugins/metismenu/css/metisMenu.min.css" %}" rel="stylesheet" />
+	<!-- loader-->
+	<link href="{% static "assets/css/pace.min.css" %}" rel="stylesheet" />
+	<script src="{% static "assets/js/pace.min.js" %}"></script>
+	<!-- Bootstrap CSS -->
+	<link href="{% static "assets/css/bootstrap.min.css" %}" rel="stylesheet">
+	<link href="{% static "assets/css/bootstrap-extended.css" %}" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&amp;display=swap" rel="stylesheet">
+	<link href="{% static "assets/css/app.css" %}" rel="stylesheet">
+	<link href="{% static "assets/css/icons.css" %}" rel="stylesheet">
+	<!-- Theme Style CSS -->
+	<link rel="stylesheet" href="{% static "assets/css/dark-theme.css" %}" />
+	<link rel="stylesheet" href="{% static "assets/css/semi-dark.css" %}" />
+	<link rel="stylesheet" href="{% static "assets/css/header-colors.css" %}" />
+	<title>Create Client</title>
+{% endblock %}
+
+{% block page_content %}
+<!--end breadcrumb-->
+<div class="card">
+	<div class="card-body">
+		<h5 class="mb-1">ObamaCare</h5>
+		<p class="mb-4">Information about the Obamacare plan </p>
+		<hr/>
+		<div id="editor">
+		<form id="formCreateClient" method="POST">
+			{% csrf_token %}
+			<div id="test-l-1" role="tabpanel" class="bs-stepper-pane" aria-labelledby="stepper1trigger1">
+				<div class="row g-3">
+					<div class="col-12 col-lg-6">
+						<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
+							<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa"  >
+							<option></option>
+							<option value="Daniel" >Daniel</option>
+							<option value="Zohira" >Zohira</option>
+							<option value="Gina" >Gina</option>
+							<option value="Diego" >Diego</option>
+							<option value="Danieska" >Danieska</option>
+							<option value="Vladimir">Vladimir</option>
+							<option value="Luis">Luis</option>
+							<option value="Borja">Borja</option>
+							<option value="Rodrigo">Rodrigo</option>
+							<option value="Evelyn">Evelyn</option>
+							</select>
+					</div>
+					<div class="col-12 col-lg-6">
+						<label for="first_name" class="form-label">First Name</label>
+						<input type="text" class="form-control" name="first_name" id="first_name" placeholder="First Name">
+					</div>
+					<div class="col-12 col-lg-6">
+						<label for="last_name" class="form-label">Last Name</label>
+						<input type="text" class="form-control" name="last_name" id="last_name" placeholder="Last Name">
+					</div>
+					<div class="col-12 col-lg-6">
+						<label for="phone_number" class="form-label">Phone Number</label>
+						<input type="number" class="form-control" name ="phone_number" id="phone_number" placeholder="Phone Number">
+					</div>
+					<div class="col-12 col-lg-6">
+						<label for="email" class="form-label">E-mail Address</label>
+						<input type="email" class="form-control" name="email" id="email" placeholder="Enter Email Address">
+					</div>
+					<div class="col-12 col-lg-6">
+						<label for="address" class="form-label">Address</label>
+						<input type="text" class="form-control" name="address" id="address" placeholder="Address">
+					</div>
+					<div class="col-12 col-lg-6">
+						<label for="zipcode" class="form-label">zipCode</label>
+						<input type="number" class="form-control" name ="zipcode" id="zipcode" placeholder="ZIP-CODE">
+					</div>
+					<div class="col-12 col-lg-6">
+						<label for="city" class="form-label">City</label>
+						<input type="text" class="form-control" name ="city" id="city" >
+					</div>
+					<div class="col-12 col-lg-6">
+						<label for="state" class="form-label font-weight-bold">State</label>
+						<select id="inputState" class="form-select" id="state" name="state" >
+							<option selected>---</option>
+								<option value="AL"> AL </option>
+								<option value="AR"> AR </option>
+								<option value="AZ"> AZ </option>
+								<option value="CA"> CA </option>
+								<option value="DE"> DE </option>
+								<option value="FL"> FL </option>
+								<option value="GA"> GA </option>
+								<option value="IL"> IL </option>
+								<option value="IA"> IA </option>
+								<option value="KS"> KS </option>
+								<option Value="MI"> MI </option>
+								<option Value="MO"> MO </option>
+								<option value="NJ"> NJ </option>
+								<option value="NC"> NC </option>
+								<option value="ND"> ND </option>
+								<option value="NE"> NE </option>
+								<option value="OH"> OH </option>
+								<option value="OK"> OK </option>
+								<option value="SC"> SC </option>
+								<option value="TN"> TN </option>
+								<option value="TX"> TX </option>
+								<option value="UT"> UT </option>
+								<option value="VA"> VA </option>
+								<option value="WI"> WI </option>
+								<option value="LA"> LA </option>
+								<option value="MS"> MS </option>
+								<option value="IN"> IN </option>
+								<option value="OR"> OR </option>
+						</select>
+					</div>
+					<div class="col-12 col-lg-6">
+						<label for="country" class="form-label">Country</label>
+						<input type="text" class="form-control" name ="country" id="country" placeholder="Country">
+					</div>
+					<div class="col-12 col-lg-6">
+						<label for="sex" class="form-label">Sex</label>
+						<select class="form-select"  name="sex" id="sex" aria-label="Default select example">
+							<option selected>---</option>
+							<option value="M">MASCULINO</option>
+							<option value="F">FEMENINO</option>
+						</select>
+					</div>
+					<div class="col-12 col-lg-6">
+						<label for="old" class="form-label">Old</label>
+						<input type="number" nim="1" class="form-control" name ="old" id="old" placeholder="Old">
+					</div>
+					<div class="col-12 col-lg-6">
+						<label for="date_birth" class="form-label">Date Birth</label>
+						<input type="date" nim="1" class="form-control" name ="date_birth" id="date_birth" placeholder="Old">
+					</div>
+					<div class="col-12 col-lg-6">
+						<label for="migration_status" class="form-label">Migration Status</label>
+						<select class="form-select" id="migration_status"  name="migration_status"   >
+							<option>---</option>
+							<option value="Green Card" >Green Card</option>
+							<option value="Autorizacion de Empleo" >Autorizacion de Empleo</option>
+							<option value="Notice of Action (i-797)" >Notice of Action (i-797)</option>
+							<option value="Refugiado" >Refugiado</option>
+							<option value="Asilo" >Asilo</option>
+							<option value="Temporary Protection Status (TPS)" >Temporary Protection Status (TPS)</option>
+							<option value="Violencia Domestica" >Violencia Domestica</option>
+							<option value="Residencia Condicional" >Residencia Condicional</option>
+							<option value="Parole" >Parole</option>
+							<option value="Ciudadano USA (Licencia de Manejo)" >Ciudadano USA (Licencia de Manejo)</option>
+							<option value="Vista de Estudiante (i-120)" >Vista de Estudiante (i-120)</option>
+							<option value="En Proceso actual" >En Proceso actual</option>
+							<option value="Inicio de Proceso Migratorio 3-6 meses" >Inicio de Proceso Migratorio 3-6 meses</option>
+						</select>
+					</div>
+					<div class="col-12 col-lg-6">
+						<label for="type_sales" class="form-label">Tipo de Venta</label>
+						<select class="form-select"  name="type_sales" id="type_sales" aria-label="Default select example" >
+							<option selected>---</option>
+							<option value="ACA">ACA</option>
+							<option value="SUPLEMENTARIO">SUPLEMENTARIO</option>
+							<option value="ACA/SUPLEMENTARIO">ACA/SUPLEMENTARIO</option>
+						</select>
+					</div>
+					<div class="col-12 col-lg-12">
+						<button type="submit" class="btn btn-primary px-4" id="sendClient">Next<i class='bx bx-right-arrow-alt ms-2'></i></button>
+					</div>
+					
+				</div><!---end row-->
+				
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block end_js %}
+	<!--end switcher-->
+	<!-- Bootstrap JS -->
+	<script src="{% static "assets/js/bootstrap.bundle.min.js" %}"></script>
+	<!--plugins-->
+	<script src="{% static "assets/js/jquery.min.js" %}"></script>
+	<script src="{% static "assets/plugins/simplebar/js/simplebar.min.js" %}"></script>
+	<script src="{% static "assets/plugins/metismenu/js/metisMenu.min.js" %}"></script>
+	<script src="{% static "assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js" %}"></script>
+	<script>
+		var quill = new Quill('#editor', {
+		  theme: 'snow'
+		});
+	  </script>
+	<!--app JS-->
+	<script src="{% static "assets/js/app.js" %}"></script>
+{% endblock %}
