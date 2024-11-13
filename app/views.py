@@ -81,7 +81,6 @@ def formCreateClient(request):
 
 @login_required(login_url='/login')
 def formCreatePlan(request, client_id):
-    print(request.POST.get('type_sales'))
     client = get_object_or_404(Client, id=client_id)
 
     if request.method == 'POST':
@@ -162,7 +161,6 @@ def formCreatePlan(request, client_id):
 
             # Filtrar solo los datos que corresponden a dependents y organizarlos por índices
             for key, value in request.POST.items():
-                print(key)
                 if key.startswith('dependent'):
                     # Obtener índice y nombre del campo
                     try:
@@ -178,10 +176,13 @@ def formCreatePlan(request, client_id):
                     # Almacenar el valor del campo en el diccionario correspondiente
                     dependents_data[index][field_name] = value
 
+                    print('entre')
+
             # Guardar cada dependiente en la base de datos
             for dep_data in dependents_data.values():
                 if 'nameDependent' in dep_data:  # Verificar que al menos el nombre esté presente
                     dependent_id = dep_data.get('id')  # Obtener el id si está presente
+                    print(dependent_id)
 
                     if dependent_id:  # Si se proporciona un id, actualizar el registro existente
                         Dependent.objects.filter(id=dependent_id).update(
@@ -192,8 +193,9 @@ def formCreatePlan(request, client_id):
                             migration_status=dep_data.get('migrationStatusDependent'),
                             sex=dep_data.get('sexDependent'),
                             kinship=dep_data.get('kinship'),
-                            type_police=dep_data.get('typePolice')
+                            type_police=dep_data.get('typePolice')                            
                         )
+                        print('hola')
                     else:  # Si no hay id, crear un nuevo registro
                         Dependent.objects.create(
                             client=client,
@@ -205,6 +207,7 @@ def formCreatePlan(request, client_id):
                             kinship=dep_data.get('kinship'),
                             type_police=dep_data.get('typePolice')
                         )
+                        print('holass')
 
             return JsonResponse({'success': True})
 

@@ -133,6 +133,7 @@ function saveDependents() {
       if (data.success) {
           // Actualizar la interfaz de usuario según sea necesario
           stepper1.next();
+          console.log('js perfecto')
       } else {
           // Manejar errores
           console.error('Error en la respuesta:', data);
