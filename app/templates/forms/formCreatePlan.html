@@ -441,6 +441,18 @@
 											</select>
 										</div>
 										<div class="col-12 col-lg-6">
+											<label for="kinship" class="form-label">Kinship</label>
+											<select class="form-select" id="kinship" name="kinship" aria-label="Default select example">
+												<option>---</option>
+												<option value="DAD" {% if dependent.kinship == '60' %}selected{% endif %}>DAD</option>
+												<option value="MOM" {% if dependent.kinship == '100' %}selected{% endif %}>MOM</option>
+												<option value="SON" {% if dependent.kinship == 'SON' %}selected{% endif %}>SON</option>
+												<option value="GRANDPARENT" {% if dependent.kinship == 'GRANDPARENT' %}selected{% endif %}>GRANDPARENT</option>
+												<option value="GRANDMOTHER" {% if dependent.kinship == 'GRANDMOTHER' %}selected{% endif %}>GRANDMOTHER</option>
+												<option value="COUPLE" {% if dependent.kinship == 'COUPLE' %}selected{% endif %}>COUPLE</option>
+											</select>
+										</div>
+										<div class="col-12 col-lg-6">
 											<label class="form-label">Type Police</label>
 											<select class="form-select" name="typePolice">
 												<option>---</option>

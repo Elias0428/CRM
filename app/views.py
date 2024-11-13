@@ -191,6 +191,7 @@ def formCreatePlan(request, client_id):
                             date_birth=dep_data.get('dateBirthDependent'),
                             migration_status=dep_data.get('migrationStatusDependent'),
                             sex=dep_data.get('sexDependent'),
+                            kinship=dep_data.get('kinship'),
                             type_police=dep_data.get('typePolice')
                         )
                     else:  # Si no hay id, crear un nuevo registro
@@ -201,6 +202,7 @@ def formCreatePlan(request, client_id):
                             date_birth=dep_data.get('dateBirthDependent'),
                             migration_status=dep_data.get('migrationStatusDependent'),
                             sex=dep_data.get('sexDependent'),
+                            kinship=dep_data.get('kinship'),
                             type_police=dep_data.get('typePolice')
                         )
 

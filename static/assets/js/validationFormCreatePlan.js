@@ -90,7 +90,6 @@ function saveSupplementaryPlan() {
       console.error('Error en la solicitud:', error);
   });
 }
-
   
 function saveDependents() {
   var formData = new FormData();
@@ -102,6 +101,7 @@ function saveDependents() {
   dependents.forEach((dependent, index) => {
       // Obtener los valores de cada conjunto de dependientes
       const dependentId = dependent.querySelector('[name="dependentId"]').value;
+      const kinship = dependent.querySelector('[name="kinship"]').value;
       const nameDependent = dependent.querySelector('[name="nameDependent"]').value;
       const applyDependent = dependent.querySelector('[name="applyDependent"]').value;
       const dateBirthDependent = dependent.querySelector('[name="dateBirthDependent"]').value;
@@ -113,6 +113,7 @@ function saveDependents() {
       if (nameDependent.trim() !== '') {
           // Agregar cada dependiente al formData con un índice
           formData.append(`dependent[${index}][id]`, dependentId);
+          formData.append(`dependent[${index}][kinship]`, kinship);
           formData.append(`dependent[${index}][nameDependent]`, nameDependent);
           formData.append(`dependent[${index}][applyDependent]`, applyDependent);
           formData.append(`dependent[${index}][dateBirthDependent]`, dateBirthDependent);
