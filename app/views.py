@@ -87,36 +87,56 @@ def formCreatePlan(request, client_id):
         type_sale = request.POST.get('type_sales')
 
         if type_sale == 'ACA':
-            aca_plan, created = ObamaCare.objects.update_or_create(
-                client=client,
-                profiling_agent=request.user,
-                defaults={
-                    'taxes': request.POST.get('taxes'),
-                    'plan_name': request.POST.get('planName'),
-                    'work': request.POST.get('work'),
-                    'subsidy': request.POST.get('subsidy'),
-                    'carrier': request.POST.get('carrierObama'),
-                    'apply': request.POST.get('applyObama'),
-                    'observation': request.POST.get('observationObama')
-                }
-            )
+            
+            aca_plan_id = request.POST.get('acaPlanId')
+
+            if aca_plan_id:
+                # Si el ID existe, actualiza el registro
+                ObamaCare.objects.filter(id=aca_plan_id).update(
+                    client=client,
+                    profiling_agent=request.user,
+                    taxes=request.POST.get('taxes'),
+                    plan_name=request.POST.get('planName'),
+                    work=request.POST.get('work'),
+                    subsidy=request.POST.get('subsidy'),
+                    carrier=request.POST.get('carrierObama'),
+                    apply=request.POST.get('applyObama'),
+                    observation=request.POST.get('observationObama')
+                )
+                aca_plan = ObamaCare.objects.get(id=aca_plan_id)
+                created = False
+            else:
+                # Si no hay ID, crea un nuevo registro
+                aca_plan, created = ObamaCare.objects.update_or_create(
+                    client=client,
+                    profiling_agent=request.user,
+                    defaults={
+                        'taxes': request.POST.get('taxes'),
+                        'plan_name': request.POST.get('planName'),
+                        'work': request.POST.get('work'),
+                        'subsidy': request.POST.get('subsidy'),
+                        'carrier': request.POST.get('carrierObama'),
+                        'apply': request.POST.get('applyObama'),
+                        'observation': request.POST.get('observationObama')
+                    }
+                )
             print(aca_plan, created)
-            return JsonResponse({'success': True})
+            return JsonResponse({'success': True, 'aca_plan_id': aca_plan.id})
         elif type_sale == 'SUPLEMENTARIO':
             supp_data = {}
+            updated_supp_ids = []  # Lista para almacenar los IDs de los registros suplementarios
 
-            # Filtrar solo los datos que corresponden a dependents y organizarlos por índices
+            # Filtrar solo los datos que corresponden a suplementario y organizarlos por índices
             for key, value in request.POST.items():
-                print(value)
                 if key.startswith('supplementary_plan_data'): #pregunta como inicia el string
                     # Obtener índice y nombre del campo
                     try:
-                        index = key.split('[')[1].split(']')[0]  # Extrae el índice del dependiente
+                        index = key.split('[')[1].split(']')[0]  # Extrae el índice del suplementario
                         field_name = key.split('[')[2].split(']')[0]  # Extrae el nombre del campo
                     except IndexError:
                         continue  # Ignora las llaves que no tengan el formato esperado
                     
-                    # Inicializar un diccionario para el dependiente si no existe
+                    # Inicializar un diccionario para el suplementario si no existe
                     if index not in supp_data:
                         supp_data[index] = {}
 
@@ -141,8 +161,9 @@ def formCreatePlan(request, client_id):
                             deducible=sup_data.get('deducibleSupp'),
                             observation=sup_data.get('observationSuple')
                         )
+                        updated_supp_ids.append(supp_id)  # Agregar el ID actualizado a la lista
                     else:  # Si no hay id, crear un nuevo registro
-                        Supp.objects.create(
+                        new_supp = Supp.objects.create(
                             client=client,
                             profiling_agent=request.user,
                             effective_date=sup_data.get('effectiveDateSupp'),
@@ -154,10 +175,11 @@ def formCreatePlan(request, client_id):
                             deducible=sup_data.get('deducibleSupp'),
                             observation=sup_data.get('observationSuple')
                         )
-
-            return JsonResponse({'success': True})
+                        updated_supp_ids.append(new_supp.id)  # Agregar el ID creado a la lista
+            return JsonResponse({'success': True,  'supp_ids': updated_supp_ids})
         elif type_sale == 'DEPENDENTS':
             dependents_data = {}
+            updated_dependents_ids = []  # Lista para almacenar los IDs de los registros suplementarios
 
             # Filtrar solo los datos que corresponden a dependents y organizarlos por índices
             for key, value in request.POST.items():
@@ -176,13 +198,11 @@ def formCreatePlan(request, client_id):
                     # Almacenar el valor del campo en el diccionario correspondiente
                     dependents_data[index][field_name] = value
 
-                    print('entre')
-
             # Guardar cada dependiente en la base de datos
+            print(dependents_data, 'soy dependets data')
             for dep_data in dependents_data.values():
                 if 'nameDependent' in dep_data:  # Verificar que al menos el nombre esté presente
                     dependent_id = dep_data.get('id')  # Obtener el id si está presente
-                    print(dependent_id)
 
                     if dependent_id:  # Si se proporciona un id, actualizar el registro existente
                         Dependent.objects.filter(id=dependent_id).update(
@@ -195,9 +215,9 @@ def formCreatePlan(request, client_id):
                             kinship=dep_data.get('kinship'),
                             type_police=dep_data.get('typePolice')                            
                         )
-                        print('hola')
+                        updated_dependents_ids.append(dependent_id)  # Agregar el ID actualizado a la lista
                     else:  # Si no hay id, crear un nuevo registro
-                        Dependent.objects.create(
+                        new_dependent = Dependent.objects.create(
                             client=client,
                             name=dep_data.get('nameDependent'),
                             apply=dep_data.get('applyDependent'),
@@ -207,9 +227,9 @@ def formCreatePlan(request, client_id):
                             kinship=dep_data.get('kinship'),
                             type_police=dep_data.get('typePolice')
                         )
-                        print('holass')
+                        updated_dependents_ids.append(new_dependent.id)  # Agregar el ID creado a la lista
 
-            return JsonResponse({'success': True})
+            return JsonResponse({'success': True,'dependents_ids': updated_dependents_ids}) #Y aki retornes la lista/array.
 
     aca_plan = ObamaCare.objects.filter(client=client).first()
     supplementary_plan = Supp.objects.filter(client=client)

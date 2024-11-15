@@ -91,7 +91,7 @@ class Supp(models.Model):
     effective_date = models.DateField()
     company = models.CharField(max_length=200)
     policy_type = models.CharField(max_length=100)
-    premium = models.DecimalField(max_digits=10, decimal_places=2)
+    premium = models.DecimalField(max_digits=10, decimal_places=2,)
     preventive = models.CharField(max_length=100)
     coverage = models.IntegerField()
     deducible = models.IntegerField()

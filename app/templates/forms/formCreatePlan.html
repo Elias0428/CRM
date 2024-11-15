@@ -85,6 +85,7 @@
 							<p class="mb-4">Enter your personal information to get closer to copanies</p>
 
 							<div class="row g-3">
+								<input type="hidden" id="acaPlanId" name="acaPlanId" value="{{ aca_plan_data.id }}">
 								<div class="col-12 col-lg-6">
 									<label for="taxes" class="form-label">Taxes</label>
 									<input type="number" class="form-control" id="taxes" value="{{aca_plan_data.taxes}}"  name="taxes" >
@@ -226,10 +227,10 @@
 															<div class="col-12 col-lg-6">
 																<label for="preventiveSupp" class="form-label">Preventive</label>
 																<select class="form-select" id="preventiveSupp" name="preventiveSupp" aria-label="Default select example">
-																	<option>---</option>
+																	<option selected disable></option>
 																	<option value="60" {% if supp_plan.preventive == '60' %}selected{% endif %}>60% </option>
-																		<option value="100" {% if supp_plan.preventive == '100' %}selected{% endif %}>100%</option>
-																		<option value="Sin Espera" {% if supp_plan.preventive == 'Sin Espera' %}selected{% endif %}>Sin Espera</option>
+																	<option value="100" {% if supp_plan.preventive == '100' %}selected{% endif %}>100%</option>
+																	<option value="Sin Espera" {% if supp_plan.preventive == 'Sin Espera' %}selected{% endif %}>Sin Espera</option>
 																</select>
 															</div>
 															<div class="col-12 col-lg-6">
@@ -261,7 +262,7 @@
 															</div>
 															<div class="col-12 col-lg-12">
 																<label for="observationSuple" class="form-label">Observation</label>
-																<textarea class="form-control" id="observationSuple" name="observationSuple" rows="3" type="text"  value="{{supp_plan.observation}}"  placeholder="Supplementary plan remark" style="resize: none"></textarea>
+																<textarea class="form-control" id="observationSuple" name="observationSuple" rows="3" type="text" placeholder="Supplementary plan remark" style="resize: none">{{supp_plan.observation}}</textarea>
 															</div>
 															<div class="col-12 d-flex justify-content-end mt-3">
 																<button type="button" class="btn btn-danger remove-btn" onclick="removeSupp(this)">Remove</button>
@@ -273,7 +274,7 @@
 										{% endfor %}
 									{% else %}
 										<!-- Plantilla para un nuevo SUPLEMENTARIO -->
-										<div class="items repeater-item">
+										<div class="items repeater1-item supplementaryClassList">
 												<div class="card mb-3">
 													<div class="card-body">
 														<div class="row g-3">
@@ -392,7 +393,6 @@
 							<!-- Contenedor de dependientes existentes -->
 							<div id="dependent-container">
 								{% if dependents %}
-								{{dependents}}
 									{% for dependent in dependents %}
 										<div class="items repeater2-item dependentClassList">
 											<div class="card mb-3">
@@ -439,8 +439,8 @@
 															<label for="kinship" class="form-label">Kinship</label>
 															<select class="form-select" id="kinship" name="kinship" aria-label="Default select example">
 																<option>---</option>
-																<option value="DAD" {% if dependent.kinship == '60' %}selected{% endif %}>DAD</option>
-																<option value="MOM" {% if dependent.kinship == '100' %}selected{% endif %}>MOM</option>
+																<option value="DAD" {% if dependent.kinship == 'DAD' %}selected{% endif %}>DAD</option>
+																<option value="MOM" {% if dependent.kinship == 'MOM' %}selected{% endif %}>MOM</option>
 																<option value="SON" {% if dependent.kinship == 'SON' %}selected{% endif %}>SON</option>
 																<option value="GRANDPARENT" {% if dependent.kinship == 'GRANDPARENT' %}selected{% endif %}>GRANDPARENT</option>
 																<option value="GRANDMOTHER" {% if dependent.kinship == 'GRANDMOTHER' %}selected{% endif %}>GRANDMOTHER</option>
@@ -465,7 +465,7 @@
 									{% endfor %}
 								{% else %}	
 									<!-- Plantilla para un nuevo dependiente -->
-									<div class="items repeater2-item dependent-container">
+									<div class="items repeater2-item dependentClassList">
 										<div class="card mb-3">
 											<div class="card-body">
 												<div class="row g-3">
@@ -497,8 +497,20 @@
 														<label class="form-label">Sex</label>
 														<select class="form-select" name="sexDependent">
 															<option>---</option>
-															<option value="MASCULINO">MASCULINO</option>
-															<option value="FEMENINO">FEMENINO</option>
+															<option value="M">MASCULINO</option>
+															<option value="F">FEMENINO</option>
+														</select>
+													</div>
+													<div class="col-12 col-lg-6">
+														<label for="kinship" class="form-label">Kinship</label>
+														<select class="form-select" id="kinship" name="kinship" aria-label="Default select example">
+															<option>---</option>
+															<option value="DAD">DAD</option>
+															<option value="MOM">MOM</option>
+															<option value="SON">SON</option>
+															<option value="GRANDPARENT">GRANDPARENT</option>
+															<option value="GRANDMOTHER">GRANDMOTHER</option>
+															<option value="COUPLE">COUPLE</option>
 														</select>
 													</div>
 													<div class="col-12 col-lg-6">
@@ -522,7 +534,7 @@
 						<div class="col-12 mt-4">
 							<div class="d-flex align-items-center gap-3">
 								<button class="btn btn-outline-secondary px-4" onclick="stepper1.previous()">Previous</button>
-								<button class="btn btn-primary px-4" id="buttonSendDepend" >Next</button>
+								<button class="btn btn-primary px-4" id="buttonSendDepend" >Send</button>
 							</div>
 						</div>						
 						<!---end row-->							
