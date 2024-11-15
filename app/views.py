@@ -47,6 +47,9 @@ def motivationalPhrase(request):
 def index(request):
     return render(request, 'index.html')
 
+def select_client(request):
+    clients = Client.objects.all()
+    return render(request, 'agents/select_client.html', {'clients':clients})
 
 @login_required(login_url='/login')
 def formCreateClient(request):
@@ -231,6 +234,7 @@ def formCreatePlan(request, client_id):
 
             return JsonResponse({'success': True,'dependents_ids': updated_dependents_ids}) #Y aki retornes la lista/array.
 
+    type_sale = request.GET.get('type_sale')
     aca_plan = ObamaCare.objects.filter(client=client).first()
     supplementary_plan = Supp.objects.filter(client=client)
     dependents = Dependent.objects.filter(client=client)
@@ -240,7 +244,8 @@ def formCreatePlan(request, client_id):
         'client': client,
         'aca_plan_data': aca_plan,
         'supplementary_plan_data': supplementary_plan,
-        'dependents': dependents
+        'dependents': dependents,
+        'type_sale':type_sale
     })
 
 

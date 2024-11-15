@@ -24,7 +24,8 @@ urlpatterns = [
     path('logout/', views.logout_, name='logout'),
 
     path('motivationalPhrase/', views.motivationalPhrase, name='motivationalPhrase'),
-    path('index/', views.index, name='index'),
+    path('', views.index, name='index'),
+    path('select_client/', views.select_client, name='select_client'),
 
     # Json
     path('formCreateClient/', views.formCreateClient, name='formCreateClient'),
@@ -32,6 +33,5 @@ urlpatterns = [
     path('formCreatePlan/deleteDependent/<int:dependent_id>/', views.delete_dependent, name='delete_dependent'),
     path('formCreatePlan/deleteSupp/<int:supp_id>/', views.delete_supp, name='delete_supp'),
 
-    path('', views.index, name='index'),
     path('table/', views.table, name='table')
 ]
