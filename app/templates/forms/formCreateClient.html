@@ -34,8 +34,8 @@
 <!--end breadcrumb-->
 <div class="card">
 	<div class="card-body">
-		<h5 class="mb-1">ObamaCare</h5>
-		<p class="mb-4">Information about the Obamacare plan </p>
+		<h5 class="mb-1">CLIENT</h5>
+		<p class="mb-4">Information the Client </p>
 		<hr/>
 		<div id="editor">
 		<form id="formCreateClient" method="POST">
@@ -168,6 +168,7 @@
 							<option value="ACA/SUPLEMENTARIO">ACA/SUPLEMENTARIO</option>
 						</select>
 					</div>
+					<div id="error-message" style="color: red;"></div>
 					<div class="col-12 col-lg-12">
 						<button type="submit" class="btn btn-primary px-4" id="sendClient">Next<i class='bx bx-right-arrow-alt ms-2'></i></button>
 					</div>
@@ -176,6 +177,23 @@
 				
 				</div>
 			</form>
+		</div>
+	</div>
+
+	<div class="modal fade" id="responseModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="modalLabel">Mensaje</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body" id="modalMessage">
+					<!-- Aquí se mostrará el mensaje dinámico -->
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
@@ -190,6 +208,13 @@
 	<script src="{% static "assets/plugins/simplebar/js/simplebar.min.js" %}"></script>
 	<script src="{% static "assets/plugins/metismenu/js/metisMenu.min.js" %}"></script>
 	<script src="{% static "assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js" %}"></script>
+	<script src="{% static 'assets/js/validationFormCreateClient.js' %}"></script>
+
+	<!-- Bootstrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Bootstrap JS Bundle con Popper -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 	<script>
 		var quill = new Quill('#editor', {
 		  theme: 'snow'
@@ -197,4 +222,10 @@
 	  </script>
 	<!--app JS-->
 	<script src="{% static "assets/js/app.js" %}"></script>
+
+	<script>
+
+		
+
+	</script>
 {% endblock %}

@@ -24,7 +24,7 @@ function saveAcaPlan() {
     }
 
   
-    fetch(`/formCreatePlan/${client_id}/`, {
+    fetch(`/fetchAca/${client_id}/`, {
       method: 'POST',
       body: formData
     })
@@ -51,6 +51,7 @@ function saveSupplementaryPlan() {
   const plans = document.querySelectorAll('.supplementaryClassList'); // Ajustado el selector aquí
   plans.forEach((plan, index) => {
     // Obtener los valores de cada conjunto de dependientes
+      
       const effectiveDateSupp = plan.querySelector('[name="effectiveDateSupp"]').value;
       const carrierSuple = plan.querySelector('[name="carrierSuple"]').value;
       const premiumSupp = plan.querySelector('[name="premiumSupp"]').value;
@@ -81,7 +82,7 @@ function saveSupplementaryPlan() {
   });
 
   // Realizar la solicitud fetch
-  fetch(`/formCreatePlan/${client_id}/`, {
+  fetch(`/fetchSupp/${client_id}/`, {
       method: 'POST',
       body: formData
   })
@@ -89,6 +90,15 @@ function saveSupplementaryPlan() {
   .then(data => {
       if (data.success) {
           console.log('IDs actualizados:', data.supp_ids);
+          plans.forEach((plan, index) => {
+            suppIdInputHidden = plan.querySelector('[name="suppId"]')
+            console.log(suppIdInputHidden)
+            if (suppIdInputHidden.value == ''){
+              // si imput esta vacio se le coloca el id recivido del parte del bakend
+              suppIdInputHidden.value = data.supp_ids[index]
+            }
+          });
+
           // Actualizar la interfaz de usuario según sea necesario
           stepper1.next();
       } else {
@@ -141,7 +151,7 @@ function saveDependents() {
       
 
   // Realizar la solicitud fetch
-  fetch(`/formCreatePlan/${client_id}/`, {
+  fetch(`/fetchDependent/${client_id}/`, {
       method: 'POST',
       body: formData
   })
@@ -149,9 +159,22 @@ function saveDependents() {
   .then(data => {
       if (data.success) {
           console.log('IDs actualizados:', data.dependents_ids);
+          console.log(data.success)
           // Actualizar la interfaz de usuario según sea necesario
-          window.location.href = '/index/'
           stepper1.next();
+          if (data.success){
+            Swal.fire({
+              icon: 'success' ,
+              title: '<p style="color: black;">Saved success</p>',
+              confirmButtonText: "OK",
+            }).then((result) => {
+              /* Read more about isConfirmed, isDenied below */
+              if (result.isConfirmed) {
+                window.location.href = '/';
+              }
+            });            
+          }
+          
       } else {
           // Manejar errores
           console.error('Error en la respuesta:', data);

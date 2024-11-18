@@ -74,6 +74,7 @@ class ObamaCare(models.Model):
     doc_icon = models.BooleanField(default=False,null=True)
     doc_migration = models.BooleanField(default=False,null=True)
     status = models.CharField(max_length=50)
+    status_color = models.IntegerField(null = True)
     work = models.CharField(max_length=50)
     npm = models.BigIntegerField(null=True)
     img = models.FileField(null=True)
