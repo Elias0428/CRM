@@ -1,39 +1,52 @@
+const idsSelectWithValidation = ['agent_usa', 'inputState', 'sex', 'migration_status', 'type_sales']
+
 document.getElementById('formCreateClient').addEventListener('submit', function(event) {
-    event.preventDefault(); // Evita el envío tradicional del formulario
-        
-        const formData = new FormData(this);
+    event.preventDefault(); // Previene el envío por defecto del formulario
+    let isValid = true;
+    const phoneNumber = document.getElementById('phone_number')
 
-        fetch('/formCreateClient/', {
-            method: "POST",
-            body: formData,
-        })
-        .then((response) => response.json())
-        .then((data) => {
-            if (data.error) {
-                showModal('Error', data.error); // Muestra el error en el modal
-            } else if (data.success) {
-                showModal('Éxito', 'Cliente registrado correctamente', true, data.redirect_url);
-            }
-        })
-        .catch((error) => {
-            console.error("Error en la solicitud:", error);
-            showModal('Error', 'Hubo un problema al procesar tu solicitud. Inténtalo de nuevo.');
-        });
-    });
 
-    // Función para mostrar el modal con un título, mensaje y redirección opcional
-    function showModal(title, message, redirect = false, redirectUrl = '') {
-        document.getElementById('modalLabel').textContent = title;
-        document.getElementById('modalMessage').textContent = message;
-        
-        // Inicializar el modal
-        let modal = new bootstrap.Modal(document.getElementById('responseModal'));
-        modal.show();
-        
-        // Evento para redirigir cuando se cierra el modal
-        document.getElementById('responseModal').addEventListener('hidden.bs.modal', function () {
-            if (redirect && redirectUrl) {
-                window.location.href = redirectUrl;
-            }
-    });
+    // Función para validar los Select
+    for (let i = 0; i < idsSelectWithValidation.length; i++) {
+        const idSelect = idsSelectWithValidation[i];
+        const select = document.getElementById(idSelect);
+        if (select.value == 'no_valid') {
+            isValid = false;
+            select.focus(); // Hace foco en el select inválido
+            break; // Detiene la iteración
+        }
+    }
+
+    phoneNumberFormat = validatePhoneNumber(phoneNumber.value)
+    console.log(phoneNumberFormat)
+    console.log(!isValid)
+
+    if (!isValid){
+        return;
+    }else if(phoneNumberFormat == false) {
+        phoneNumber.focus()
+        return;
+    }
+    phoneNumber.value = phoneNumberFormat
+    console.log('Papi llego hasta aqui. lo mando mi loco')
+    // this.submit();
+});
+
+
+function validatePhoneNumber(phoneNumber) {
+    // Eliminar cualquier caracter que no sea número
+    const cleanNumber = phoneNumber.toString().replace(/\D/g, '');
+    
+    // Si el número empieza con 1 y tiene 11 dígitos, es válido
+    if (cleanNumber.startsWith('1') && cleanNumber.length === 11) {
+        return cleanNumber;
+    }
+    
+    // Si el número tiene exactamente 10 dígitos, agregar 1 al inicio
+    if (cleanNumber.length === 10) {
+        return '1' + cleanNumber;
+    }
+    
+    // En cualquier otro caso, el número no es válido
+    return false;
 }

@@ -19,7 +19,7 @@ class Client(models.Model):
     zipcode = models.IntegerField()
     city = models.CharField(max_length=100)
     state = models.CharField(max_length=50)
-    country = models.CharField(max_length=100)
+    county = models.CharField(max_length=100)
     sex = models.CharField(max_length=1)
     old = models.IntegerField()    
     date_birth = models.DateField()
