@@ -1,7 +1,7 @@
 {% extends "index.html" %}
 {% load static %}
 {% block head %}
-    <title>Select Client</title>
+    <title>Client Obamacare</title>
 	<!--plugins-->
 	<link href="{% static "assets/plugins/simplebar/css/simplebar.css" %}" rel="stylesheet" />
 	<link href="{% static "assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" %}" rel="stylesheet" />
@@ -22,7 +22,7 @@
 	<link rel="stylesheet" href="{% static "assets/css/header-colors.css" %}" />
 {% endblock %}
 {% block page_content %}
-<h6 class="mb-0 text-uppercase">DataTable Import</h6>
+<h6 class="mb-0 text-uppercase">Client obamacare</h6>
 <hr/>
 <div class="card">
     <div class="card-body">
@@ -44,18 +44,18 @@
                         <td>{{obamacare.client.agent_usa}}</td>
                         <td>{{obamacare.profiling_agent.first_name}}</td>
                         <td>{{obamacare.client.first_name}} {{obamacare.client.last_name}}</td>
-                        <td>+1 {{obamacare.client.phone_number}}</td>
+                        <td>+ {{obamacare.client.phone_number}}</td>
 						<td>{% if obamacare.status_color == 1 or obamacare.status_color == None %}
 							<span class="badge rounded-pill bg-danger">Not profiled</span>
 						{% elif obamacare.status_color == 2 %}
-						<span class="badge rounded-pill bg-warning text-dark">Process</span>
+							<span class="badge rounded-pill bg-warning text-dark">Process</span>
 						{% elif obamacare.status_color == 3 %}
-						<span class="badge rounded-pill bg-success">Profiling</span>
+							<span class="badge rounded-pill bg-success">Profiling</span>
 						{% endif  %}</td>
                         <td>
 							<div class="d-flex order-actions">
-								<a href="javascript:;" class=""><i class='bx bxs-edit'></i></a>
-								<a href="javascript:;" class="ms-3"><i class='bx bxs-trash'></i></a>
+								<a href="{% url 'editClientObama' obamacare.id %}" class=""><i class='bx bxs-edit'></i></a>
+								<a href="{% url 'toggleObamaStatus' obamacare.id %}" class="ms-3"><i class='bx bxs-trash'></i></a>
 							</div>
 						</td> 
                     </tr>

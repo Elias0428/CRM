@@ -1,7 +1,7 @@
 {% extends "index.html" %}
 {% load static %}
 {% block head %}
-    <title>Select Client</title>
+    <title>Client Supp</title>
 	<!--plugins-->
 	<link href="{% static "assets/plugins/simplebar/css/simplebar.css" %}" rel="stylesheet" />
 	<link href="{% static "assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" %}" rel="stylesheet" />
@@ -22,7 +22,7 @@
 	<link rel="stylesheet" href="{% static "assets/css/header-colors.css" %}" />
 {% endblock %}
 {% block page_content %}
-<h6 class="mb-0 text-uppercase">Client obamacare</h6>
+<h6 class="mb-0 text-uppercase">Client supplementary</h6>
 <hr/>
 <div class="card">
     <div class="card-body">
@@ -39,23 +39,23 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for obamacare in obamaCare %}
+                    {% for supp in supps %}
                     <tr>
-                        <td>{{obamacare.client.agent_usa}}</td>
-                        <td>{{obamacare.profiling_agent.first_name}}</td>
-                        <td>{{obamacare.client.first_name}} {{obamacare.client.last_name}}</td>
-                        <td>+1 {{obamacare.client.phone_number}}</td>
-						<td>{% if obamacare.status_color == 1 or obamacare.status_color == None %}
+                        <td>{{supp.client.agent_usa}}</td>
+                        <td>{{supp.profiling_agent.first_name}}</td>
+                        <td>{{supp.client.first_name}} {{supp.client.last_name}}</td>
+                        <td>+ {{supp.client.phone_number}}</td>
+						<td>{% if supp.status_color == 1 or supp.status_color == None %}
 							<span class="badge rounded-pill bg-danger">Not profiled</span>
-						{% elif obamacare.status_color == 2 %}
-						<span class="badge rounded-pill bg-warning text-dark">Process</span>
-						{% elif obamacare.status_color == 3 %}
-						<span class="badge rounded-pill bg-success">Profiling</span>
+						{% elif supp.status_color == 2 %}
+							<span class="badge rounded-pill bg-warning text-dark">Process</span>
+						{% elif supp.status_color == 3 %}
+							<span class="badge rounded-pill bg-success">Profiling</span>
 						{% endif  %}</td>
                         <td>
 							<div class="d-flex order-actions">
 								<a href="javascript:;" class=""><i class='bx bxs-edit'></i></a>
-								<a href="javascript:;" class="ms-3"><i class='bx bxs-trash'></i></a>
+								<a href="{% url 'toggleObamaStatus' supp.id %}" class="ms-3"><i class='bx bxs-trash'></i></a>
 							</div>
 						</td> 
                     </tr>

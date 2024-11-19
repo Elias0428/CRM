@@ -27,9 +27,15 @@ urlpatterns = [
     path('check-phone-number/', views.check_phone_number, name = 'check_phone_number'),
     path('motivationalPhrase/', views.motivationalPhrase, name='motivationalPhrase'),
     path('', views.index, name='index'),
+
     path('select_client/', views.select_client, name='select_client'),
     path('clientObamacare/', views.clientObamacare, name='clientObamacare'),
     path('clientSupp/', views.clientSupp, name='clientSupp'),
+    
+    path('toggleObamaStatus/<obamacare_id>/', views.toggleObamaStatus, name='toggleObamaStatus'),
+    path('toggleSuppStatus/<supp_id>/', views.toggleSuppStatus, name='toggleSuppStatus'),
+
+    path('editClientObama/<obamacare_id>/', views.editClientObama, name='editClientObama'),
 
     # Json
     path('formCreatePlan/<client_id>/', views.formCreatePlan, name='formCreatePlan'),

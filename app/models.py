@@ -9,12 +9,12 @@ class User(AbstractUser):
 
 class Client(models.Model):
     agent = models.ForeignKey(User, on_delete=models.CASCADE)
+    agent_usa = models.CharField(max_length=20)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     phone_number = models.BigIntegerField()
     email = models.EmailField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    agent_usa = models.CharField(max_length=20)
+    created_at = models.DateTimeField(auto_now_add=True)    
     address = models.CharField(max_length=255)
     zipcode = models.IntegerField()
     city = models.CharField(max_length=100)
@@ -22,9 +22,10 @@ class Client(models.Model):
     country = models.CharField(max_length=100)
     sex = models.CharField(max_length=1)
     old = models.IntegerField()    
-    migration_status = models.CharField(max_length=100)
-    type_sales = models.CharField(max_length=100)
     date_birth = models.DateField()
+    migration_status = models.CharField(max_length=100)
+    type_sales = models.CharField(max_length=100)    
+    is_active = models.BooleanField(default=True)  
 
     class Meta:
         db_table = 'clients'
@@ -66,6 +67,7 @@ class ObamaCare(models.Model):
     taxes = models.IntegerField()
     plan_name = models.CharField(max_length=200)
     carrier = models.CharField(max_length=200)
+    profiling = models.CharField(max_length=200,null=True)
     profiling_date = models.DateField(null=True)
     subsidy = models.BigIntegerField()
     ffm = models.BigIntegerField(null=True)
@@ -82,13 +84,14 @@ class ObamaCare(models.Model):
     date_effective_coverage_end = models.DateField(null=True)
     apply = models.CharField(max_length=50)
     observation = models.TextField(null=True)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'obamacare'
 
 class Supp(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    profiling_agent = models.ForeignKey(User, on_delete=models.CASCADE)
+    profiling_agent = models.ForeignKey(User, on_delete=models.CASCADE)    
     effective_date = models.DateField()
     company = models.CharField(max_length=200)
     policy_type = models.CharField(max_length=100)
@@ -101,6 +104,7 @@ class Supp(models.Model):
     date_effective_coverage_end = models.DateField(null=True)
     payment_type = models.CharField(max_length=50,null=True)
     observation = models.TextField(null=True)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'supp'

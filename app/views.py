@@ -56,8 +56,6 @@ def select_client(request):
     clients = Client.objects.all()
     return render(request, 'agents/select_client.html', {'clients':clients})
 
-
-
 # Vista para crear cliente
 def formCreateClient(request):
     if request.method == 'POST':
@@ -259,14 +257,40 @@ def fetchDependent(request, client_id):
 
 def clientObamacare(request):
     obamaCare = ObamaCare.objects.select_related('profiling_agent','client').filter(
-        profiling_agent_id = request.user.id)
-    print(obamaCare)
+        profiling_agent_id = request.user.id, is_active = True )
     return render(request, 'table/clientObamacare.html', {'obamaCare':obamaCare})
 
 def clientSupp(request):
     supp = Supp.objects.select_related('profiling_agent','client').filter(
         profiling_agent_id = request.user.id)
-    return render(request, 'table/clientSupp.html', {'supp':supp})
+    return render(request, 'table/clientSupp.html', {'supps':supp})
+
+def client(request):
+    client = Client.objects.select_related('agent').filter(
+        agent = request.user.id)
+    return render(request, 'table/client.html', {'clients':client})
+
+def toggleObamaStatus(request, obamacare_id):
+    # Obtener el cliente por su ID
+    obama = get_object_or_404(ObamaCare, id=obamacare_id)
+    
+    # Cambiar el estado de is_active (True a False o viceversa)
+    obama.is_active = not obama.is_active
+    obama.save()  # Guardar los cambios en la base de datos
+    
+    # Redirigir de nuevo a la página actual con un parámetro de éxito
+    return redirect('clientObamacare')
+
+def toggleSuppStatus(request, supp_id):
+    # Obtener el cliente por su ID
+    supp = get_object_or_404(Supp, id=supp_id)
+    
+    # Cambiar el estado de is_active (True a False o viceversa)
+    supp.is_active = not supp.is_active
+    supp.save()  # Guardar los cambios en la base de datos
+    
+    # Redirigir de nuevo a la página actual con un parámetro de éxito
+    return redirect('clientSupp')
 
 def delete_dependent(request, dependent_id):
     if request.method == 'POST':
@@ -292,3 +316,18 @@ def delete_supp(request, supp_id):
 
 def table(request):
     return render(request, 'table.html')
+
+def editClientObama(request, obamacare_id):
+
+    obamacare = ObamaCare.objects.select_related('profiling_agent','client').filter(id = obamacare_id).first()
+
+    if request.method == 'POST':
+        formClient = ClientForm(request.POST)
+
+        if formClient.is_valid():
+            obama = formClient.save(commit=False)
+            obama.save()
+
+            return render(request, 'forms/editClientObama.html', {'obamacare':obamacare}) 
+    else:    
+        return render(request, 'forms/editClientObama.html', {'obamacare':obamacare})
