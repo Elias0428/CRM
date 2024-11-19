@@ -65,7 +65,7 @@ def formCreateClient(request):
             
             # Verificar si el número de teléfono ya está registrado
             if Client.objects.filter(phone_number=phone_number).exists():
-                return JsonResponse({'error': 'El número de teléfono ya está registrado.'}, status=409)
+                return render(request, 'forms/formCreateClient.html', {'error_message': 'Este numero de telefono ya esta registrado'})
             
             # Guardar el cliente
             client = form.save(commit=False)
@@ -73,15 +73,11 @@ def formCreateClient(request):
             client.save()
             
             # Responder con éxito y la URL de redirección
-            return JsonResponse({
-                'success': True, 
-                'message': 'Cliente registrado correctamente.',
-                'redirect_url': f'/formCreatePlan/{client.id}/'
-            })
+            return redirect('formCreatePlan', client.id)
         else:
-            return JsonResponse({'error': form.errors}, status=400)
+            return render(request, 'forms/formCreateClient.html', {'error_message': form.errors})
     else:
-        return render(request, 'forms/formCreateClient.html', {'form': ClientForm()})
+        return render(request, 'forms/formCreateClient.html')
 
 # Nueva vista para verificar si el número de teléfono ya existe (usada en AJAX)
 def check_phone_number(request):

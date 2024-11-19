@@ -164,7 +164,7 @@
 							<select class="form-select" id="doc_icon"  name="doc_icon">
 								<option disabled selected value='no_valid'></option>
 								<option value="1">Yes</option>
-								<option value="2">N</option>
+								<option value="2">No</option>
 							</select>
 						</div>
 						<div class="col-12 col-lg-6">
@@ -184,6 +184,7 @@
 								<option value="ACA/SUPLEMENTARIO">ACA/SUPLEMENTARIO</option>
 							</select>
 						</div>
+						<h5 class="text-danger text-center">{{error_message}}</h5>
 						<div class="col-12 col-lg-12">
 							<button type="submit" class="btn btn-primary px-4" id="sendClient">Next<i class='bx bx-right-arrow-alt ms-2'></i></button>
 						</div>
@@ -206,11 +207,7 @@
 	<script src="{% static "assets/plugins/simplebar/js/simplebar.min.js" %}"></script>
 	<script src="{% static "assets/plugins/metismenu/js/metisMenu.min.js" %}"></script>
 	<script src="{% static "assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js" %}"></script>
-	<script>
-		var quill = new Quill('#editor', {
-		  theme: 'snow'
-		});
-	  </script>
+	
 	<!--app JS-->
 	<script src="{% static "assets/js/app.js" %}"></script>
 	<script src="{% static "assets/js/validationFormCreateClient.js" %}"></script>
