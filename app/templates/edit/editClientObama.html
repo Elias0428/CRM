@@ -1,0 +1,399 @@
+{% extends "index.html" %}
+{% load static %}
+{% block head %}
+    <title>Client Obamacare</title>
+	<!--plugins-->
+	<link href="{% static "assets/plugins/simplebar/css/simplebar.css" %}" rel="stylesheet" />
+	<link href="{% static "assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" %}" rel="stylesheet" />
+	<link href="{% static "assets/plugins/metismenu/css/metisMenu.min.css" %}" rel="stylesheet" />
+	<link href="{% static "assets/plugins/datatable/css/dataTables.bootstrap5.min.css" %}" rel="stylesheet" />
+	<!-- loader-->
+	<link href="{% static "assets/css/pace.min.css" %}" rel="stylesheet" />
+	<script src="{% static "assets/js/pace.min.js" %}"></script>
+	<!-- Bootstrap CSS -->
+	<link href="{% static "assets/css/bootstrap.min.css" %}" rel="stylesheet">
+	<link href="{% static "assets/css/bootstrap-extended.css" %}" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&amp;display=swap" rel="stylesheet">
+	<link href="{% static "assets/css/app.css" %}" rel="stylesheet">
+	<link href="{% static "assets/css/icons.css" %}" rel="stylesheet">
+	<!-- Theme Style CSS -->
+	<link rel="stylesheet" href="{% static "assets/css/dark-theme.css" %}" />
+	<link rel="stylesheet" href="{% static "assets/css/semi-dark.css" %}" />
+	<link rel="stylesheet" href="{% static "assets/css/header-colors.css" %}" />
+{% endblock %}
+{% block page_content %}
+<h6 class="mb-0 text-uppercase">Client obamacare</h6>
+<hr/>
+<div class="row">
+    <div class="col-xl-10 mx-auto">
+        <div class="card">
+            <div class="card-body p-4">
+                <form class="row g-3 needs-validation" method="POST" Action="{% url 'editClientObama' obamacare.id %}">
+                    <h4>Client</h4>
+                    <div class="col-12 col-lg-2">
+						<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
+						<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa"  >
+							<option value="Daniel" {% if obamacare.client.agent_usa == "Daniel" %}selected{% endif %} >Daniel</option>
+							<option value="Zohira" {% if obamacare.client.agent_usa == "Zohira" %}selected{% endif %}  >Zohira</option>
+							<option value="Gina" {% if obamacare.client.agent_usa == "Gina" %}selected{% endif %} >Gina</option>
+							<option value="Diego" {% if obamacare.client.agent_usa == "Diego" %}selected{% endif %} >Diego</option>
+							<option value="Danieska" {% if obamacare.client.agent_usa == "Danieska" %}selected{% endif %} >Danieska</option>
+							<option value="Vladimir" {% if obamacare.client.agent_usa == "Vladimir" %}selected{% endif %} >Vladimir</option>
+							<option value="Luis" {% if obamacare.client.agent_usa == "Luis" %}selected{% endif %} >Luis</option>
+							<option value="Borja" {% if obamacare.client.agent_usa == "Borja" %}selected{% endif %} >Borja</option>
+							<option value="Rodrigo" {% if obamacare.client.agent_usa == "Rodrigo" %}selected{% endif %} >Rodrigo</option>
+							<option value="Evelyn" {% if obamacare.client.agent_usa == "Evelyn" %}selected{% endif %} >Evelyn</option>
+						</select>
+					</div>
+					<div class="col-12 col-lg-5">
+						<label for="first_name" class="form-label">First Name</label>
+						<input type="text" class="form-control" name="first_name" id="first_name" placeholder="First Name" value="{{obamacare.client.first_name}}">
+						<input class="form-control" hidden name="id_client" id="id_client"  value="{{obamacare.client.id}}">
+					</div>
+					<div class="col-12 col-lg-5">
+						<label for="last_name" class="form-label">Last Name</label>
+						<input type="text" class="form-control" name="last_name" id="last_name" placeholder="Last Name" value="{{obamacare.client.last_name}}">
+					</div>
+					<div class="col-12 col-lg-2">
+						<label for="phone_number" class="form-label">Phone Number</label>
+						<input type="number" class="form-control" name ="phone_number" id="phone_number" placeholder="Phone Number" value="{{obamacare.client.phone_number}}">
+					</div>
+					<div class="col-12 col-lg-5">
+						<label for="email" class="form-label">E-mail Address</label>
+						<input type="email" class="form-control" name="email" id="email" placeholder="Enter Email Address" value="{{obamacare.client.email}}">
+					</div>
+					<div class="col-12 col-lg-5">
+						<label for="address" class="form-label">Address</label>
+						<input type="text" class="form-control" name="address" id="address" placeholder="Address" value="{{obamacare.client.address}}">
+					</div>
+					<div class="col-12 col-lg-2">
+						<label for="zipcode" class="form-label">zipCode</label>
+						<input type="number" class="form-control" name ="zipcode" id="zipcode" placeholder="ZIP-CODE" value="{{obamacare.client.zipcode}}">
+					</div>
+					<div class="col-12 col-lg-2">
+						<label for="city" class="form-label">City</label>
+						<input type="text" class="form-control" name ="city" id="city" value="{{obamacare.client.city}}">
+					</div>
+					<div class="col-12 col-lg-2">
+						<label for="state" class="form-label font-weight-bold">State</label>
+						<select id="inputState" class="form-select" id="state" name="state" >
+							<option value="">---</option>
+							<option value="AL" {% if obamacare.client.migration_status == "AL" %}selected{% endif %} > AL </option>
+							<option value="AR" {% if obamacare.client.migration_status == "AR" %}selected{% endif %} > AR </option>
+							<option value="AZ" {% if obamacare.client.migration_status == "AZ" %}selected{% endif %} > AZ </option>
+							<option value="CA" {% if obamacare.client.migration_status == "AZ" %}selected{% endif %} > CA </option>
+							<option value="DE" {% if obamacare.client.migration_status == "DE" %}selected{% endif %} > DE </option>
+							<option value="FL" {% if obamacare.client.migration_status == "FL" %}selected{% endif %} > FL </option>
+							<option value="GA" {% if obamacare.client.migration_status == "GA" %}selected{% endif %} > GA </option>
+							<option value="IL" {% if obamacare.client.migration_status == "IL" %}selected{% endif %} > IL </option>
+							<option value="IA" {% if obamacare.client.migration_status == "IA" %}selected{% endif %} > IA </option>
+							<option value="KS" {% if obamacare.client.migration_status == "KS" %}selected{% endif %} > KS </option>
+							<option Value="MI" {% if obamacare.client.migration_status == "MI" %}selected{% endif %} > MI </option>                            
+							<option value="MS" {% if obamacare.client.migration_status == "MS" %}selected{% endif %} > MS </option>
+							<option Value="MO" {% if obamacare.client.migration_status == "MO" %}selected{% endif %} > MO </option>
+							<option value="NJ" {% if obamacare.client.migration_status == "NJ" %}selected{% endif %} > NJ </option>
+							<option value="NC" {% if obamacare.client.migration_status == "NC" %}selected{% endif %} > NC </option>
+							<option value="ND" {% if obamacare.client.migration_status == "ND" %}selected{% endif %} > ND </option>
+							<option value="NE" {% if obamacare.client.migration_status == "NE" %}selected{% endif %} > NE </option>
+							<option value="OH" {% if obamacare.client.migration_status == "OH" %}selected{% endif %} > OH </option>
+							<option value="OK" {% if obamacare.client.migration_status == "OK" %}selected{% endif %} > OK </option>
+							<option value="SC" {% if obamacare.client.migration_status == "SC" %}selected{% endif %} > SC </option>
+							<option value="TN" {% if obamacare.client.migration_status == "TN" %}selected{% endif %} > TN </option>
+							<option value="TX" {% if obamacare.client.migration_status == "TX" %}selected{% endif %} > TX </option>
+							<option value="UT" {% if obamacare.client.migration_status == "UT" %}selected{% endif %} > UT </option>
+							<option value="VA" {% if obamacare.client.migration_status == "VA" %}selected{% endif %} > VA </option>
+							<option value="WI" {% if obamacare.client.migration_status == "WI" %}selected{% endif %} > WI </option>
+							<option value="LA" {% if obamacare.client.migration_status == "LA" %}selected{% endif %} > LA </option>
+							<option value="IN" {% if obamacare.client.migration_status == "IN" %}selected{% endif %} > IN </option>
+							<option value="OR" {% if obamacare.client.migration_status == "OR" %}selected{% endif %} > OR </option>
+						</select>
+					</div>
+					<div class="col-12 col-lg-2">
+						<label for="country" class="form-label">Country</label>
+						<input type="text" class="form-control" name ="country" id="country" placeholder="Country" value="{{obamacare.client.country}}">
+					</div>
+					<div class="col-12 col-lg-2">
+						<label for="sex" class="form-label">Sex</label>
+						<select class="form-select"  name="sex" id="sex" aria-label="Default select example">
+							<option value="">---</option>
+							<option value="M" {% if obamacare.client.sex == "M" %}selected{% endif %} >MASCULINO</option>
+							<option value="F" {% if obamacare.client.sex == "F" %}selected{% endif %} >FEMENINO</option>
+						</select>
+					</div>
+					<div class="col-12 col-lg-2">
+						<label for="old" class="form-label">Old</label>
+						<input type="number" nim="1" class="form-control" name ="old" id="old" placeholder="Old" value="{{obamacare.client.old}}">
+					</div>
+					<div class="col-12 col-lg-2">
+						<label for="date_birth" class="form-label">Date Birth</label>
+                        <input type="date" class="form-control" value="{{ obamacare.client.date_birth|date:'Y-m-d' }}" id="date_birth" name="date_birth">
+					</div>
+					<div class="col-12 col-lg-4">
+						<label for="migration_status" class="form-label">Migration Status</label>
+						<select class="form-select" id="migration_status"  name="migration_status" required  >
+							<option value="">---</option>
+							<option value="Green Card" {% if obamacare.client.migration_status == "Green Card" %}selected{% endif %} >Green Card</option>
+							<option value="Autorizacion de Empleo" {% if obamacare.client.migration_status == "Autorizacion de Empleo" %}selected{% endif %} >Autorizacion de Empleo</option>
+							<option value="Notice of Action (i-797)" {% if obamacare.client.migration_status == "Notice of Action (i-797)" %}selected{% endif %} >Notice of Action (i-797)</option>
+							<option value="Refugiado" {% if obamacare.client.migration_status == "Refugiado" %}selected{% endif %} >Refugiado</option>
+							<option value="Asilo" {% if obamacare.client.migration_status == "Asilo" %}selected{% endif %} >Asilo</option>
+							<option value="Temporary Protection Status (TPS)" {% if obamacare.client.migration_status == "Temporary Protection Status (TPS)" %}selected{% endif %} >Temporary Protection Status (TPS)</option>
+							<option value="Violencia Domestica" {% if obamacare.client.migration_status == "Violencia Domestica" %}selected{% endif %} >Violencia Domestica</option>
+							<option value="Residencia Condicional" {% if obamacare.client.migration_status == "Residencia Condicional" %}selected{% endif %} >Residencia Condicional</option>
+							<option value="Parole" {% if obamacare.client.migration_status == "Parole" %}selected{% endif %} >Parole</option>
+							<option value="Ciudadano USA (Licencia de Manejo)"{% if obamacare.client.migration_status == "Ciudadano USA (Licencia de Manejo)" %}selected{% endif %} >Ciudadano USA (Licencia de Manejo)</option>
+							<option value="Vista de Estudiante (i-120)" {% if obamacare.client.migration_status == "Vista de Estudiante (i-120)" %}selected{% endif %} >Vista de Estudiante (i-120)</option>
+							<option value="En Proceso actual" {% if obamacare.client.migration_status == "n Proceso actual" %}selected{% endif %} >En Proceso actual</option>
+							<option value="Inicio de Proceso Migratorio 3-6 meses" {% if obamacare.client.migration_status == "Inicio de Proceso Migratorio 3-6 meses" %}selected{% endif %} >Inicio de Proceso Migratorio 3-6 meses</option>
+						</select>
+					</div>
+                    <hr>
+                    <h4>Dependents</h4>
+                    {% for dependent in dependents %}
+                    <div class="col-12 col-lg-6">
+                        <label class="form-label">Name of Dependent #{{forloop.counter}}</label>
+                        <input type="hidden" name="dependentId" value="{{ dependent.id }}">
+                        <input type="text" class="form-control" name="nameDependent" value="{{dependent.name}}" >
+                    </div>
+                    <div class="col-12 col-lg-3">
+                        <label class="form-label">Apply</label>
+                        <select class="form-select" name="applyDependent">
+                            <option value="">---</option>
+                            <option value="SI" {% if dependent.apply == "SI" %}selected{% endif %}>SI</option>
+							<option value="NO" {% if dependent.apply == "NO" %}selected{% endif %}>NO</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-lg-4">
+                        <label class="form-label">Date Birth</label>
+                        {% if dependent.date_birth %}
+							<input type="date" class="form-control" value="{{ dependent.date_birth|date:'Y-m-d' }}" id="dateBirthDependent" name="dateBirthDependent">
+						{% else %}
+							<input type="date" class="form-control" id="dateBirthDependent" name="dateBirthDependent">	
+						{% endif %}	                        
+                    </div>
+                    
+                    <div class="col-12 col-lg-4">
+                        <label class="form-label">Migration Status</label>
+                        <select class="form-select" name="migrationStatusDependent">
+                            <option value="">---</option>
+                            <option value="Green Card" {% if dependent.migration_status == "Green Card" %}selected{% endif %}>Green Card</option>
+							<option value="Autorizacion de Empleo" {% if dependent.migration_status == "Autorizacion de Empleo" %}selected{% endif %}>Autorizacion de Empleo</option>
+                        </select>
+                    </div>
+					<div class="col-12 col-lg-4">
+                        <label class="form-label">Sex</label>
+                        <select class="form-select" name="sexDependent">
+                            <option value="">---</option>
+                            <option value="M" {% if dependent.sex == "M" %}selected{% endif %}>MASCULINO</option>
+							<option value="F" {% if dependent.sex == "F" %}selected{% endif %}>FEMENINO</option>
+                        </select>
+                    </div>                    
+                    <div class="col-12 col-lg-4">
+                        <label for="kinship" class="form-label">Kinship</label>
+                        <select class="form-select" id="kinship" name="kinship" aria-label="Default select example">
+                            <option value="">---</option>
+                            <option value="DAD" {% if dependent.kinship == 'DAD' %}selected{% endif %}>DAD</option>
+                            <option value="MOM" {% if dependent.kinship == 'MOM' %}selected{% endif %}>MOM</option>
+                            <option value="SON" {% if dependent.kinship == 'SON' %}selected{% endif %}>SON</option>
+                            <option value="GRANDPARENT" {% if dependent.kinship == 'GRANDPARENT' %}selected{% endif %}>GRANDPARENT</option>
+                            <option value="GRANDMOTHER" {% if dependent.kinship == 'GRANDMOTHER' %}selected{% endif %}>GRANDMOTHER</option>
+                            <option value="COUPLE" {% if dependent.kinship == 'COUPLE' %}selected{% endif %}>COUPLE</option>
+                        </select>
+                    </div>
+                   <hr/>
+                    {% endfor %}
+                    <H4>Plan</H4>
+                    <div class="col-12 col-lg-2">
+                        <label for="taxes" class="form-label">Taxes</label>
+                        <input type="number" class="form-control" id="taxes" name="taxes" value="{{ obamacare.taxes }}" >
+                    </div>
+                    <div class="col-12 col-lg-4">
+                        <label for="carrierObama" class="form-label">Carrier</label>
+                        <select class="form-select" id="carrierObama"  name="carrierObama" required  >
+                            <option value="">---</option>
+                            <option value="AETNA" {% if obamacare.carrier == "AETNA" %}selected{% endif %} >AETNA</option>
+							<option value="AMBETTER" {% if obamacare.carrier == "AMBETTER" %}selected{% endif %} >AMBETTER</option>
+							<option value="ANTHEM" {% if obamacare.carrier == "ANTHEM" %}selected{% endif %} >ANTHEM</option>
+							<option value="AVMED" {% if obamacare.carrier == "AVMED" %}selected{% endif %} >AVMED</option>
+							<option value="BLUE CROSS" {% if obamacare.carrier == "BLUE CROSS" %}selected{% endif %} >BLUE CROSS</option>
+							<option value="BRIGHT" {% if obamacare.carrier == "BRIGHT" %}selected{% endif %} >BRIGHT</option>
+							<option value="CARE SOURCE" {% if obamacare.carrier == "CARE SOURCE" %}selected{% endif %} >CARE SOURCE</option>
+							<option value="CIGNA" {% if obamacare.carrier == "CIGNA" %}selected{% endif %} >CIGNA</option>
+							<option value="FLORIDA BLUE" {% if obamacare.carrier == "FLORIDA BLUE" %}selected{% endif %} >FLORIDA BLUE</option>
+							<option value="FRIDAY" {% if obamacare.carrier == "FRIDAY" %}selected{% endif %} >FRIDAY</option>
+							<option value="MEDICA" {% if obamacare.carrier == "MEDICA" %}selected{% endif %} >MEDICA</option>
+							<option value="MOLINA" {% if obamacare.carrier == "MOLINA" %}selected{% endif %} >MOLINA</option>
+							<option value="OSCAR" {% if obamacare.carrier == "OSCAR" %}selected{% endif %} >OSCAR</option>
+							<option value="UNITED" {% if obamacare.carrier == "UNITED" %}selected{% endif %} >UNITED</option>
+							<option value="CHRISTUS HEALTH" {% if obamacare.carrier == "CHRISTUS HEALTH" %}selected{% endif %} >CHRISTUS HEALTH</option>
+							<option value="US HEALTH AND LIFE" {% if obamacare.carrier == "US HEALTH AND LIFE" %}selected{% endif %} >US HEALTH AND LIFE</option>
+							<option value="MODA" {% if obamacare.carrier == "MODA" %}selected{% endif %} >MODA</option>
+							<option value="PROVIDENCE" {% if obamacare.carrier == "PROVIDENCE" %}selected{% endif %} >PROVIDENCE</option>
+							<option value="AERIHEALTH CARITAS" {% if obamacare.carrier == "AERIHEALTH CARITAS" %}selected{% endif %} >AERIHEALTH CARITAS</option>
+							<option value="HEALTH FRIST" {% if obamacare.carrier == "HEALTH FRIST" %}selected{% endif %} >HEALTH FRIST</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-lg-2">
+                        <label for="work" class="form-label font-weight-bold">Work</label>
+                        <select class="form-select" id="work" aria-label="Default select example"  name="work"   >
+                            <option value="">---</option>
+                            <option value="w2" {% if obamacare.work == "w2" %}selected{% endif %} >W2</option>
+                            <option value="1099"{% if obamacare.work == "1099"%}selected{% endif %} >1099</option> 
+                        </select>
+                    </div>
+                    <div class="col-12 col-lg-2">
+                        <label for="subsidy" class="form-label">Subsidy</label>
+                        <input type="text" class="form-control" id="subsidy" name="subsidy" value="{{ obamacare.subsidy }}" >
+                    </div>
+                    <div class="col-12 col-lg-2">
+                        <label for="ffm" class="form-label">FFM</label>
+                        <input type="number" class="form-control" id="ffm" name="ffm" value="{{obamacare.ffm}}" >
+                    </div>
+                    <div class="col-12 col-lg-2">
+                        <label for="required_bearing" class="form-label">Bearing</label>
+                        <select class="form-select" id="required_bearing" aria-label="Default select example"  name="required_bearing"   >
+                            <option value="">---</option>
+                            <option value="1">SI</option>
+                            <option value="0">NO</option> 
+                        </select>
+                    </div>                    
+                    <div class="col-12 col-lg-2">
+                        <label for="date_bearing" class="form-label">Bearing Date</label>
+                        <input type="date" class="form-control" id="date_bearing" name="date_bearing" value="{{ obamacare.date_bearing }}" >
+                    </div>
+                    <div class="col-12 col-lg-2">
+						<label for="doc_icon" class="form-label">Doc Icon</label>
+						<select class="form-select" id="doc_icon"  name="doc_icon" required  >
+							<option value="">---</option>
+							<option value="1" {% if obamacare.doc_icon == "1"%}selected{% endif %} >SI</option>
+							<option value="0" {% if obamacare.doc_icon == "0"%}selected{% endif %} >NO</option>
+						</select>
+					</div>
+					<div class="col-12 col-lg-2">
+						<label for="doc_migration" class="form-label">Doc Migration</label>
+						<select class="form-select" id="doc_migration"  name="doc_migration" required  >
+							<option value="">---</option>
+							<option value="1" {% if obamacare.doc_migration == "1"%}selected{% endif %} >SI</option>
+							<option value="0" {% if obamacare.doc_migration == "0"%}selected{% endif %} >NO</option>
+						</select>
+					</div>
+                    <div class="col-12 col-lg-2">
+                        <label for="npm" class="form-label">NPM</label>
+                        <input type="number" class="form-control" id="npm" name="npm" value="{{ obamacare.npm }}" >
+                    </div>
+                    <div class="col-12 col-lg-2">
+						<label for="apply" class="form-label">Apply</label>
+						<select class="form-select" id="apply"  name="apply" >
+							<option value="">---</option>
+							<option value="SI" {% if obamacare.apply == "SI"%}selected{% endif %} >SI</option>
+							<option value="NO" {% if obamacare.apply == "NO"%}selected{% endif %} >NO</option>
+						</select>
+					</div>
+                    <div class="col-12 col-lg-6">
+                        <label for="planName" class="form-label">Plan Name</label>
+                        <input type="text" class="form-control" id="planName" name="planName" value="{{ obamacare.plan_name }}"  >
+                    </div>
+                    <div class="col-12 col-lg-3">
+                        <label for="profiling" class="form-label">Profiling</label>
+                        <select class="form-select" id="profiling"  name="profiling" > 
+                            <option></option> 
+                            <option value="NO" {% if obamacare.profiling == "NO" %}selected{% endif %}>NO</option>                           
+                            {% for  user in users %}
+                                <option value="user.profiling" {% if user.profiling == "user.profiling"%}selected{% endif %}>{{user.first_name}}</option>                      
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12 col-lg-2">
+						<label for="statusObama" class="form-label">Status</label>
+						<select class="form-select" id="statusObama"  name="statusObama" >
+							<option value="">---</option>
+						</select>
+					</div>
+                    <div class="col-12 col-lg-6">
+                        <label for="date_effective_coverage" class="form-label">Date Effective Coverage</label>
+                        <input type="date" class="form-control" id="date_effective_coverage" name="date_effective_coverage" value="{{ obamacare.date_effective_coverage }}"  >
+                    </div>
+                    <div class="col-12 col-lg-6">
+                        <label for="date_effective_coverage_end" class="form-label">Date Effective Coverage End</label>
+                        <input type="date" class="form-control" id="date_effective_coverage_end" name="date_effective_coverage_end" value="{{ obamacare.date_effective_coverage_end }}"  >
+                    </div>                    
+                    <div class="col-12 col-lg-6">
+                        <label for="observationObama" class="form-label">Observation</label>
+                        <textarea class="form-control" id="observationObama" name="observationObama" rows="3" placeholder="Obamacare plan observation" style="resize: none">{{ obamacare.observation }}</textarea>
+                    </div>
+					<div class="col-12 col-lg-6">
+                        <label for="observationObama" class="form-label">Observation Agent</label>
+                        <textarea class="form-control" id="observationObama" name="observationObama" disabled rows="3" placeholder="Obamacare plan observation" style="resize: none">{{ obsObamaText }}</textarea>
+                    </div>
+					{% if request.user.role == 'A' %}
+					<div class="col-12 col-lg-6" id="obs_agent">
+                        <label for="obs_agent" class="form-label">OBS. AGENT</label>
+                        <input type="text" class="form-control" id="obs_agent" name="obs_agent"  >
+                    </div> 
+					{% endif %}
+                    <hr>                    
+                    <div class="col-md-12">
+                        <div class="d-md-flex d-grid align-items-center gap-3">
+							<button type="submit" name="action" value="save_obamacare" id="enviar" class="btn btn-primary px-4"  >Submit</button>
+							<button type="submit" name="action" id="enviar2" value="save_observation_agent" class="btn btn-primary px-4" style="display: none;">Submits</button>
+							<a href="{% url 'clientObamacare' %}" class="btn btn-light px-4">Back</a>
+                        </div>
+                    </div>
+                    {% csrf_token %}	
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block end_js %}
+	<!-- Bootstrap JS -->
+	<script src="{% static "assets/js/bootstrap.bundle.min.js" %}"></script>
+	<!--plugins-->
+	<script src="{% static "assets/js/jquery.min.js" %}"></script>
+	<script src="{% static "assets/plugins/simplebar/js/simplebar.min.js" %}"></script>
+	<script src="{% static "assets/plugins/metismenu/js/metisMenu.min.js" %}"></script>
+	<script src="{% static "assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js" %}"></script>
+	<script src="{% static "assets/plugins/datatable/js/jquery.dataTables.min.js" %}"></script>
+	<script src="{% static "assets/plugins/datatable/js/dataTables.bootstrap5.min.js" %}"></script>
+
+	<!--app JS-->
+	<script src="{% static "assets/js/app.js" %}"></script>
+	{% if request.user.role == 'A' %}
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			var form = document.querySelector('form');
+			var formElements = form.querySelectorAll('input:not([type="hidden"]), select, textarea');
+	
+			// Deshabilitar todos los campos del formulario excepto los de tipo 'hidden'
+			formElements.forEach(function (element) {
+				if (element.id !== 'id_client') {  // Asegúrate de no deshabilitar 'id_client'
+					element.disabled = true;
+				}
+			});
+	
+			// Manejar el div y el input de 'obs_agent'
+			var divObsAgent = document.getElementById('obs_agent');
+			var inputObsAgent = document.querySelector('input#obs_agent');
+	
+			// Condición para habilitar y mostrar el campo (modificar según sea necesario)
+			var conditionMet = /* tu lógica aquí */ true; // Cambia esta lógica según lo que necesites
+	
+			if (conditionMet) {
+				if (divObsAgent) divObsAgent.style.display = 'block'; // Mostrar el div
+				if (inputObsAgent) inputObsAgent.disabled = false;    // Habilitar el input
+			} else {
+				if (divObsAgent) divObsAgent.style.display = 'none'; // Ocultar el div
+			}
+	
+			// Opcional: Ocultar botón submit
+			var submitButton = form.querySelector('button[id="enviar"]');
+			var submitButton2 = form.querySelector('button[id="enviar2"]');
+			if (submitButton && submitButton2) {
+				submitButton.style.display = 'none';     // Oculta el primer botón submit
+				submitButton2.style.display = 'inline';  // Muestra el segundo botón submit
+			}
+		});
+	</script>	
+	{% endif %} 
+{% endblock %}

@@ -36,6 +36,12 @@ urlpatterns = [
     path('toggleSuppStatus/<supp_id>/', views.toggleSuppStatus, name='toggleSuppStatus'),
 
     path('editClientObama/<obamacare_id>/', views.editClientObama, name='editClientObama'),
+    path('editClientSupp/<supp_id>/', views.editClientSupp, name='editClientSupp'),
+    
+    path('formCreateAlert/', views.formCreateAlert, name='formCreateAlert'),
+    path('alert/', views.tableAlert, name='alert'),
+    path('toggleAlert/<alertClient_id>/', views.toggleAlert, name='toggleAlert'),
+    path('editAlert/<alertClient_id>/', views.editAlert, name='editAlert'),
 
     # Json
     path('formCreatePlan/<client_id>/', views.formCreatePlan, name='formCreatePlan'),

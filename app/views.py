@@ -253,7 +253,7 @@ def fetchDependent(request, client_id):
 
 def clientObamacare(request):
     obamaCare = ObamaCare.objects.select_related('profiling_agent','client').filter(
-        profiling_agent_id = request.user.id, is_active = True )
+        profiling_agent_id = request.user.id, is_active = True ) #El error es porque no estas logueado HUevon!
     return render(request, 'table/clientObamacare.html', {'obamaCare':obamaCare})
 
 def clientSupp(request):
@@ -313,17 +313,224 @@ def delete_supp(request, supp_id):
 def table(request):
     return render(request, 'table.html')
 
-def editClientObama(request, obamacare_id):
+def clean_field_to_null(value):
+    """
+    Limpia el valor de un campo. Si el valor está vacío (cadena vacía, None o solo espacios),
+    devuelve `None` para que se guarde como NULL en la base de datos.
+    """
+    if value == '' or value is None or value.strip() == '':
+        return None
+    return value
 
-    obamacare = ObamaCare.objects.select_related('profiling_agent','client').filter(id = obamacare_id).first()
+def clean_fields_to_null(request, field_names):
+    """
+    Limpia un conjunto de campos obtenidos desde `request.POST`, 
+    convirtiendo los valores vacíos en `None` (NULL en la base de datos).
+    Devuelve un diccionario con los campos limpiados.
+    """
+    cleaned_data = {}
+    for field in field_names:
+        value = request.POST.get(field)
+        cleaned_data[field] = clean_field_to_null(value)
+    return cleaned_data
+
+def editClientObama(request, obamacare_id):
+    obamacare = ObamaCare.objects.select_related('profiling_agent', 'client').filter(id=obamacare_id).first()
+
+    obsObama = ObservationAgent.objects.filter(id_obamaCare=obamacare_id)
+
+    if obamacare and obamacare.client: 
+        dependents = Dependent.objects.filter(client=obamacare.client)
+
+    user = User.objects.filter(role='C')
 
     if request.method == 'POST':
-        formClient = ClientForm(request.POST)
+        action = request.POST.get('action')
 
+        if action == 'save_obamacare':
+            
+            # Campos de ObamaCare
+            obamacare_fields = [
+                'taxes', 'planName', 'carrierObama', 'profiling', 'subsidy', 'ffm', 'required_bearing',
+                'date_bearing', 'doc_icon', 'doc_migration', 'statusObama', 'work', 'npm', 
+                'date_effective_coverage', 'date_effective_coverage_end', 'apply', 'observationObama'
+            ]
+            
+            # Limpiar los campos de ObamaCare convirtiendo los vacíos en None
+            cleaned_obamacare_data = clean_fields_to_null(request, obamacare_fields)
+            print("Datos a guardar en ObamaCare:", cleaned_obamacare_data)
+
+            # Actualizar ObamaCare
+            ObamaCare.objects.filter(id=obamacare_id).update(
+                taxes=cleaned_obamacare_data['taxes'],
+                plan_name=cleaned_obamacare_data['planName'],
+                carrier=cleaned_obamacare_data['carrierObama'],
+                profiling=cleaned_obamacare_data['profiling'],
+                subsidy=cleaned_obamacare_data['subsidy'],
+                ffm=int(cleaned_obamacare_data['ffm']) if cleaned_obamacare_data['ffm'] else None,
+                required_bearing=cleaned_obamacare_data['required_bearing'],
+                date_bearing=cleaned_obamacare_data['date_bearing'],
+                doc_icon=cleaned_obamacare_data['doc_icon'],
+                doc_migration=cleaned_obamacare_data['doc_migration'],
+                status=cleaned_obamacare_data['statusObama'],
+                work=cleaned_obamacare_data['work'],
+                npm=cleaned_obamacare_data['npm'],
+                date_effective_coverage=cleaned_obamacare_data['date_effective_coverage'],
+                date_effective_coverage_end=cleaned_obamacare_data['date_effective_coverage_end'],
+                apply=cleaned_obamacare_data['apply'],
+                observation=cleaned_obamacare_data['observationObama']
+            )
+
+            return redirect('clientObamacare')
+
+        elif action == 'save_observation_agent':
+            
+            obs = request.POST.get('obs_agent')
+
+            if obs:
+                id_client = request.POST.get('id_client')
+                print(request.POST['id_client'])
+                client = Client.objects.get(id=id_client)
+                id_obama = ObamaCare.objects.get(id=obamacare_id)
+                id_user = request.user
+
+                # Crear y guardar la observación
+                ObservationAgent.objects.create(
+                    id_client=client,
+                    id_obamaCare=id_obama,
+                    id_user=id_user,
+                    content=obs
+                )
+            
+            return redirect('clientObamacare')
+
+    context = {
+        'obamacare': obamacare,
+        'dependents': dependents,
+        'users': user,
+        'obsObamaText': '\n'.join([obs.content for obs in obsObama])
+    }
+
+    return render(request, 'edit/editClientObama.html', context)
+
+def editClientSupp(request,supp_id):
+
+    supp = Supp.objects.select_related('client','profiling_agent').filter(id=supp_id).first()
+    obsSupp = ObservationAgent.objects.filter(id_supp=supp_id)
+
+    if supp and supp.client: 
+        dependents = Dependent.objects.filter(client=supp.client)
+
+    action = request.POST.get('action')
+
+    if request.method == 'POST':
+
+        if action == 'save_supp':
+                
+            # Campos de Supp
+            supp_fields = [
+                'effectiveDateSupp', 'carrierSuple', 'premiumSupp', 'preventiveSupp', 'policyTypeSupp', 'coverageSupp', 'deducibleSupp',
+                'statusSupp', 'typePaymeSupp', 'date_effective_coverage', 'date_effective_coverage_end', 'observationSuple'
+            ]
+            
+            # Limpiar los campos de ObamaCare convirtiendo los vacíos en None
+            cleaned_supp_data = clean_fields_to_null(request, supp_fields)
+            print("Datos a guardar en Supp:", cleaned_supp_data)
+
+            # Actualizar ObamaCare
+            Supp.objects.filter(id=supp_id).update(
+                effective_date=cleaned_supp_data['effectiveDateSupp'],
+                company=cleaned_supp_data['carrierSuple'],
+                policy_type=cleaned_supp_data['policyTypeSupp'],
+                premium=cleaned_supp_data['premiumSupp'],
+                preventive=cleaned_supp_data['preventiveSupp'],
+                coverage=cleaned_supp_data['coverageSupp'],
+                deducible=cleaned_supp_data['deducibleSupp'],
+                status=cleaned_supp_data['statusSupp'],
+                date_effective_coverage=cleaned_supp_data['date_effective_coverage'],
+                date_effective_coverage_end=cleaned_supp_data['date_effective_coverage_end'],
+                payment_type=cleaned_supp_data['typePaymeSupp'],
+                observation=cleaned_supp_data['observationSuple']
+            )
+
+            return redirect('clientSupp')  
+              
+        elif action == 'save_supp_agent':
+
+            obs = request.POST.get('obs_agent')
+
+            if obs:
+                id_client = request.POST.get('id_client')
+                client = Client.objects.get(id=id_client)
+                id_supp = Supp.objects.get(id=supp_id)
+                id_user = request.user
+
+                # Crear y guardar la observación
+                ObservationAgent.objects.create(
+                    id_client=client,
+                    id_supp=id_supp,
+                    id_user=id_user,
+                    content=obs
+                )
+            
+                return redirect('clientSupp')
+
+    context = {
+        'supps': supp,
+        'dependents': dependents,
+        'obsSuppText': '\n'.join([obs.content for obs in obsSupp])
+    }
+    
+    return render(request, 'edit/editClientSupp.html', context)
+
+def formCreateAlert(request):
+
+    if request.method == 'POST':
+        formClient = ClientAlertForm(request.POST)
         if formClient.is_valid():
-            obama = formClient.save(commit=False)
-            obama.save()
+            alert = formClient.save(commit=False)
+            alert.agent = request.user
+            alert.save()
+            return redirect('formCreateAlert')  # Cambia a tu página de éxito
 
-            return render(request, 'forms/editClientObama.html', {'obamacare':obamacare}) 
-    else:    
-        return render(request, 'forms/editClientObama.html', {'obamacare':obamacare})
+    return render(request, 'forms/formCreateAlert.html')
+    
+def tableAlert(request):
+    
+    alert = ClientAlert.objects.select_related('agent').filter(
+        agent = request.user.id, 
+        is_active = True)
+    return render(request, 'table/alert.html', {'alertC':alert})
+
+def toggleAlert(request, alertClient_id):
+    # Obtener el cliente por su ID
+    alert = get_object_or_404(ClientAlert, id=alertClient_id)
+    
+    # Cambiar el estado de is_active (True a False o viceversa)
+    alert.is_active = not alert.is_active
+    alert.save()  # Guardar los cambios en la base de datos
+    
+    # Redirigir de nuevo a la página actual con un parámetro de éxito
+    return redirect('alert')
+
+def editAlert(request, alertClient_id):
+
+    alert = ClientAlert.objects.select_related('agent').filter(id=alertClient_id).first()
+
+    if request.method == 'POST':
+
+        alert_fields = ['name_client', 'phone_number', 'datetime', 'content' ]
+
+        # Limpiar los campos 
+        cleaned_alert_data = clean_fields_to_null(request, alert_fields)
+
+        ClientAlert.objects.filter(id=alertClient_id).update(
+                name_client=cleaned_alert_data['name_client'],
+                phone_number=cleaned_alert_data['phone_number'],
+                datetime=cleaned_alert_data['datetime'],
+                content=cleaned_alert_data['content']
+            )
+        return redirect('alert')
+
+    return render(request, 'edit/editAlert.html', {'editAlert':alert} )
+

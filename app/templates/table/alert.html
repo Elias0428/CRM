@@ -1,7 +1,7 @@
 {% extends "index.html" %}
 {% load static %}
 {% block head %}
-    <title>Client Supp</title>
+    <title>Table Alert</title>
 	<!--plugins-->
 	<link href="{% static "assets/plugins/simplebar/css/simplebar.css" %}" rel="stylesheet" />
 	<link href="{% static "assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" %}" rel="stylesheet" />
@@ -22,7 +22,7 @@
 	<link rel="stylesheet" href="{% static "assets/css/header-colors.css" %}" />
 {% endblock %}
 {% block page_content %}
-<h6 class="mb-0 text-uppercase">Client supplementary</h6>
+<h6 class="mb-0 text-uppercase">Alert</h6>
 <hr/>
 <div class="card">
     <div class="card-body">
@@ -30,35 +30,25 @@
             <table id="tableClient" class="table table-striped table-bordered">
                 <thead>
                     <tr>
-                        <th>Agent USA</th>
                         <th>Agent COL</th>
-                        <th>Name</th>
-                        <th>Phone Numbers</th>
-						<th>Type Police</th>
-                        <th>Status</th>
-                        <th>Options</th>
+                        <th>Name Client</th>
+						<th>Date</th>
+						<th>Obs</th>
+						<th>Option</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for supp in supps %}
+                    {% for alertClient in alertC %}
                     <tr>
-                        <td>{{supp.client.agent_usa}}</td>
-                        <td>{{supp.profiling_agent.first_name}}</td>
-                        <td>{{supp.client.first_name}} {{supp.client.last_name}}</td>
-                        <td>+ {{supp.client.phone_number}}</td>
-						<td>{{supp.policy_type}}</td>
-						<td>{% if supp.status_color == 1 or supp.status_color == None %}
-							<span class="badge rounded-pill bg-danger">Not profiled</span>
-						{% elif supp.status_color == 2 %}
-							<span class="badge rounded-pill bg-warning text-dark">Process</span>
-						{% elif supp.status_color == 3 %}
-							<span class="badge rounded-pill bg-success">Profiling</span>
-						{% endif  %}</td>
-                        <td>
+                        <td>{{alertClient.agent.first_name}} {{alertClient.agent.last_name}}</td>
+                        <td>{{alertClient.name_client}}</td>
+                        <td>{{alertClient.datetime}}</td>
+						<td>{{alertClient.content}}</td>
+						<td>
 							<div class="d-flex order-actions">
-								<a href="{% url 'editClientSupp' supp.id %}" class=""><i class='bx bxs-edit'></i></a>
+								<a href="{% url 'editAlert' alertClient.id %}" class=""><i class='bx bxs-edit'></i></a>
 								{% if request.user.is_superuser %}
-								<a href="{% url 'toggleObamaStatus' supp.id %}" class="ms-3"><i class='bx bxs-trash'></i></a>
+								<a href="{% url 'toggleAlert' alertClient.id %}" class="ms-3"><i class='bx bxs-trash'></i></a>
 								{% endif %}
 							</div>
 						</td> 

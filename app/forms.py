@@ -12,7 +12,7 @@ class ObamaForm(forms.ModelForm):
     class Meta:
         model = ObamaCare
         fields = '__all__'
-        exclude = ['client','profiling_agent','profiling','profiling_date','ffm','required_bearing','date_bearing','doc_icon','doc_migration','status','npm','date_effective_coverage','date_effective_coverage_end','img']
+        exclude = ['client','profiling_agent','profiling','profiling_date','ffm','required_bearing','date_bearing','status','npm','date_effective_coverage','date_effective_coverage_end','img']
 
 class SuppForm(forms.ModelForm):
     class Meta:
@@ -25,3 +25,9 @@ class DepentForm(forms.ModelForm):
         model = Dependent
         fields = '__all__'
         exclude = ['client']
+
+class ClientAlertForm(forms.ModelForm):
+    class Meta:
+        model = ClientAlert
+        fields = '__all__'
+        exclude = ['agent']

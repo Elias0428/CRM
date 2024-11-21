@@ -3,9 +3,21 @@ from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 
 class User(AbstractUser):
+
+    ROLES_CHOICES = (
+        ('A', 'Agent'),
+        ('S', 'Supervisor'),
+        ('C', 'Customer'),
+        ('AU', 'Auditor'),
+        ('Admin', 'Admin'),
+    )
+    role = models.CharField(max_length=20, choices=ROLES_CHOICES)
     
     class Meta:
         db_table = 'users'
+        
+    def _str_(self):
+        return self.username
 
 class Client(models.Model):
     agent = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -67,7 +79,7 @@ class ObamaCare(models.Model):
     taxes = models.IntegerField()
     plan_name = models.CharField(max_length=200)
     carrier = models.CharField(max_length=200)
-    profiling = models.CharField(max_length=200,null=True)
+    profiling = models.CharField(max_length=200,default='NO')
     profiling_date = models.DateField(null=True)
     subsidy = models.BigIntegerField()
     ffm = models.BigIntegerField(null=True)
@@ -75,7 +87,7 @@ class ObamaCare(models.Model):
     date_bearing = models.DateField(null=True)
     doc_icon = models.BooleanField(default=False,null=True)
     doc_migration = models.BooleanField(default=False,null=True)
-    status = models.CharField(max_length=50)
+    status = models.CharField(max_length=50,null=True)
     status_color = models.IntegerField(null = True)
     work = models.CharField(max_length=50)
     npm = models.BigIntegerField(null=True)
@@ -111,8 +123,9 @@ class Supp(models.Model):
 
 class ObservationAgent(models.Model):
     id_client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    id_obamaCare = models.ForeignKey(ObamaCare, on_delete=models.CASCADE)
-    id_supp = models.ForeignKey(Supp, on_delete=models.CASCADE)
+    id_obamaCare = models.ForeignKey(ObamaCare, on_delete=models.CASCADE, null=True, blank=True)
+    id_supp = models.ForeignKey(Supp, on_delete=models.CASCADE, null=True, blank=True)
+    id_user = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField()
 
     class Meta:
@@ -152,3 +165,14 @@ class Motivation(models.Model):
 
     class Meta:
         db_table = 'motivation'
+
+class ClientAlert(models.Model):
+    agent = models.ForeignKey(User, on_delete=models.CASCADE)
+    name_client = models.CharField(max_length=255)
+    phone_number = models.BigIntegerField()
+    datetime = models.DateField()
+    content = models.TextField()
+    is_active = models.BooleanField(default=True)  
+
+    class Meta:
+        db_table = 'client_alert'
