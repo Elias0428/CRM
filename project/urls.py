@@ -35,6 +35,14 @@ urlpatterns = [
     path('toggleObamaStatus/<obamacare_id>/', views.toggleObamaStatus, name='toggleObamaStatus'),
     path('toggleSuppStatus/<supp_id>/', views.toggleSuppStatus, name='toggleSuppStatus'),
 
+    path('save-customer-observation/', views.saveCustomerObservation, name='saveCustomerObservation'),
+
+    path('typification/', views.typification, name='typification'),
+    path('get-observation-detail/<observation_id>/', views.get_observation_detail, name='get_observation_detail'),
+    path('toggleTypification/<typifications_id>/', views.toggleTypification, name='toggleTypification'),
+
+    path('sale/', views.sale, name='sale'),
+
     path('editClientObama/<obamacare_id>/', views.editClientObama, name='editClientObama'),
     path('editClientSupp/<supp_id>/', views.editClientSupp, name='editClientSupp'),
     
@@ -42,6 +50,11 @@ urlpatterns = [
     path('alert/', views.tableAlert, name='alert'),
     path('toggleAlert/<alertClient_id>/', views.toggleAlert, name='toggleAlert'),
     path('editAlert/<alertClient_id>/', views.editAlert, name='editAlert'),
+
+    path('formCreateUser/', views.formCreateUser, name='formCreateUser'),
+    path('editUser/<user_id>', views.editUser, name='editUser'),
+    path('toggleUser/<user_id>/', views.toggleUser, name='toggleUser'),
+    path('pulsar135/<user_id>/', views.toggleUser, name='toggleUser'),
 
     # Json
     path('formCreatePlan/<client_id>/', views.formCreatePlan, name='formCreatePlan'),

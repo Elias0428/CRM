@@ -76,6 +76,7 @@ class Typification(models.Model):
 class ObamaCare(models.Model):
     profiling_agent = models.ForeignKey(User, on_delete=models.CASCADE)
     client = models.OneToOneField(Client, on_delete=models.CASCADE,null=True)
+    created_at = models.DateTimeField(auto_now_add=True)  
     taxes = models.IntegerField()
     plan_name = models.CharField(max_length=200)
     carrier = models.CharField(max_length=200)
@@ -104,6 +105,7 @@ class ObamaCare(models.Model):
 class Supp(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     profiling_agent = models.ForeignKey(User, on_delete=models.CASCADE)    
+    created_at = models.DateTimeField(auto_now_add=True)  
     effective_date = models.DateField()
     company = models.CharField(max_length=200)
     policy_type = models.CharField(max_length=100)
@@ -112,6 +114,7 @@ class Supp(models.Model):
     coverage = models.IntegerField()
     deducible = models.IntegerField()
     status = models.CharField(max_length=50,null=True)
+    status_color = models.IntegerField(null = True)
     date_effective_coverage = models.DateField(null=True)
     date_effective_coverage_end = models.DateField(null=True)
     payment_type = models.CharField(max_length=50,null=True)
@@ -132,8 +135,15 @@ class ObservationAgent(models.Model):
         db_table = 'observations_agents'
 
 class ObservationCustomer(models.Model):
-    id_client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    agent = models.ForeignKey(User, on_delete=models.CASCADE)  
+    type_police = models.CharField(max_length=20) 
+    typeCall = models.CharField(max_length=20)   
+    id_plan = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True) 
+    typification = models.TextField()
     content = models.TextField()
+    is_active = models.BooleanField(default=True) 
 
     class Meta:
         db_table = 'observations_customers'
@@ -176,3 +186,11 @@ class ClientAlert(models.Model):
 
     class Meta:
         db_table = 'client_alert'
+
+class dropDownList(models.Model):
+    profiling_obama = models.CharField(max_length=255,null=True)
+    profiling_supp = models.CharField(max_length=255,null=True)
+
+    class Meta:
+        db_table = 'drop_down_list'
+

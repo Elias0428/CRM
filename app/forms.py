@@ -31,3 +31,4 @@ class ClientAlertForm(forms.ModelForm):
         model = ClientAlert
         fields = '__all__'
         exclude = ['agent']
+

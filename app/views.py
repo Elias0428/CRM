@@ -10,13 +10,15 @@ from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404
 import json
 
-from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpResponse
-from .models import Client
-from .forms import ClientForm
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from datetime import datetime, timedelta
+import calendar
+from django.db.models import Q
+from django.db.models.functions import Coalesce
+from django.db.models import Count
 
-from app.models import *
 
 # Create your views here.
 
@@ -113,6 +115,8 @@ def fetchAca(request, client_id):
         ObamaCare.objects.filter(id=aca_plan_id).update(
             client=client,
             profiling_agent=request.user,
+            status_color = 1,
+            profiling = 'NO',
             taxes=request.POST.get('taxes'),
             plan_name=request.POST.get('planName'),
             work=request.POST.get('work'),
@@ -135,7 +139,9 @@ def fetchAca(request, client_id):
                 'subsidy': request.POST.get('subsidy'),
                 'carrier': request.POST.get('carrierObama'),
                 'apply': request.POST.get('applyObama'),
-                'observation': request.POST.get('observationObama')
+                'observation': request.POST.get('observationObama'),
+                'status_color': 1,
+                'profiling':'NO'
             }
         )
     return JsonResponse({'success': True, 'aca_plan_id': aca_plan.id})
@@ -170,6 +176,8 @@ def fetchSupp(request, client_id):
             if supp_id:  # Si se proporciona un id, actualizar el registro existente
                 Supp.objects.filter(id=supp_id).update(
                     client=client,
+                    status='REGISTERED',
+                    status_color = 1,
                     profiling_agent=request.user,
                     effective_date=sup_data.get('effectiveDateSupp'),
                     company=sup_data.get('carrierSuple'),
@@ -178,12 +186,13 @@ def fetchSupp(request, client_id):
                     preventive=sup_data.get('preventiveSupp'),
                     coverage=sup_data.get('coverageSupp'),
                     deducible=sup_data.get('deducibleSupp'),
-                    observation=sup_data.get('observationSuple')
+                    observation=sup_data.get('observationSuple'),
                 )
                 updated_supp_ids.append(supp_id)  # Agregar el ID actualizado a la lista
             else:  # Si no hay id, crear un nuevo registro
                 new_supp = Supp.objects.create(
                     client=client,
+                    status='REGISTERED',
                     profiling_agent=request.user,
                     effective_date=sup_data.get('effectiveDateSupp'),
                     company=sup_data.get('carrierSuple'),
@@ -192,7 +201,8 @@ def fetchSupp(request, client_id):
                     preventive=sup_data.get('preventiveSupp'),
                     coverage=sup_data.get('coverageSupp'),
                     deducible=sup_data.get('deducibleSupp'),
-                    observation=sup_data.get('observationSuple')
+                    observation=sup_data.get('observationSuple'),
+                    status_color = 1
                 )
                 updated_supp_ids.append(new_supp.id)  # Agregar el ID creado a la lista
     return JsonResponse({'success': True,  'supp_ids': updated_supp_ids})
@@ -342,13 +352,16 @@ def editClientObama(request, obamacare_id):
     if obamacare and obamacare.client: 
         dependents = Dependent.objects.filter(client=obamacare.client)
 
-    user = User.objects.filter(role='C')
+    users = User.objects.filter(role='C')
+    list_drow = dropDownList.objects.filter(profiling_obama__isnull=False)
+
+    obsCus = ObservationCustomer.objects.select_related('agent').filter(client_id=obamacare.client.id)
 
     if request.method == 'POST':
         action = request.POST.get('action')
 
         if action == 'save_obamacare':
-            
+
             # Campos de ObamaCare
             obamacare_fields = [
                 'taxes', 'planName', 'carrierObama', 'profiling', 'subsidy', 'ffm', 'required_bearing',
@@ -358,19 +371,55 @@ def editClientObama(request, obamacare_id):
             
             # Limpiar los campos de ObamaCare convirtiendo los vacíos en None
             cleaned_obamacare_data = clean_fields_to_null(request, obamacare_fields)
-            print("Datos a guardar en ObamaCare:", cleaned_obamacare_data)
+
+            # Recibir el valor seleccionado del formulario
+            selected_profiling = request.POST.get('profiling')
+
+            sw = True
+            color = obamacare.status_color
+
+            # Recorrer los usuarios
+            for user in users:
+                # Comparar el valor seleccionado con el username de cada usuario
+                if selected_profiling == user.username:
+                    color = 3
+                    sw = False
+                    break  # Si solo te interesa el primer match, puedes salir del bucle
+            
+            for list_drow in list_drow:
+                if selected_profiling == list_drow.profiling_obama:
+                    color = 2
+                    sw = False
+                    break
+            
+            if selected_profiling == 'VENTA CAIDA' or selected_profiling == 'CLIENTE CANCELO':
+                color = 4                    
+
+            if selected_profiling is not None:  # Solo actualizamos profiling_date si profiling no es None - DannyZz
+                profiling_date = timezone.now().date()
+                profiling = cleaned_obamacare_data['profiling']
+            else:
+                profiling_date = obamacare.profiling_date  # Mantener el valor anterior si profiling es None - DannyZz
+                profiling = obamacare.profiling
+                sw = False
+
+            if sw :
+                color = 1  
+
 
             # Actualizar ObamaCare
             ObamaCare.objects.filter(id=obamacare_id).update(
                 taxes=cleaned_obamacare_data['taxes'],
                 plan_name=cleaned_obamacare_data['planName'],
                 carrier=cleaned_obamacare_data['carrierObama'],
-                profiling=cleaned_obamacare_data['profiling'],
+                profiling=profiling,
+                profiling_date=profiling_date,  # Se actualiza solo si profiling no es None - DannyZz
                 subsidy=cleaned_obamacare_data['subsidy'],
                 ffm=int(cleaned_obamacare_data['ffm']) if cleaned_obamacare_data['ffm'] else None,
                 required_bearing=cleaned_obamacare_data['required_bearing'],
                 date_bearing=cleaned_obamacare_data['date_bearing'],
                 doc_icon=cleaned_obamacare_data['doc_icon'],
+                status_color = color,
                 doc_migration=cleaned_obamacare_data['doc_migration'],
                 status=cleaned_obamacare_data['statusObama'],
                 work=cleaned_obamacare_data['work'],
@@ -402,13 +451,15 @@ def editClientObama(request, obamacare_id):
                     content=obs
                 )
             
-            return redirect('clientObamacare')
-
+            return redirect('clientObamacare')      
+        
     context = {
         'obamacare': obamacare,
         'dependents': dependents,
-        'users': user,
-        'obsObamaText': '\n'.join([obs.content for obs in obsObama])
+        'users': users,
+        'obsObamaText': '\n'.join([obs.content for obs in obsObama]),
+        'obsCustomer': obsCus,
+        'list_drow': list_drow
     }
 
     return render(request, 'edit/editClientObama.html', context)
@@ -417,6 +468,8 @@ def editClientSupp(request,supp_id):
 
     supp = Supp.objects.select_related('client','profiling_agent').filter(id=supp_id).first()
     obsSupp = ObservationAgent.objects.filter(id_supp=supp_id)
+    obsCus = ObservationCustomer.objects.select_related('agent').filter(client_id=supp.client.id)
+    list_drow = dropDownList.objects.filter(profiling_supp__isnull=False)
 
     if supp and supp.client: 
         dependents = Dependent.objects.filter(client=supp.client)
@@ -435,9 +488,23 @@ def editClientSupp(request,supp_id):
             
             # Limpiar los campos de ObamaCare convirtiendo los vacíos en None
             cleaned_supp_data = clean_fields_to_null(request, supp_fields)
-            print("Datos a guardar en Supp:", cleaned_supp_data)
 
-            # Actualizar ObamaCare
+            # Recibir el valor seleccionado del formulario
+            selected_satus= request.POST.get('statusSupp')
+
+            color = 1         
+
+            for list_drow in list_drow:
+                if selected_satus == list_drow.profiling_supp:
+                    if selected_satus != 'ACTIVE':
+                        color = 2
+                        break         
+                    if selected_satus == 'ACTIVE':
+                        color = 3 
+                        break  
+
+
+            # Actualizar Supp
             Supp.objects.filter(id=supp_id).update(
                 effective_date=cleaned_supp_data['effectiveDateSupp'],
                 company=cleaned_supp_data['carrierSuple'],
@@ -447,6 +514,7 @@ def editClientSupp(request,supp_id):
                 coverage=cleaned_supp_data['coverageSupp'],
                 deducible=cleaned_supp_data['deducibleSupp'],
                 status=cleaned_supp_data['statusSupp'],
+                status_color=color,
                 date_effective_coverage=cleaned_supp_data['date_effective_coverage'],
                 date_effective_coverage_end=cleaned_supp_data['date_effective_coverage_end'],
                 payment_type=cleaned_supp_data['typePaymeSupp'],
@@ -478,7 +546,9 @@ def editClientSupp(request,supp_id):
     context = {
         'supps': supp,
         'dependents': dependents,
-        'obsSuppText': '\n'.join([obs.content for obs in obsSupp])
+        'obsSuppText': '\n'.join([obs.content for obs in obsSupp]),
+        'obsCustomer': obsCus,
+        'list_drow': list_drow
     }
     
     return render(request, 'edit/editClientSupp.html', context)
@@ -534,3 +604,452 @@ def editAlert(request, alertClient_id):
 
     return render(request, 'edit/editAlert.html', {'editAlert':alert} )
 
+def formCreateUser(request):
+
+    user = User.objects.all()
+
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        email = request.POST.get('email')
+        role = request.POST.get('role')
+        
+        try:
+            # Validar si el username ya existe
+            if User.objects.filter(username=username).exists():
+                
+                return render(request, 'forms/formCreateUser.html', {'msg':f'El nombre de usuario "{username}" ya está en uso.'})
+            
+            # Crear el usuario si no existe el username
+            user = User.objects.create(
+                username=username,
+                password=make_password(password),  # Encriptar la contraseña
+                email=email,
+                last_name=last_name,
+                first_name=first_name,
+                role=role
+            )
+            return render(request, 'forms/formCreateUser.html', {'msg':f'Usuario {user.username} creado con éxito.'})
+
+        except Exception as e:
+            return HttpResponse({'error': str(e)}, status=500)
+            
+    return render(request, 'forms/formCreateUser.html',{'users':user})
+
+def editUser(request, user_id):
+    # Obtener el usuario a editar o devolver un 404 si no existe
+    user = get_object_or_404(User, id=user_id)
+
+    if request.method == 'POST':
+        # Recuperar los datos del formulario
+        first_name = request.POST.get('first_name', user.first_name)
+        last_name = request.POST.get('last_name', user.last_name)
+        email = request.POST.get('email', user.email)
+        username = request.POST.get('username', user.username)
+        password = request.POST.get('password', None)
+        role = request.POST.get('role', user.role)
+        is_active = request.POST.get('is_active', user.is_active)
+
+        # Verificar si el nuevo username ya existe en otro usuario
+        if username != user.username and User.objects.filter(username=username).exists():
+            return JsonResponse({'error': f'El nombre de usuario "{username}" ya está en uso.'}, status=400)
+
+        # Actualizar los datos del usuario
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+        user.username = username
+        user.role = role
+        user.is_active = is_active
+
+        # Actualizar la contraseña si se proporciona una nueva
+        if password:
+            user.password = make_password(password)
+
+        # Guardar los cambios
+        user.save()
+
+        # Redirigir a otra vista o mostrar un mensaje de éxito
+        return redirect('formCreateUser')  
+
+    # Renderizar el formulario con los datos actuales del usuario
+    context = {'users': user}
+    return render(request, 'edit/editUser.html', context)
+
+def toggleUser(request, user_id):
+    # Obtener el cliente por su ID
+    user = get_object_or_404(User, id=user_id)
+    
+    # Cambiar el estado de is_active (True a False o viceversa)
+    user.is_active = not user.is_active
+    user.save()  # Guardar los cambios en la base de datos
+    
+    # Redirigir de nuevo a la página actual con un parámetro de éxito
+    return redirect('formCreateUser')
+
+def saveCustomerObservation(request):
+    if request.method == "POST":
+        content = request.POST.get('textoIngresado')
+        plan_id = request.POST.get('plan_id')
+        type_plan = request.POST.get('type_plan')
+        typeCall = request.POST.get('typeCall')
+
+        # Obtenemos las observaciones seleccionadas
+        observations = request.POST.getlist('observaciones[]')  # Lista de valores seleccionados
+        
+        # Convertir las observaciones a una cadena (por ejemplo, separada por comas o saltos de línea)
+        typification_text = ", ".join(observations)  # Puedes usar "\n".join(observations) si prefieres saltos de línea
+
+        if type_plan == 'ACA':
+            plan = ObamaCare.objects.get(id=plan_id)
+        elif type_plan == 'SUPP':
+            plan = Supp.objects.get(id=plan_id) 
+
+        if content.strip():  # Validar que el texto no esté vacío
+            ObservationCustomer.objects.create(
+                client=plan.client,
+                agent=request.user,
+                id_plan=plan.id,
+                type_police=type_plan,
+                typeCall=typeCall,
+                typification=typification_text, # Guardamos las observaciones en el campo 'typification'
+                content=content
+            )
+            messages.success(request, "Observación guardada exitosamente.")
+        else:
+            messages.error(request, "El contenido de la observación no puede estar vacío.")
+
+        if type_plan == 'ACA':
+            return redirect('editClientObama', plan.id)
+        elif type_plan == 'SUPP':
+            return redirect('editClientSupp', plan.id)        
+        
+    else:
+        return HttpResponse("Método no permitido.", status=405)
+
+def typification(request):
+
+    # Obtener parámetros de fecha del request
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    # Consulta base
+    typification = ObservationCustomer.objects.select_related('agent', 'client').filter(is_active = True)
+
+    # Si no se proporcionan fechas, mostrar registros del mes actual
+    if not start_date and not end_date:
+        # Obtener el primer día del mes actual con zona horaria
+        today = timezone.now()
+        first_day_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        
+        # Obtener el último día del mes actual
+        if today.month == 12:
+            # Si es diciembre, el último día será el 31
+            last_day_of_month = today.replace(day=31, hour=23, minute=59, second=59, microsecond=999999)
+        else:
+            # Para otros meses, usar el día anterior al primer día del siguiente mes
+            last_day_of_month = (first_day_of_month.replace(month=first_day_of_month.month+1) - timezone.timedelta(seconds=1))
+        
+        typification = typification.filter(created_at__range=[first_day_of_month, last_day_of_month])
+    
+    # Si se proporcionan fechas, filtrar por el rango de fechas
+    elif start_date and end_date:
+        # Convertir fechas a objetos datetime con zona horaria
+        start_date = timezone.make_aware(
+            datetime.strptime(start_date, '%Y-%m-%d').replace(hour=0, minute=0, second=0, microsecond=0)
+        )
+        end_date = timezone.make_aware(
+            datetime.strptime(end_date, '%Y-%m-%d').replace(hour=23, minute=59, second=59, microsecond=999999)
+        )
+        
+        typification = typification.filter(
+            created_at__range=[start_date, end_date]
+        )
+
+    # Ordenar por fecha de creación descendente
+    typification = typification.order_by('-created_at')
+
+    return render(request, 'table/typification.html', {
+        'typification': typification,
+        'start_date': start_date,
+        'end_date': end_date
+    })
+
+def get_observation_detail(request, observation_id):
+    try:
+        # Obtener el registro específico
+        observation = ObservationCustomer.objects.select_related('agent', 'client').get(id=observation_id)
+        
+        # Preparar los datos para el JSON
+        data = {
+            'agent_name': f"{observation.agent.first_name} {observation.agent.last_name}",
+            'client_name': f"{observation.client.first_name} {observation.client.last_name}",
+            'type_police': observation.type_police,
+            'type_call': observation.typeCall,
+            'created_at': observation.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'typification': observation.typification,
+            'content': observation.content,
+        }
+        
+        return JsonResponse(data)
+    except ObservationCustomer.DoesNotExist:
+        return JsonResponse({'error': 'Registro no encontrado'}, status=404)
+
+def toggleTypification(request, typifications_id):
+    # Obtener el cliente por su ID
+    typi = get_object_or_404(ObservationCustomer, id=typifications_id)
+    
+    # Cambiar el estado de is_active (True a False o viceversa)
+    typi.is_active = not typi.is_active
+    typi.save()  # Guardar los cambios en la base de datos
+    
+    # Redirigir de nuevo a la página actual con un parámetro de éxito
+    return redirect('typification')
+
+def index(request):
+    obama = countSalesObama()
+    supp = countSalesSupp()
+    chartOne = chartSaleIndex()
+    obamaAgent = countSalesObamaAgent(request)
+    suppAgent = countSalesSuppAgent(request)
+    tableStatusAca = tableStatusObama()
+    tableStatusSup = tableStatusSupp()
+
+    # Asegúrate de que chartOne sea un JSON válido
+    chartOne_json = json.dumps(chartOne)
+
+    context = {
+        'obama':obama,
+        'supp':supp,
+        'obamaAgent':obamaAgent,
+        'suppAgent':suppAgent,
+        'chartOne':chartOne_json,
+        'tableStatusObama':tableStatusAca,
+        'tableStatusSup':tableStatusSup
+    }      
+
+    return render(request, 'index.html', context)
+ 
+def countSalesObama():
+
+    # Obtener el mes y el año actuales
+    now = timezone.now()
+
+    # Calcular el primer día del mes
+    start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+    # Calcular el último día del mes
+    last_day = calendar.monthrange(now.year, now.month)[1]  # Obtiene el último día del mes
+    end_of_month = now.replace(day=last_day, hour=23, minute=59, second=59, microsecond=999999)
+    
+    all = ObamaCare.objects.filter(created_at__gte=start_of_month,created_at__lte=end_of_month).count()
+    active = ObamaCare.objects.filter(status_color=3,created_at__gte=start_of_month,created_at__lte=end_of_month).count()
+    process = ObamaCare.objects.filter(created_at__gte=start_of_month,created_at__lte=end_of_month).filter(Q(status_color=2) | Q(status_color=1)).count()
+    cancell = ObamaCare.objects.filter(status_color=4,created_at__gte=start_of_month,created_at__lte=end_of_month).count()
+    dicts = {
+        'all':all,
+        'active':active,
+        'process':process,
+        'cancell':cancell
+    }
+    return dicts
+
+def countSalesSupp():
+
+    # Obtener el mes y el año actuales
+    now = timezone.now()
+
+    # Calcular el primer día del mes
+    start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+    # Calcular el último día del mes
+    last_day = calendar.monthrange(now.year, now.month)[1]  # Obtiene el último día del mes
+    end_of_month = now.replace(day=last_day, hour=23, minute=59, second=59, microsecond=999999)
+
+    all = Supp.objects.filter(created_at__gte=start_of_month,created_at__lte=end_of_month).count()
+    active = Supp.objects.filter(status_color=3,created_at__gte=start_of_month,created_at__lte=end_of_month).count()
+    process = Supp.objects.filter(created_at__gte=start_of_month,created_at__lte=end_of_month).filter(Q(status_color=2) | Q(status_color=1)).count()
+    cancell = Supp.objects.filter(status_color=4,created_at__gte=start_of_month,created_at__lte=end_of_month).count()
+    dicts = {
+        'all':all,
+        'active':active,
+        'process':process,
+        'cancell':cancell
+    }
+    return dicts
+
+def countSalesObamaAgent(request):
+
+    # Obtener el mes y el año actuales
+    now = timezone.now()
+
+    # Calcular el primer día del mes
+    start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+    # Calcular el último día del mes
+    last_day = calendar.monthrange(now.year, now.month)[1]  # Obtiene el último día del mes
+    end_of_month = now.replace(day=last_day, hour=23, minute=59, second=59, microsecond=999999)
+    
+    user = User.objects.get(id=request.user.id)
+    all = ObamaCare.objects.filter(profiling_agent=user.id,created_at__gte=start_of_month,created_at__lte=end_of_month).count()
+    active = ObamaCare.objects.filter(profiling_agent=user.id, status_color=3,created_at__gte=start_of_month,created_at__lte=end_of_month).count()
+    process = ObamaCare.objects.filter(profiling_agent=user.id, created_at__gte=start_of_month,created_at__lte=end_of_month).filter(Q(status_color=2) | Q(status_color=1)).count()
+    cancell = ObamaCare.objects.filter(profiling_agent=user.id, status_color=4,created_at__gte=start_of_month,created_at__lte=end_of_month).count()
+    dicts = {
+        'all':all,
+        'active':active,
+        'process':process,
+        'cancell':cancell
+    }
+    return dicts
+
+def countSalesSuppAgent(request):
+
+    # Obtener el mes y el año actuales
+    now = timezone.now()
+
+    # Calcular el primer día del mes
+    start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+    # Calcular el último día del mes
+    last_day = calendar.monthrange(now.year, now.month)[1]  # Obtiene el último día del mes
+    end_of_month = now.replace(day=last_day, hour=23, minute=59, second=59, microsecond=999999)
+
+    user = User.objects.get(id=request.user.id)
+    all = Supp.objects.filter(profiling_agent=user.id,created_at__gte=start_of_month,created_at__lte=end_of_month).count()
+    active = Supp.objects.filter(profiling_agent=user.id, status_color=3,created_at__gte=start_of_month,created_at__lte=end_of_month).count()
+    process = Supp.objects.filter(profiling_agent=user.id, created_at__gte=start_of_month,created_at__lte=end_of_month).filter(Q(status_color=2) | Q(status_color=1)).count()
+    cancell = Supp.objects.filter(profiling_agent=user.id, status_color=4,created_at__gte=start_of_month,created_at__lte=end_of_month).count()
+    dicts = {
+        'all':all,
+        'active':active,
+        'process':process,
+        'cancell':cancell
+    }
+    return dicts
+
+def chartSaleIndex():
+
+    # Obtener la fecha y hora actual
+    now = timezone.now()
+    current_month = now.month
+    current_year = now.year
+
+    # Obtener el primer y último día del mes actual (con zona horaria)
+    start_of_month = timezone.make_aware(datetime(current_year, current_month, 1), timezone.get_current_timezone())
+    end_of_month = timezone.make_aware(datetime(current_year, current_month + 1, 1), timezone.get_current_timezone()) if current_month < 12 else timezone.make_aware(datetime(current_year + 1, 1, 1), timezone.get_current_timezone())
+
+    # Consultas combinadas para obtener los conteos de ObamaCare y Supp
+    users_data = User.objects.filter(role='A').annotate(
+        # Contar solo los aprobados en ObamaCare para el mes y año actuales
+        obamacare_count=Count('obamacare', filter=Q(obamacare__status_color=3) & Q(obamacare__created_at__gte=start_of_month) & Q(obamacare__created_at__lt=end_of_month)),
+        # Conteo total de ObamaCare para el mes y año actuales
+        obamacare_count_total=Count('obamacare', distinct=True, filter=Q(obamacare__created_at__gte=start_of_month) & Q(obamacare__created_at__lt=end_of_month)),
+        # Contar solo los aprobados en Supp para el mes y año actuales
+        supp_count=Coalesce(Count('supp', filter=Q(supp__status_color=3) & Q(supp__created_at__gte=start_of_month) & Q(supp__created_at__lt=end_of_month)), 0),
+        # Conteo total de Supp para el mes y año actuales
+        supp_count_total=Coalesce(Count('supp', filter=Q(supp__created_at__gte=start_of_month) & Q(supp__created_at__lt=end_of_month)), 0)
+    ).values('username', 'obamacare_count', 'obamacare_count_total', 'supp_count', 'supp_count_total')
+
+    # Convertir los datos a una lista de diccionarios
+    combined_data = []
+    for user in users_data:
+        combined_data.append({
+            'username': user['username'],
+            'obamacare_count': user['obamacare_count'],
+            'obamacare_count_total': user['obamacare_count_total'],
+            'supp_count': user['supp_count'],
+            'supp_count_total': user['supp_count_total'],
+        })
+
+    #Imprimir el resultado en consola para todos los usuarios
+    #print("Datos combinados de los usuarios:")
+    #if combined_data:  # Verificar si hay datos
+    #    for data in combined_data:
+    #         print(data)
+    #else:
+    #    print("No se encontraron usuarios con el rol 'A'.")
+
+    return combined_data
+
+def tableStatusObama():
+
+    # Obtener la fecha y hora actual
+    now = timezone.now()
+    current_month = now.month
+    current_year = now.year
+
+    # Obtener el primer y último día del mes actual (con zona horaria)
+    start_of_month = timezone.make_aware(datetime(current_year, current_month, 1), timezone.get_current_timezone())
+    end_of_month = timezone.make_aware(datetime(current_year, current_month + 1, 1), timezone.get_current_timezone()) if current_month < 12 else timezone.make_aware(datetime(current_year + 1, 1, 1), timezone.get_current_timezone())
+
+    # Realizamos la consulta y agrupamos por el campo 'profiling'
+    result = ObamaCare.objects.filter(created_at__gte=start_of_month, created_at__lt=end_of_month).values('profiling').annotate(count=Count('profiling')).order_by('profiling')
+
+    return result
+
+def tableStatusSupp():
+
+    # Obtener la fecha y hora actual
+    now = timezone.now()
+    current_month = now.month
+    current_year = now.year
+
+    # Obtener el primer y último día del mes actual (con zona horaria)
+    start_of_month = timezone.make_aware(datetime(current_year, current_month, 1), timezone.get_current_timezone())
+    end_of_month = timezone.make_aware(datetime(current_year, current_month + 1, 1), timezone.get_current_timezone()) if current_month < 12 else timezone.make_aware(datetime(current_year + 1, 1, 1), timezone.get_current_timezone())
+
+    # Realizamos la consulta y agrupamos por el campo 'profiling'
+    result = Supp.objects.filter(created_at__gte=start_of_month, created_at__lt=end_of_month).values('status').annotate(count=Count('status')).order_by('status')
+
+    return result
+
+def sale(request): 
+
+    saleACA = saleObamaAgent()
+
+    context = {
+        'saleACA': saleACA
+    }
+
+    return render (request, 'table/sale.html', context)
+
+def saleObamaAgent():
+
+    # Agrupar por 'profiling_agent' y 'status_color' y contar las ventas
+    sales_by_agent_and_status = Supp.objects.values('profiling_agent', 'status_color') \
+        .annotate(total_sales=Count('id')) \
+        .order_by('profiling_agent', 'status_color')
+
+    # Crear un diccionario para almacenar los resultados por agente y status color
+    agents_sales = {}
+
+    # Inicializamos los colores de estado que queremos mostrar
+    status_colors = [1, 2, 3, 4]
+
+    # Procesar los resultados y organizar los totales por agente
+    for entry in sales_by_agent_and_status:
+        agent = entry['profiling_agent']
+        status_color = entry['status_color']
+        total_sales = entry['total_sales']
+
+        # Si el agente no está en el diccionario, lo inicializamos
+        if agent not in agents_sales:
+            agents_sales[agent] = {'status_color_1': 0, 'status_color_2': 0, 'status_color_3': 0, 'status_color_4': 0, 'total_sales': 0}
+
+        # Acumulamos las ventas por color de estado
+        if status_color == 1:
+            agents_sales[agent]['status_color_1'] = total_sales
+        elif status_color == 2:
+            agents_sales[agent]['status_color_2'] = total_sales
+        elif status_color == 3:
+            agents_sales[agent]['status_color_3'] = total_sales
+        elif status_color == 4:
+            agents_sales[agent]['status_color_4'] = total_sales
+
+        # Sumar las ventas totales del agente
+        agents_sales[agent]['total_sales'] += total_sales
+
+    return agents_sales
