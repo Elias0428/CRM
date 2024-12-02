@@ -52,7 +52,7 @@ def motivationalPhrase(request):
     return render (request, 'motivationalPhrase.html',context)
 
 def index(request):
-    return render(request, 'index.html')
+    return render(request, 'dashboard/index.html')
 
 def select_client(request):
     clients = Client.objects.all()
@@ -118,6 +118,7 @@ def fetchAca(request, client_id):
             status_color = 1,
             profiling = 'NO',
             taxes=request.POST.get('taxes'),
+            agent_usa=request.POST.get('agent_usa'),
             plan_name=request.POST.get('planName'),
             work=request.POST.get('work'),
             subsidy=request.POST.get('subsidy'),
@@ -134,6 +135,7 @@ def fetchAca(request, client_id):
             profiling_agent=request.user,
             defaults={
                 'taxes': request.POST.get('taxes'),
+                'agent_usa': request.POST.get('agent_usa'),
                 'plan_name': request.POST.get('planName'),
                 'work': request.POST.get('work'),
                 'subsidy': request.POST.get('subsidy'),
@@ -180,6 +182,7 @@ def fetchSupp(request, client_id):
                     status_color = 1,
                     profiling_agent=request.user,
                     effective_date=sup_data.get('effectiveDateSupp'),
+                    agent_usa=sup_data.get('agent_usa'),
                     company=sup_data.get('carrierSuple'),
                     premium=sup_data.get('premiumSupp'),
                     policy_type=sup_data.get('policyTypeSupp'),
@@ -195,6 +198,7 @@ def fetchSupp(request, client_id):
                     status='REGISTERED',
                     profiling_agent=request.user,
                     effective_date=sup_data.get('effectiveDateSupp'),
+                    agent_usa=sup_data.get('agent_usa'),
                     company=sup_data.get('carrierSuple'),
                     premium=sup_data.get('premiumSupp'),
                     policy_type=sup_data.get('policyTypeSupp'),
@@ -366,7 +370,7 @@ def editClientObama(request, obamacare_id):
             obamacare_fields = [
                 'taxes', 'planName', 'carrierObama', 'profiling', 'subsidy', 'ffm', 'required_bearing',
                 'date_bearing', 'doc_icon', 'doc_migration', 'statusObama', 'work', 'npm', 
-                'date_effective_coverage', 'date_effective_coverage_end', 'apply', 'observationObama'
+                'date_effective_coverage', 'date_effective_coverage_end', 'apply', 'observationObama', 'agent_usa'
             ]
             
             # Limpiar los campos de ObamaCare convirtiendo los vacíos en None
@@ -410,6 +414,7 @@ def editClientObama(request, obamacare_id):
             # Actualizar ObamaCare
             ObamaCare.objects.filter(id=obamacare_id).update(
                 taxes=cleaned_obamacare_data['taxes'],
+                agent_usa=cleaned_obamacare_data['agent_usa'],
                 plan_name=cleaned_obamacare_data['planName'],
                 carrier=cleaned_obamacare_data['carrierObama'],
                 profiling=profiling,
@@ -483,7 +488,7 @@ def editClientSupp(request,supp_id):
             # Campos de Supp
             supp_fields = [
                 'effectiveDateSupp', 'carrierSuple', 'premiumSupp', 'preventiveSupp', 'policyTypeSupp', 'coverageSupp', 'deducibleSupp',
-                'statusSupp', 'typePaymeSupp', 'date_effective_coverage', 'date_effective_coverage_end', 'observationSuple'
+                'statusSupp', 'typePaymeSupp', 'date_effective_coverage', 'date_effective_coverage_end', 'observationSuple', 'agent_usa'
             ]
             
             # Limpiar los campos de ObamaCare convirtiendo los vacíos en None
@@ -507,6 +512,7 @@ def editClientSupp(request,supp_id):
             # Actualizar Supp
             Supp.objects.filter(id=supp_id).update(
                 effective_date=cleaned_supp_data['effectiveDateSupp'],
+                agent_usa=cleaned_supp_data['agent_usa'],
                 company=cleaned_supp_data['carrierSuple'],
                 policy_type=cleaned_supp_data['policyTypeSupp'],
                 premium=cleaned_supp_data['premiumSupp'],
@@ -1008,48 +1014,245 @@ def tableStatusSupp():
 
 def sale(request): 
 
-    saleACA = saleObamaAgent()
+    # Obtener los parámetros de fecha del request
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    # Llamar a la función que procesa los datos de ventas y obtiene la información agrupada
+    saleACA = saleObamaAgent(start_date, end_date)
+    saleACAUsa = saleObamaAgentUsa(start_date, end_date)
+    saleSupp = saleSuppAgent(start_date, end_date)
+    saleSuppUsa = saleSuppAgentUsa(start_date, end_date)
 
     context = {
-        'saleACA': saleACA
+        'saleACA': saleACA,
+        'saleACAUsa': saleACAUsa,
+        'saleSupp': saleSupp,
+        'saleSuppUsa': saleSuppUsa
     }
 
     return render (request, 'table/sale.html', context)
 
-def saleObamaAgent():
-
-    # Agrupar por 'profiling_agent' y 'status_color' y contar las ventas
-    sales_by_agent_and_status = Supp.objects.values('profiling_agent', 'status_color') \
+def saleObamaAgent(start_date=None, end_date=None):
+    # Definir la consulta base para Supp, utilizando `select_related` para obtener el nombre del agente (User)
+    sales_query = ObamaCare.objects.select_related('profiling_agent') \
+        .values('profiling_agent__username', 'status_color') \
         .annotate(total_sales=Count('id')) \
         .order_by('profiling_agent', 'status_color')
 
+    # Si no se proporcionan fechas, filtrar por el mes actual
+    if not start_date and not end_date:
+        today = timezone.now()
+        first_day_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+        if today.month == 12:
+            last_day_of_month = today.replace(day=31, hour=23, minute=59, second=59, microsecond=999999)
+        else:
+            last_day_of_month = (first_day_of_month.replace(month=first_day_of_month.month + 1) - timezone.timedelta(seconds=1))
+
+        sales_query = sales_query.filter(created_at__range=[first_day_of_month, last_day_of_month])
+
+    # Si se proporcionan fechas, filtrar por el rango de fechas
+    elif start_date and end_date:
+        start_date = timezone.make_aware(
+            datetime.strptime(start_date, '%Y-%m-%d').replace(hour=0, minute=0, second=0, microsecond=0)
+        )
+        end_date = timezone.make_aware(
+            datetime.strptime(end_date, '%Y-%m-%d').replace(hour=23, minute=59, second=59, microsecond=999999)
+        )
+
+        sales_query = sales_query.filter(created_at__range=[start_date, end_date])
+
     # Crear un diccionario para almacenar los resultados por agente y status color
     agents_sales = {}
-
-    # Inicializamos los colores de estado que queremos mostrar
     status_colors = [1, 2, 3, 4]
 
     # Procesar los resultados y organizar los totales por agente
-    for entry in sales_by_agent_and_status:
-        agent = entry['profiling_agent']
+    for entry in sales_query:
+        agent_name = entry['profiling_agent__username']  # Ahora tenemos el nombre del agente
         status_color = entry['status_color']
         total_sales = entry['total_sales']
 
-        # Si el agente no está en el diccionario, lo inicializamos
-        if agent not in agents_sales:
-            agents_sales[agent] = {'status_color_1': 0, 'status_color_2': 0, 'status_color_3': 0, 'status_color_4': 0, 'total_sales': 0}
+        if agent_name not in agents_sales:
+            agents_sales[agent_name] = {'status_color_1': 0, 'status_color_2': 0, 'status_color_3': 0, 'status_color_4': 0, 'total_sales': 0}
 
-        # Acumulamos las ventas por color de estado
         if status_color == 1:
-            agents_sales[agent]['status_color_1'] = total_sales
+            agents_sales[agent_name]['status_color_1'] = total_sales
         elif status_color == 2:
-            agents_sales[agent]['status_color_2'] = total_sales
+            agents_sales[agent_name]['status_color_2'] = total_sales
         elif status_color == 3:
-            agents_sales[agent]['status_color_3'] = total_sales
+            agents_sales[agent_name]['status_color_3'] = total_sales
         elif status_color == 4:
-            agents_sales[agent]['status_color_4'] = total_sales
+            agents_sales[agent_name]['status_color_4'] = total_sales
 
-        # Sumar las ventas totales del agente
-        agents_sales[agent]['total_sales'] += total_sales
+        agents_sales[agent_name]['total_sales'] += total_sales
 
     return agents_sales
+
+def saleObamaAgentUsa(start_date=None, end_date=None):
+    # Definir la consulta base para Supp, utilizando `values` para obtener el nombre del agente (agent_usa)
+    sales_query = ObamaCare.objects.values('agent_usa', 'status_color') \
+        .annotate(total_sales=Count('id')) \
+        .order_by('agent_usa', 'status_color')
+
+    # Si no se proporcionan fechas, filtrar por el mes actual
+    if not start_date and not end_date:
+        today = timezone.now()
+        first_day_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+        if today.month == 12:
+            last_day_of_month = today.replace(day=31, hour=23, minute=59, second=59, microsecond=999999)
+        else:
+            last_day_of_month = (first_day_of_month.replace(month=first_day_of_month.month + 1) - timezone.timedelta(seconds=1))
+
+        sales_query = sales_query.filter(created_at__range=[first_day_of_month, last_day_of_month])
+
+    # Si se proporcionan fechas, filtrar por el rango de fechas
+    elif start_date and end_date:
+        start_date = timezone.make_aware(
+            datetime.strptime(start_date, '%Y-%m-%d').replace(hour=0, minute=0, second=0, microsecond=0)
+        )
+        end_date = timezone.make_aware(
+            datetime.strptime(end_date, '%Y-%m-%d').replace(hour=23, minute=59, second=59, microsecond=999999)
+        )
+
+        sales_query = sales_query.filter(created_at__range=[start_date, end_date])
+
+    # Crear un diccionario para almacenar los resultados por agente y status color
+    agents_sales = {}
+    status_colors = [1, 2, 3, 4]
+
+    # Procesar los resultados y organizar los totales por agente
+    for entry in sales_query:
+        agent_name = entry['agent_usa']  # Ahora tenemos el nombre del agente usando el campo `agent_usa`
+        status_color = entry['status_color']
+        total_sales = entry['total_sales']
+
+        if agent_name not in agents_sales:
+            agents_sales[agent_name] = {'status_color_1': 0, 'status_color_2': 0, 'status_color_3': 0, 'status_color_4': 0, 'total_sales': 0}
+
+        if status_color == 1:
+            agents_sales[agent_name]['status_color_1'] = total_sales
+        elif status_color == 2:
+            agents_sales[agent_name]['status_color_2'] = total_sales
+        elif status_color == 3:
+            agents_sales[agent_name]['status_color_3'] = total_sales
+        elif status_color == 4:
+            agents_sales[agent_name]['status_color_4'] = total_sales
+
+        agents_sales[agent_name]['total_sales'] += total_sales
+
+    return agents_sales
+
+def saleSuppAgent(start_date=None, end_date=None):
+    # Definir la consulta base para Supp, utilizando `select_related` para obtener el nombre del agente (User)
+    sales_query = Supp.objects.select_related('profiling_agent') \
+        .values('profiling_agent__username', 'status_color') \
+        .annotate(total_sales=Count('id')) \
+        .order_by('profiling_agent', 'status_color')
+
+    # Si no se proporcionan fechas, filtrar por el mes actual
+    if not start_date and not end_date:
+        today = timezone.now()
+        first_day_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+        if today.month == 12:
+            last_day_of_month = today.replace(day=31, hour=23, minute=59, second=59, microsecond=999999)
+        else:
+            last_day_of_month = (first_day_of_month.replace(month=first_day_of_month.month + 1) - timezone.timedelta(seconds=1))
+
+        sales_query = sales_query.filter(created_at__range=[first_day_of_month, last_day_of_month])
+
+    # Si se proporcionan fechas, filtrar por el rango de fechas
+    elif start_date and end_date:
+        start_date = timezone.make_aware(
+            datetime.strptime(start_date, '%Y-%m-%d').replace(hour=0, minute=0, second=0, microsecond=0)
+        )
+        end_date = timezone.make_aware(
+            datetime.strptime(end_date, '%Y-%m-%d').replace(hour=23, minute=59, second=59, microsecond=999999)
+        )
+
+        sales_query = sales_query.filter(created_at__range=[start_date, end_date])
+
+    # Crear un diccionario para almacenar los resultados por agente y status color
+    agents_sales = {}
+    status_colors = [1, 2, 3, 4]
+
+    # Procesar los resultados y organizar los totales por agente
+    for entry in sales_query:
+        agent_name = entry['profiling_agent__username']  # Ahora tenemos el nombre del agente
+        status_color = entry['status_color']
+        total_sales = entry['total_sales']
+
+        if agent_name not in agents_sales:
+            agents_sales[agent_name] = {'status_color_1': 0, 'status_color_2': 0, 'status_color_3': 0, 'status_color_4': 0, 'total_sales': 0}
+
+        if status_color == 1:
+            agents_sales[agent_name]['status_color_1'] = total_sales
+        elif status_color == 2:
+            agents_sales[agent_name]['status_color_2'] = total_sales
+        elif status_color == 3:
+            agents_sales[agent_name]['status_color_3'] = total_sales
+        elif status_color == 4:
+            agents_sales[agent_name]['status_color_4'] = total_sales
+
+        agents_sales[agent_name]['total_sales'] += total_sales
+
+    return agents_sales
+
+def saleSuppAgentUsa(start_date=None, end_date=None):
+    # Definir la consulta base para Supp, utilizando `values` para obtener el nombre del agente (agent_usa)
+    sales_query = Supp.objects.values('agent_usa', 'status_color') \
+        .annotate(total_sales=Count('id')) \
+        .order_by('agent_usa', 'status_color')
+
+    # Si no se proporcionan fechas, filtrar por el mes actual
+    if not start_date and not end_date:
+        today = timezone.now()
+        first_day_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+        if today.month == 12:
+            last_day_of_month = today.replace(day=31, hour=23, minute=59, second=59, microsecond=999999)
+        else:
+            last_day_of_month = (first_day_of_month.replace(month=first_day_of_month.month + 1) - timezone.timedelta(seconds=1))
+
+        sales_query = sales_query.filter(created_at__range=[first_day_of_month, last_day_of_month])
+
+    # Si se proporcionan fechas, filtrar por el rango de fechas
+    elif start_date and end_date:
+        start_date = timezone.make_aware(
+            datetime.strptime(start_date, '%Y-%m-%d').replace(hour=0, minute=0, second=0, microsecond=0)
+        )
+        end_date = timezone.make_aware(
+            datetime.strptime(end_date, '%Y-%m-%d').replace(hour=23, minute=59, second=59, microsecond=999999)
+        )
+
+        sales_query = sales_query.filter(created_at__range=[start_date, end_date])
+
+    # Crear un diccionario para almacenar los resultados por agente y status color
+    agents_sales = {}
+    status_colors = [1, 2, 3, 4]
+
+    # Procesar los resultados y organizar los totales por agente
+    for entry in sales_query:
+        agent_name = entry['agent_usa']  # Ahora tenemos el nombre del agente usando el campo `agent_usa`
+        status_color = entry['status_color']
+        total_sales = entry['total_sales']
+
+        if agent_name not in agents_sales:
+            agents_sales[agent_name] = {'status_color_1': 0, 'status_color_2': 0, 'status_color_3': 0, 'status_color_4': 0, 'total_sales': 0}
+
+        if status_color == 1:
+            agents_sales[agent_name]['status_color_1'] = total_sales
+        elif status_color == 2:
+            agents_sales[agent_name]['status_color_2'] = total_sales
+        elif status_color == 3:
+            agents_sales[agent_name]['status_color_3'] = total_sales
+        elif status_color == 4:
+            agents_sales[agent_name]['status_color_4'] = total_sales
+
+        agents_sales[agent_name]['total_sales'] += total_sales
+
+    return agents_sales
+
+

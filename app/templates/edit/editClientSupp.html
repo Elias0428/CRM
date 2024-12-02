@@ -204,6 +204,22 @@
                    <hr/>
                     {% endfor %}
                     <H4>Plan</H4>
+					<div class="col-12 col-lg-6">
+						<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
+						<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa">
+							<option disabled selected value='no_valid'></option>
+							<option value="Daniel" {% if supps.agent_usa == 'Daniel' %}selected{% endif %}>Daniel</option>
+							<option value="Zohira" {% if supps.agent_usa == 'Zohira' %}selected{% endif %}>Zohira</option>
+							<option value="Gina" {% if supps.agent_usa == 'Gina' %}selected{% endif %}>Gina</option>
+							<option value="Diego" {% if supps.agent_usa == 'Diego' %}selected{% endif %}>Diego</option>
+							<option value="Danieska" {% if supps.agent_usa == 'Danieska' %}selected{% endif %}>Danieska</option>
+							<option value="Vladimir" {% if supps.agent_usa == 'Vladimir' %}selected{% endif %}>Vladimir</option>
+							<option value="Luis" {% if supps.agent_usa == 'Luis' %}selected{% endif %}>Luis</option>
+							<option value="Borja" {% if supps.agent_usa == 'Borja' %}selected{% endif %}>Borja</option>
+							<option value="Rodrigo" {% if supps.agent_usa == 'Rodrigo' %}selected{% endif %}>Rodrigo</option>
+							<option value="Evelyn" {% if supps.agent_usa == 'Evelyn' %}selected{% endif %}>Evelyn</option>
+						</select>
+					</div>
                     <div class="col-12 col-lg-3">
 						<label for="effectiveDateSupp" class="form-label">Effective Date</label>
 						{% if supps.effective_date %}
@@ -315,7 +331,7 @@
 					</div>
 					<div class="col-12 col-lg-6">
                         <label for="observationObama" class="form-label">Observation Agent</label>
-                        <textarea class="form-control" id="observationObama" name="observationObama" disabled rows="3" placeholder="Obamacare plan observation" style="resize: none">{{ obsSuppText }}</textarea>
+                        <textarea class="form-control" id="observationObama" name="observationObama" disabled rows="3" placeholder="supps plan observation" style="resize: none">{{ obsSuppText }}</textarea>
                     </div>
 					{% if request.user.role == 'A' %}
 					<div class="col-12 col-lg-6" id="obs_agent">

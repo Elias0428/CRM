@@ -86,6 +86,22 @@
 							<div class="row g-3">
 								<input type="hidden" id="acaPlanId" name="acaPlanId" value="{{ aca_plan_data.id }}">
 								<div class="col-12 col-lg-6">
+									<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
+									<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa">
+										<option disabled selected value='no_valid'></option>
+										<option value="Daniel" {% if aca_plan_data.agent_usa == 'Daniel' %}selected{% endif %}>Daniel</option>
+										<option value="Zohira" {% if aca_plan_data.agent_usa == 'Zohira' %}selected{% endif %}>Zohira</option>
+										<option value="Gina" {% if aca_plan_data.agent_usa == 'Gina' %}selected{% endif %}>Gina</option>
+										<option value="Diego" {% if aca_plan_data.agent_usa == 'Diego' %}selected{% endif %}>Diego</option>
+										<option value="Danieska" {% if aca_plan_data.agent_usa == 'Danieska' %}selected{% endif %}>Danieska</option>
+										<option value="Vladimir" {% if aca_plan_data.agent_usa == 'Vladimir' %}selected{% endif %}>Vladimir</option>
+										<option value="Luis" {% if aca_plan_data.agent_usa == 'Luis' %}selected{% endif %}>Luis</option>
+										<option value="Borja" {% if aca_plan_data.agent_usa == 'Borja' %}selected{% endif %}>Borja</option>
+										<option value="Rodrigo" {% if aca_plan_data.agent_usa == 'Rodrigo' %}selected{% endif %}>Rodrigo</option>
+										<option value="Evelyn" {% if aca_plan_data.agent_usa == 'Evelyn' %}selected{% endif %}>Evelyn</option>
+									</select>
+								</div>
+								<div class="col-12 col-lg-6">
 									<label for="taxes" class="form-label">Taxes</label>
 									<input type="number" class="form-control" id="taxes" value="{{aca_plan_data.taxes}}"  name="taxes" >
 								</div>
@@ -178,6 +194,22 @@
 													<div class="card-body">
 														<div class="row g-3">
 															<input type="hidden" name="suppId" value="{{ supp_plan.id }}">
+															<div class="col-12 col-lg-6">
+																<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
+																<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa">
+																	<option disabled selected value='no_valid'></option>
+																	<option value="Daniel" {% if supp_plan.agent_usa == 'Daniel' %}selected{% endif %}>Daniel</option>
+																	<option value="Zohira" {% if supp_plan.agent_usa == 'Zohira' %}selected{% endif %}>Zohira</option>
+																	<option value="Gina" {% if supp_plan.agent_usa == 'Gina' %}selected{% endif %}>Gina</option>
+																	<option value="Diego" {% if supp_plan.agent_usa == 'Diego' %}selected{% endif %}>Diego</option>
+																	<option value="Danieska" {% if supp_plan.agent_usa == 'Danieska' %}selected{% endif %}>Danieska</option>
+																	<option value="Vladimir" {% if supp_plan.agent_usa == 'Vladimir' %}selected{% endif %}>Vladimir</option>
+																	<option value="Luis" {% if supp_plan.agent_usa == 'Luis' %}selected{% endif %}>Luis</option>
+																	<option value="Borja" {% if supp_plan.agent_usa == 'Borja' %}selected{% endif %}>Borja</option>
+																	<option value="Rodrigo" {% if supp_plan.agent_usa == 'Rodrigo' %}selected{% endif %}>Rodrigo</option>
+																	<option value="Evelyn" {% if supp_plan.agent_usa == 'Evelyn' %}selected{% endif %}>Evelyn</option>
+																</select>
+															</div>
 															<div class="col-12 col-lg-6">
 																<label for="effectiveDateSupp" class="form-label">Effective Date</label>
 																{% if supp_plan.effective_date %}
@@ -277,6 +309,22 @@
 													<div class="card-body">
 														<div class="row g-3">
 															<input type="hidden" name="suppId" value="">
+															<div class="col-12 col-lg-6">
+																<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
+																<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa">
+																	<option disabled selected value='no_valid'></option>
+																	<option value="Daniel">Daniel</option>
+																	<option value="Zohira">Zohira</option>
+																	<option value="Gina">Gina</option>
+																	<option value="Diego">Diego</option>
+																	<option value="Danieska">Danieska</option>
+																	<option value="Vladimir">Vladimir</option>
+																	<option value="Luis">Luis</option>
+																	<option value="Borja">Borja</option>
+																	<option value="Rodrigo">Rodrigo</option>
+																	<option value="Evelyn">Evelyn</option>
+																</select>
+															</div>
 															<div class="col-12 col-lg-6">
 																<label for="effectiveDateSupp" class="form-label">Effective Date</label>
 																	<input type="date" class="form-control" id="effectiveDateSupp" name="effectiveDateSupp" >	

@@ -76,6 +76,7 @@ document.addEventListener("DOMContentLoaded", function() {
             opacity: 1
         },
         tooltip: {
+            theme: 'dark',  // Esto asegura que el tooltip tenga un fondo oscuro
             y: {
                 formatter: function(val) {
                     return val + " items";

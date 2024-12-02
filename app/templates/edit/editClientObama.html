@@ -203,6 +203,22 @@
                    <hr/>
                     {% endfor %}
                     <H4>Plan</H4>
+					<div class="col-12 col-lg-6">
+						<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
+						<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa">
+							<option disabled selected value='no_valid'></option>
+							<option value="Daniel" {% if obamacare.agent_usa == 'Daniel' %}selected{% endif %}>Daniel</option>
+							<option value="Zohira" {% if obamacare.agent_usa == 'Zohira' %}selected{% endif %}>Zohira</option>
+							<option value="Gina" {% if obamacare.agent_usa == 'Gina' %}selected{% endif %}>Gina</option>
+							<option value="Diego" {% if obamacare.agent_usa == 'Diego' %}selected{% endif %}>Diego</option>
+							<option value="Danieska" {% if obamacare.agent_usa == 'Danieska' %}selected{% endif %}>Danieska</option>
+							<option value="Vladimir" {% if obamacare.agent_usa == 'Vladimir' %}selected{% endif %}>Vladimir</option>
+							<option value="Luis" {% if obamacare.agent_usa == 'Luis' %}selected{% endif %}>Luis</option>
+							<option value="Borja" {% if obamacare.agent_usa == 'Borja' %}selected{% endif %}>Borja</option>
+							<option value="Rodrigo" {% if obamacare.agent_usa == 'Rodrigo' %}selected{% endif %}>Rodrigo</option>
+							<option value="Evelyn" {% if obamacare.agent_usa == 'Evelyn' %}selected{% endif %}>Evelyn</option>
+						</select>
+					</div>
                     <div class="col-12 col-lg-2">
                         <label for="taxes" class="form-label">Taxes</label>
                         <input type="number" class="form-control" id="taxes" name="taxes" value="{{ obamacare.taxes }}" >

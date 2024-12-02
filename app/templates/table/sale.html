@@ -1,7 +1,7 @@
 {% extends "index.html" %}
 {% load static %}
 {% block head %}
-    <title>Table Alert</title>
+    <title>Table Sale</title>
 	<!--plugins-->
 	<link href="{% static "assets/plugins/simplebar/css/simplebar.css" %}" rel="stylesheet" />
 	<link href="{% static "assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" %}" rel="stylesheet" />
@@ -22,8 +22,9 @@
 	<link rel="stylesheet" href="{% static "assets/css/header-colors.css" %}" />
 {% endblock %}
 {% block page_content %}
-<h6 class="mb-0 text-uppercase">Alert</h6>
+<h6 class="mb-0 text-uppercase">Sales</h6>
 <hr/>
+<h4>Filter Data</h4>
 <div class="card">
     <div class="card-header">
         <form method="get" class="row">
@@ -41,12 +42,13 @@
             </div>
             <div class="col-md-4 align-self-end">
                 <button type="submit" class="btn btn-primary">Filtrar</button>
-                <a href="{% url 'typification' %}" class="btn btn-secondary">Restablecer</a>
+                <a href="{% url 'sale' %}" class="btn btn-secondary">Restablecer</a>
             </div>
         </form>
     </div>
 </div>
 <hr>
+<h4>Obamacare</h4>
 <div class="row row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2">
 
 	<div class="col">
@@ -54,20 +56,27 @@
 			<div class="card-body">
 				<h5>Satus Poliza Obama</h5>
 				<div class="table-responsive">
-					<table id="tableProfiling" class="table table-striped table-bordered">
+					<table id="tableSaleObama" class="table table-striped table-bordered">
 						<thead>
 							<tr>
-								<th>COL</th>
-								<th>Name Client</th>
+								<th>Agente</th>
+								<th>Registered</th>
+								<th>Process</th>
+								<th>Active</th>
+								<th>Canccell</th>
+								<th>Total</th>
 							</tr>
 						</thead>
 						<tbody>
-							{% for result in tableStatusObama %}
-							
-							<tr>
-								<td>{{result.profiling}} </td>
-								<td>{{result.count}}</td>
-							</tr>
+							{% for agent, sales in saleACA.items %}
+								<tr>
+									<td>{{ agent }}</td>
+									<td>{{ sales.status_color_1 }}</td>
+									<td>{{ sales.status_color_2 }}</td>
+									<td>{{ sales.status_color_3 }}</td>
+									<td>{{ sales.status_color_4 }}</td>
+									<td>{{ sales.total_sales }}</td>
+								</tr>
 							{% endfor %}
 						</tbody>
 					</table>
@@ -79,21 +88,102 @@
 	<div class="col">
 		<div class="card mb-3">
 			<div class="card-body">
-				<h5>Satus Poliza Supp</h5>
+				<h5>Satus Poliza Obama USA</h5>
 				<div class="table-responsive">
-					<table id="tableProfilingSupp" class="table table-striped table-bordered">
+					<table id="tableSaleObamaUsa" class="table table-striped table-bordered">
 						<thead>
 							<tr>
-								<th>COL</th>
-								<th>Name Client</th>
+								<th>Agente</th>
+								<th>Registered</th>
+								<th>Process</th>
+								<th>Active</th>
+								<th>Canccell</th>
+								<th>Total</th>
 							</tr>
 						</thead>
 						<tbody>
-							{% for resultSupp in tableStatusSup %}											
+							{% for agent, sales in saleACAUsa.items %}
+								<tr>
+									<td>{{ agent }}</td>
+									<td>{{ sales.status_color_1 }}</td>
+									<td>{{ sales.status_color_2 }}</td>
+									<td>{{ sales.status_color_3 }}</td>
+									<td>{{ sales.status_color_4 }}</td>
+									<td>{{ sales.total_sales }}</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+<hr>
+<h4>Supplementary</h4>
+<div class="row row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2">
+
+	<div class="col">
+		<div class="card mb-3">
+			<div class="card-body">
+				<h5>Satus Poliza Supp</h5>
+				<div class="table-responsive">
+					<table id="tableSaleSupp" class="table table-striped table-bordered">
+						<thead>
 							<tr>
-								<td>{{resultSupp.status}} </td>
-								<td>{{resultSupp.count}}</td>
+								<th>Agente</th>
+								<th>Registered</th>
+								<th>Process</th>
+								<th>Active</th>
+								<th>Canccell</th>
+								<th>Total</th>
 							</tr>
+						</thead>
+						<tbody>
+							{% for agent, sales in saleSupp.items %}
+								<tr>
+									<td>{{ agent }}</td>
+									<td>{{ sales.status_color_1 }}</td>
+									<td>{{ sales.status_color_2 }}</td>
+									<td>{{ sales.status_color_3 }}</td>
+									<td>{{ sales.status_color_4 }}</td>
+									<td>{{ sales.total_sales }}</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="col">
+		<div class="card mb-3">
+			<div class="card-body">
+				<h5>Satus Poliza Supp USA</h5>
+				<div class="table-responsive">
+					<table id="tableSaleSuppUsa" class="table table-striped table-bordered">
+						<thead>
+							<tr>
+								<th>Agente</th>
+								<th>Registered</th>
+								<th>Process</th>
+								<th>Active</th>
+								<th>Canccell</th>
+								<th>Total</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for agent, sales in saleSuppUsa.items %}
+								<tr>
+									<td>{{ agent }}</td>
+									<td>{{ sales.status_color_1 }}</td>
+									<td>{{ sales.status_color_2 }}</td>
+									<td>{{ sales.status_color_3 }}</td>
+									<td>{{ sales.status_color_4 }}</td>
+									<td>{{ sales.total_sales }}</td>
+								</tr>
 							{% endfor %}
 						</tbody>
 					</table>
@@ -115,14 +205,10 @@
 	<script src="{% static "assets/plugins/datatable/js/jquery.dataTables.min.js" %}"></script>
 	<script src="{% static "assets/plugins/datatable/js/dataTables.bootstrap5.min.js" %}"></script>
 	<script>
-		$(document).ready(function() {
-			var table = $('#tableClient').DataTable( {
-				lengthChange: false,
-			} );
-		 
-			table.buttons().container()
-				.appendTo( '#tableClient_wrapper .col-md-6:eq(0)' );
-		} );
+		$(document).ready(function() {$('#tableSaleObamaUsa').DataTable();} );
+		$(document).ready(function() {$('#tableSaleObama').DataTable();	} );
+		$(document).ready(function() {$('#tableSaleSupp').DataTable();} );
+		$(document).ready(function() {$('#tableSaleSuppUsa').DataTable();} );
 	</script>
 	<!--app JS-->
 	<script src="{% static "assets/js/app.js" %}"></script>

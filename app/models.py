@@ -76,6 +76,7 @@ class Typification(models.Model):
 class ObamaCare(models.Model):
     profiling_agent = models.ForeignKey(User, on_delete=models.CASCADE)
     client = models.OneToOneField(Client, on_delete=models.CASCADE,null=True)
+    agent_usa = models.CharField(max_length=20)
     created_at = models.DateTimeField(auto_now_add=True)  
     taxes = models.IntegerField()
     plan_name = models.CharField(max_length=200)
@@ -104,6 +105,7 @@ class ObamaCare(models.Model):
 
 class Supp(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    agent_usa = models.CharField(max_length=20)
     profiling_agent = models.ForeignKey(User, on_delete=models.CASCADE)    
     created_at = models.DateTimeField(auto_now_add=True)  
     effective_date = models.DateField()
