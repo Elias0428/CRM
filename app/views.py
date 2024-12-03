@@ -18,6 +18,7 @@ import calendar
 from django.db.models import Q
 from django.db.models.functions import Coalesce
 from django.db.models import Count
+from datetime import date
 
 
 # Create your views here.
@@ -32,7 +33,6 @@ def login_(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            print('Esta vaina logueo marico')
             return redirect(motivationalPhrase)
         else:
             msg = 'Datos incorrectos, intente de nuevo'
@@ -50,9 +50,6 @@ def motivationalPhrase(request):
     motivation = Motivation.objects.filter(id=randomInt).first()
     context = {'motivation':motivation}
     return render (request, 'motivationalPhrase.html',context)
-
-def index(request):
-    return render(request, 'dashboard/index.html')
 
 def select_client(request):
     clients = Client.objects.all()
@@ -443,7 +440,6 @@ def editClientObama(request, obamacare_id):
 
             if obs:
                 id_client = request.POST.get('id_client')
-                print(request.POST['id_client'])
                 client = Client.objects.get(id=id_client)
                 id_obama = ObamaCare.objects.get(id=obamacare_id)
                 id_user = request.user
@@ -826,6 +822,12 @@ def index(request):
     # Asegúrate de que chartOne sea un JSON válido
     chartOne_json = json.dumps(chartOne)
 
+    #(ALERT) Obtener las alertas vencidas (fechas menores o iguales a la fecha actual)
+    expiredAlerts = ClientAlert.objects.filter(datetime__lte=date.today(), is_active=True)
+
+    # Contar las alertas
+    alertCount = expiredAlerts.count()
+
     context = {
         'obama':obama,
         'supp':supp,
@@ -833,10 +835,12 @@ def index(request):
         'suppAgent':suppAgent,
         'chartOne':chartOne_json,
         'tableStatusObama':tableStatusAca,
-        'tableStatusSup':tableStatusSup
+        'tableStatusSup':tableStatusSup,
+        'expiredAlerts': expiredAlerts, 
+        'alertCount': alertCount
     }      
 
-    return render(request, 'index.html', context)
+    return render(request, 'dashboard/index.html', context)
  
 def countSalesObama():
 
@@ -1254,5 +1258,4 @@ def saleSuppAgentUsa(start_date=None, end_date=None):
         agents_sales[agent_name]['total_sales'] += total_sales
 
     return agents_sales
-
 
