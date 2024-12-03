@@ -35,13 +35,15 @@ AUTH_USER_MODEL = 'app.user'
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'app'
+    'app',
+    "channels",
 ]
 
 #Configuration to use own user model
@@ -75,8 +77,18 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'project.wsgi.application'
+WSGI_APPLICATION = "project.wsgi.application"
 
+ASGI_APPLICATION = 'project.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',  # Utilizamos Redis como backend
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],  # Asegúrate de que Redis esté corriendo en esta dirección
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases

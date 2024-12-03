@@ -54,7 +54,8 @@ urlpatterns = [
     path('formCreateUser/', views.formCreateUser, name='formCreateUser'),
     path('editUser/<user_id>', views.editUser, name='editUser'),
     path('toggleUser/<user_id>/', views.toggleUser, name='toggleUser'),
-    path('pulsar135/<user_id>/', views.toggleUser, name='toggleUser'),
+
+    path('liveViewWeekly/', views.liveViewWeekly, name='liveViewWeekly'),
 
     # Json
     path('formCreatePlan/<client_id>/', views.formCreatePlan, name='formCreatePlan'),

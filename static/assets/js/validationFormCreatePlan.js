@@ -7,39 +7,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function saveAcaPlan() {
 
-    var formData = new FormData();
-    formData.append('type_sales', type_sales)
-    formData.append('taxes', document.getElementById('taxes').value)
-    formData.append('planName', document.getElementById('planName').value)
-    formData.append('work', document.getElementById('work').value)
-    formData.append('subsidy', document.getElementById('subsidy').value)
-    formData.append('carrierObama', document.getElementById('carrierObama').value)
-    formData.append('applyObama', document.getElementById('applyObama').value)
-    formData.append('observationObama', document.getElementById('observationObama').value)
-    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value)
+  var formData = new FormData();
+  formData.append('type_sales', type_sales)
+  formData.append('taxes', document.getElementById('taxes').value)
+  formData.append('planName', document.getElementById('planName').value)
+  formData.append('work', document.getElementById('work').value)
+  formData.append('subsidy', document.getElementById('subsidy').value)
+  formData.append('carrierObama', document.getElementById('carrierObama').value)
+  formData.append('applyObama', document.getElementById('applyObama').value)
+  formData.append('observationObama', document.getElementById('observationObama').value)
+  formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value)
 
-    var acaPlanId = document.getElementById('acaPlanId').value;
-    if (acaPlanId) {
-        formData.append('acaPlanId', acaPlanId);
-    }
+  var acaPlanId = document.getElementById('acaPlanId').value;
+  if (acaPlanId) {
+    formData.append('acaPlanId', acaPlanId);
+  }
 
-  
-    fetch(`/fetchAca/${client_id}/`, {
-      method: 'POST',
-      body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        // Actualizar la interfaz de usuario según sea necesario
-        stepper1.next();
-      } else {
-        // Manejar errores
-      }
-    })
-    .catch(error => {
+
+  fetch(`/fetchAca/${client_id}/`, {
+    method: 'POST',
+    body: formData
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Actualizar la interfaz de usuario según sea necesario
+      stepper1.next();
+    } else {
       // Manejar errores
-    });
+    }
+  })
+  .catch(error => {
+    // Manejar errores
+  });
 }
   
 function saveSupplementaryPlan() {
@@ -51,60 +51,60 @@ function saveSupplementaryPlan() {
   const plans = document.querySelectorAll('.supplementaryClassList'); // Ajustado el selector aquí
   plans.forEach((plan, index) => {
     // Obtener los valores de cada conjunto de dependientes
-      
-      const effectiveDateSupp = plan.querySelector('[name="effectiveDateSupp"]').value;
-      const carrierSuple = plan.querySelector('[name="carrierSuple"]').value;
-      const premiumSupp = plan.querySelector('[name="premiumSupp"]').value;
-      const policyTypeSupp = plan.querySelector('[name="policyTypeSupp"]').value;
-      const preventiveSupp = plan.querySelector('[name="preventiveSupp"]').value;
-      const coverageSupp = plan.querySelector('[name="coverageSupp"]').value;
-      const deducibleSupp = plan.querySelector('[name="deducibleSupp"]').value;
-      const observationSuple = plan.querySelector('[name="observationSuple"]').value;
-      const suppIdField = plan.querySelector('[name="suppId"]');
-      
-      let suppId = suppIdField ? suppIdField.value : '';
 
-      // Validar si hay un nombre ingresado, para evitar enviar campos vacíos
-      if (effectiveDateSupp.trim() !== '') {
-          // Agregar cada dependiente al formData con un índice
-          if (plan.querySelector('[name="suppId"]')){
-            formData.append(`supplementary_plan_data[${index}][id]`, suppId);
-          }          
-          formData.append(`supplementary_plan_data[${index}][effectiveDateSupp]`, effectiveDateSupp);
-          formData.append(`supplementary_plan_data[${index}][carrierSuple]`, carrierSuple);
-          formData.append(`supplementary_plan_data[${index}][premiumSupp]`, premiumSupp);
-          formData.append(`supplementary_plan_data[${index}][policyTypeSupp]`, policyTypeSupp);
-          formData.append(`supplementary_plan_data[${index}][preventiveSupp]`, preventiveSupp);
-          formData.append(`supplementary_plan_data[${index}][coverageSupp]`, coverageSupp);
-          formData.append(`supplementary_plan_data[${index}][deducibleSupp]`, deducibleSupp);
-          formData.append(`supplementary_plan_data[${index}][observationSuple]`, observationSuple);
+    const effectiveDateSupp = plan.querySelector('[name="effectiveDateSupp"]').value;
+    const carrierSuple = plan.querySelector('[name="carrierSuple"]').value;
+    const premiumSupp = plan.querySelector('[name="premiumSupp"]').value;
+    const policyTypeSupp = plan.querySelector('[name="policyTypeSupp"]').value;
+    const preventiveSupp = plan.querySelector('[name="preventiveSupp"]').value;
+    const coverageSupp = plan.querySelector('[name="coverageSupp"]').value;
+    const deducibleSupp = plan.querySelector('[name="deducibleSupp"]').value;
+    const observationSuple = plan.querySelector('[name="observationSuple"]').value;
+    const suppIdField = plan.querySelector('[name="suppId"]');
+
+    let suppId = suppIdField ? suppIdField.value : '';
+
+    // Validar si hay un nombre ingresado, para evitar enviar campos vacíos
+    if (effectiveDateSupp.trim() !== '') {
+      // Agregar cada dependiente al formData con un índice
+      if (plan.querySelector('[name="suppId"]')) {
+        formData.append(`supplementary_plan_data[${index}][id]`, suppId);
       }
+      formData.append(`supplementary_plan_data[${index}][effectiveDateSupp]`, effectiveDateSupp);
+      formData.append(`supplementary_plan_data[${index}][carrierSuple]`, carrierSuple);
+      formData.append(`supplementary_plan_data[${index}][premiumSupp]`, premiumSupp);
+      formData.append(`supplementary_plan_data[${index}][policyTypeSupp]`, policyTypeSupp);
+      formData.append(`supplementary_plan_data[${index}][preventiveSupp]`, preventiveSupp);
+      formData.append(`supplementary_plan_data[${index}][coverageSupp]`, coverageSupp);
+      formData.append(`supplementary_plan_data[${index}][deducibleSupp]`, deducibleSupp);
+      formData.append(`supplementary_plan_data[${index}][observationSuple]`, observationSuple);
+    }
   });
 
   // Realizar la solicitud fetch
   fetch(`/fetchSupp/${client_id}/`, {
-      method: 'POST',
-      body: formData
+    method: 'POST',
+    body: formData
   })
   .then(response => response.json())
   .then(data => {
-      if (data.success) {
-          console.log('IDs actualizados:', data.supp_ids);
-          plans.forEach((plan, index) => {
-            suppIdInputHidden = plan.querySelector('[name="suppId"]')
-            console.log(suppIdInputHidden)
-            if (suppIdInputHidden.value == ''){
-              // si imput esta vacio se le coloca el id recivido del parte del bakend
-              suppIdInputHidden.value = data.supp_ids[index]
-            }
-          });
+    if (data.success) {
+      console.log('IDs actualizados:', data.supp_ids);
+      plans.forEach((plan, index) => {
+        suppIdInputHidden = plan.querySelector('[name="suppId"]')
+        console.log(suppIdInputHidden)
+        if (suppIdInputHidden.value == '') {
+          // si imput esta vacio se le coloca el id recivido del parte del bakend
+          suppIdInputHidden.value = data.supp_ids[index]
+        }
+      });
 
-          // Actualizar la interfaz de usuario según sea necesario
-          stepper1.next();
-      } else {
-          // Manejar errores
-          console.error('Error en la respuesta:', data);
-      }
+      // Actualizar la interfaz de usuario según sea necesario
+      stepper1.next();
+    } else {
+      // Manejar errores
+      console.error('Error en la respuesta:', data);
+    }
   })
   .catch(error => {
     console.error('Error en la solicitud:', error);
@@ -135,52 +135,52 @@ function saveDependents() {
 
     // Validar si hay un nombre ingresado, para evitar enviar campos vacíos
     if (nameDependent.trim() !== '') {
-        // Agregar cada dependiente al formData con un índice
-        if (dependent.querySelector('[name="dependentId"]')){
-          formData.append(`dependent[${index}][id]`, dependentId);
-        }
-        formData.append(`dependent[${index}][kinship]`, kinship);
-        formData.append(`dependent[${index}][nameDependent]`, nameDependent);
-        formData.append(`dependent[${index}][applyDependent]`, applyDependent);
-        formData.append(`dependent[${index}][dateBirthDependent]`, dateBirthDependent);
-        formData.append(`dependent[${index}][migrationStatusDependent]`, migrationStatusDependent);
-        formData.append(`dependent[${index}][sexDependent]`, sexDependent);
-        formData.append(`dependent[${index}][typePolice]`, typePolice);
+      // Agregar cada dependiente al formData con un índice
+      if (dependent.querySelector('[name="dependentId"]')){
+        formData.append(`dependent[${index}][id]`, dependentId);
+      }
+      formData.append(`dependent[${index}][kinship]`, kinship);
+      formData.append(`dependent[${index}][nameDependent]`, nameDependent);
+      formData.append(`dependent[${index}][applyDependent]`, applyDependent);
+      formData.append(`dependent[${index}][dateBirthDependent]`, dateBirthDependent);
+      formData.append(`dependent[${index}][migrationStatusDependent]`, migrationStatusDependent);
+      formData.append(`dependent[${index}][sexDependent]`, sexDependent);
+      formData.append(`dependent[${index}][typePolice]`, typePolice);
     }
   });
       
 
   // Realizar la solicitud fetch
   fetch(`/fetchDependent/${client_id}/`, {
-      method: 'POST',
-      body: formData
+    method: 'POST',
+    body: formData
   })
   .then(response => response.json())
   .then(data => {
+    if (data.success) {
+      console.log('IDs actualizados:', data.dependents_ids);
+      console.log(data.success)
+      // Actualizar la interfaz de usuario según sea necesario
+      stepper1.next();
       if (data.success) {
-          console.log('IDs actualizados:', data.dependents_ids);
-          console.log(data.success)
-          // Actualizar la interfaz de usuario según sea necesario
-          stepper1.next();
-          if (data.success){
-            Swal.fire({
-              icon: 'success' ,
-              title: '<p style="color: black;">Saved success</p>',
-              confirmButtonText: "OK",
-            }).then((result) => {
-              /* Read more about isConfirmed, isDenied below */
-              if (result.isConfirmed) {
-                window.location.href = '/';
-              }
-            });            
+        Swal.fire({
+          icon: 'success',
+          title: '<p style="color: black;">Saved success</p>',
+          confirmButtonText: "OK",
+        }).then((result) => {
+          /* Read more about isConfirmed, isDenied below */
+          if (result.isConfirmed) {
+            window.location.href = '/';
           }
-          
-      } else {
-          // Manejar errores
-          console.error('Error en la respuesta:', data);
+        });
       }
+
+    } else {
+      // Manejar errores
+      console.error('Error en la respuesta:', data);
+    }
   })
   .catch(error => {
-      console.error('Error en la solicitud:', error);
+    console.error('Error en la solicitud:', error);
   });
 }

@@ -1,24 +1,30 @@
-from django.shortcuts import render, HttpResponse
-from app.models import *
-import random
-from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, redirect
-from django.contrib.auth.hashers import make_password
-from django.http import JsonResponse
-from app.forms import *
-from django.views.decorators.http import require_POST
-from django.shortcuts import get_object_or_404
+# Importaciones estándar de Python
 import json
+import random
+from datetime import datetime, timedelta, date
+import calendar
+from collections import defaultdict
 
-from django.http import JsonResponse, HttpResponse
+# Importaciones de terceros
+from django.shortcuts import render, HttpResponse, redirect, get_object_or_404
+from django.http import JsonResponse
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from datetime import datetime, timedelta
-import calendar
-from django.db.models import Q
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q, Count
 from django.db.models.functions import Coalesce
-from django.db.models import Count
-from datetime import date
+from django.utils import timezone
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+
+# Importaciones de la propia aplicación
+from app.models import *
+from app.forms import *
+from .models import ObamaCare, Supp
+
 
 
 # Create your views here.
@@ -103,6 +109,7 @@ def formCreatePlan(request, client_id):
         'type_sale':type_sale
     })
 
+@csrf_exempt
 def fetchAca(request, client_id):
     client = Client.objects.get(id=client_id)
     aca_plan_id = request.POST.get('acaPlanId')
@@ -111,11 +118,10 @@ def fetchAca(request, client_id):
         # Si el ID existe, actualiza el registro
         ObamaCare.objects.filter(id=aca_plan_id).update(
             client=client,
-            profiling_agent=request.user,
+            profiling_agent=User.objects.get(id=1),
             status_color = 1,
             profiling = 'NO',
             taxes=request.POST.get('taxes'),
-            agent_usa=request.POST.get('agent_usa'),
             plan_name=request.POST.get('planName'),
             work=request.POST.get('work'),
             subsidy=request.POST.get('subsidy'),
@@ -129,10 +135,9 @@ def fetchAca(request, client_id):
         # Si no hay ID, crea un nuevo registro
         aca_plan, created = ObamaCare.objects.update_or_create(
             client=client,
-            profiling_agent=request.user,
+            profiling_agent=User.objects.get(id=1),
             defaults={
                 'taxes': request.POST.get('taxes'),
-                'agent_usa': request.POST.get('agent_usa'),
                 'plan_name': request.POST.get('planName'),
                 'work': request.POST.get('work'),
                 'subsidy': request.POST.get('subsidy'),
@@ -143,6 +148,8 @@ def fetchAca(request, client_id):
                 'profiling':'NO'
             }
         )
+        # Llamar a la función para notificar al WebSocket
+        notify_websocket(aca_plan.client.agent.id)
     return JsonResponse({'success': True, 'aca_plan_id': aca_plan.id})
 
 def fetchSupp(request, client_id):
@@ -206,6 +213,9 @@ def fetchSupp(request, client_id):
                     status_color = 1
                 )
                 updated_supp_ids.append(new_supp.id)  # Agregar el ID creado a la lista
+    
+    # Llamar a la función para notificar al WebSocket
+    notify_websocket(new_supp.client.agent.id)
     return JsonResponse({'success': True,  'supp_ids': updated_supp_ids})
         
 def fetchDependent(request, client_id):
@@ -244,7 +254,7 @@ def fetchDependent(request, client_id):
                     migration_status=dep_data.get('migrationStatusDependent'),
                     sex=dep_data.get('sexDependent'),
                     kinship=dep_data.get('kinship'),
-                    type_police=dep_data.get('typePolice')                            
+                    type_police=dep_data.get('typePolice')
                 )
                 updated_dependents_ids.append(dependent_id)  # Agregar el ID actualizado a la lista
             else:  # Si no hay id, crear un nuevo registro
@@ -568,7 +578,6 @@ def formCreateAlert(request):
     return render(request, 'forms/formCreateAlert.html')
     
 def tableAlert(request):
-    
     alert = ClientAlert.objects.select_related('agent').filter(
         agent = request.user.id, 
         is_active = True)
@@ -810,6 +819,7 @@ def toggleTypification(request, typifications_id):
     # Redirigir de nuevo a la página actual con un parámetro de éxito
     return redirect('typification')
 
+@login_required(login_url='login/')
 def index(request):
     obama = countSalesObama()
     supp = countSalesSupp()
@@ -1259,3 +1269,89 @@ def saleSuppAgentUsa(start_date=None, end_date=None):
 
     return agents_sales
 
+def liveViewWeekly(request):
+    
+    users = User.objects.all()
+    print(json.dumps(getSalesForWekkly()))
+    context = {
+        'users':users,
+        'weeklySales': getSalesForWekkly()
+    }
+    return render(request, 'agents/liveView.html', context)
+
+def getSalesForWekkly():
+
+    # Inicializamos un diccionario por defecto para contar las instancias
+    user_counts = defaultdict(lambda: {
+        'lunes': {'obama': 0, 'supp': 0},
+        'martes': {'obama': 0, 'supp': 0},
+        'miercoles': {'obama': 0, 'supp': 0},
+        'jueves': {'obama': 0, 'supp': 0},
+        'viernes': {'obama': 0, 'supp': 0},
+        'sabado': {'obama': 0, 'supp': 0}
+    })
+
+    # Mapeo de números a días de la semana
+    dias_de_la_semana = {
+        0: 'lunes',
+        1: 'martes',
+        2: 'miercoles',
+        3: 'jueves',
+        4: 'viernes',
+        5: 'sabado'
+    }
+
+    # Contamos cuántos registros de ObamaCare tiene cada usuario por día
+    obama_counts = ObamaCare.objects.values('profiling_agent', 'created_at').annotate(obama_count=Count('id'))
+    for obama in obama_counts:
+        # Obtener el día de la semana (0=lunes, 1=martes, ..., 6=domingo)
+        dia_semana = obama['created_at'].weekday()
+        if dia_semana < 6:  # Excluimos el domingo
+            dia = dias_de_la_semana[dia_semana]
+            user_counts[obama['profiling_agent']][dia]['obama'] += obama['obama_count']
+
+    # Contamos cuántos registros de Supp tiene cada usuario por día
+    supp_counts = Supp.objects.values('profiling_agent', 'created_at').annotate(supp_count=Count('id'))
+    for supp in supp_counts:
+        # Obtener el día de la semana (0=lunes, 1=martes, ..., 6=domingo)
+        dia_semana = supp['created_at'].weekday()
+        if dia_semana < 6:  # Excluimos el domingo
+            dia = dias_de_la_semana[dia_semana]
+            user_counts[supp['profiling_agent']][dia]['supp'] += supp['supp_count']
+
+    # Aseguramos que todos los usuarios estén en el diccionario, incluso si no tienen registros
+    for user in User.objects.all():
+        if user.id not in user_counts:
+            user_counts[user.id] = {
+                'lunes': {'obama': 0, 'supp': 0},
+                'martes': {'obama': 0, 'supp': 0},
+                'miercoles': {'obama': 0, 'supp': 0},
+                'jueves': {'obama': 0, 'supp': 0},
+                'viernes': {'obama': 0, 'supp': 0},
+                'sabado': {'obama': 0, 'supp': 0}
+            }
+
+    # Convertimos los identificadores de usuario a nombres (si necesitas los nombres de los usuarios)
+    user_names = {user.id: user.username for user in User.objects.all()}
+
+    # Crear un diccionario con los nombres de los usuarios y los conteos por día
+    final_counts = {user_names[user_id]: counts for user_id, counts in user_counts.items()}
+
+    return final_counts
+
+#Websocket
+def notify_websocket(user_id):
+    """
+    Función que notifica al WebSocket de un cambio, llamando a un consumidor específico.
+    """
+    channel_layer = get_channel_layer()
+
+    # Llamamos al WebSocket para notificar al usuario que su plan fue agregado
+    async_to_sync(channel_layer.group_send)(
+        "user_updates",  # El nombre del grupo de WebSocket
+        {
+            "type": "user_update",  # Tipo de mensaje que enviamos
+            "user_id": user_id,  # ID del usuario al que notificamos
+            "message": "Nuevo plan agregado"
+        }
+    )
