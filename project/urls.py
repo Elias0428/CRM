@@ -43,8 +43,8 @@ urlpatterns = [
 
     path('sale/', views.sale, name='sale'),
 
-    path('editClientObama/<obamacare_id>/', views.editClientObama, name='editClientObama'),
-    path('editClientSupp/<supp_id>/', views.editClientSupp, name='editClientSupp'),
+    path('editClientObama/<client_id>/<obamacare_id>/', views.editClientObama, name='editClientObama'),
+    path('editClientSupp/<client_id>/<supp_id>/', views.editClientSupp, name='editClientSupp'),
     
     path('formCreateAlert/', views.formCreateAlert, name='formCreateAlert'),
     path('alert/', views.tableAlert, name='alert'),

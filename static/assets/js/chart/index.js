@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Verificar si el elemento con los datos existe
     if (!chartDataElement) {
-        console.error("No se encontró el script con los datos del gráfico.");
+        //console.error("No se encontró el script con los datos del gráfico.");
         return;
     }
 
@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const chartData = JSON.parse(chartDataElement.textContent);
 
     // Verificar si los datos se han cargado correctamente
-    console.log("chartData:", chartData);
+    //console.log("chartData:", chartData);
 
     // Extraer los datos para el gráfico
     const usernames = chartData.map(item => item.username);
@@ -92,6 +92,6 @@ document.addEventListener("DOMContentLoaded", function() {
         var chart = new ApexCharts(chartContainer, options);
         chart.render();
     } else {
-        console.error("El contenedor del gráfico con id 'Elias' no existe.");
+        //console.error("El contenedor del gráfico con id 'Elias' no existe.");
     }
 });

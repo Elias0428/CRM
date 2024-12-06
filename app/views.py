@@ -56,6 +56,7 @@ def select_client(request):
     return render(request, 'agents/select_client.html', {'clients':clients})
 
 # Vista para crear cliente
+@login_required(login_url='/login') 
 def formCreateClient(request):
     if request.method == 'POST':
         form = ClientForm(request.POST)
@@ -87,6 +88,7 @@ def check_phone_number(request):
         return JsonResponse({'exists': exists})
     return JsonResponse({'exists': False})
 
+@login_required(login_url='/login') 
 def formCreatePlan(request, client_id):
     client = get_object_or_404(Client, id=client_id)
 
@@ -235,8 +237,12 @@ def fetchDependent(request, client_id):
         if 'nameDependent' in dep_data:  # Verificar que al menos el nombre esté presente
             dependent_id = dep_data.get('id')  # Obtener el id si está presente
 
+            # Obtener y procesar el campo 'typePoliceDependents' (múltiples valores)
+            type_police_values = dep_data.get('typePoliceDependents', [])
+            type_police = ", ".join(type_police_values.split(','))
+
             if dependent_id:  # Si se proporciona un id, actualizar el registro existente
-                Dependent.objects.filter(id=dependent_id).update(
+                dependent = Dependent.objects.filter(id=dependent_id).update(
                     client=client,
                     name=dep_data.get('nameDependent'),
                     apply=dep_data.get('applyDependent'),
@@ -244,8 +250,9 @@ def fetchDependent(request, client_id):
                     migration_status=dep_data.get('migrationStatusDependent'),
                     sex=dep_data.get('sexDependent'),
                     kinship=dep_data.get('kinship'),
-                    type_police=dep_data.get('typePolice')                            
+                    type_police=type_police
                 )
+                client.dependents.add(dependent)                   
                 updated_dependents_ids.append(dependent_id)  # Agregar el ID actualizado a la lista
             else:  # Si no hay id, crear un nuevo registro
                 new_dependent = Dependent.objects.create(
@@ -256,26 +263,41 @@ def fetchDependent(request, client_id):
                     migration_status=dep_data.get('migrationStatusDependent'),
                     sex=dep_data.get('sexDependent'),
                     kinship=dep_data.get('kinship'),
-                    type_police=dep_data.get('typePolice')
+                    type_police=type_police
                 )
                 updated_dependents_ids.append(new_dependent.id)  # Agregar el ID creado a la lista
 
     return JsonResponse({'success': True,'dependents_ids': updated_dependents_ids}) #Y aki retornes la lista/array.
 
+@login_required(login_url='/login')
 def clientObamacare(request):
-    obamaCare = ObamaCare.objects.select_related('profiling_agent','client').filter(
-        profiling_agent_id = request.user.id, is_active = True ) #El error es porque no estas logueado HUevon!
+    
+    roleAuditar = ['S', 'C',  'AU']
+    
+    if request.user.role in roleAuditar:
+        obamaCare = ObamaCare.objects.select_related('profiling_agent','client').filter(is_active = True ) 
+    elif request.user.role == 'Admin':
+        obamaCare = ObamaCare.objects.select_related('profiling_agent','client')
+    elif request.user.role == 'A':
+        obamaCare = ObamaCare.objects.select_related('profiling_agent','client').filter(profiling_agent_id = request.user.id, is_active = True ) 
+
+    print(request.user.role)
+    
     return render(request, 'table/clientObamacare.html', {'obamaCare':obamaCare})
 
+@login_required(login_url='/login')
 def clientSupp(request):
-    supp = Supp.objects.select_related('profiling_agent','client').filter(
-        profiling_agent_id = request.user.id)
-    return render(request, 'table/clientSupp.html', {'supps':supp})
 
-def client(request):
-    client = Client.objects.select_related('agent').filter(
-        agent = request.user.id)
-    return render(request, 'table/client.html', {'clients':client})
+    roleAuditar = ['S', 'C',  'AU']
+    
+    if request.user.role in roleAuditar:
+        supp = Supp.objects.select_related('profiling_agent','client').filter(is_active = True )
+    elif request.user.role == 'Admin':
+        supp = Supp.objects.select_related('profiling_agent','client')
+    elif request.user.role == 'A':
+        supp = Supp.objects.select_related('profiling_agent','client').filter(profiling_agent_id = request.user.id, is_active = True)
+
+    return render(request, 'table/clientSupp.html', {'supps':supp})
 
 def toggleObamaStatus(request, obamacare_id):
     # Obtener el cliente por su ID
@@ -345,13 +367,46 @@ def clean_fields_to_null(request, field_names):
         cleaned_data[field] = clean_field_to_null(value)
     return cleaned_data
 
-def editClientObama(request, obamacare_id):
+def editClient(request,agent_id):
+
+    # Campos de Client
+    client_fields = [
+        'agent_usa', 'first_name', 'last_name', 'phone_number', 'email', 'address', 'zipcode',
+        'city', 'state', 'county', 'sex', 'old', 'date_birth', 'migration_status'
+    ]
+    
+    # Limpiar los campos de Client convirtiendo los vacíos en None
+    cleaned_client_data = clean_fields_to_null(request, client_fields)
+
+    # Actualizar Client
+    client = Client.objects.filter(id=agent_id).update(
+        agent_usa=cleaned_client_data['agent_usa'],
+        first_name=cleaned_client_data['first_name'],
+        last_name=cleaned_client_data['last_name'],
+        phone_number=cleaned_client_data['phone_number'],
+        email=cleaned_client_data['email'],
+        address=cleaned_client_data['address'],
+        zipcode=cleaned_client_data['zipcode'],
+        city=cleaned_client_data['city'],
+        state=cleaned_client_data['state'],
+        county=cleaned_client_data['county'],
+        sex=cleaned_client_data['sex'],
+        old=cleaned_client_data['old'],
+        date_birth=cleaned_client_data['date_birth'],
+        migration_status=cleaned_client_data['migration_status']
+    )
+
+    return client
+
+def editClientObama(request, client_id, obamacare_id):
     obamacare = ObamaCare.objects.select_related('profiling_agent', 'client').filter(id=obamacare_id).first()
 
     obsObama = ObservationAgent.objects.filter(id_obamaCare=obamacare_id)
 
-    if obamacare and obamacare.client: 
-        dependents = Dependent.objects.filter(client=obamacare.client)
+    dependents = None
+
+    if obamacare and obamacare.dependents: 
+        dependents = Dependent.objects.filter(id=obamacare.dependent.id)
 
     users = User.objects.filter(role='C')
     list_drow = dropDownList.objects.filter(profiling_obama__isnull=False)
@@ -363,10 +418,12 @@ def editClientObama(request, obamacare_id):
 
         if action == 'save_obamacare':
 
+            editClient(request, client_id)
+
             # Campos de ObamaCare
             obamacare_fields = [
                 'taxes', 'planName', 'carrierObama', 'profiling', 'subsidy', 'ffm', 'required_bearing',
-                'date_bearing', 'doc_icon', 'doc_migration', 'statusObama', 'work', 'npm', 
+                'date_bearing', 'doc_income', 'doc_migration', 'statusObama', 'work', 'npm', 
                 'date_effective_coverage', 'date_effective_coverage_end', 'apply', 'observationObama', 'agent_usa'
             ]
             
@@ -420,7 +477,7 @@ def editClientObama(request, obamacare_id):
                 ffm=int(cleaned_obamacare_data['ffm']) if cleaned_obamacare_data['ffm'] else None,
                 required_bearing=cleaned_obamacare_data['required_bearing'],
                 date_bearing=cleaned_obamacare_data['date_bearing'],
-                doc_icon=cleaned_obamacare_data['doc_icon'],
+                doc_income=cleaned_obamacare_data['doc_income'],
                 status_color = color,
                 doc_migration=cleaned_obamacare_data['doc_migration'],
                 status=cleaned_obamacare_data['statusObama'],
@@ -465,21 +522,26 @@ def editClientObama(request, obamacare_id):
 
     return render(request, 'edit/editClientObama.html', context)
 
-def editClientSupp(request,supp_id):
+def editClientSupp(request, client_id,supp_id):
 
-    supp = Supp.objects.select_related('client','profiling_agent').filter(id=supp_id).first()
+    supp = Supp.objects.select_related('client','profiling_agent','dependent').filter(id=supp_id).first()
     obsSupp = ObservationAgent.objects.filter(id_supp=supp_id)
     obsCus = ObservationCustomer.objects.select_related('agent').filter(client_id=supp.client.id)
     list_drow = dropDownList.objects.filter(profiling_supp__isnull=False)
 
-    if supp and supp.client: 
-        dependents = Dependent.objects.filter(client=supp.client)
+    dependents = None
+
+    if supp and supp.dependent: 
+        dependents = Dependent.objects.filter(client=supp.dependent.id)
+        print(dependents)
 
     action = request.POST.get('action')
 
     if request.method == 'POST':
 
         if action == 'save_supp':
+
+            editClient(request, client_id)
                 
             # Campos de Supp
             supp_fields = [
@@ -491,16 +553,16 @@ def editClientSupp(request,supp_id):
             cleaned_supp_data = clean_fields_to_null(request, supp_fields)
 
             # Recibir el valor seleccionado del formulario
-            selected_satus= request.POST.get('statusSupp')
+            selected_status= request.POST.get('statusSupp')
 
             color = 1         
 
             for list_drow in list_drow:
-                if selected_satus == list_drow.profiling_supp:
-                    if selected_satus != 'ACTIVE':
+                if selected_status == list_drow.profiling_supp:
+                    if selected_status != 'ACTIVE':
                         color = 2
                         break         
-                    if selected_satus == 'ACTIVE':
+                    if selected_status == 'ACTIVE':
                         color = 3 
                         break  
 
@@ -555,6 +617,37 @@ def editClientSupp(request,supp_id):
     
     return render(request, 'edit/editClientSupp.html', context)
 
+#def editDepents(request,):
+#
+#    # Campos de Denpendents
+#    client_fields = [
+#        'agent_usa', 'first_name', 'last_name', 'phone_number', 'email', 'address', 'zipcode',
+#        'city', 'state', 'county', 'sex', 'old', 'date_birth', 'migration_status'
+#    ]
+#    
+#    # Limpiar los campos de Client convirtiendo los vacíos en None
+#    cleaned_client_data = clean_fields_to_null(request, client_fields)
+#
+#    # Actualizar Client
+#    client = Client.objects.filter(id=agent_id).update(
+#        agent_usa=cleaned_client_data['agent_usa'],
+#        first_name=cleaned_client_data['first_name'],
+#        last_name=cleaned_client_data['last_name'],
+#        phone_number=cleaned_client_data['phone_number'],
+#        email=cleaned_client_data['email'],
+#        address=cleaned_client_data['address'],
+#        zipcode=cleaned_client_data['zipcode'],
+#        city=cleaned_client_data['city'],
+#        state=cleaned_client_data['state'],
+#        county=cleaned_client_data['county'],
+#        sex=cleaned_client_data['sex'],
+#        old=cleaned_client_data['old'],
+#        date_birth=cleaned_client_data['date_birth'],
+#        migration_status=cleaned_client_data['migration_status']
+#    )
+#
+#    return client
+
 def formCreateAlert(request):
 
     if request.method == 'POST':
@@ -566,12 +659,19 @@ def formCreateAlert(request):
             return redirect('formCreateAlert')  # Cambia a tu página de éxito
 
     return render(request, 'forms/formCreateAlert.html')
-    
+
+@login_required(login_url='/login')    
 def tableAlert(request):
+
+    roleAuditar = ['S', 'C',  'AU']
     
-    alert = ClientAlert.objects.select_related('agent').filter(
-        agent = request.user.id, 
-        is_active = True)
+    if request.user.role in roleAuditar:
+        alert = ClientAlert.objects.select_related('agent').filter(is_active = True)
+    elif request.user.role == 'Admin':
+        alert = ClientAlert.objects.select_related('agent')
+    elif request.user.role == 'A':
+        alert = ClientAlert.objects.select_related('agent').filter(agent = request.user.id, is_active = True)
+    
     return render(request, 'table/alert.html', {'alertC':alert})
 
 def toggleAlert(request, alertClient_id):
@@ -731,6 +831,7 @@ def saveCustomerObservation(request):
     else:
         return HttpResponse("Método no permitido.", status=405)
 
+@login_required(login_url='/login') 
 def typification(request):
 
     # Obtener parámetros de fecha del request
@@ -810,12 +911,11 @@ def toggleTypification(request, typifications_id):
     # Redirigir de nuevo a la página actual con un parámetro de éxito
     return redirect('typification')
 
+@login_required(login_url='/login') 
 def index(request):
-    obama = countSalesObama()
-    supp = countSalesSupp()
-    chartOne = chartSaleIndex()
-    obamaAgent = countSalesObamaAgent(request)
-    suppAgent = countSalesSuppAgent(request)
+    obama = countSalesObama(request)
+    supp = countSalesSupp(request)
+    chartOne = chartSaleIndex(request)
     tableStatusAca = tableStatusObama()
     tableStatusSup = tableStatusSupp()
 
@@ -831,8 +931,6 @@ def index(request):
     context = {
         'obama':obama,
         'supp':supp,
-        'obamaAgent':obamaAgent,
-        'suppAgent':suppAgent,
         'chartOne':chartOne_json,
         'tableStatusObama':tableStatusAca,
         'tableStatusSup':tableStatusSup,
@@ -842,7 +940,7 @@ def index(request):
 
     return render(request, 'dashboard/index.html', context)
  
-def countSalesObama():
+def countSalesObama(request):
 
     # Obtener el mes y el año actuales
     now = timezone.now()
@@ -853,20 +951,30 @@ def countSalesObama():
     # Calcular el último día del mes
     last_day = calendar.monthrange(now.year, now.month)[1]  # Obtiene el último día del mes
     end_of_month = now.replace(day=last_day, hour=23, minute=59, second=59, microsecond=999999)
+
+    roleAuditar = ['S', 'C',  'AU', 'Admin']
     
-    all = ObamaCare.objects.filter(created_at__gte=start_of_month,created_at__lte=end_of_month).count()
-    active = ObamaCare.objects.filter(status_color=3,created_at__gte=start_of_month,created_at__lte=end_of_month).count()
-    process = ObamaCare.objects.filter(created_at__gte=start_of_month,created_at__lte=end_of_month).filter(Q(status_color=2) | Q(status_color=1)).count()
-    cancell = ObamaCare.objects.filter(status_color=4,created_at__gte=start_of_month,created_at__lte=end_of_month).count()
+    if request.user.role in roleAuditar:
+        all = ObamaCare.objects.filter(created_at__gte=start_of_month,created_at__lte=end_of_month,is_active = True).count()
+        active = ObamaCare.objects.filter(status_color=3,created_at__gte=start_of_month,created_at__lte=end_of_month,is_active = True).count()
+        process = ObamaCare.objects.filter(created_at__gte=start_of_month,created_at__lte=end_of_month,is_active = True).filter(Q(status_color=2) | Q(status_color=1)).count()
+        cancell = ObamaCare.objects.filter(status_color=4,created_at__gte=start_of_month,created_at__lte=end_of_month,is_active = True).count()
+    elif request.user.role == 'A':
+        all = ObamaCare.objects.filter(created_at__gte=start_of_month,created_at__lte=end_of_month).filter(profiling_agent_id = request.user.id, is_active = True ).count()
+        active = ObamaCare.objects.filter(status_color=3,created_at__gte=start_of_month,created_at__lte=end_of_month).filter(profiling_agent_id = request.user.id, is_active = True ).count()
+        process = ObamaCare.objects.filter(created_at__gte=start_of_month,created_at__lte=end_of_month).filter(Q(status_color=2) | Q(status_color=1)).filter(profiling_agent_id = request.user.id, is_active = True ).count()
+        cancell = ObamaCare.objects.filter(status_color=4,created_at__gte=start_of_month,created_at__lte=end_of_month).filter(profiling_agent_id = request.user.id, is_active = True ).count()
+       
+   
     dicts = {
-        'all':all,
+        'all': all,
         'active':active,
         'process':process,
         'cancell':cancell
     }
     return dicts
 
-def countSalesSupp():
+def countSalesSupp(request):
 
     # Obtener el mes y el año actuales
     now = timezone.now()
@@ -878,35 +986,20 @@ def countSalesSupp():
     last_day = calendar.monthrange(now.year, now.month)[1]  # Obtiene el último día del mes
     end_of_month = now.replace(day=last_day, hour=23, minute=59, second=59, microsecond=999999)
 
-    all = Supp.objects.filter(created_at__gte=start_of_month,created_at__lte=end_of_month).count()
-    active = Supp.objects.filter(status_color=3,created_at__gte=start_of_month,created_at__lte=end_of_month).count()
-    process = Supp.objects.filter(created_at__gte=start_of_month,created_at__lte=end_of_month).filter(Q(status_color=2) | Q(status_color=1)).count()
-    cancell = Supp.objects.filter(status_color=4,created_at__gte=start_of_month,created_at__lte=end_of_month).count()
-    dicts = {
-        'all':all,
-        'active':active,
-        'process':process,
-        'cancell':cancell
-    }
-    return dicts
-
-def countSalesObamaAgent(request):
-
-    # Obtener el mes y el año actuales
-    now = timezone.now()
-
-    # Calcular el primer día del mes
-    start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-
-    # Calcular el último día del mes
-    last_day = calendar.monthrange(now.year, now.month)[1]  # Obtiene el último día del mes
-    end_of_month = now.replace(day=last_day, hour=23, minute=59, second=59, microsecond=999999)
+    roleAuditar = ['S', 'C',  'AU', 'Admin']
     
-    user = User.objects.get(id=request.user.id)
-    all = ObamaCare.objects.filter(profiling_agent=user.id,created_at__gte=start_of_month,created_at__lte=end_of_month).count()
-    active = ObamaCare.objects.filter(profiling_agent=user.id, status_color=3,created_at__gte=start_of_month,created_at__lte=end_of_month).count()
-    process = ObamaCare.objects.filter(profiling_agent=user.id, created_at__gte=start_of_month,created_at__lte=end_of_month).filter(Q(status_color=2) | Q(status_color=1)).count()
-    cancell = ObamaCare.objects.filter(profiling_agent=user.id, status_color=4,created_at__gte=start_of_month,created_at__lte=end_of_month).count()
+    if request.user.role in roleAuditar:
+        all = Supp.objects.filter(created_at__gte=start_of_month,created_at__lte=end_of_month,is_active = True).count()
+        active = Supp.objects.filter(status_color=3,created_at__gte=start_of_month,created_at__lte=end_of_month,is_active = True).count()
+        process = Supp.objects.filter(created_at__gte=start_of_month,created_at__lte=end_of_month,is_active = True).filter(Q(status_color=2) | Q(status_color=1)).count()
+        cancell = Supp.objects.filter(status_color=4,created_at__gte=start_of_month,created_at__lte=end_of_month,is_active = True).count()
+    elif request.user.role == 'A':
+        all = Supp.objects.filter(created_at__gte=start_of_month,created_at__lte=end_of_month).filter(profiling_agent_id = request.user.id, is_active = True ).count()
+        active = Supp.objects.filter(status_color=3,created_at__gte=start_of_month,created_at__lte=end_of_month).filter(profiling_agent_id = request.user.id, is_active = True ).count()
+        process = Supp.objects.filter(created_at__gte=start_of_month,created_at__lte=end_of_month).filter(profiling_agent_id = request.user.id, is_active = True ).filter(Q(status_color=2) | Q(status_color=1)).count()
+        cancell = Supp.objects.filter(status_color=4,created_at__gte=start_of_month,created_at__lte=end_of_month).filter(profiling_agent_id = request.user.id, is_active = True ).count()
+
+
     dicts = {
         'all':all,
         'active':active,
@@ -915,53 +1008,51 @@ def countSalesObamaAgent(request):
     }
     return dicts
 
-def countSalesSuppAgent(request):
-
-    # Obtener el mes y el año actuales
-    now = timezone.now()
-
-    # Calcular el primer día del mes
-    start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-
-    # Calcular el último día del mes
-    last_day = calendar.monthrange(now.year, now.month)[1]  # Obtiene el último día del mes
-    end_of_month = now.replace(day=last_day, hour=23, minute=59, second=59, microsecond=999999)
-
-    user = User.objects.get(id=request.user.id)
-    all = Supp.objects.filter(profiling_agent=user.id,created_at__gte=start_of_month,created_at__lte=end_of_month).count()
-    active = Supp.objects.filter(profiling_agent=user.id, status_color=3,created_at__gte=start_of_month,created_at__lte=end_of_month).count()
-    process = Supp.objects.filter(profiling_agent=user.id, created_at__gte=start_of_month,created_at__lte=end_of_month).filter(Q(status_color=2) | Q(status_color=1)).count()
-    cancell = Supp.objects.filter(profiling_agent=user.id, status_color=4,created_at__gte=start_of_month,created_at__lte=end_of_month).count()
-    dicts = {
-        'all':all,
-        'active':active,
-        'process':process,
-        'cancell':cancell
-    }
-    return dicts
-
-def chartSaleIndex():
-
+def chartSaleIndex(request):
     # Obtener la fecha y hora actual
     now = timezone.now()
     current_month = now.month
     current_year = now.year
 
-    # Obtener el primer y último día del mes actual (con zona horaria)
+    # Obtener el primer y último día del mes actual
     start_of_month = timezone.make_aware(datetime(current_year, current_month, 1), timezone.get_current_timezone())
-    end_of_month = timezone.make_aware(datetime(current_year, current_month + 1, 1), timezone.get_current_timezone()) if current_month < 12 else timezone.make_aware(datetime(current_year + 1, 1, 1), timezone.get_current_timezone())
 
-    # Consultas combinadas para obtener los conteos de ObamaCare y Supp
-    users_data = User.objects.filter(role='A').annotate(
-        # Contar solo los aprobados en ObamaCare para el mes y año actuales
-        obamacare_count=Count('obamacare', filter=Q(obamacare__status_color=3) & Q(obamacare__created_at__gte=start_of_month) & Q(obamacare__created_at__lt=end_of_month)),
-        # Conteo total de ObamaCare para el mes y año actuales
-        obamacare_count_total=Count('obamacare', distinct=True, filter=Q(obamacare__created_at__gte=start_of_month) & Q(obamacare__created_at__lt=end_of_month)),
-        # Contar solo los aprobados en Supp para el mes y año actuales
-        supp_count=Coalesce(Count('supp', filter=Q(supp__status_color=3) & Q(supp__created_at__gte=start_of_month) & Q(supp__created_at__lt=end_of_month)), 0),
-        # Conteo total de Supp para el mes y año actuales
-        supp_count_total=Coalesce(Count('supp', filter=Q(supp__created_at__gte=start_of_month) & Q(supp__created_at__lt=end_of_month)), 0)
-    ).values('username', 'obamacare_count', 'obamacare_count_total', 'supp_count', 'supp_count_total')
+    # Obtener el último día del mes actual
+    last_day_of_month = calendar.monthrange(current_year, current_month)[1]
+    end_of_month = timezone.make_aware(datetime(current_year, current_month, last_day_of_month, 23, 59, 59), timezone.get_current_timezone())
+    
+    roleAuditar = ['S', 'C', 'AU', 'Admin']
+
+    if request.user.role in roleAuditar:
+
+        # Consultas combinadas para obtener los conteos de ObamaCare y Supp para todos los usuarios
+        users_data = User.objects.annotate(
+            # Contar solo los aprobados en ObamaCare para el mes y año actuales
+            obamacare_count=Count('obamacare', filter=Q(obamacare__status_color=3) & Q(obamacare__created_at__gte=start_of_month) & Q(obamacare__created_at__lt=end_of_month), distinct=True),
+            # Conteo total de ObamaCare para el mes y año actuales
+            obamacare_count_total=Count('obamacare', distinct=True, filter=Q(obamacare__created_at__gte=start_of_month) & Q(obamacare__created_at__lt=end_of_month)),
+            # Contar solo los aprobados en Supp para el mes y año actuales
+            supp_count=Coalesce(Count('supp', filter=Q(supp__status_color=3) & Q(supp__created_at__gte=start_of_month) & Q(supp__created_at__lt=end_of_month)), 0),
+            # Conteo total de Supp para el mes y año actuales
+            supp_count_total=Coalesce(Count('supp', filter=Q(supp__created_at__gte=start_of_month) & Q(supp__created_at__lt=end_of_month)), 0)
+        ).values('username', 'obamacare_count', 'obamacare_count_total', 'supp_count', 'supp_count_total')               
+
+    elif request.user.role == 'A':
+        # Consultas combinadas para obtener los conteos de ObamaCare y Supp solo para el usuario actual con el rol 'A'
+        users_data = User.objects.filter(id=request.user.id).annotate(
+            # Contar solo los aprobados en ObamaCare para el mes y año actuales y filtrar por el usuario
+            obamacare_count=Count('obamacare', filter=Q(obamacare__status_color=3) & Q(obamacare__created_at__gte=start_of_month) & Q(obamacare__created_at__lt=end_of_month) & 
+                Q(obamacare__profiling_agent_id=request.user.id) & Q(obamacare__is_active=True), distinct=True),
+            # Conteo total de ObamaCare para el mes y año actuales
+            obamacare_count_total=Count('obamacare', distinct=True, filter=Q(obamacare__created_at__gte=start_of_month) & Q(obamacare__created_at__lt=end_of_month) & 
+                Q(obamacare__profiling_agent_id=request.user.id) & Q(obamacare__is_active=True)),
+            # Contar solo los aprobados en Supp para el mes y año actuales y filtrar por el usuario
+            supp_count=Coalesce(Count('supp', filter=Q(supp__status_color=3) & Q(supp__created_at__gte=start_of_month) & Q(supp__created_at__lt=end_of_month) & 
+                Q(supp__profiling_agent_id=request.user.id) & Q(supp__is_active=True)), 0),
+            # Conteo total de Supp para el mes y año actuales
+            supp_count_total=Coalesce(Count('supp', filter=Q(supp__created_at__gte=start_of_month) & Q(supp__created_at__lt=end_of_month) & 
+                Q(supp__profiling_agent_id=request.user.id) & Q(supp__is_active=True)), 0)
+        ).values('username', 'obamacare_count', 'obamacare_count_total', 'supp_count', 'supp_count_total')
 
     # Convertir los datos a una lista de diccionarios
     combined_data = []
@@ -974,11 +1065,11 @@ def chartSaleIndex():
             'supp_count_total': user['supp_count_total'],
         })
 
-    #Imprimir el resultado en consola para todos los usuarios
+    # Imprimir el resultado en consola para todos los usuarios
     #print("Datos combinados de los usuarios:")
     #if combined_data:  # Verificar si hay datos
     #    for data in combined_data:
-    #         print(data)
+    #        print(data)
     #else:
     #    print("No se encontraron usuarios con el rol 'A'.")
 
@@ -1012,10 +1103,11 @@ def tableStatusSupp():
     end_of_month = timezone.make_aware(datetime(current_year, current_month + 1, 1), timezone.get_current_timezone()) if current_month < 12 else timezone.make_aware(datetime(current_year + 1, 1, 1), timezone.get_current_timezone())
 
     # Realizamos la consulta y agrupamos por el campo 'profiling'
-    result = Supp.objects.filter(created_at__gte=start_of_month, created_at__lt=end_of_month).values('status').annotate(count=Count('status')).order_by('status')
+    result = Supp.objects.filter(created_at__gte=start_of_month, created_at__lt=end_of_month,).values('status').annotate(count=Count('status')).order_by('status')
 
     return result
 
+@login_required(login_url='/login') 
 def sale(request): 
 
     # Obtener los parámetros de fecha del request

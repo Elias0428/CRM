@@ -50,7 +50,7 @@ class Dependent(models.Model):
     kinship = models.CharField(max_length=100,null=True)
     date_birth = models.DateField(null=True)
     migration_status = models.CharField(max_length=50)
-    type_police = models.CharField(max_length=50)
+    type_police = models.TextField()
 
     class Meta:
         db_table = 'dependents'
@@ -87,7 +87,7 @@ class ObamaCare(models.Model):
     ffm = models.BigIntegerField(null=True)
     required_bearing = models.BooleanField(default=False,null=True)
     date_bearing = models.DateField(null=True)
-    doc_icon = models.BooleanField(default=False,null=True)
+    doc_income = models.BooleanField(default=False,null=True)
     doc_migration = models.BooleanField(default=False,null=True)
     status = models.CharField(max_length=50,null=True)
     status_color = models.IntegerField(null = True)
@@ -100,11 +100,14 @@ class ObamaCare(models.Model):
     observation = models.TextField(null=True)
     is_active = models.BooleanField(default=True)
 
+    dependents = models.ManyToManyField(Dependent, related_name='ObamaDependents')
+
     class Meta:
         db_table = 'obamacare'
 
 class Supp(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    dependent = models.ForeignKey(Dependent, on_delete=models.CASCADE, null=True)
     agent_usa = models.CharField(max_length=20)
     profiling_agent = models.ForeignKey(User, on_delete=models.CASCADE)    
     created_at = models.DateTimeField(auto_now_add=True)  
@@ -122,6 +125,8 @@ class Supp(models.Model):
     payment_type = models.CharField(max_length=50,null=True)
     observation = models.TextField(null=True)
     is_active = models.BooleanField(default=True)
+
+    dependents = models.ManyToManyField(Dependent, related_name='SuppDependents')
 
     class Meta:
         db_table = 'supp'

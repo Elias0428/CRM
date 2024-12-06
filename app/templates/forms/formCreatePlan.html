@@ -19,6 +19,9 @@
 	<!-- loader-->
 	<link href="{% static "assets/css/pace.min.css" %}" rel="stylesheet" />
 	<script src="{% static "assets/js/pace.min.js" %}"></script>
+
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+
 	<!-- Bootstrap CSS -->
 	<link href="{% static "assets/css/bootstrap.min.css" %}" rel="stylesheet">
 	<link href="{% static "assets/css/bootstrap-extended.css" %}" rel="stylesheet">
@@ -33,8 +36,6 @@
 {% endblock %}
 
 {% block page_content %}
-<h6 class="text-uppercase">Non Linear</h6>
-<hr>
 <div id="stepper1" class="bs-stepper">
 	<div class="card">
 		<div class="card-header">
@@ -44,8 +45,8 @@
 						<div class="step-trigger" role="tab" id="stepper1trigger1" aria-controls="test-l-1">
 						<div class="bs-stepper-circle">1</div>
 						<div class="">
-							<h5 class="mb-0 steper-title">ACA</h5>
-							<p class="mb-0 steper-sub-title">Enter Your Details</p>
+							<h5 class="mb-0 steper-title">OBAMACARE</h5>
+							<p class="mb-0 steper-sub-title">Enter Your Details Obamacare</p>
 						</div>
 						</div>
 					</div>							
@@ -56,8 +57,8 @@
 					<div class="step-trigger" role="tab" id="stepper1trigger2" aria-controls="test-l-2">
 						<div class="bs-stepper-circle">2</div>
 						<div class="">
-							<h5 class="mb-0 steper-title">Account Details</h5>
-							<p class="mb-0 steper-sub-title">Setup Account Details</p>
+							<h5 class="mb-0 steper-title">SUPPLEMENTARY</h5>
+							<p class="mb-0 steper-sub-title">Enter your Supplementary data</p>
 						</div>
 					</div>
 					</div>
@@ -67,8 +68,8 @@
 					<div class="step-trigger" role="tab" id="stepper1trigger3" aria-controls="test-l-3">
 						<div class="bs-stepper-circle">3</div>
 						<div class="">
-							<h5 class="mb-0 steper-title">Education</h5>
-							<p class="mb-0 steper-sub-title">Education Details</p>
+							<h5 class="mb-0 steper-title">DEPENDENTS</h5>
+							<p class="mb-0 steper-sub-title">Enter dependent's data</p>
 						</div>
 					</div>
 				</div>
@@ -80,11 +81,12 @@
 					<input type="hidden" id="type_sales" name="type_sales" value="{{ client.type_sales }}">
 					{% if client.type_sales == 'ACA'  or client.type_sales == 'ACA/SUPLEMENTARIO' %}
 						<div id="test-l-1" role="tabpanel" class="bs-stepper-pane" aria-labelledby="stepper1trigger1">
-							<h5 class="mb-1">Your Personal Information</h5>
-							<p class="mb-4">Enter your personal information to get closer to copanies</p>
+							<h5 class="mb-1">Your Obamacare Information</h5>
+							<p class="mb-4">Enter data related to your Obamacare plan information.</p>
 
 							<div class="row g-3">
 								<input type="hidden" id="acaPlanId" name="acaPlanId" value="{{ aca_plan_data.id }}">
+								<input type="hidden" id="acaPlan" name="acaPlan" value="ACA">
 								<div class="col-12 col-lg-6">
 									<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
 									<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa">
@@ -172,8 +174,8 @@
 					{% endif %}
 					{% if client.type_sales == 'SUPLEMENTARIO'  or client.type_sales == 'ACA/SUPLEMENTARIO' %}
 						<div id="test-l-2" role="tabpanel" class="bs-stepper-pane" aria-labelledby="stepper1trigger2">
-							<h5 class="mb-1">Account Details</h5>
-							<p class="mb-4">Enter Your Account Details.</p>
+							<h5 class="mb-1">Your Supplementary Information</h5>
+							<p class="mb-4">Enter data related to your Supplementary plan information.</p>
 							<div id="repeater1">
 								<!-- Repeater Heading -->
 								<div class="card mb-3">
@@ -495,11 +497,9 @@
 															</select>
 														</div>
 														<div class="col-12 col-lg-6">
-															<label class="form-label">Type Police</label>
-															<select class="form-select" name="typePolice">
-																<option>---</option>
-																<option value="ACA" {% if dependent.type_police == "ACA" %}selected{% endif %}>ACA</option>
-																<option value="SUPPLEMENTARY" {% if dependent.type_police == "SUPPLEMENTARY" %}selected{% endif %}>SUPPLEMENTARY</option>
+															<label class="form-label">Type Dependents</label>
+															<select class="form-select" name="typePoliceDependents[]" id="typePoliceDependents" multiple>
+																<option>---</option>														
 															</select>
 														</div>
 														<div class="col-12 d-flex justify-content-end mt-3">
@@ -535,9 +535,20 @@
 													<div class="col-12 col-lg-6">
 														<label class="form-label">Migration Status</label>
 														<select class="form-select" name="migrationStatusDependent">
-															<option>---</option>
-															<option value="Green Card">Green Card</option>
-															<option value="Autorizacion de Empleo">Autorizacion de Empleo</option>
+															<option disabled selected value='no_valid'></option>
+															<option value="Green Card" >Green Card</option>
+															<option value="Autorizacion de Empleo" >Autorizacion de Empleo</option>
+															<option value="Notice of Action (i-797)" >Notice of Action (i-797)</option>
+															<option value="Refugiado" >Refugiado</option>
+															<option value="Asilo" >Asilo</option>
+															<option value="Temporary Protection Status (TPS)" >Temporary Protection Status (TPS)</option>
+															<option value="Violencia Domestica" >Violencia Domestica</option>
+															<option value="Residencia Condicional" >Residencia Condicional</option>
+															<option value="Parole">Parole</option>
+															<option value="Ciudadano USA (Licencia de Manejo)" >Ciudadano USA (Licencia de Manejo)</option>
+															<option value="Vista de Estudiante (i-120)" >Vista de Estudiante (i-120)</option>
+															<option value="En Proceso actual" >En Proceso actual</option>
+															<option value="Inicio de Proceso Migratorio 3-6 meses" >Inicio de Proceso Migratorio 3-6 meses</option>
 														</select>
 													</div>
 													<div class="col-12 col-lg-6">
@@ -561,11 +572,9 @@
 														</select>
 													</div>
 													<div class="col-12 col-lg-6">
-														<label class="form-label">Type Police</label>
-														<select class="form-select" name="typePolice">
+														<label class="form-label">Type Dependents</label>
+														<select  class="form-select" name="typePoliceDependents[]"  id="typePoliceDependents" multiple>
 															<option>---</option>
-															<option value="ACA">ACA</option>
-															<option value="SUPPLEMENTARY">SUPPLEMENTARY</option>
 														</select>
 													</div>
 													<div class="col-12 d-flex justify-content-end mt-3">
@@ -621,4 +630,105 @@
 	<script src="{% static 'assets/js/repeater.js' %}"></script>
 	<script src="{% static 'assets/js/removeFormDependent.js' %}"></script>
 	<script src="{% static 'assets/js/validationForm.js' %}"></script>
+
+	<!-- Incluir JS de Choices.js -->
+	<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			const selectElement = document.querySelectorAll('#typePoliceDependents[]');
+			const choices = new Choices(selectElement, {
+				removeItemButton: true,  // Muestra el botón de eliminar las opciones seleccionadas
+				searchEnabled: true,     // Habilita la búsqueda en el menú desplegable
+				placeholderValue: 'Seleccione una opción...',
+				itemSelectText: '',      // Elimina el texto 'Selecciona un elemento'
+			});
+		});
+	</script>
+
+	<!-- Personalización CSS para fondo oscuro -->
+	<style>
+		/* Estilo general del select */
+		.choices__inner {
+			background-color: #222; /* Fondo oscuro */
+			color: #ddd; /* Texto en gris claro */
+			font-family: 'Arial', sans-serif; /* Fuente moderna */
+			border: 1px solid #444; /* Borde sutil */
+			border-radius: 8px; /* Bordes redondeados */
+			padding: 8px 12px; /* Espaciado interno */
+			transition: all 0.3s ease; /* Transición suave */
+		}
+	
+		/* Estilo para el borde cuando el select está enfocado */
+		.choices__inner--focused {
+			border-color: #3b82f6; /* Borde azul cuando está enfocado */
+			box-shadow: 0 0 10px rgba(59, 130, 246, 0.3); /* Sombra sutil azul */
+		}
+	
+		/* Estilo para las opciones dentro del dropdown */
+		.choices__list--dropdown {
+			background-color: #333; /* Fondo oscuro para el dropdown */
+			color: #ddd; /* Texto claro */
+			max-height: 250px; /* Altura máxima */
+			overflow-y: auto; /* Desplazamiento si las opciones son muchas */
+			border-radius: 8px; /* Bordes redondeados */
+			box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Sombra suave */
+			border: none; /* Sin borde */
+		}
+	
+		/* Estilo para las opciones dentro del dropdown cuando están enfocadas */
+		.choices__item--highlighted {
+			background-color: #3b82f6; /* Fondo azul cuando se resalta */
+			color: white; /* Texto blanco */
+			cursor: pointer; /* Puntero */
+		}
+	
+		/* Estilo para las opciones seleccionables dentro del dropdown */
+		.choices__item--selectable {
+			background-color: #444; /* Fondo oscuro */
+			color: #ddd; /* Texto claro */
+			padding: 8px 12px; /* Espaciado */
+			transition: background-color 0.2s ease; /* Transición de color suave */
+		}
+	
+		/* Estilo para las opciones seleccionadas en el campo */
+		.choices__item {
+			background-color: #3b82f6; /* Fondo azul */
+			color: rgb(59, 59, 59); /* Texto blanco */
+			padding: 6px 10px; /* Espaciado de las opciones seleccionadas */
+			margin: 4px; /* Separación entre opciones */
+			border-radius: 20px; /* Bordes redondeados */
+			font-weight: bold; /* Texto en negrita */
+			font-size: 14px; /* Tamaño de texto */
+		}
+	
+		/* Estilo para el botón de eliminar de las opciones seleccionadas */
+		.choices__button {
+			color: #fff; /* Eliminar en blanco */
+			font-size: 16px;
+			background-color: transparent;
+			border: none;
+			margin-left: 8px;
+			cursor: pointer;
+		}
+	
+		.choices__button:hover {
+			color: #f00; /* Cambiar color a rojo al pasar el mouse */
+		}
+	
+		/* Fondo del área de texto al estar vacío */
+		.choices__placeholder {
+			color: #888; /* Color gris claro */
+		}
+	
+		/* Ajustes para el input de búsqueda */
+		.choices__input {
+			background-color: #333; /* Fondo oscuro */
+			color: #fff; /* Texto blanco */
+			border: 1px solid #444; /* Borde oscuro */
+			padding: 8px 12px; /* Espaciado interno */
+			border-radius: 6px; /* Bordes redondeados */
+		}
+	</style>
+
 {% endblock %}

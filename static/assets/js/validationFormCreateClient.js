@@ -1,4 +1,4 @@
-const idsSelectWithValidation = ['agent_usa', 'inputState', 'sex', 'migration_status', 'doc_icon', 'doc_migration', 'type_sales']
+const idsSelectWithValidation = ['agent_usa', 'inputState', 'sex', 'migration_status', 'doc_income', 'doc_migration', 'type_sales']
 
 document.getElementById('formCreateClient').addEventListener('submit', function(event) {
     event.preventDefault(); // Previene el envío por defecto del formulario
