@@ -42,18 +42,7 @@ class Client(models.Model):
     class Meta:
         db_table = 'clients'
 
-class Dependent(models.Model):
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    name = models.CharField(max_length=200)
-    apply = models.CharField(max_length=200)
-    sex = models.CharField(max_length=1)
-    kinship = models.CharField(max_length=100,null=True)
-    date_birth = models.DateField(null=True)
-    migration_status = models.CharField(max_length=50)
-    type_police = models.TextField()
 
-    class Meta:
-        db_table = 'dependents'
 
 class Call(models.Model):
     id_client = models.ForeignKey(Client, on_delete=models.CASCADE)
@@ -100,10 +89,22 @@ class ObamaCare(models.Model):
     observation = models.TextField(null=True)
     is_active = models.BooleanField(default=True)
 
-    dependents = models.ManyToManyField(Dependent, related_name='ObamaDependents')
-
     class Meta:
         db_table = 'obamacare'
+
+class Dependent(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    obamacare = models.ForeignKey(ObamaCare, on_delete=models.CASCADE, null=True)  # Relación de muchos a uno
+    name = models.CharField(max_length=200)
+    apply = models.CharField(max_length=200)
+    sex = models.CharField(max_length=1)
+    kinship = models.CharField(max_length=100,null=True)
+    date_birth = models.DateField(null=True)
+    migration_status = models.CharField(max_length=50)
+    type_police = models.TextField()
+
+    class Meta:
+        db_table = 'dependents'
 
 class Supp(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)

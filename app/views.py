@@ -213,36 +213,55 @@ def fetchSupp(request, client_id):
 def fetchDependent(request, client_id):
     client = Client.objects.get(id=client_id)
     dependents_data = {}
-    updated_dependents_ids = []  # Lista para almacenar los IDs de los registros suplementarios
+    updated_dependents_ids = []
 
-    # Filtrar solo los datos que corresponden a dependents y organizarlos por índices
+    # Procesar datos de dependientes como antes
     for key, value in request.POST.items():
         if key.startswith('dependent'):
-            # Obtener índice y nombre del campo
             try:
-                index = key.split('[')[1].split(']')[0]  # Extrae el índice del dependiente
-                field_name = key.split('[')[2].split(']')[0]  # Extrae el nombre del campo
+                index = key.split('[')[1].split(']')[0]
+                field_name = key.split('[')[2].split(']')[0]
             except IndexError:
-                continue  # Ignora las llaves que no tengan el formato esperado
+                continue
             
-            # Inicializar un diccionario para el dependiente si no existe
             if index not in dependents_data:
                 dependents_data[index] = {}
 
-            # Almacenar el valor del campo en el diccionario correspondiente
             dependents_data[index][field_name] = value
 
-    # Guardar cada dependiente en la base de datos
+    # Crear lista de dependientes
+    dependents_to_add = []
     for dep_data in dependents_data.values():
-        if 'nameDependent' in dep_data:  # Verificar que al menos el nombre esté presente
-            dependent_id = dep_data.get('id')  # Obtener el id si está presente
+        if 'nameDependent' in dep_data:
+            dependent_id = dep_data.get('id')
 
-            # Obtener y procesar el campo 'typePoliceDependents' (múltiples valores)
+            # Procesar múltiples valores de type_police
             type_police_values = dep_data.get('typePoliceDependents', [])
-            type_police = ", ".join(type_police_values.split(','))
+            type_police = ", ".join(type_police_values.split(',') if type_police_values else [])
 
-            if dependent_id:  # Si se proporciona un id, actualizar el registro existente
-                dependent = Dependent.objects.filter(id=dependent_id).update(
+            # Lógica para asociar ObamaCare
+            obamacare = None
+            if 'ACA' in type_police:
+                # Buscar un plan ObamaCare para el cliente
+                obamacare = ObamaCare.objects.filter(client=client).first()
+
+            # Crear o actualizar Dependent
+            if dependent_id:
+                dependent = Dependent.objects.get(id=dependent_id)
+                for attr, value in {
+                    'name': dep_data.get('nameDependent'),
+                    'apply': dep_data.get('applyDependent'),
+                    'date_birth': dep_data.get('dateBirthDependent'),
+                    'migration_status': dep_data.get('migrationStatusDependent'),
+                    'sex': dep_data.get('sexDependent'),
+                    'kinship': dep_data.get('kinship'),
+                    'type_police': type_police,
+                    'obamacare': obamacare
+                }.items():
+                    setattr(dependent, attr, value)
+                dependent.save()
+            else:
+                dependent = Dependent.objects.create(
                     client=client,
                     name=dep_data.get('nameDependent'),
                     apply=dep_data.get('applyDependent'),
@@ -250,24 +269,25 @@ def fetchDependent(request, client_id):
                     migration_status=dep_data.get('migrationStatusDependent'),
                     sex=dep_data.get('sexDependent'),
                     kinship=dep_data.get('kinship'),
-                    type_police=type_police
+                    type_police=type_police,
+                    obamacare=obamacare
                 )
-                client.dependents.add(dependent)                   
-                updated_dependents_ids.append(dependent_id)  # Agregar el ID actualizado a la lista
-            else:  # Si no hay id, crear un nuevo registro
-                new_dependent = Dependent.objects.create(
-                    client=client,
-                    name=dep_data.get('nameDependent'),
-                    apply=dep_data.get('applyDependent'),
-                    date_birth=dep_data.get('dateBirthDependent'),
-                    migration_status=dep_data.get('migrationStatusDependent'),
-                    sex=dep_data.get('sexDependent'),
-                    kinship=dep_data.get('kinship'),
-                    type_police=type_police
-                )
-                updated_dependents_ids.append(new_dependent.id)  # Agregar el ID creado a la lista
 
-    return JsonResponse({'success': True,'dependents_ids': updated_dependents_ids}) #Y aki retornes la lista/array.
+            dependents_to_add.append(dependent)
+            updated_dependents_ids.append(dependent.id)
+
+    # Obtener todos los Supp para este cliente
+    supps = Supp.objects.filter(client=client)
+    
+    # Agregar todos los dependientes a cada Supp
+    for supp in supps:
+        supp.dependents.clear()  # Limpiar relaciones existentes
+        supp.dependents.add(*dependents_to_add)
+
+    return JsonResponse({
+        'success': True,
+        'dependents_ids': updated_dependents_ids
+    })
 
 @login_required(login_url='/login')
 def clientObamacare(request):
@@ -400,14 +420,10 @@ def editClient(request,agent_id):
 
 def editClientObama(request, client_id, obamacare_id):
     obamacare = ObamaCare.objects.select_related('profiling_agent', 'client').filter(id=obamacare_id).first()
+    dependents = Dependent.objects.select_related('obamacare').filter(obamacare=obamacare)
 
     obsObama = ObservationAgent.objects.filter(id_obamaCare=obamacare_id)
-
-    dependents = None
-
-    if obamacare and obamacare.dependents: 
-        dependents = Dependent.objects.filter(id=obamacare.dependent.id)
-
+  
     users = User.objects.filter(role='C')
     list_drow = dropDownList.objects.filter(profiling_obama__isnull=False)
 
@@ -419,6 +435,7 @@ def editClientObama(request, client_id, obamacare_id):
         if action == 'save_obamacare':
 
             editClient(request, client_id)
+            dependents= editDepentsObama(request, obamacare_id)
 
             # Campos de ObamaCare
             obamacare_fields = [
@@ -513,27 +530,28 @@ def editClientObama(request, client_id, obamacare_id):
         
     context = {
         'obamacare': obamacare,
-        'dependents': dependents,
         'users': users,
         'obsObamaText': '\n'.join([obs.content for obs in obsObama]),
         'obsCustomer': obsCus,
-        'list_drow': list_drow
+        'list_drow': list_drow,
+        'dependents' : dependents
     }
 
     return render(request, 'edit/editClientObama.html', context)
 
 def editClientSupp(request, client_id,supp_id):
 
-    supp = Supp.objects.select_related('client','profiling_agent','dependent').filter(id=supp_id).first()
+    supp = Supp.objects.select_related('client','profiling_agent').filter(id=supp_id).first()
     obsSupp = ObservationAgent.objects.filter(id_supp=supp_id)
     obsCus = ObservationCustomer.objects.select_related('agent').filter(client_id=supp.client.id)
     list_drow = dropDownList.objects.filter(profiling_supp__isnull=False)
 
-    dependents = None
+    # Obtener el objeto Supp que tiene el id `supp_id`
+    supp_instance = Supp.objects.get(id=supp_id)
 
-    if supp and supp.dependent: 
-        dependents = Dependent.objects.filter(client=supp.dependent.id)
-        print(dependents)
+    # Obtener todos los dependientes asociados a este Supp
+    dependents = supp_instance.dependents.all()
+
 
     action = request.POST.get('action')
 
@@ -542,10 +560,11 @@ def editClientSupp(request, client_id,supp_id):
         if action == 'save_supp':
 
             editClient(request, client_id)
+            dependents= editDepentsSupp(request, supp_id)
                 
             # Campos de Supp
             supp_fields = [
-                'effectiveDateSupp', 'carrierSuple', 'premiumSupp', 'preventiveSupp', 'policyTypeSupp', 'coverageSupp', 'deducibleSupp',
+                'effectiveDateSupp', 'carrierSuple', 'premiumSupp', 'preventiveSupp', 'coverageSupp', 'deducibleSupp',
                 'statusSupp', 'typePaymeSupp', 'date_effective_coverage', 'date_effective_coverage_end', 'observationSuple', 'agent_usa'
             ]
             
@@ -572,7 +591,6 @@ def editClientSupp(request, client_id,supp_id):
                 effective_date=cleaned_supp_data['effectiveDateSupp'],
                 agent_usa=cleaned_supp_data['agent_usa'],
                 company=cleaned_supp_data['carrierSuple'],
-                policy_type=cleaned_supp_data['policyTypeSupp'],
                 premium=cleaned_supp_data['premiumSupp'],
                 preventive=cleaned_supp_data['preventiveSupp'],
                 coverage=cleaned_supp_data['coverageSupp'],
@@ -617,36 +635,79 @@ def editClientSupp(request, client_id,supp_id):
     
     return render(request, 'edit/editClientSupp.html', context)
 
-#def editDepents(request,):
-#
-#    # Campos de Denpendents
-#    client_fields = [
-#        'agent_usa', 'first_name', 'last_name', 'phone_number', 'email', 'address', 'zipcode',
-#        'city', 'state', 'county', 'sex', 'old', 'date_birth', 'migration_status'
-#    ]
-#    
-#    # Limpiar los campos de Client convirtiendo los vacíos en None
-#    cleaned_client_data = clean_fields_to_null(request, client_fields)
-#
-#    # Actualizar Client
-#    client = Client.objects.filter(id=agent_id).update(
-#        agent_usa=cleaned_client_data['agent_usa'],
-#        first_name=cleaned_client_data['first_name'],
-#        last_name=cleaned_client_data['last_name'],
-#        phone_number=cleaned_client_data['phone_number'],
-#        email=cleaned_client_data['email'],
-#        address=cleaned_client_data['address'],
-#        zipcode=cleaned_client_data['zipcode'],
-#        city=cleaned_client_data['city'],
-#        state=cleaned_client_data['state'],
-#        county=cleaned_client_data['county'],
-#        sex=cleaned_client_data['sex'],
-#        old=cleaned_client_data['old'],
-#        date_birth=cleaned_client_data['date_birth'],
-#        migration_status=cleaned_client_data['migration_status']
-#    )
-#
-#    return client
+def editDepentsObama(request, obamacare_id):
+    # Obtener todos los dependientes asociados al ObamaCare
+    dependents = Dependent.objects.filter(obamacare=obamacare_id)
+
+    if request.method == "POST":
+        for dependent in dependents:
+            # Obtener los datos enviados por cada dependiente
+            dependent_id = request.POST.get(f'dependentId_{dependent.id}')
+            name = request.POST.get(f'nameDependent_{dependent.id}')
+            apply = request.POST.get(f'applyDependent_{dependent.id}')
+            kinship = request.POST.get(f'kinship_{dependent.id}')
+            date_birth = request.POST.get(f'dateBirthDependent_{dependent.id}')
+            migration_status = request.POST.get(f'migrationStatusDependent_{dependent.id}')
+            sex = request.POST.get(f'sexDependent_{dependent.id}')
+            
+            # Verificar si el ID coincide
+            if dependent.id == int(dependent_id):  # Verificamos si el ID coincide
+                
+                # Verificamos que todos los campos tengan datos
+                if name and apply and kinship and date_birth and migration_status and sex:
+                    dependent.name = name
+                    dependent.apply = apply
+                    dependent.kinship = kinship
+                    dependent.date_birth = date_birth
+                    dependent.migration_status = migration_status
+                    dependent.sex = sex
+
+                    dependent.save()
+
+    # Retornar todos los dependientes actualizados (o procesados)
+    return dependents
+
+def editDepentsSupp(request, supp_id):
+    
+    # Obtener el objeto Supp que tiene el id `supp_id`
+    supp_instance = Supp.objects.get(id=supp_id)
+
+    # Obtener todos los dependientes asociados a este Supp
+    dependents = supp_instance.dependents.all()
+
+    if request.method == "POST":
+        for dependent in dependents:
+            # Aquí obtenemos los datos enviados a través del formulario para cada dependiente
+            dependent_id = request.POST.get(f'dependentId_{dependent.id}')  # Cambiar a 'dependentId_{dependent.id}'
+            
+            if dependent_id is None:
+                continue  # Si no se encuentra el dependentId, continuamos con el siguiente dependiente
+            
+            # Verificamos si el dependent_id recibido coincide con el ID del dependiente actual
+            if dependent.id == int(dependent_id):
+                name = request.POST.get(f'nameDependent_{dependent.id}')
+                apply = request.POST.get(f'applyDependent_{dependent.id}')
+                kinship = request.POST.get(f'kinship_{dependent.id}')
+                date_birth = request.POST.get(f'dateBirthDependent_{dependent.id}')
+                migration_status = request.POST.get(f'migrationStatusDependent_{dependent.id}')
+                sex = request.POST.get(f'sexDependent_{dependent.id}')
+                
+                
+                # Verificamos si los demás campos existen y no son None
+                if name and apply and kinship and date_birth and migration_status and sex:
+                    # Actualizamos los campos del dependiente
+                    dependent.name = name
+                    dependent.apply = apply
+                    dependent.kinship = kinship
+                    dependent.date_birth = date_birth
+                    dependent.migration_status = migration_status
+                    dependent.sex = sex
+                    
+                    # Guardamos el objeto dependiente actualizado
+                    dependent.save()
+    
+    # Retornar los dependientes que fueron actualizados o procesados
+    return dependents
 
 def formCreateAlert(request):
 
