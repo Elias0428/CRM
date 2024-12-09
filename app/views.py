@@ -983,20 +983,12 @@ def index(request):
     # Asegúrate de que chartOne sea un JSON válido
     chartOne_json = json.dumps(chartOne)
 
-    #(ALERT) Obtener las alertas vencidas (fechas menores o iguales a la fecha actual)
-    expiredAlerts = ClientAlert.objects.filter(datetime__lte=date.today(), is_active=True)
-
-    # Contar las alertas
-    alertCount = expiredAlerts.count()
-
     context = {
         'obama':obama,
         'supp':supp,
         'chartOne':chartOne_json,
         'tableStatusObama':tableStatusAca,
-        'tableStatusSup':tableStatusSup,
-        'expiredAlerts': expiredAlerts, 
-        'alertCount': alertCount
+        'tableStatusSup':tableStatusSup
     }      
 
     return render(request, 'dashboard/index.html', context)
