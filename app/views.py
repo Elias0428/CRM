@@ -363,9 +363,6 @@ def delete_supp(request, supp_id):
             return JsonResponse({'success': False, 'error': 'Dependent not found'})
     return JsonResponse({'success': False, 'error': 'Invalid request method'})
 
-def table(request):
-    return render(request, 'table.html')
-
 def clean_field_to_null(value):
     """
     Limpia el valor de un campo. Si el valor está vacío (cadena vacía, None o solo espacios),
@@ -1403,4 +1400,91 @@ def saleSuppAgentUsa(start_date=None, end_date=None):
         agents_sales[agent_name]['total_sales'] += total_sales
 
     return agents_sales
+
+def liveViewWeekly(request):
+    
+    users = User.objects.all()
+    print(json.dumps(getSalesForWekkly()))
+    context = {
+        'users':users,
+        'weeklySales': getSalesForWekkly()
+    }
+    return render(request, 'agents/liveView.html', context)
+
+def getSalesForWekkly():
+
+    # Inicializamos un diccionario por defecto para contar las instancias
+    user_counts = defaultdict(lambda: {
+        'lunes': {'obama': 0, 'supp': 0},
+        'martes': {'obama': 0, 'supp': 0},
+        'miercoles': {'obama': 0, 'supp': 0},
+        'jueves': {'obama': 0, 'supp': 0},
+        'viernes': {'obama': 0, 'supp': 0},
+        'sabado': {'obama': 0, 'supp': 0}
+    })
+
+    # Mapeo de números a días de la semana
+    dias_de_la_semana = {
+        0: 'lunes',
+        1: 'martes',
+        2: 'miercoles',
+        3: 'jueves',
+        4: 'viernes',
+        5: 'sabado'
+    }
+
+    # Contamos cuántos registros de ObamaCare tiene cada usuario por día
+    obama_counts = ObamaCare.objects.values('profiling_agent', 'created_at').annotate(obama_count=Count('id'))
+    for obama in obama_counts:
+        # Obtener el día de la semana (0=lunes, 1=martes, ..., 6=domingo)
+        dia_semana = obama['created_at'].weekday()
+        if dia_semana < 6:  # Excluimos el domingo
+            dia = dias_de_la_semana[dia_semana]
+            user_counts[obama['profiling_agent']][dia]['obama'] += obama['obama_count']
+
+    # Contamos cuántos registros de Supp tiene cada usuario por día
+    supp_counts = Supp.objects.values('profiling_agent', 'created_at').annotate(supp_count=Count('id'))
+    for supp in supp_counts:
+        # Obtener el día de la semana (0=lunes, 1=martes, ..., 6=domingo)
+        dia_semana = supp['created_at'].weekday()
+        if dia_semana < 6:  # Excluimos el domingo
+            dia = dias_de_la_semana[dia_semana]
+            user_counts[supp['profiling_agent']][dia]['supp'] += supp['supp_count']
+
+    # Aseguramos que todos los usuarios estén en el diccionario, incluso si no tienen registros
+    for user in User.objects.all():
+        if user.id not in user_counts:
+            user_counts[user.id] = {
+                'lunes': {'obama': 0, 'supp': 0},
+                'martes': {'obama': 0, 'supp': 0},
+                'miercoles': {'obama': 0, 'supp': 0},
+                'jueves': {'obama': 0, 'supp': 0},
+                'viernes': {'obama': 0, 'supp': 0},
+                'sabado': {'obama': 0, 'supp': 0}
+            }
+
+    # Convertimos los identificadores de usuario a nombres (si necesitas los nombres de los usuarios)
+    user_names = {user.id: user.username for user in User.objects.all()}
+
+    # Crear un diccionario con los nombres de los usuarios y los conteos por día
+    final_counts = {user_names[user_id]: counts for user_id, counts in user_counts.items()}
+
+    return final_counts
+
+#Websocket
+def notify_websocket(user_id):
+    """
+    Función que notifica al WebSocket de un cambio, llamando a un consumidor específico.
+    """
+    channel_layer = get_channel_layer()
+
+    # Llamamos al WebSocket para notificar al usuario que su plan fue agregado
+    async_to_sync(channel_layer.group_send)(
+        "user_updates",  # El nombre del grupo de WebSocket
+        {
+            "type": "user_update",  # Tipo de mensaje que enviamos
+            "user_id": user_id,  # ID del usuario al que notificamos
+            "message": "Nuevo plan agregado"
+        }
+    )
 
