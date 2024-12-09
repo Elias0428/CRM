@@ -25,6 +25,7 @@ urlpatterns = [
 
     path('admin/', admin.site.urls),
 
+    path('liveView/',views.liveViewWeekly,name='liveView'),
     path('formCreateClient/', views.formCreateClient, name='formCreateClient'),
     path('check-phone-number/', views.check_phone_number, name = 'check_phone_number'),
     path('motivationalPhrase/', views.motivationalPhrase, name='motivationalPhrase'),
@@ -66,6 +67,6 @@ urlpatterns = [
     path('formCreatePlan/deleteDependent/<int:dependent_id>/', views.delete_dependent, name='delete_dependent'),
     path('formCreatePlan/deleteSupp/<int:supp_id>/', views.delete_supp, name='delete_supp'),
 
-    path('exportUsers/', views.exportUsers, name='exportUsers'),
-    path('testImportDb/', views.testExportDB, name='testExportDB'),
+    ##path('exportUsers/', views.exportUsers, name='exportUsers'),
+    ##path('testImportDb/', views.testExportDB, name='testExportDB'),
 ]

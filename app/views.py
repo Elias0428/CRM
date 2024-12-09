@@ -1,3 +1,4 @@
+from collections import defaultdict
 from django.shortcuts import render, HttpResponse
 from app.models import *
 import random
@@ -19,6 +20,9 @@ from django.db.models import Q
 from django.db.models.functions import Coalesce
 from django.db.models import Count
 from datetime import date
+
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 
 # Create your views here.
