@@ -35,13 +35,15 @@ AUTH_USER_MODEL = 'app.user'
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'app'
+    'app',
+    'channels'
 ]
 
 #Configuration to use own user model

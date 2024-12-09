@@ -305,7 +305,6 @@ def clientObamacare(request):
     elif request.user.role == 'A':
         obamaCare = ObamaCare.objects.select_related('profiling_agent','client').filter(profiling_agent_id = request.user.id, is_active = True ) 
 
-    print(request.user.role)
     
     return render(request, 'table/clientObamacare.html', {'obamaCare':obamaCare})
 
@@ -1119,14 +1118,6 @@ def chartSaleIndex(request):
             'supp_count_total': user['supp_count_total'],
         })
 
-    # Imprimir el resultado en consola para todos los usuarios
-    #print("Datos combinados de los usuarios:")
-    #if combined_data:  # Verificar si hay datos
-    #    for data in combined_data:
-    #        print(data)
-    #else:
-    #    print("No se encontraron usuarios con el rol 'A'.")
-
     return combined_data
 
 def tableStatusObama():
@@ -1408,7 +1399,6 @@ def saleSuppAgentUsa(start_date=None, end_date=None):
 def liveViewWeekly(request):
     
     users = User.objects.all()
-    print(json.dumps(getSalesForWekkly()))
     context = {
         'users':users,
         'weeklySales': getSalesForWekkly()
@@ -1438,7 +1428,7 @@ def getSalesForWekkly():
     }
 
     # Contamos cuántos registros de ObamaCare tiene cada usuario por día
-    obama_counts = ObamaCare.objects.values('profiling_agent', 'created_at').annotate(obama_count=Count('id'))
+    obama_counts = ObamaCare.objects.values('profiling_agent', 'created_at').filter(status_color = 3).annotate(obama_count=Count('id'))
     for obama in obama_counts:
         # Obtener el día de la semana (0=lunes, 1=martes, ..., 6=domingo)
         dia_semana = obama['created_at'].weekday()
@@ -1447,7 +1437,7 @@ def getSalesForWekkly():
             user_counts[obama['profiling_agent']][dia]['obama'] += obama['obama_count']
 
     # Contamos cuántos registros de Supp tiene cada usuario por día
-    supp_counts = Supp.objects.values('profiling_agent', 'created_at').annotate(supp_count=Count('id'))
+    supp_counts = Supp.objects.values('profiling_agent', 'created_at').filter(status_color = 3).annotate(supp_count=Count('id'))
     for supp in supp_counts:
         # Obtener el día de la semana (0=lunes, 1=martes, ..., 6=domingo)
         dia_semana = supp['created_at'].weekday()
