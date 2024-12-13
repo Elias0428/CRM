@@ -80,7 +80,7 @@
 					<div class="col-12 col-lg-2">
 						<label for="state" class="form-label font-weight-bold">State</label>
 						<select id="inputState" class="form-select" id="state" name="state" >
-							<option value="">---</option>
+							<option value="" disabled selected>Please Select</option>
 							<option value="AL" {% if supps.client.state == "AL" %}selected{% endif %} > AL </option>
 							<option value="AR" {% if supps.client.state == "AR" %}selected{% endif %} > AR </option>
 							<option value="AZ" {% if supps.client.state == "AZ" %}selected{% endif %} > AZ </option>
@@ -118,9 +118,9 @@
 					<div class="col-12 col-lg-4">
 						<label for="sex" class="form-label">Sex</label>
 						<select class="form-select"  name="sex" id="sex" aria-label="Default select example">
-							<option value="">---</option>
-							<option value="M" {% if supps.client.sex == "M" %}selected{% endif %} >MASCULINO</option>
-							<option value="F" {% if supps.client.sex == "F" %}selected{% endif %} >FEMENINO</option>
+							<option value="" disabled selected>Please Select</option>
+							<option value="M" {% if supps.client.sex == "M" %}selected{% endif %} >MALE</option>
+							<option value="F" {% if supps.client.sex == "F" %}selected{% endif %} >FEMALE</option>
 						</select>
 					</div>
 					<div class="col-12 col-lg-2">
@@ -129,25 +129,24 @@
 					</div>
 					<div class="col-12 col-lg-3">
 						<label for="date_birth" class="form-label">Date Birth</label>
-                        <input type="date" class="form-control" value="{{ supps.client.date_birth|date:'Y-m-d' }}" id="date_birth" name="date_birth">
+						<input type="text" class="form-control" name="date_birth" id="date_birth" value="{{ supps.client.date_birth|date:'m/d/Y' }}" >
 					</div>
-					<div class="col-12 col-lg-6">
+					<div class="col-12 col-lg-7">
 						<label for="migration_status" class="form-label">Migration Status</label>
 						<select class="form-select" id="migration_status"  name="migration_status" required  >
-							<option value="">---</option>
-							<option value="Green Card" {% if supps.client.migration_status == "Green Card" %}selected{% endif %} >Green Card</option>
-							<option value="Autorizacion de Empleo" {% if supps.client.migration_status == "Autorizacion de Empleo" %}selected{% endif %} >Autorizacion de Empleo</option>
-							<option value="Notice of Action (i-797)" {% if supps.client.migration_status == "Notice of Action (i-797)" %}selected{% endif %} >Notice of Action (i-797)</option>
-							<option value="Refugiado" {% if supps.client.migration_status == "Refugiado" %}selected{% endif %} >Refugiado</option>
-							<option value="Asilo" {% if supps.client.migration_status == "Asilo" %}selected{% endif %} >Asilo</option>
-							<option value="Temporary Protection Status (TPS)" {% if supps.client.migration_status == "Temporary Protection Status (TPS)" %}selected{% endif %} >Temporary Protection Status (TPS)</option>
-							<option value="Violencia Domestica" {% if supps.client.migration_status == "Violencia Domestica" %}selected{% endif %} >Violencia Domestica</option>
-							<option value="Residencia Condicional" {% if supps.client.migration_status == "Residencia Condicional" %}selected{% endif %} >Residencia Condicional</option>
-							<option value="Parole" {% if supps.client.migration_status == "Parole" %}selected{% endif %} >Parole</option>
-							<option value="Ciudadano USA (Licencia de Manejo)"{% if supps.client.migration_status == "Ciudadano USA (Licencia de Manejo)" %}selected{% endif %} >Ciudadano USA (Licencia de Manejo)</option>
-							<option value="Vista de Estudiante (i-120)" {% if supps.client.migration_status == "Vista de Estudiante (i-120)" %}selected{% endif %} >Vista de Estudiante (i-120)</option>
-							<option value="En Proceso actual" {% if supps.client.migration_status == "n Proceso actual" %}selected{% endif %} >En Proceso actual</option>
-							<option value="Inicio de Proceso Migratorio 3-6 meses" {% if supps.client.migration_status == "Inicio de Proceso Migratorio 3-6 meses" %}selected{% endif %} >Inicio de Proceso Migratorio 3-6 meses</option>
+							<option value="" disabled selected>Please Select</option>
+							<option value="EMPLOYMENT AUTHORIZATION" {% if   supps.client.migration_status == "EMPLOYMENT AUTHORIZATION" %}selected{% endif %} >Employment Authorization</option>
+							<option value="NOTICE OF ACTION" {% if   supps.client.migration_status == "NOTICE OF ACTION" %}selected{% endif %} >Notice of Action (i-797)</option>
+							<option value="REFUGEE" {% if  supps.client.migration_status  == "REFUGEE" %}selected{% endif %} >Refugee</option>
+							<option value="ASYLUM" {% if supps.client.migration_status  == "ASYLUM" %}selected{% endif %} >Asylum</option>
+							<option value="TPS" {% if supps.client.migration_status == "TPS" %}selected{% endif %} >Temporary Protection Status (TPS)</option>
+							<option value="DOMESTIC VIOLENCE" {% if supps.client.migration_status == "DOMESTIC VIOLENCE" %}selected{% endif %} >Domestic Violence</option>
+							<option value="PERMANENT RESIDENT" {% if supps.client.migration_status == "PERMANENT RESIDENT" %}selected{% endif %} >Permanent Resident (Green Card)</option>
+							<option value="CONDITIONAL RESIDENT" {% if supps.client.migration_status  == "CONDITIONAL RESIDENT" %}selected{% endif %} >Conditional Resident</option>
+							<option value="PAROLE" {% if supps.client.migration_status  == "PAROLE" %}selected{% endif %} >Parole</option>
+							<option value="US CITIZEN" {% if supps.client.migration_status  == "US CITIZEN" %}selected{% endif %} >US Citizen (Driver's License)</option>
+							<option value="STUDENT VISA" {% if supps.client.migration_status  == "STUDENT VISA" %}selected{% endif %} >Student Visa (I-20)</option>
+							<option value="CURRENTLY IN PROCESS" {% if supps.client.migration_status  == "CURRENTLY IN PROCESS" %}selected{% endif %} >Currently In Process (this means the client received an i-797)</option>
 						</select>
 					</div>
                     <hr>
@@ -161,7 +160,7 @@
 							<div class="col-12 col-lg-2">
 								<label class="form-label">Apply</label>
 								<select class="form-select" name="applyDependent_{{ dependent.id }}">
-									<option value="">---</option>
+									<option value="" disabled selected>Please Select</option>
 									<option value="SI" {% if dependent.apply == "SI" %}selected{% endif %}>SI</option>
 									<option value="NO" {% if dependent.apply == "NO" %}selected{% endif %}>NO</option>
 								</select>
@@ -169,15 +168,15 @@
 							<div class="col-12 col-lg-4">
 								<label class="form-label">Sex</label>
 								<select class="form-select" name="sexDependent_{{ dependent.id }}">
-									<option value="">---</option>
-									<option value="M" {% if dependent.sex == "M" %}selected{% endif %}>MASCULINO</option>
-									<option value="F" {% if dependent.sex == "F" %}selected{% endif %}>FEMENINO</option>
+									<option value="" disabled selected>Please Select</option>
+									<option value="M" {% if dependent.sex == "M" %}selected{% endif %}>MALE</option>
+									<option value="F" {% if dependent.sex == "F" %}selected{% endif %}>FEMALE</option>
 								</select>
 							</div>
-							<div class="col-12 col-lg-4">
-								<label for="kinship" class="form-label">Kinship</label>
+							<div class="col-12 col-lg-3">
+								<label for="kinship" class="form-label">Relationship</label>
 								<select class="form-select" id="kinship" name="kinship_{{ dependent.id }}" aria-label="Default select example">
-									<option value="">---</option>
+									<option value="" disabled selected>Please Select</option>
 									<option value="DAD" {% if dependent.kinship == 'DAD' %}selected{% endif %}>DAD</option>
 									<option value="MOM" {% if dependent.kinship == 'MOM' %}selected{% endif %}>MOM</option>
 									<option value="SON" {% if dependent.kinship == 'SON' %}selected{% endif %}>SON</option>
@@ -186,30 +185,26 @@
 									<option value="COUPLE" {% if dependent.kinship == 'COUPLE' %}selected{% endif %}>COUPLE</option>
 								</select>
 							</div>
-							<div class="col-12 col-lg-4">
+							<div class="col-12 col-lg-3">
 								<label class="form-label">Date Birth</label>
-								{% if dependent.date_birth %}
-									<input type="date" class="form-control" value="{{ dependent.date_birth|date:'Y-m-d' }}" id="dateBirthDependent" name="dateBirthDependent_{{ dependent.id }}">
-								{% else %}
-									<input type="date" class="form-control" id="dateBirthDependent" name="dateBirthDependent_{{ dependent.id }}">  
-								{% endif %}
+								<input type="text" class="form-control" id="dateBirthDependent"  name="dateBirthDependent_{{ dependent.id }}"  value="{{ dependent.date_birth|date:'m/d/Y' }}" >
 							</div>
-							<div class="col-12 col-lg-4">
+							<div class="col-12 col-lg-6">
 								<label class="form-label">Migration Status</label>
 								<select class="form-select" name="migrationStatusDependent_{{ dependent.id }}">
-									<option value="Green Card" {% if dependent.migration_status == "Green Card" %}selected{% endif %}>Green Card</option>
-									<option value="Autorizacion de Empleo" {% if dependent.migration_status == "Autorizacion de Empleo" %}selected{% endif %}>Autorización de Empleo</option>
-									<option value="Notice of Action (i-797)" {% if dependent.migration_status == "Notice of Action (i-797)" %}selected{% endif %} >Notice of Action (i-797)</option>
-									<option value="Refugiado" {% if dependent.migration_status == "Refugiado" %}selected{% endif %} >Refugiado</option>
-									<option value="Asilo" {% if dependent.migration_status == "Asilo" %}selected{% endif %} >Asilo</option>
-									<option value="Temporary Protection Status (TPS)" {% if dependent.migration_status == "Temporary Protection Status (TPS)" %}selected{% endif %} >Temporary Protection Status (TPS)</option>
-									<option value="Violencia Domestica" {% if dependent.migration_status == "Violencia Domestica" %}selected{% endif %} >Violencia Domestica</option>
-									<option value="Residencia Condicional" {% if dependent.migration_status == "Residencia Condicional" %}selected{% endif %} >Residencia Condicional</option>
-									<option value="Parole" {% if dependent.migration_status == "Parole" %}selected{% endif %} >Parole</option>
-									<option value="Ciudadano USA (Licencia de Manejo)" {% if dependent.migration_status == "Ciudadano USA (Licencia de Manejo)" %}selected{% endif %} >Ciudadano USA (Licencia de Manejo)</option>
-									<option value="Vista de Estudiante (i-120)" {% if dependent.migration_status == "Vista de Estudiante (i-120)" %}selected{% endif %} >Vista de Estudiante (i-120)</option>
-									<option value="En Proceso actual" {% if dependent.migration_status == "En Proceso actual" %}selected{% endif %} >En Proceso actual</option>
-									<option value="Inicio de Proceso Migratorio 3-6 meses" {% if dependent.migration_status == "Inicio de Proceso Migratorio 3-6 meses" %}selected{% endif %} >Inicio de Proceso Migratorio 3-6 meses</option>
+									<option value="" disabled selected>Please Select</option>
+									<option value="EMPLOYMENT AUTHORIZATION" {% if   dependent.migration_status == "EMPLOYMENT AUTHORIZATION" %}selected{% endif %} >Employment Authorization</option>
+									<option value="NOTICE OF ACTION" {% if   dependent.migration_status == "NOTICE OF ACTION" %}selected{% endif %} >Notice of Action (i-797)</option>
+									<option value="REFUGEE" {% if  dependent.migration_status  == "REFUGEE" %}selected{% endif %} >Refugee</option>
+									<option value="ASYLUM" {% if dependent.migration_status  == "ASYLUM" %}selected{% endif %} >Asylum</option>
+									<option value="TPS" {% if dependent.migration_status == "TPS" %}selected{% endif %} >Temporary Protection Status (TPS)</option>
+									<option value="DOMESTIC VIOLENCE" {% if dependent.migration_status == "DOMESTIC VIOLENCE" %}selected{% endif %} >Domestic Violence</option>
+									<option value="PERMANENT RESIDENT" {% if dependent.migration_status == "PERMANENT RESIDENT" %}selected{% endif %} >Permanent Resident (Green Card)</option>
+									<option value="CONDITIONAL RESIDENT" {% if dependent.migration_status  == "CONDITIONAL RESIDENT" %}selected{% endif %} >Conditional Resident</option>
+									<option value="PAROLE" {% if dependent.migration_status  == "PAROLE" %}selected{% endif %} >Parole</option>
+									<option value="US CITIZEN" {% if dependent.migration_status  == "US CITIZEN" %}selected{% endif %} >US Citizen (Driver's License)</option>
+									<option value="STUDENT VISA" {% if dependent.migration_status  == "STUDENT VISA" %}selected{% endif %} >Student Visa (I-20)</option>
+									<option value="CURRENTLY IN PROCESS" {% if dependent.migration_status  == "CURRENTLY IN PROCESS" %}selected{% endif %} >Currently In Process (this means the client received an i-797)</option>
 								</select>
 							</div>
 							<hr>
@@ -219,7 +214,7 @@
 						<div class="col-12 col-lg-4">
 							<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
 							<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa">
-								<option disabled selected value='no_valid'></option>
+								<option value="" disabled selected>Please Select</option>
 								<option value="Daniel" {% if supps.agent_usa == 'Daniel' %}selected{% endif %}>Daniel</option>
 								<option value="Zohira" {% if supps.agent_usa == 'Zohira' %}selected{% endif %}>Zohira</option>
 								<option value="Gina" {% if supps.agent_usa == 'Gina' %}selected{% endif %}>Gina</option>
@@ -243,7 +238,7 @@
 						<div class="col-12 col-lg-5">
 							<label for="carrierSuple" class="form-label">Carrier</label>
 							<select class="form-select" id="carrierSuple"  aria-label="Default select example" name="carrierSuple">
-								<option>---</option>
+								<option value="" disabled selected>Please Select</option>
 								<option value="AFLAC" {% if supps.company == 'AFLAC' %}selected{% endif %}> AFLAC</option>                             
 								<option value="AETNA" {% if supps.company == 'AETNA' %}selected{% endif %}> AETNA </option>
 								<option value="ALLSTATE HEALTH SOLUTIONS" {% if supps.company == 'ALLSTATE HEALTH SOLUTIONS' %}selected{% endif %}> ALLSTATE HEALTH SOLUTIONS </option>  
@@ -277,7 +272,7 @@
 						<div class="col-12 col-lg-2">
 							<label for="coverageSupp" class="form-label">Coverage</label>
 							<select class="form-select" id="coverageSupp"  name="coverageSupp" aria-label="Default select example">
-								<option>---</option>
+								<option value="" disabled selected>Please Select</option>
 								<option value="500" {% if supps.coverage == 500 %}selected{% endif %} >500</option>
 									<option value="750" {% if supps.coverage == 750 %}selected{% endif %} >750</option>
 									<option value="1000" {% if supps.coverage == 1000 %}selected{% endif %} >1000</option>
@@ -295,7 +290,7 @@
 						<div class="col-12 col-lg-2">
 							<label for="deducibleSupp" class="form-label">Deducible</label>
 							<select class="form-select" id="deducibleSupp"  name="deducibleSupp"  aria-label="Default select example">
-								<option>---</option>
+								<option value="" disabled selected>Please Select</option>
 								<option value="100" {% if supps.deducible == 100 %}selected{% endif %} >100</option>
 									<option value="50" {% if supps.deducible == 50 %}selected{% endif %} >50</option>
 									<option value="0" {% if supps.deducible == 0 %}selected{% endif %} >0</option>
@@ -304,7 +299,7 @@
 						<div class="col-12 col-lg-8">
 							<label for="statusSupp" class="form-label">Status</label>
 							<select class="form-select" id="statusSupp"  name="statusSupp"  aria-label="Default select example">
-								<option>---</option>
+								<option value="" disabled selected>Please Select</option>
 									{% for  list_drow in list_drow %}
 										<option value="{{list_drow.profiling_supp}}" {% if supps.status == list_drow.profiling_supp %}selected{% endif %} >{{list_drow.profiling_supp}}</option>                      
 									{% endfor %}						
@@ -313,18 +308,18 @@
 						<div class="col-12 col-lg-4">
 							<label for="typePaymeSupp" class="form-label">Type Paymet</label>
 							<select class="form-select" id="typePaymeSupp"  name="typePaymeSupp"  aria-label="Default select example">
-								<option>---</option>
+								<option value="" disabled selected>Please Select</option>
 								<option value="CARD" {% if supps.payment_type == 'CARD' %}selected{% endif %} >CARD</option>
 								<option value="BANK ACCOUNT" {% if supps.payment_type == 'BANK ACCOUNT' %}selected{% endif %} >BANK ACCOUNT</option>
 							</select>
 						</div>
 						<div class="col-12 col-lg-4">
 							<label for="date_effective_coverage" class="form-label">Date Effective Coverage</label>
-							<input type="date" class="form-control" id="date_effective_coverage" name="date_effective_coverage" value="{{ supps.date_effective_coverage }}"  >
+							<input type="text" class="form-control" name="date_effective_coverage" id="date_effective_coverage" value="{{supps.date_effective_coverage|date:'m/d/Y'}}" >
 						</div>
 						<div class="col-12 col-lg-4">
 							<label for="date_effective_coverage_end" class="form-label">Date Effective Coverage End</label>
-							<input type="date" class="form-control" id="date_effective_coverage_end" name="date_effective_coverage_end" value="{{ supps.date_effective_coverage_end }}"  >
+							<input type="text" class="form-control" name="date_effective_coverage_end" id="date_effective_coverage_end" value="{{supps.date_effective_coverage_end|date:'m/d/Y'}}" >
 						</div> 
 						<div class="col-12 col-lg-6">
 							<label for="observationSuple" class="form-label">Observation</label>
@@ -491,6 +486,11 @@
 	<script src="{% static "assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js" %}"></script>
 	<script src="{% static "assets/plugins/datatable/js/jquery.dataTables.min.js" %}"></script>
 	<script src="{% static "assets/plugins/datatable/js/dataTables.bootstrap5.min.js" %}"></script>
+
+	<!-- Agregar Flatpickr -->
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+	
 	<!-- Incluir JS de Choices.js -->
 	<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
@@ -543,6 +543,11 @@
 				placeholderValue: 'Seleccione una opción...',
 				itemSelectText: '',      // Elimina el texto 'Selecciona un elemento'
 			});
+			//formateo de la fecha
+			flatpickr("#date_birth", {dateFormat: "m/d/Y", });
+			flatpickr("[id^='dateBirthDependent']", {dateFormat: "m/d/Y",  }); 
+			flatpickr("#date_effective_coverage", {dateFormat: "m/d/Y",  }); 
+			flatpickr("#date_effective_coverage_end", {dateFormat: "m/d/Y",  }); 
 		});
 	</script>
 

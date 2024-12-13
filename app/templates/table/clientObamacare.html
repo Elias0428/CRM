@@ -34,6 +34,7 @@
                         <th>Agent COL</th>
                         <th>Name</th>
                         <th>Phone Numbers</th>
+						<th>Date</th>
                         <th>Status</th>
                         <th>Options</th>
                     </tr>
@@ -45,6 +46,7 @@
                         <td>{{obamacare.profiling_agent.first_name}}</td>
                         <td>{{obamacare.client.first_name}} {{obamacare.client.last_name}}</td>
                         <td>+ {{obamacare.client.phone_number}}</td>
+						<td>{{obamacare.client.created_at}}</td>
 						<td>{% if obamacare.status_color == 1 or obamacare.status_color == None %}
 							<span class="badge rounded-pill bg-danger">Not profiled</span>
 						{% elif obamacare.status_color == 2 %}

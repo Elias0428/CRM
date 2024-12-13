@@ -34,6 +34,7 @@
                         <th>Agent COL</th>
                         <th>Name</th>
                         <th>Phone Numbers</th>
+						<th>Date</th>
 						<th>Type Police</th>
                         <th>Status</th>
                         <th>Options</th>
@@ -46,11 +47,12 @@
                         <td>{{supp.profiling_agent.first_name}}</td>
                         <td>{{supp.client.first_name}} {{supp.client.last_name}}</td>
                         <td>+ {{supp.client.phone_number}}</td>
+						<td>{{supp.client.created_at}}</td>
 						<td>{{supp.policy_type}}</td>
 						<td>{% if supp.status_color == 1 or supp.status_color == None %}
 							<span class="badge rounded-pill bg-danger">Not profiled</span>
 						{% elif supp.status_color == 2 %}
-							<span class="badge rounded-pill bg-warning text-dark">Process</span>
+							<span class="badge rounded-pill bg-warning text-dark">Processing</span>
 						{% elif supp.status_color == 3 %}
 							<span class="badge rounded-pill bg-success">Profiling</span>
 						{% endif  %}</td>

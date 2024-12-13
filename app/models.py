@@ -42,8 +42,6 @@ class Client(models.Model):
     class Meta:
         db_table = 'clients'
 
-
-
 class Call(models.Model):
     id_client = models.ForeignKey(Client, on_delete=models.CASCADE)
     id_agent = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -63,7 +61,8 @@ class Typification(models.Model):
         db_table = 'typifications'
 
 class ObamaCare(models.Model):
-    profiling_agent = models.ForeignKey(User, on_delete=models.CASCADE)
+    profiling_agent = models.ForeignKey(User, on_delete=models.CASCADE, related_name='profiling_agent_aca')
+    agent = models.ForeignKey(User, on_delete=models.CASCADE,related_name='agent_sale_aca')
     client = models.OneToOneField(Client, on_delete=models.CASCADE,null=True)
     agent_usa = models.CharField(max_length=20)
     created_at = models.DateTimeField(auto_now_add=True)  
@@ -108,9 +107,10 @@ class Dependent(models.Model):
 
 class Supp(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    agent = models.ForeignKey(User, on_delete=models.CASCADE, related_name='agent_sale_supp')
     dependent = models.ForeignKey(Dependent, on_delete=models.CASCADE, null=True)
     agent_usa = models.CharField(max_length=20)
-    profiling_agent = models.ForeignKey(User, on_delete=models.CASCADE)    
+    profiling_agent = models.ForeignKey(User, on_delete=models.CASCADE, related_name='profiling_agent_supp')    
     created_at = models.DateTimeField(auto_now_add=True)  
     effective_date = models.DateField()
     company = models.CharField(max_length=200)
@@ -176,7 +176,6 @@ class Log(models.Model):
 
     class Meta:
         db_table = 'logs'
-
 
 class Motivation(models.Model):
     content = models.TextField()

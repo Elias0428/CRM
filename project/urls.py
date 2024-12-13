@@ -26,6 +26,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('liveView/',views.liveViewWeekly,name='liveView'),
+
+    path('generar_reporte/', views.generar_reporte, name='generar_reporte'),
+
     path('formCreateClient/', views.formCreateClient, name='formCreateClient'),
     path('check-phone-number/', views.check_phone_number, name = 'check_phone_number'),
     path('motivationalPhrase/', views.motivationalPhrase, name='motivationalPhrase'),
@@ -56,7 +59,6 @@ urlpatterns = [
     path('formCreateUser/', views.formCreateUser, name='formCreateUser'),
     path('editUser/<user_id>', views.editUser, name='editUser'),
     path('toggleUser/<user_id>/', views.toggleUser, name='toggleUser'),
-    path('pulsar135/<user_id>/', views.toggleUser, name='toggleUser'),
 
     # Json
     path('formCreatePlan/<client_id>/', views.formCreatePlan, name='formCreatePlan'),

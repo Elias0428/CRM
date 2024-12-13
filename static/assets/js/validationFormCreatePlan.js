@@ -2,6 +2,22 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('buttonSendObama')?.addEventListener('click', saveAcaPlan);
     document.getElementById('buttonSendSupp')?.addEventListener('click', saveSupplementaryPlan);
     document.getElementById('buttonSendDepend')?.addEventListener('click', saveDependents);
+
+    const addButton = document.getElementById('initDatePickerBtn');
+
+    if (addButton) {
+      addButton.addEventListener('click', () => {
+        // Aquí podrías tener lógica para agregar un nuevo dependiente
+        // Simula el proceso de agregar un dependiente dinámicamente
+        if (idAcaPlan === "ACA") { addTypesDependentACA(); } else{ addTypesDependent(); }
+        
+        
+        // Llama a addTypesDependent después de que el DOM se haya actualizado
+        setTimeout(() => {
+          if (idAcaPlan === "ACA") { addTypesDependentACA();} else{ addTypesDependent(); }
+        }, 0); // Asegura que se ejecute después de la actualización del DOM
+      });
+    } 
 });
 
 var idAcaPlan
@@ -37,7 +53,10 @@ function saveAcaPlan() {
         // Actualizar la interfaz de usuario según sea necesario
         stepper1.next();
         idAcaPlan = acaPlan
-        //console.log(idAcaPlan)
+        if (idAcaPlan == 'ACA') {
+          //console.log(idAcaPlan);
+          addTypesDependentACA();
+        }       
         
       } else {
         // Manejar errores
@@ -58,7 +77,7 @@ function saveSupplementaryPlan() {
   plans.forEach((plan, index) => {
     // Obtener los valores de cada conjunto de dependientes
       
-      const effectiveDateSupp = plan.querySelector('[name="effectiveDateSupp"]').value;
+      
       const carrierSuple = plan.querySelector('[name="carrierSuple"]').value;
       const agent_usa = plan.querySelector('[name="agent_usa"]').value;
       const premiumSupp = plan.querySelector('[name="premiumSupp"]').value;
@@ -68,6 +87,14 @@ function saveSupplementaryPlan() {
       const deducibleSupp = plan.querySelector('[name="deducibleSupp"]').value;
       const observationSuple = plan.querySelector('[name="observationSuple"]').value;
       const suppIdField = plan.querySelector('[name="suppId"]');
+
+      //fecha estilo USA
+      const effectiveDateSupp = plan.querySelector('[name="effectiveDateSupp"]').value;
+      // Separar la fecha en partes: mes, día, y año
+      const [month, day, year] = effectiveDateSupp.split('/');
+      // Reorganizar la fecha a formato año/mes/día
+      const effectiveDateSuppFormatted = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+
       
       let suppId = suppIdField ? suppIdField.value : '';
 
@@ -77,7 +104,7 @@ function saveSupplementaryPlan() {
           if (plan.querySelector('[name="suppId"]')){
             formData.append(`supplementary_plan_data[${index}][id]`, suppId);
           }          
-          formData.append(`supplementary_plan_data[${index}][effectiveDateSupp]`, effectiveDateSupp);
+          formData.append(`supplementary_plan_data[${index}][effectiveDateSupp]`, effectiveDateSuppFormatted);
           formData.append(`supplementary_plan_data[${index}][agent_usa]`, agent_usa);
           formData.append(`supplementary_plan_data[${index}][carrierSuple]`, carrierSuple);
           formData.append(`supplementary_plan_data[${index}][premiumSupp]`, premiumSupp);
@@ -135,10 +162,29 @@ function saveDependents() {
     // Obtener los valores de cada conjunto de dependientes
     const kinship = dependent.querySelector('[name="kinship"]').value;
     const nameDependent = dependent.querySelector('[name="nameDependent"]').value;
-    const applyDependent = dependent.querySelector('[name="applyDependent"]').value;
-    const dateBirthDependent = dependent.querySelector('[name="dateBirthDependent"]').value;
+    const applyDependent = dependent.querySelector('[name="applyDependent"]').value;    
     const migrationStatusDependent = dependent.querySelector('[name="migrationStatusDependent"]').value;
     const sexDependent = dependent.querySelector('[name="sexDependent"]').value;
+
+    // Validar si el nombre del dependiente está vacío o si algún campo necesario falta
+    if (nameDependent.trim() === '' || kinship.trim() === '' || applyDependent.trim() === '' || migrationStatusDependent.trim() === '' || sexDependent.trim() === '') {
+      if (submitButton) {
+        submitButton.disabled = true;
+      }
+    
+      return; // Si algún campo obligatorio está vacío, se omite este dependiente.
+    }
+
+    if (!validarYActualizarFecha()){
+      return;
+    }
+
+    //fecha estilo USA
+    const dateBirthDependent = dependent.querySelector('[name="dateBirthDependent"]').value;
+    // Separar la fecha en partes: mes, día, y año
+    const [month, day, year] = dateBirthDependent.split('-');
+    // Reorganizar la fecha a formato año/mes/día
+    const dateBirthDependentFormatted = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
 
 
     // Ajuste aquí para obtener los valores seleccionados de un select múltiple
@@ -173,7 +219,7 @@ function saveDependents() {
         formData.append(`dependent[${index}][kinship]`, kinship);
         formData.append(`dependent[${index}][nameDependent]`, nameDependent);
         formData.append(`dependent[${index}][applyDependent]`, applyDependent);
-        formData.append(`dependent[${index}][dateBirthDependent]`, dateBirthDependent);
+        formData.append(`dependent[${index}][dateBirthDependent]`, dateBirthDependentFormatted);
         formData.append(`dependent[${index}][migrationStatusDependent]`, migrationStatusDependent);
         formData.append(`dependent[${index}][sexDependent]`, sexDependent);
         
@@ -225,19 +271,19 @@ function saveDependents() {
 }
 
 function addTypesDependent() {
-  const policyTypeSuppSelect = document.querySelectorAll('select[name="policyTypeSupp"]');
+  const policyTypeSuppSelects = document.querySelectorAll('select[name="policyTypeSupp"]');
   const typePoliceSelects = document.querySelectorAll('select[name="typePoliceDependents[]"]');
-
+  
   // Verificar que se encuentren los selects necesarios
-  if (policyTypeSuppSelect.length === 0 || typePoliceSelects.length === 0) {
-    //console.error("No se encontraron los selects necesarios.");
+  if (policyTypeSuppSelects.length === 0 || typePoliceSelects.length === 0) {
     return;
   }
-
+  
+  
   // Agregar opciones dinámicamente dependiendo del select policyTypeSupp
-  policyTypeSuppSelect.forEach(policySelect => {
+  policyTypeSuppSelects.forEach(policySelect => {
     const selectedPolicyType = policySelect.value; // Obtener el valor seleccionado de policyTypeSupp
-
+  
     if (selectedPolicyType) {
       typePoliceSelects.forEach(typePoliceSelect => {
         // Verificar si la opción ya existe en el select
@@ -251,17 +297,50 @@ function addTypesDependent() {
       });
     }
   });
-
-  // Verificar si idAcaPlan es "ACA" y agregar la opción "Elias" si es necesario
-  if (idAcaPlan === "ACA") {
+  
+  // Verificar si idAcaPlan es "ACA" y agregar la opción "ACA" si es necesario
+  console.log(idAcaPlan);
+  if (idAcaPlan === "ACA" || idAcaPlan === "ACA/SUPLEMENTARIO") {
     typePoliceSelects.forEach(typePoliceSelect => {
-      // Verificar si la opción 'Elias' ya existe
-      const optionExists = Array.from(typePoliceSelect.options).some(option => option.value === "Elias");
+      // Verificar si la opción 'ACA' ya existe
+      const optionExists = Array.from(typePoliceSelect.options).some(option => option.value === "ACA");
       if (!optionExists) {
         const newOption = document.createElement('option');
         newOption.value = "ACA";  // Establecer el valor de la opción
         newOption.textContent = "ACA";  // Establecer el texto visible de la opción
-        typePoliceSelect.appendChild(newOption); // Añadir la opción "Elias" al select
+        typePoliceSelect.appendChild(newOption); // Añadir la opción "ACA" al select
+      }
+    });
+  }
+  
+  // Inicializar Choices.js solo si no tiene la clase 'choices__input'
+  typePoliceSelects.forEach(select => {
+    if (!select.classList.contains('choices__input')) {
+      new Choices(select, {
+        removeItemButton: true,
+        searchEnabled: true,
+        placeholder: true,
+        placeholderValue: 'Select options',
+      });
+    }
+  });
+}
+
+function addTypesDependentACA() {
+  
+  const typePoliceSelects = document.querySelectorAll('select[name="typePoliceDependents[]"]');
+
+  // Verificar si idAcaPlan es "ACA" y agregar la opción "ACA" si es necesario
+  console.log(idAcaPlan)
+  if (idAcaPlan === "ACA") {
+    typePoliceSelects.forEach(typePoliceSelect => {
+      // Verificar si la opción 'Elias' ya existe
+      const optionExists = Array.from(typePoliceSelect.options).some(option => option.value === "ACA");
+      if (!optionExists) {
+        const newOption = document.createElement('option');
+        newOption.value = "ACA";  // Establecer el valor de la opción
+        newOption.textContent = "ACA";  // Establecer el texto visible de la opción
+        typePoliceSelect.appendChild(newOption); // Añadir la opción "ACA" al select
       }
     });
   }
@@ -279,8 +358,37 @@ function addTypesDependent() {
   });
 }
 
+function validarYActualizarFecha() {
+  var inputsDate = document.querySelectorAll('#dateBirthDependent');
 
+  const isValid = true
+  inputsDate.forEach(inputFecha => {
+    // Validar que la fecha tenga el formato MM-DD-AAAA
+    const fechaRegex = /^(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])-\d{4}$/;
+    if (!fechaRegex.test(inputFecha.value)) {
+      inputFecha.focus();
+      alert('La fecha no tiene el formato válido MM-DD-AAAA');
+      isValid = false;
+    }
 
+    // Separar la fecha en mes, día y año
+    const [mes, dia, año] = inputFecha.value.split('-').map(num => parseInt(num));
 
+    // Validar si el año es bisiesto
+    const esBisiesto = (año % 4 === 0 && (año % 100 !== 0 || año % 400 === 0));
 
+    // Validar la cantidad de días en el mes
+    const diasPorMes = {
+      1: 31, 2: esBisiesto ? 29 : 28, 3: 31, 4: 30,
+      5: 31, 6: 30, 7: 31, 8: 31, 9: 30,
+      10: 31, 11: 30, 12: 31
+    };
 
+    // Validar que el día sea válido para ese mes
+    if (dia < 1 || dia > diasPorMes[mes]) {
+      alert('El día no es válido para el mes indicado');
+      isValid = false;
+    }
+  });
+  return isValid;
+}

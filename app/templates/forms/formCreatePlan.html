@@ -32,7 +32,7 @@
 	<link rel="stylesheet" href="{% static 'assets/css/dark-theme.css' %}" />
 	<link rel="stylesheet" href="{% static 'assets/css/semi-dark.css' %}" />
 	<link rel="stylesheet" href="{% static 'assets/css/header-colors.css' %}" />
-	<title>{{client.type_sales}}</title>
+	<title>Plan information</title>
 {% endblock %}
 
 {% block page_content %}
@@ -86,11 +86,11 @@
 
 							<div class="row g-3">
 								<input type="hidden" id="acaPlanId" name="acaPlanId" value="{{ aca_plan_data.id }}">
-								<input type="hidden" id="acaPlan" name="acaPlan" value="ACA">
+								<input type="hidden" id="acaPlan" name="acaPlan" value="{{ client.type_sales }}">
 								<div class="col-12 col-lg-6">
 									<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
 									<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa">
-										<option disabled selected value='no_valid'></option>
+										<option disabled selected value=""></option>
 										<option value="Daniel" {% if aca_plan_data.agent_usa == 'Daniel' %}selected{% endif %}>Daniel</option>
 										<option value="Zohira" {% if aca_plan_data.agent_usa == 'Zohira' %}selected{% endif %}>Zohira</option>
 										<option value="Gina" {% if aca_plan_data.agent_usa == 'Gina' %}selected{% endif %}>Gina</option>
@@ -104,7 +104,7 @@
 									</select>
 								</div>
 								<div class="col-12 col-lg-6">
-									<label for="taxes" class="form-label">Taxes</label>
+									<label for="taxes" class="form-label">Income</label>
 									<input type="number" class="form-control" id="taxes" value="{{aca_plan_data.taxes}}"  name="taxes" >
 								</div>
 								<div class="col-12 col-lg-6">
@@ -114,7 +114,7 @@
 								<div class="col-12 col-lg-6">
 									<label for="work" class="form-label font-weight-bold">Work</label>
 									<select class="form-select" id="work" aria-label="Default select example"  name="work"   >
-										<option>---</option>
+										<option disabled selected value=""></option>
 										<option value="w2" {% if aca_plan_data.work == "w2" %}selected{% endif %} >W2</option>
 										<option value="1099" {% if aca_plan_data.work == "1099" %}selected{% endif %} >1099</option> 
 									</select>
@@ -126,7 +126,7 @@
 								<div class="col-12 col-lg-6">
 									<label for="carrierObama" class="form-label">Carrier</label>
 									<select class="form-select" id="carrierObama"  name="carrierObama"  >
-										<option>---</option>
+										<option disabled selected value=""></option>
 										<option value="AETNA" {% if aca_plan_data.carrier == "AETNA" %}selected{% endif %} >AETNA</option>
 										<option value="AMBETTER" {% if aca_plan_data.carrier == "AMBETTER" %}selected{% endif %} >AMBETTER</option>
 										<option value="ANTHEM" {% if aca_plan_data.carrier == "ANTHEM" %}selected{% endif %} >ANTHEM</option>
@@ -152,7 +152,7 @@
 								<div class="col-12 col-lg-6">
 									<label for="applyObama" class="form-label">Apply</label>
 									<select class="form-select" id="applyObama"  name="applyObama"  >
-										<option>---</option>
+										<option disabled selected value=""></option>
 										<option value="SI" {% if aca_plan_data.apply == "SI" %}selected{% endif %} >SI</option>
 										<option value="NO" {% if aca_plan_data.apply == "NO" %}selected{% endif %}>NO</option>
 									</select>
@@ -199,7 +199,7 @@
 															<div class="col-12 col-lg-6">
 																<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
 																<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa">
-																	<option disabled selected value='no_valid'></option>
+																	<option disabled selected value=""></option>
 																	<option value="Daniel" {% if supp_plan.agent_usa == 'Daniel' %}selected{% endif %}>Daniel</option>
 																	<option value="Zohira" {% if supp_plan.agent_usa == 'Zohira' %}selected{% endif %}>Zohira</option>
 																	<option value="Gina" {% if supp_plan.agent_usa == 'Gina' %}selected{% endif %}>Gina</option>
@@ -214,16 +214,12 @@
 															</div>
 															<div class="col-12 col-lg-6">
 																<label for="effectiveDateSupp" class="form-label">Effective Date</label>
-																{% if supp_plan.effective_date %}
-																	<input type="date" class="form-control"  value="{{ supp_plan.effective_date|date:'Y-m-d' }}" id="effectiveDateSupp" name="effectiveDateSupp">
-																{% else %}
-																	<input type="date" class="form-control"  id="effectiveDateSupp" name="effectiveDateSupp">	
-																{% endif %}
+																<input type="text" class="form-control" name="effectiveDateSupp" id="effectiveDateSupp" value="{{ supp_plan.effective_date|date:'m/d/Y' }}" >
 															</div>
 															<div class="col-12 col-lg-6">
 																<label for="carrierSuple" class="form-label">Carrier</label>
 																<select class="form-select" id="carrierSuple"  aria-label="Default select example" name="carrierSuple">
-																	<option>---</option>
+																	<option disabled selected value=""></option>
 																	<option value="AFLAC" {% if supp_plan.company == 'AFLAC' %}selected{% endif %}> AFLAC</option>                             
 																	<option value="AETNA" {% if supp_plan.company == 'AETNA' %}selected{% endif %}> AETNA </option>
 																	<option value="ALLSTATE HEALTH SOLUTIONS" {% if supp_plan.company == 'ALLSTATE HEALTH SOLUTIONS' %}selected{% endif %}> ALLSTATE HEALTH SOLUTIONS </option>  
@@ -244,7 +240,7 @@
 															<div class="col-12 col-lg-6">
 																<label for="policyTypeSupp" class="form-label">Policy Type</label>
 																<select class="form-select" id="policyTypeSupp"  name="policyTypeSupp" aria-label="Default select example">
-																	<option>---</option>
+																	<option disabled selected value=""></option>
 																	<option value="ACCIDENTE" {% if supp_plan.policy_type == 'ACCIDENTE' %}selected{% endif %} >ACCIDENTE</option>
 																		<option value="HOSPITALIZACION" {% if supp_plan.policy_type == 'HOSPITALIZACION' %}selected{% endif %} >HOSPITALIZACION</option>
 																		<option value="DENTAL" {% if supp_plan.policy_type == 'DENTAL' %}selected{% endif %} >DENTAL</option>
@@ -268,7 +264,7 @@
 															<div class="col-12 col-lg-6">
 																<label for="coverageSupp" class="form-label">Coverage</label>
 																<select class="form-select" id="coverageSupp"  name="coverageSupp" aria-label="Default select example">
-																	<option>---</option>
+																	<option disabled selected value=""></option>
 																	<option value="500" {% if supp_plan.coverage == 500 %}selected{% endif %} >500</option>
 																		<option value="750" {% if supp_plan.coverage == 750 %}selected{% endif %} >750</option>
 																		<option value="1000" {% if supp_plan.coverage == 1000 %}selected{% endif %} >1000</option>
@@ -286,7 +282,7 @@
 															<div class="col-12 col-lg-6">
 																<label for="deducibleSupp" class="form-label">Deducible</label>
 																<select class="form-select" id="deducibleSupp"  name="deducibleSupp"  aria-label="Default select example">
-																	<option>---</option>
+																	<option disabled selected value=""></option>
 																	<option value="100" {% if supp_plan.deducible == 100 %}selected{% endif %} >100</option>
 																		<option value="50" {% if supp_plan.deducible == 50 %}selected{% endif %} >50</option>
 																		<option value="0" {% if supp_plan.deducible == 0 %}selected{% endif %} >0</option>
@@ -314,7 +310,7 @@
 															<div class="col-12 col-lg-6">
 																<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
 																<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa">
-																	<option disabled selected value='no_valid'></option>
+																	<option disabled selected value=""></option>
 																	<option value="Daniel">Daniel</option>
 																	<option value="Zohira">Zohira</option>
 																	<option value="Gina">Gina</option>
@@ -334,7 +330,7 @@
 															<div class="col-12 col-lg-6">
 																<label for="carrierSuple" class="form-label">Carrier</label>
 																<select class="form-select" id="carrierSuple" aria-label="Default select example" name="carrierSuple">
-																	<option>---</option>
+																	<option disabled selected value=""></option>
 																	<option value="AFLAC"> AFLAC</option>                             
 																	<option value="AETNA"> AETNA </option>
 																	<option value="ALLSTATE HEALTH SOLUTIONS"> ALLSTATE HEALTH SOLUTIONS </option>  
@@ -355,7 +351,7 @@
 															<div class="col-12 col-lg-6">
 																<label for="policyTypeSupp" class="form-label">Policy Type</label>
 																<select class="form-select" id="policyTypeSupp" name="policyTypeSupp" aria-label="Default select example">
-																	<option>---</option>
+																	<option disabled selected value=""></option>
 																	<option value="ACCIDENTE">ACCIDENTE</option>
 																		<option value="HOSPITALIZACION">HOSPITALIZACION</option>
 																		<option value="DENTAL">DENTAL</option>
@@ -370,7 +366,7 @@
 															<div class="col-12 col-lg-6">
 																<label for="preventiveSupp" class="form-label">Preventive</label>
 																<select class="form-select" id="preventiveSupp" name="preventiveSupp" aria-label="Default select example">
-																	<option>---</option>
+																	<option disabled selected value=""></option>
 																	<option value="60">60% </option>
 																		<option value="100">100%</option>
 																		<option value="Sin Espera">Sin Espera</option>
@@ -379,7 +375,7 @@
 															<div class="col-12 col-lg-6">
 																<label for="coverageSupp" class="form-label">Coverage</label>
 																<select class="form-select" id="coverageSupp" name="coverageSupp" aria-label="Default select example">
-																	<option>---</option>
+																	<option disabled selected value=""></option>
 																	<option value="500">500</option>
 																		<option value="750">750</option>
 																		<option value="1000">1000</option>
@@ -397,7 +393,7 @@
 															<div class="col-12 col-lg-6">
 																<label for="deducibleSupp" class="form-label">Deducible</label>
 																<select class="form-select" id="deducibleSupp" name="deducibleSupp" aria-label="Default select example">
-																	<option>---</option>
+																	<option disabled selected value=""></option>
 																	<option value="100">100</option>
 																		<option value="50">50</option>
 																		<option value="0">0</option>
@@ -434,7 +430,7 @@
 								<div class="card-body">
 									<div class="d-flex align-items-center justify-content-between">
 										<h5 class="mb-0">Dependents</h5>
-										<button type="button"  class="btn btn-primary repeater-add-btn-2 px-4">Add</button>
+										<button type="button"  class="btn btn-primary repeater-add-btn-2 px-4 " id="initDatePickerBtn">Add</button>
 									</div>
 								</div>
 							</div>
@@ -455,39 +451,45 @@
 														<div class="col-12 col-lg-6">
 															<label class="form-label">Apply</label>
 															<select class="form-select" name="applyDependent">
-																<option>---</option>
+																<option disabled selected value=""></option>
 																<option value="SI" {% if dependent.apply == "SI" %}selected{% endif %}>SI</option>
 																<option value="NO" {% if dependent.apply == "NO" %}selected{% endif %}>NO</option>
 															</select>
 														</div>
 														<div class="col-12 col-lg-6">
-															<label class="form-label">Date Birth</label>
-															{% if dependent.date_birth %}
-																<input type="date" class="form-control" value="{{ dependent.date_birth|date:'Y-m-d' }}" id="dateBirthDependent" name="dateBirthDependent">
-															{% else %}
-																<input type="date" class="form-control" id="dateBirthDependent" name="dateBirthDependent">	
-															{% endif %}
+															<label class="form-label">Date Birth (MM-DD-AAAA)</label>
+															<input type="text" class="form-control " name="dateBirthDependent" id="dateBirthDependent" value="{{ dependent.date_birth|date:'m/d/Y' }}" >
 														</div>
 														<div class="col-12 col-lg-6">
 															<label class="form-label">Migration Status</label>
 															<select class="form-select" name="migrationStatusDependent">
-																<option>---</option>
-																<option value="Green Card" {% if dependent.migration_status == "Green Card" %}selected{% endif %}>Green Card</option>
-																<option value="Autorizacion de Empleo" {% if dependent.migration_status == "Autorizacion de Empleo" %}selected{% endif %}>Autorizacion de Empleo</option>
+																<option value="" disabled selected>Please Select</option>
+																<option value="EMPLOYMENT AUTHORIZATION" {% if dependent.migration_status == "EMPLOYMENT AUTHORIZATION" %}selected{% endif %} >Employment Authorization</option>
+																<option value="NOTICE OF ACTION" {% if dependent.migration_status == "NOTICE OF ACTION" %}selected{% endif %} >Notice of Action (i-797)</option>
+																<option value="REFUGEE" {% if dependent.migration_status == "REFUGEE" %}selected{% endif %} >Refugee</option>
+																<option value="ASYLUM" {% if dependent.migration_status == "ASYLUM" %}selected{% endif %} >Asylum</option>
+																<option value="TPS" {% if dependent.migration_status == "TPS" %}selected{% endif %} >Temporary Protection Status (TPS)</option>
+																<option value="DOMESTIC VIOLENCE" {% if dependent.migration_status == "DOMESTIC VIOLENCE" %}selected{% endif %} >Domestic Violence</option>
+																<option value="PERMANENT RESIDENT" {% if dependent.migration_status == "PERMANENT RESIDENT" %}selected{% endif %} >Permanent Resident (Green Card)</option>
+																<option value="CONDITIONAL RESIDENT" {% if dependent.migration_status == "CONDITIONAL RESIDENT" %}selected{% endif %} >Conditional Resident</option>
+																<option value="PAROLE" {% if dependent.migration_status == "PAROLE" %}selected{% endif %} >Parole</option>
+																<option value="US CITIZEN" {% if dependent.migration_status == "US CITIZEN" %}selected{% endif %} >US Citizen (Driver's License)</option>
+																<option value="STUDENT VISA" {% if dependent.migration_status == "STUDENT VISA" %}selected{% endif %} >Student Visa (I-20)</option>
+																<option value="CURRENTLY IN PROCESS" {% if dependent.migration_status == "CURRENTLY IN PROCESS" %}selected{% endif %} >Currently In Process (this means the client received an i-797)</option>
 															</select>
 														</div>
 														<div class="col-12 col-lg-6">
 															<label class="form-label">Sex</label>
 															<select class="form-select" name="sexDependent">
-																<option>---</option>
-																<option value="M" {% if dependent.sex == "M" %}selected{% endif %}>MASCULINO</option>
-																<option value="F" {% if dependent.sex == "F" %}selected{% endif %}>FEMENINO</option>
+																<option disabled selected value=""></option>
+																<option value="M" {% if dependent.sex == "M" %}selected{% endif %}>MALE</option>
+																<option value="F" {% if dependent.sex == "F" %}selected{% endif %}>FEMALE</option>
 															</select>
 														</div>
 														<div class="col-12 col-lg-6">
-															<label for="kinship" class="form-label">Kinship</label>
+															<label for="kinship" class="form-label">Relationship</label>
 															<select class="form-select" id="kinship" name="kinship" aria-label="Default select example">
-																<option>---</option>
+																<option disabled selected value=""></option>
 																<option value="DAD" {% if dependent.kinship == 'DAD' %}selected{% endif %}>DAD</option>
 																<option value="MOM" {% if dependent.kinship == 'MOM' %}selected{% endif %}>MOM</option>
 																<option value="SON" {% if dependent.kinship == 'SON' %}selected{% endif %}>SON</option>
@@ -498,8 +500,8 @@
 														</div>
 														<div class="col-12 col-lg-6">
 															<label class="form-label">Type Dependents</label>
-															<select class="form-select" name="typePoliceDependents[]" id="typePoliceDependents" multiple>
-																<option>---</option>														
+															<select class="form-select typePoliceSelects" name="typePoliceDependents[]" id="typePoliceDependents" multiple>
+																													
 															</select>
 														</div>
 														<div class="col-12 d-flex justify-content-end mt-3">
@@ -523,46 +525,45 @@
 													<div class="col-12 col-lg-6">
 														<label class="form-label">Apply</label>
 														<select class="form-select" name="applyDependent">
-															<option>---</option>
+															<option disabled selected value=""></option>
 															<option value="SI">SI</option>
 															<option value="NO">NO</option>
 														</select>
 													</div>
 													<div class="col-12 col-lg-6">
-														<label class="form-label">Date Birth</label>
-														<input type="date" class="form-control" name="dateBirthDependent" value="">
+														<label class="form-label">Date Birth (MM-DD-AAAA)</label>
+														<input type="text" class="form-control" name="dateBirthDependent" id="dateBirthDependent"  value="" >
 													</div>
 													<div class="col-12 col-lg-6">
 														<label class="form-label">Migration Status</label>
-														<select class="form-select" name="migrationStatusDependent">
-															<option disabled selected value='no_valid'></option>
-															<option value="Green Card" >Green Card</option>
-															<option value="Autorizacion de Empleo" >Autorizacion de Empleo</option>
-															<option value="Notice of Action (i-797)" >Notice of Action (i-797)</option>
-															<option value="Refugiado" >Refugiado</option>
-															<option value="Asilo" >Asilo</option>
-															<option value="Temporary Protection Status (TPS)" >Temporary Protection Status (TPS)</option>
-															<option value="Violencia Domestica" >Violencia Domestica</option>
-															<option value="Residencia Condicional" >Residencia Condicional</option>
-															<option value="Parole">Parole</option>
-															<option value="Ciudadano USA (Licencia de Manejo)" >Ciudadano USA (Licencia de Manejo)</option>
-															<option value="Vista de Estudiante (i-120)" >Vista de Estudiante (i-120)</option>
-															<option value="En Proceso actual" >En Proceso actual</option>
-															<option value="Inicio de Proceso Migratorio 3-6 meses" >Inicio de Proceso Migratorio 3-6 meses</option>
+														<select class="form-select" name="migrationStatusDependent">															
+															<option value="" disabled selected>Please Select</option>
+															<option value="EMPLOYMENT_AUTHORIZATION">Employment Authorization</option>
+															<option value="NOTICE_OF_ACTION">Notice of Action (i-797)</option>
+															<option value="REFUGEE">Refugee</option>
+															<option value="ASYLUM">Asylum</option>
+															<option value="TPS">Temporary Protection Status (TPS)</option>
+															<option value="DOMESTIC_VIOLENCE">Domestic Violence</option>
+															<option value="PERMANENT_RESIDENT">Permanent Resident (Green Card)</option>
+															<option value="CONDITIONAL_RESIDENT">Conditional Resident</option>
+															<option value="PAROLE">Parole</option>
+															<option value="US_CITIZEN">US Citizen (Driver's License)</option>
+															<option value="STUDENT_VISA">Student Visa (I-20)</option>
+															<option value="CURRENTLY_IN_PROCESS">Currently In Process (this means the client received an i-797)</option>	  
 														</select>
 													</div>
 													<div class="col-12 col-lg-6">
 														<label class="form-label">Sex</label>
 														<select class="form-select" name="sexDependent">
-															<option>---</option>
-															<option value="M">MASCULINO</option>
-															<option value="F">FEMENINO</option>
+															<option disabled selected value=""></option>
+															<option value="M">MALE</option>
+															<option value="F">FEMALE</option>
 														</select>
 													</div>
 													<div class="col-12 col-lg-6">
-														<label for="kinship" class="form-label">Kinship</label>
+														<label for="kinship" class="form-label">Relationship</label>
 														<select class="form-select" id="kinship" name="kinship" aria-label="Default select example">
-															<option>---</option>
+															<option disabled selected value=""></option>
 															<option value="DAD">DAD</option>
 															<option value="MOM">MOM</option>
 															<option value="SON">SON</option>
@@ -572,9 +573,8 @@
 														</select>
 													</div>
 													<div class="col-12 col-lg-6">
-														<label class="form-label">Type Dependents</label>
+														<label class="form-label ">Type Dependents</label>
 														<select  class="form-select" name="typePoliceDependents[]"  id="typePoliceDependents" multiple>
-															<option>---</option>
 														</select>
 													</div>
 													<div class="col-12 d-flex justify-content-end mt-3">
@@ -631,21 +631,23 @@
 	<script src="{% static 'assets/js/removeFormDependent.js' %}"></script>
 	<script src="{% static 'assets/js/validationForm.js' %}"></script>
 
+	<!-- Agregar Flatpickr -->
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
 	<!-- Incluir JS de Choices.js -->
 	<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
+	
 	<script>
-		document.addEventListener('DOMContentLoaded', function() {
-			const selectElement = document.querySelectorAll('#typePoliceDependents[]');
-			const choices = new Choices(selectElement, {
-				removeItemButton: true,  // Muestra el botón de eliminar las opciones seleccionadas
-				searchEnabled: true,     // Habilita la búsqueda en el menú desplegable
-				placeholderValue: 'Seleccione una opción...',
-				itemSelectText: '',      // Elimina el texto 'Selecciona un elemento'
+		// Usar Flatpickr para formatear el campo de fecha
+		document.addEventListener('DOMContentLoaded', function () {
+			flatpickr("#effectiveDateSupp", {
+				dateFormat: "m/d/Y", // Formato MM/DD/YYYY
 			});
 		});
 	</script>
-
+	
 	<!-- Personalización CSS para fondo oscuro -->
 	<style>
 		/* Estilo general del select */

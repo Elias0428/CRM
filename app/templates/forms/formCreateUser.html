@@ -55,7 +55,7 @@
 					<div class="col-md-4">
 						<label for="role" class="form-label">Roll</label>
 						<select id="inputState" class="form-select" id="role" name="role" >
-							<option value="">---</option>
+							<option value="" disabled selected>Please Select</option>
 							<option value="A"> AGENTE </option>
 							<option value="S"> SUPERVISOR </option>
 							<option value="C"> CUSTOMER </option>
@@ -73,6 +73,7 @@
 			</div>
 		</div>
 		<hr>
+		<h3>Users</h3>
 		<div class="card">
 			<div class="card-body">
 				<div class="table-responsive">
@@ -97,7 +98,7 @@
 									<div class="d-flex order-actions">
 										<a href="{% url 'editUser' user.id %}" class=""><i class='bx bxs-edit'></i></a>
 										{% if request.user.is_superuser %}
-										<a href="" class="ms-3"><i class='bx bxs-trash'></i></a>
+										<a href="{% url 'toggleUser' user.id %}" class="ms-3"><i class='bx bxs-trash'></i></a>
 										{% endif %}
 									</div>
 								</td> 
@@ -137,13 +138,21 @@
 		} );
 	</script>
 	
-	{% if msg %}
+	{% if type == 'error' %}
 	<script>
 		Swal.fire({
 			icon: "error",
 			title: "Oops...",
-			text: "{{msg}}",
+			text: "{{msg|safe}}",
 		});
+	</script>
+	{% elif type == 'good' %}
+	<script>
+		Swal.fire({
+			title: "Good job!",
+			text: "User successfully saved!",
+			icon: "success"
+		  });
 	</script>
 	{% endif %}
 

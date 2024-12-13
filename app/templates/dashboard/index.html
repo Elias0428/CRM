@@ -37,7 +37,7 @@
 	<link rel="stylesheet" href="{% static "assets/css/semi-dark.css" %}" />
 	<link rel="stylesheet" href="{% static "assets/css/header-colors.css" %}" />
 
-	<title>Home</title>
+	<title>Home {{request.user.role}}</title>
 	{% endblock %}
 </head>
 
@@ -61,22 +61,20 @@
 			<ul class="metismenu" id="menu">
 				<li>
 					<a href="javascript:;" class="has-arrow">
-						<div class="parent-icon"><i class='bx bx-home-alt'></i>
-						</div>
+						<div class="parent-icon"><i class='bx bx-home-alt'></i></div>
 						<div class="menu-title">Dashboard</div>
 					</a>
 					<ul>						
 						<li> <a href="{% url "index" %}"><i class='bx bx-radio-circle'></i>Home</a>
 						</li>
-						<li> <a href=""><i class='bx bx-radio-circle'></i>View TV</a>
+						<li> <a href="{% url "liveView" %}"><i class='bx bx-radio-circle'></i>View TV</a>
 						</li>
 					</ul>
 				</li>
 				<li class="menu-label">enter data</li>
 				<li>
 					<a href="javascript:;" class="has-arrow">
-						<div class="parent-icon"><i class="bx bx-money"></i>
-						</div>
+						<div class="parent-icon"><i class="fadeIn animated bx bx-user-plus"></i></div>
 						<div class="menu-title">New Sale</div>
 					</a>
 					<ul>
@@ -84,14 +82,15 @@
 						</li>
 						<li> <a href="{% url "select_client" %}"><i class='bx bx-radio-circle'></i>Existing Client</a>
 						</li>
+						<li> <a href="{% url "formCreateAlert" %}"><i class='bx bx-radio-circle'></i>Create Alert</a>
+						</li>
 					</ul>
 				</li>
 				<li class="menu-label">Tables</li>
 				<li>
 					<a class="has-arrow" href="javascript:;">
-						<div class="parent-icon"><i class='bx bx-message-square-edit'></i>
-						</div>
-						<div class="menu-title">Reports</div>
+						<div class="parent-icon"><i class="fadeIn animated bx bx-task"></i></div>
+						<div class="menu-title">Information Client</div>
 					</a>
 					<ul>
 						<li> <a href="{% url "clientObamacare" %}"><i class='bx bx-radio-circle'></i>Clients Obama</a>
@@ -100,167 +99,31 @@
 						</li>
 						<li> <a href="{% url "alert" %}"><i class='bx bx-radio-circle'></i>Alert</a>
 						</li>
+						</li>
+					</ul>
+				</li>
+				{% if request.user.role == 'Admin' or request.user.role == 'S'  %}
+				<li>
+					<a class="has-arrow" href="javascript:;">
+						<div class="parent-icon"> <i class="fadeIn animated bx bx-spreadsheet"></i></div>
+						<div class="menu-title">Reports</div>
+					</a>
+					<ul>
 						<li> <a href="{% url "typification" %}"><i class='bx bx-radio-circle'></i>Typification</a>
 						</li>
 						<li> <a href="{% url "sale" %}"><i class='bx bx-radio-circle'></i>Sale</a>
 						</li>
 					</ul>
 				</li>
+				{% endif %}
+				{% if request.user.role == 'Admin'  %}
+				<li class="menu-label">User</li>
 				<li>
-					<a class="has-arrow" href="javascript:;">
-						<div class="parent-icon"><i class="bx bx-grid-alt"></i>
-						</div>
-						<div class="menu-title">Tables</div>
-					</a>
-					<ul>
-						<li> <a href="table-basic-table.html"><i class='bx bx-radio-circle'></i>Basic Table</a>
-						</li>
-						<li> <a href="table-datatable.html"><i class='bx bx-radio-circle'></i>Data Table</a>
-						</li>
-					</ul>
+					<li> <a href="{% url "formCreateUser" %}"><i class='bx bx-radio-circle'></i>View User</a>
+					</li>
 				</li>
-				<li class="menu-label">Pages</li>
-				<li>
-					<a class="has-arrow" href="javascript:;">
-						<div class="parent-icon"><i class="bx bx-lock"></i>
-						</div>
-						<div class="menu-title">Authentication</div>
-					</a>
-					<ul>
-						<li><a class="has-arrow" href="javascript:;"><i class='bx bx-radio-circle'></i>Basic</a>
-							<ul>
-								<li><a href="auth-basic-signin.html" target="_blank"><i class='bx bx-radio-circle'></i>Sign In</a></li>
-								<li><a href="auth-basic-signup.html" target="_blank"><i class='bx bx-radio-circle'></i>Sign Up</a></li>
-								<li><a href="auth-basic-forgot-password.html" target="_blank"><i class='bx bx-radio-circle'></i>Forgot Password</a></li>
-								<li><a href="auth-basic-reset-password.html" target="_blank"><i class='bx bx-radio-circle'></i>Reset Password</a></li>
-							</ul>
-						</li>
-						<li><a class="has-arrow" href="javascript:;"><i class='bx bx-radio-circle'></i>Cover</a>
-							<ul>
-								<li><a href="auth-cover-signin.html" target="_blank"><i class='bx bx-radio-circle'></i>Sign In</a></li>
-								<li><a href="auth-cover-signup.html" target="_blank"><i class='bx bx-radio-circle'></i>Sign Up</a></li>
-								<li><a href="auth-cover-forgot-password.html" target="_blank"><i class='bx bx-radio-circle'></i>Forgot Password</a></li>
-								<li><a href="auth-cover-reset-password.html" target="_blank"><i class='bx bx-radio-circle'></i>Reset Password</a></li>
-							</ul>
-						</li>
-						<li><a class="has-arrow" href="javascript:;"><i class='bx bx-radio-circle'></i>With Header Footer</a>
-							<ul>
-								<li><a href="auth-header-footer-signin.html" target="_blank"><i class='bx bx-radio-circle'></i>Sign In</a></li>
-								<li><a href="auth-header-footer-signup.html" target="_blank"><i class='bx bx-radio-circle'></i>Sign Up</a></li>
-								<li><a href="auth-header-footer-forgot-password.html" target="_blank"><i class='bx bx-radio-circle'></i>Forgot Password</a></li>
-								<li><a href="auth-header-footer-reset-password.html" target="_blank"><i class='bx bx-radio-circle'></i>Reset Password</a></li>
-							</ul>
-						</li>
-					</ul>
-				</li>
-				<li>
-					<a href="user-profile.html">
-						<div class="parent-icon"><i class="bx bx-user-circle"></i>
-						</div>
-						<div class="menu-title">User Profile</div>
-					</a>
-				</li>
-				<li>
-					<a href="timeline.html">
-						<div class="parent-icon"> <i class="bx bx-video-recording"></i>
-						</div>
-						<div class="menu-title">Timeline</div>
-					</a>
-				</li>
-				<li>
-					<a class="has-arrow" href="javascript:;">
-						<div class="parent-icon"><i class="bx bx-error"></i>
-						</div>
-						<div class="menu-title">Errors</div>
-					</a>
-					<ul>
-						<li> <a href="errors-404-error.html" target="_blank"><i class='bx bx-radio-circle'></i>404 Error</a>
-						</li>
-						<li> <a href="errors-500-error.html" target="_blank"><i class='bx bx-radio-circle'></i>500 Error</a>
-						</li>
-						<li> <a href="errors-coming-soon.html" target="_blank"><i class='bx bx-radio-circle'></i>Coming Soon</a>
-						</li>
-						<li> <a href="error-blank-page.html" target="_blank"><i class='bx bx-radio-circle'></i>Blank Page</a>
-						</li>
-					</ul>
-				</li>
-				<li>
-					<a href="faq.html">
-						<div class="parent-icon"><i class="bx bx-help-circle"></i>
-						</div>
-						<div class="menu-title">FAQ</div>
-					</a>
-				</li>
-				<li>
-					<a href="pricing-table.html">
-						<div class="parent-icon"><i class="bx bx-diamond"></i>
-						</div>
-						<div class="menu-title">Pricing</div>
-					</a>
-				</li>
-				<li class="menu-label">Charts & Maps</li>
-				<li>
-					<a class="has-arrow" href="javascript:;">
-						<div class="parent-icon"><i class="bx bx-line-chart"></i>
-						</div>
-						<div class="menu-title">Charts</div>
-					</a>
-					<ul>
-						<li> <a href="charts-apex-chart.html"><i class='bx bx-radio-circle'></i>Apex</a>
-						</li>
-						<li> <a href="charts-chartjs.html"><i class='bx bx-radio-circle'></i>Chartjs</a>
-						</li>
-						<li> <a href="charts-highcharts.html"><i class='bx bx-radio-circle'></i>Highcharts</a>
-						</li>
-					</ul>
-				</li>
-				<li>
-					<a class="has-arrow" href="javascript:;">
-						<div class="parent-icon"><i class="bx bx-map-alt"></i>
-						</div>
-						<div class="menu-title">Maps</div>
-					</a>
-					<ul>
-						<li> <a href="map-google-maps.html"><i class='bx bx-radio-circle'></i>Google Maps</a>
-						</li>
-						<li> <a href="map-vector-maps.html"><i class='bx bx-radio-circle'></i>Vector Maps</a>
-						</li>
-					</ul>
-				</li>
-				<li class="menu-label">Others</li>
-				<li>
-					<a class="has-arrow" href="javascript:;">
-						<div class="parent-icon"><i class="bx bx-menu"></i>
-						</div>
-						<div class="menu-title">Menu Levels</div>
-					</a>
-					<ul>
-						<li> <a class="has-arrow" href="javascript:;"><i class='bx bx-radio-circle'></i>Level One</a>
-							<ul>
-								<li> <a class="has-arrow" href="javascript:;"><i class='bx bx-radio-circle'></i>Level Two</a>
-									<ul>
-										<li> <a href="javascript:;"><i class='bx bx-radio-circle'></i>Level Three</a>
-										</li>
-									</ul>
-								</li>
-							</ul>
-						</li>
-					</ul>
-				</li>
-				<li>
-					<a href="javascript:;">
-						<div class="parent-icon"><i class="bx bx-folder"></i>
-						</div>
-						<div class="menu-title">Documentation</div>
-					</a>
-				</li>
-				<li>
-					<a href="https://themeforest.net/user/codervent" target="_blank">
-						<div class="parent-icon"><i class="bx bx-support"></i>
-						</div>
-						<div class="menu-title">Support</div>
-					</a>
-				</li>
+				{% endif %}
+				
 			</ul>
 			<!--end navigation-->
 		</div>
@@ -321,7 +184,7 @@
 											<p>No expired alerts</p>  <!-- Si no hay alertas vencidas -->
 										{% endif %}
 									</div>
-									<a href="{% url 'typification' %}">
+									<a href="{% url 'alert' %}">
 										<div class="text-center msg-footer">
 											<button class="btn btn-primary w-100">View All Notifications</button>
 										</div>
@@ -340,26 +203,14 @@
 					</div>
 					<div class="user-box dropdown px-3">
 						<a class="d-flex align-items-center nav-link dropdown-toggle gap-3 dropdown-toggle-nocaret" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-							<img src="{% static "assets/images/avatars/avatar-2.png" %}" class="user-img" alt="user avatar">
+							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user text-primary">
+								<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
 							<div class="user-info">
-								<p class="user-name mb-0">Pauline Seitz</p>
-								<p class="designattion mb-0">Web Designer</p>
+								<p class="user-name mb-0">{{request.user.first_name}} {{request.user.last_name}}</p>
+								<p class="designattion mb-0">{{request.user}}</p>
 							</div>
 						</a>
 						<ul class="dropdown-menu dropdown-menu-end">
-							<li><a class="dropdown-item d-flex align-items-center" href="javascript:;"><i class="bx bx-user fs-5"></i><span>Profile</span></a>
-							</li>
-							<li><a class="dropdown-item d-flex align-items-center" href="javascript:;"><i class="bx bx-cog fs-5"></i><span>Settings</span></a>
-							</li>
-							<li><a class="dropdown-item d-flex align-items-center" href="javascript:;"><i class="bx bx-home-circle fs-5"></i><span>Dashboard</span></a>
-							</li>
-							<li><a class="dropdown-item d-flex align-items-center" href="javascript:;"><i class="bx bx-dollar-circle fs-5"></i><span>Earnings</span></a>
-							</li>
-							<li><a class="dropdown-item d-flex align-items-center" href="javascript:;"><i class="bx bx-download fs-5"></i><span>Downloads</span></a>
-							</li>
-							<li>
-								<div class="dropdown-divider mb-0"></div>
-							</li>
 							<li><a class="dropdown-item d-flex align-items-center" href="{% url 'logout' %}"><i class="bx bx-log-out-circle"></i><span>Logout</span></a>
 							</li>
 						</ul>
@@ -527,7 +378,7 @@
 										<thead>
 											<tr>
 												<th>COL</th>
-												<th>Name Client</th>
+												<th>Amount Client</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -554,7 +405,7 @@
 										<thead>
 											<tr>
 												<th>COL</th>
-												<th>Name Client</th>
+												<th>Amount Client</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -583,7 +434,7 @@
 		<!--Start Back To Top Button--> <a href="javaScript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
 		<!--End Back To Top Button-->
 		<footer class="page-footer">
-			<p class="mb-0">Copyright © 2023. All right reserved.</p>
+			<p class="mb-0">Copyright © {% now "Y" %}. All rights reserved to Lapeira & Associates.</p>
 		</footer>
 	</div>
 	<!--end wrapper-->
