@@ -86,12 +86,12 @@ document.addEventListener("DOMContentLoaded", function() {
     };
 
     // Verifica si tienes el contenedor adecuado en el HTML
-    const chartContainer = document.querySelector("#Elias");
+    const chartContainer = document.querySelector("#chartIndex");
     if (chartContainer) {
         // Crear el gráfico ApexCharts
         var chart = new ApexCharts(chartContainer, options);
         chart.render();
     } else {
-        //console.error("El contenedor del gráfico con id 'Elias' no existe.");
+        //console.error("El contenedor del gráfico con id 'chartIndex' no existe.");
     }
 });

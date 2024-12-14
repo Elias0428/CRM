@@ -54,13 +54,11 @@
 					</div>
 					<div class="col-md-4">
 						<label for="role" class="form-label">Roll</label>
-						<select id="inputState" class="form-select" id="role" name="role" >
-							<option value="" disabled selected>Please Select</option>
-							<option value="A"> AGENTE </option>
-							<option value="S"> SUPERVISOR </option>
-							<option value="C"> CUSTOMER </option>
-							<option value="AU"> AUDITAR </option>
-							<option value="Admin"> ADMIN </option>
+						<select id="inputState" class="form-select" id="role" name="role" required >								
+							{% for value, label in roles %}
+								<option value="{{ value }}" {% if user.role == value %}selected{% endif %}>{{ label }}</option>
+							{% endfor %}
+								<option disabled selected value=""></option>							
 						</select>
 					</div>
 					<div class="col-md-12">

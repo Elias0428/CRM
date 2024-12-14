@@ -8,7 +8,9 @@ class User(AbstractUser):
         ('A', 'Agent'),
         ('S', 'Supervisor'),
         ('C', 'Customer'),
+        ('SUPP', 'Supplementary'),
         ('AU', 'Auditor'),
+        ('TV', 'Tv'),
         ('Admin', 'Admin'),
     )
     role = models.CharField(max_length=20, choices=ROLES_CHOICES)
@@ -61,7 +63,7 @@ class Typification(models.Model):
         db_table = 'typifications'
 
 class ObamaCare(models.Model):
-    profiling_agent = models.ForeignKey(User, on_delete=models.CASCADE, related_name='profiling_agent_aca')
+    profiling_agent = models.ForeignKey(User, on_delete=models.CASCADE, related_name='profiling_agent_aca' ,null=True)
     agent = models.ForeignKey(User, on_delete=models.CASCADE,related_name='agent_sale_aca')
     client = models.OneToOneField(Client, on_delete=models.CASCADE,null=True)
     agent_usa = models.CharField(max_length=20)
@@ -110,7 +112,6 @@ class Supp(models.Model):
     agent = models.ForeignKey(User, on_delete=models.CASCADE, related_name='agent_sale_supp')
     dependent = models.ForeignKey(Dependent, on_delete=models.CASCADE, null=True)
     agent_usa = models.CharField(max_length=20)
-    profiling_agent = models.ForeignKey(User, on_delete=models.CASCADE, related_name='profiling_agent_supp')    
     created_at = models.DateTimeField(auto_now_add=True)  
     effective_date = models.DateField()
     company = models.CharField(max_length=200)

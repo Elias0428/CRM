@@ -214,7 +214,7 @@
 															</div>
 															<div class="col-12 col-lg-6">
 																<label for="effectiveDateSupp" class="form-label">Effective Date</label>
-																<input type="text" class="form-control" name="effectiveDateSupp" id="effectiveDateSupp" value="{{ supp_plan.effective_date|date:'m/d/Y' }}" >
+																<input type="text" class="form-control" name="effectiveDateSupp" id="effectiveDateSupp" value="{{ supp_plan.effective_date|date:'m-d-Y' }}" >
 															</div>
 															<div class="col-12 col-lg-6">
 																<label for="carrierSuple" class="form-label">Carrier</label>
@@ -325,7 +325,7 @@
 															</div>
 															<div class="col-12 col-lg-6">
 																<label for="effectiveDateSupp" class="form-label">Effective Date</label>
-																	<input type="date" class="form-control" id="effectiveDateSupp" name="effectiveDateSupp" >	
+																<input type="text" class="form-control" id="effectiveDateSupp" name="effectiveDateSupp" >	
 															</div>
 															<div class="col-12 col-lg-6">
 																<label for="carrierSuple" class="form-label">Carrier</label>
@@ -377,17 +377,17 @@
 																<select class="form-select" id="coverageSupp" name="coverageSupp" aria-label="Default select example">
 																	<option disabled selected value=""></option>
 																	<option value="500">500</option>
-																		<option value="750">750</option>
-																		<option value="1000">1000</option>
-																		<option value="1500">1500</option>
-																		<option value="2000">2000</option>
-																		<option value="2500">2500</option>
-																		<option value="3000">3000</option>
-																		<option value="3500">3500</option>
-																		<option value="4000">4000</option>
-																		<option value="4500">4500</option>
-																		<option value="5000">5000</option>
-																		<option value="10000">10000</option>
+																	<option value="750">750</option>
+																	<option value="1000">1000</option>
+																	<option value="1500">1500</option>
+																	<option value="2000">2000</option>
+																	<option value="2500">2500</option>
+																	<option value="3000">3000</option>
+																	<option value="3500">3500</option>
+																	<option value="4000">4000</option>
+																	<option value="4500">4500</option>
+																	<option value="5000">5000</option>
+																	<option value="10000">10000</option>
 																</select>
 															</div>
 															<div class="col-12 col-lg-6">
@@ -458,7 +458,7 @@
 														</div>
 														<div class="col-12 col-lg-6">
 															<label class="form-label">Date Birth (MM-DD-AAAA)</label>
-															<input type="text" class="form-control " name="dateBirthDependent" id="dateBirthDependent" value="{{ dependent.date_birth|date:'m/d/Y' }}" >
+															<input type="text" class="form-control " name="dateBirthDependent" id="dateBirthDependent" value="{{ dependent.date_birth|date:'m-d-Y' }}" >
 														</div>
 														<div class="col-12 col-lg-6">
 															<label class="form-label">Migration Status</label>
@@ -631,22 +631,12 @@
 	<script src="{% static 'assets/js/removeFormDependent.js' %}"></script>
 	<script src="{% static 'assets/js/validationForm.js' %}"></script>
 
-	<!-- Agregar Flatpickr -->
-	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
 
 	<!-- Incluir JS de Choices.js -->
 	<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
-	
-	<script>
-		// Usar Flatpickr para formatear el campo de fecha
-		document.addEventListener('DOMContentLoaded', function () {
-			flatpickr("#effectiveDateSupp", {
-				dateFormat: "m/d/Y", // Formato MM/DD/YYYY
-			});
-		});
-	</script>
+
 	
 	<!-- Personalización CSS para fondo oscuro -->
 	<style>

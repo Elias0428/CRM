@@ -34,6 +34,8 @@ urlpatterns = [
     path('motivationalPhrase/', views.motivationalPhrase, name='motivationalPhrase'),
 
     path('select_client/', views.select_client, name='select_client'),
+    path('update-type-sales/<int:client_id>/', views.update_type_sales, name='update_type_sales'),
+
     path('clientObamacare/', views.clientObamacare, name='clientObamacare'),
     path('clientSupp/', views.clientSupp, name='clientSupp'),
     

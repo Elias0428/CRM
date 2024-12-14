@@ -56,8 +56,26 @@ def motivationalPhrase(request):
     return render (request, 'motivationalPhrase.html',context)
 
 def select_client(request):
-    clients = Client.objects.all()
+
+    # Roles con acceso ampliado
+    roleAuditar = ['S', 'Admin']
+
+    if request.user.role in roleAuditar:
+        clients = Client.objects.all()
+    else:
+        clients = Client.objects.filter(agent = request.user.id)
+    
     return render(request, 'agents/select_client.html', {'clients':clients})
+
+def update_type_sales(request, client_id):
+    if request.method == 'POST':
+        type_sales = request.POST.get('type_sales')
+        if type_sales:
+            client = get_object_or_404(Client, id=client_id)
+            client.type_sales = type_sales
+            client.save()
+            # Redirige a la URL previa con el ID del cliente
+            return redirect('formCreatePlan', client_id=client_id)
 
 # Vista para crear cliente
 @login_required(login_url='/login') 
@@ -147,7 +165,8 @@ def fetchAca(request, client_id):
                 'apply': request.POST.get('applyObama'),
                 'observation': request.POST.get('observationObama'),
                 'status_color': 1,
-                'profiling':'NO'
+                'profiling':'NO',
+                'agent': request.user
             }
         )
     return JsonResponse({'success': True, 'aca_plan_id': aca_plan.id})
@@ -798,6 +817,8 @@ def formCreateUser(request):
 
     users = User.objects.all()
 
+    roles = User.ROLES_CHOICES  # Obtén las opciones dinámicamente desde el modelo
+
     if request.method == 'POST':
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
@@ -821,12 +842,20 @@ def formCreateUser(request):
                 first_name=first_name,
                 role=role
             )
-            return render(request, 'forms/formCreateUser.html', {'msg':f'Usuario {user.username} creado con éxito.','users':users,'type':'good'})
+
+            context = {
+                'msg':f'Usuario {user.username} creado con éxito.',
+                'users':users,
+                'type':'good',
+                'roles': roles
+            }
+
+            return render(request, 'forms/formCreateUser.html', context)
 
         except Exception as e:
             return HttpResponse(str(e))
             
-    return render(request, 'forms/formCreateUser.html',{'users':users})
+    return render(request, 'forms/formCreateUser.html',{'users':users,'roles': roles})
 
 def editUser(request, user_id):
     # Obtener el usuario a editar o devolver un 404 si no existe
@@ -1034,7 +1063,7 @@ def countSalesObama(request):
 
     roleAuditar = ['S', 'C',  'AU', 'Admin']
     
-    if request.user.role in roleAuditar:
+    if request.user.role in roleAuditar:        
         all = ObamaCare.objects.filter(created_at__gte=start_of_month,created_at__lte=end_of_month,is_active = True).count()
         active = ObamaCare.objects.filter(status_color=3,created_at__gte=start_of_month,created_at__lte=end_of_month,is_active = True).count()
         process = ObamaCare.objects.filter(created_at__gte=start_of_month,created_at__lte=end_of_month,is_active = True).filter(Q(status_color=2) | Q(status_color=1)).count()
@@ -1103,7 +1132,7 @@ def chartSaleIndex(request):
     )
 
     # Roles con acceso ampliado
-    roleAuditar = ['S', 'C', 'AU', 'Admin']
+    roleAuditar = ['S', 'Admin']
 
     # Construcción de la consulta basada en el rol del usuario
     if request.user.role in roleAuditar:
@@ -1129,7 +1158,7 @@ def chartSaleIndex(request):
             ), distinct=True), 0)
         ).values('username', 'obamacare_count', 'obamacare_count_total', 'supp_count', 'supp_count_total')
 
-    elif request.user.role == 'A':
+    elif request.user.role not in roleAuditar:
         # Para usuarios con rol 'A': consultar datos solo para el usuario actual
         users_data = User.objects.filter(id=request.user.id).annotate(
             obamacare_count=Count('agent_sale_aca', filter=Q(

@@ -219,18 +219,12 @@
 	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 	<script>
-		 // Quitar el atributo readonly si está presente
-		 const dateInput = document.querySelector("#date_birth");
-		 if (dateInput.hasAttribute("readonly")) {
-			 dateInput.removeAttribute("readonly");
-		 }
-	 
-		 // Inicializar Flatpickr después de un pequeño retraso
-		 setTimeout(function() {
-			 flatpickr("#date_birth", {
-				 dateFormat: "m/d/Y", // Formato MM/DD/YYYY
-			 });
-		 }, 100); // 100ms de retraso
+		// Usar Flatpickr para formatear el campo de fecha
+		document.addEventListener('DOMContentLoaded', function () {
+			flatpickr("#date_birth", {
+				dateFormat: "m/d/Y", // Formato MM/DD/YYYY
+			});
+		});
 	</script>
 
 {% endblock %}

@@ -37,6 +37,9 @@
 						<th>Date</th>
 						<th>Type Police</th>
                         <th>Status</th>
+						{% if request.user.is_superuser %}
+							<th>Active</th>
+						{% endif  %}
                         <th>Options</th>
                     </tr>
                 </thead>
@@ -50,12 +53,16 @@
 						<td>{{supp.client.created_at}}</td>
 						<td>{{supp.policy_type}}</td>
 						<td>{% if supp.status_color == 1 or supp.status_color == None %}
-							<span class="badge rounded-pill bg-danger">Not profiled</span>
-						{% elif supp.status_color == 2 %}
-							<span class="badge rounded-pill bg-warning text-dark">Processing</span>
-						{% elif supp.status_color == 3 %}
-							<span class="badge rounded-pill bg-success">Profiling</span>
-						{% endif  %}</td>
+								<span class="badge rounded-pill bg-danger">{{supp.status}}</span>
+							{% elif supp.status_color == 2 %}
+								<span class="badge rounded-pill bg-warning text-dark">{{supp.status}}</span>
+							{% elif supp.status_color == 3 %}
+								<span class="badge rounded-pill bg-success">{{supp.status}}</span>
+							{% endif  %}
+						</td>
+						{% if request.user.is_superuser %}
+							<td> {{supp.is_active}} </td>
+						{% endif  %}
                         <td>
 							<div class="d-flex order-actions">
 								<a href="{% url 'editClientSupp' supp.client_id  supp.id %}" class=""><i class='bx bxs-edit'></i></a>

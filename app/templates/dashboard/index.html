@@ -10,7 +10,7 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!--favicon-->
-	<link rel="icon" href="{% static "assets/images/favicon-32x32.png" %}" type="image/png" />
+	<link rel="icon" href="{% static "assets/images/icons/LogoB.png" %}" type="image/png" />
 	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
@@ -49,12 +49,13 @@
 		<div class="sidebar-wrapper" data-simplebar="true">
 			<div class="sidebar-header">
 				<div>
-					<img src="{% static "assets/images/logo-icon.png" %}" class="logo-icon" alt="logo icon">
+					<img src="{% static "assets/images/icons/LogoB2.png" %}" class="logo-icon" alt="logo icon">
 				</div>
 				<div>
 					<h4 class="logo-text">CRM L&A</h4>
 				</div>
-				<div class="toggle-icon ms-auto"><i class='bx bx-arrow-back'></i>
+				<div class="toggle-icon ms-auto">
+					<i class="fadeIn animated bx bx-menu"></i>
 				</div>
 			 </div>
 			<!--navigation-->
@@ -67,8 +68,10 @@
 					<ul>						
 						<li> <a href="{% url "index" %}"><i class='bx bx-radio-circle'></i>Home</a>
 						</li>
+						{% if request.user.role == 'Admin' or request.user.role == 'S' or request.user.role == 'TV' %}
 						<li> <a href="{% url "liveView" %}"><i class='bx bx-radio-circle'></i>View TV</a>
 						</li>
+						{% endif %}
 					</ul>
 				</li>
 				<li class="menu-label">enter data</li>
@@ -359,7 +362,7 @@
 					<div class="col">
 						<div class="card radius-10">
 							<div class="card-body">
-								<div id="Elias"></div>
+								<div id="chartIndex"></div>
 							</div>
 						</div>
 					</div>

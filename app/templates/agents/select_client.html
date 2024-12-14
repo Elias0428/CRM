@@ -32,25 +32,57 @@
                     <tr>
                         <th>Name</th>
                         <th>Phone Numbers</th>
-                        <th>Options</th>
+                        <th>Current policy</th>
+                        <th>Select New Plan</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for client in clients %}
                     <tr>
                         <td>{{client.first_name}} {{client.last_name}}</td>
-                        <td>+1 {{client.phone_number}}</td>
+                        <td>+ {{client.phone_number}}</td>
+                        {% if client.type_sales == "ACA" %} <td>OBAMACARE</td>{% endif %}
+                        {% if client.type_sales == "SUPLEMENTARIO" %} <td>SUPPLEMENTARY</td> {% endif %}
+                        {% if client.type_sales == "ACA/SUPLEMENTARIO" %} <td>OBAMACARE / SUPPLEMENTARY</td> {% endif %}
                         <td>
-                            <li class="nav-item dropdown"> <a class=" dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">Select Action</a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="{% url "formCreatePlan" client.id %}?type_sale=ACA">New ACA</a>
+                            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="dropdown" aria-expanded="false">Dropdown</button>
+                            <ul class="dropdown-menu">
+                                {% if client.type_sales == "ACA" %}
+                                    <!-- Solo mostrar ACA/SUPP si tiene ACA -->
+                                    <li>
+                                        <form method="POST" action="{% url 'update_type_sales' client.id %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="type_sales" value="ACA/SUPLEMENTARIO">
+                                            <button type="submit" class="dropdown-item">ACA AND SUPP</button>
+                                        </form>
                                     </li>
-                                    <li><a class="dropdown-item" href="{% url "formCreatePlan" client.id %}?type_sale=SUPP">New SUPP</a>
+                                {% elif client.type_sales == "SUPLEMENTARIO" %}
+                                    <!-- Mostrar SUPP y ACA/SUPP si tiene SUPP -->
+                                    <li>
+                                        <form method="POST" action="{% url 'update_type_sales' client.id %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="type_sales" value="SUPLEMENTARIO">
+                                            <button type="submit" class="dropdown-item">New SUPP</button>
+                                        </form>
                                     </li>
-                                    <li><a class="dropdown-item" href="{% url "formCreatePlan" client.id %}?type_sale=ACA/SUPP">ACA AND SUPP</a>
+                                    <li>
+                                        <form method="POST" action="{% url 'update_type_sales' client.id %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="type_sales" value="ACA/SUPLEMENTARIO">
+                                            <button type="submit" class="dropdown-item">ACA AND SUPP</button>
+                                        </form>
                                     </li>
-                                </ul>
-                            </li>
+                                {% elif client.type_sales == "ACA/SUPLEMENTARIO" %}
+                                    <!-- Solo mostrar ACA/SUPP si ya tiene ACA/SUPP -->
+                                    <li>
+                                        <form method="POST" action="{% url 'update_type_sales' client.id %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="type_sales" value="ACA/SUPLEMENTARIO">
+                                            <button type="submit" class="dropdown-item">ACA AND SUPP</button>
+                                        </form>
+                                    </li>
+                                {% endif %}
+                            </ul>
                         </td>
                     </tr>
                     {% endfor %}
@@ -59,7 +91,8 @@
                     <tr>
                         <th>Name</th>
                         <th>Phone Numbers</th>
-                        <th>Options</th>
+                        <th>Current policy</th>
+                        <th>Select New Plan</th>
                     </tr>
                 </tfoot>
             </table>

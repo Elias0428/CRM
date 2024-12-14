@@ -88,15 +88,21 @@ function saveSupplementaryPlan() {
       const observationSuple = plan.querySelector('[name="observationSuple"]').value;
       const suppIdField = plan.querySelector('[name="suppId"]');
 
+      
+      let suppId = suppIdField ? suppIdField.value : '';
+
+      if (!validarYActualizarFechaSupp()){
+        return;
+      }
+
       //fecha estilo USA
       const effectiveDateSupp = plan.querySelector('[name="effectiveDateSupp"]').value;
       // Separar la fecha en partes: mes, día, y año
-      const [month, day, year] = effectiveDateSupp.split('/');
+      const [month, day, year] = effectiveDateSupp.split('-');
       // Reorganizar la fecha a formato año/mes/día
       const effectiveDateSuppFormatted = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
 
-      
-      let suppId = suppIdField ? suppIdField.value : '';
+
 
       // Validar si hay un nombre ingresado, para evitar enviar campos vacíos
       if (agent_usa.trim() !== '') {
@@ -334,7 +340,7 @@ function addTypesDependentACA() {
   console.log(idAcaPlan)
   if (idAcaPlan === "ACA") {
     typePoliceSelects.forEach(typePoliceSelect => {
-      // Verificar si la opción 'Elias' ya existe
+      // Verificar si la opción 'ACA' ya existe
       const optionExists = Array.from(typePoliceSelect.options).some(option => option.value === "ACA");
       if (!optionExists) {
         const newOption = document.createElement('option');
@@ -360,6 +366,41 @@ function addTypesDependentACA() {
 
 function validarYActualizarFecha() {
   var inputsDate = document.querySelectorAll('#dateBirthDependent');
+
+  const isValid = true
+  inputsDate.forEach(inputFecha => {
+    // Validar que la fecha tenga el formato MM-DD-AAAA
+    const fechaRegex = /^(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])-\d{4}$/;
+    if (!fechaRegex.test(inputFecha.value)) {
+      inputFecha.focus();
+      alert('La fecha no tiene el formato válido MM-DD-AAAA');
+      isValid = false;
+    }
+
+    // Separar la fecha en mes, día y año
+    const [mes, dia, año] = inputFecha.value.split('-').map(num => parseInt(num));
+
+    // Validar si el año es bisiesto
+    const esBisiesto = (año % 4 === 0 && (año % 100 !== 0 || año % 400 === 0));
+
+    // Validar la cantidad de días en el mes
+    const diasPorMes = {
+      1: 31, 2: esBisiesto ? 29 : 28, 3: 31, 4: 30,
+      5: 31, 6: 30, 7: 31, 8: 31, 9: 30,
+      10: 31, 11: 30, 12: 31
+    };
+
+    // Validar que el día sea válido para ese mes
+    if (dia < 1 || dia > diasPorMes[mes]) {
+      alert('El día no es válido para el mes indicado');
+      isValid = false;
+    }
+  });
+  return isValid;
+}
+
+function validarYActualizarFechaSupp() {
+  var inputsDate = document.querySelectorAll('#effectiveDateSupp');
 
   const isValid = true
   inputsDate.forEach(inputFecha => {
