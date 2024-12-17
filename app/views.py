@@ -1638,22 +1638,22 @@ def getSalesForWekkly():
 
     # Contamos cuántos registros de ObamaCare tiene cada usuario por día
     userRole = [ 'A' , 'C']
-    obama_counts = ObamaCare.objects.values('profiling_agent', 'created_at').filter(profiling_agent__role__in=userRole).annotate(obama_count=Count('id'))
+    obama_counts = ObamaCare.objects.values('agent', 'created_at').filter(agent__role__in=userRole).annotate(obama_count=Count('id'))
     for obama in obama_counts:
         # Obtener el día de la semana (0=lunes, 1=martes, ..., 6=domingo)
         dia_semana = obama['created_at'].weekday()
         if dia_semana < 6:  # Excluimos el domingo
             dia = dias_de_la_semana[dia_semana]
-            user_counts[obama['profiling_agent']][dia]['obama'] += obama['obama_count']
+            user_counts[obama['agent']][dia]['obama'] += obama['obama_count']
 
     # Contamos cuántos registros de Supp tiene cada usuario por día
-    supp_counts = Supp.objects.values('profiling_agent', 'created_at').filter(profiling_agent__role__in=userRole).annotate(supp_count=Count('id'))
+    supp_counts = Supp.objects.values('agent', 'created_at').filter(agent__role__in=userRole).annotate(supp_count=Count('id'))
     for supp in supp_counts:
         # Obtener el día de la semana (0=lunes, 1=martes, ..., 6=domingo)
         dia_semana = supp['created_at'].weekday()
         if dia_semana < 6:  # Excluimos el domingo
             dia = dias_de_la_semana[dia_semana]
-            user_counts[supp['profiling_agent']][dia]['supp'] += supp['supp_count']
+            user_counts[supp['agent']][dia]['supp'] += supp['supp_count']
 
     # Aseguramos que todos los usuarios estén en el diccionario, incluso si no tienen registros    
     for user in User.objects.filter(role__in = userRole):
