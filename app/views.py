@@ -44,9 +44,20 @@ def login_(request):
     else:
         return render(request, 'auth/login.html')
     
+    
 def logout_(request):
-    logout(request)
-    return redirect(index)
+
+     # Verifica si es una solicitud AJAX
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        logout(request)
+        return JsonResponse({
+            'status': 'success', 
+            'redirect_url': '/login/'  # URL a la que redirigir después del logout
+        })
+    else:
+        # Cierre de sesión manual tradicional
+        logout(request)
+        return redirect(index)
     
 @login_required(login_url='/login')
 def motivationalPhrase(request):
@@ -55,6 +66,7 @@ def motivationalPhrase(request):
     context = {'motivation':motivation}
     return render (request, 'motivationalPhrase.html',context)
 
+@login_required(login_url='/login') 
 def select_client(request):
 
     # Roles con acceso ampliado
@@ -1691,7 +1703,6 @@ def notify_websocket(user_id):
             "message": "Nuevo plan agregado"
         }
     )
-
 
 def generar_reporte(request):
     form = ReporteSeleccionForm(request.GET)
