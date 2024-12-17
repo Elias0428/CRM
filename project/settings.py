@@ -29,7 +29,7 @@ SECRET_KEY = 'django-insecure-wxwjr&9_la5a&fe9i@=fwe(gjze$wsz$lwac&=5mmy&557vyzg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['blue.lapeira.com']
 
 #Configuration to use own user model
 AUTH_USER_MODEL = 'app.user'  
