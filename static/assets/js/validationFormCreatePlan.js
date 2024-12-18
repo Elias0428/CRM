@@ -206,7 +206,13 @@ function saveDependents() {
         // Mostrar los valores seleccionados en 'typePolice'
         //console.log('Valores seleccionados en typePolice:', typePolice);
     }
-
+    
+    if(typePoliceField.value.trim() === ''){
+      if (submitButton) {
+        submitButton.disabled = true;
+      }
+      return
+    }
     // Aquí estamos manejando el 'dependentId' como lo hicimos antes
     const dependentIdField = dependent.querySelector('[name="dependentId"]');
     let dependentId = dependentIdField ? dependentIdField.value : '';
@@ -235,6 +241,7 @@ function saveDependents() {
           //console.log('Agregando typePolice al formData:', typePolice);  // Verificar qué valores de 'typePolice' se agregan
         }
     }
+    
   });
 
   //console.log('FormData antes de la solicitud fetch:', formData);
@@ -255,16 +262,22 @@ function saveDependents() {
           // Actualizar la interfaz de usuario según sea necesario
           stepper1.next();
           if (data.success) {
-            Swal.fire({
-              icon: 'success' ,
-              title: '<p style="color: black;">Saved success</p>',
-              confirmButtonText: "OK",
-            }).then((result) => {
-              /* Read more about isConfirmed, isDenied below */
-              if (result.isConfirmed) {
-                window.location.href = '/';
-              }
-            });
+
+          // Mostrar el modal con Bootstrap
+          const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+          successModal.show();
+
+          // Botón 1: Redirigir a la página de inicio
+          document.getElementById('button1').addEventListener('click', () => {
+            window.location.href = '/';
+          });
+
+          // Botón 2: Redirigir a los detalles
+          document.getElementById('button2').addEventListener('click', () => {
+            window.location.href = '/details';
+          });
+
+
           }
       } else {
           // Manejar errores

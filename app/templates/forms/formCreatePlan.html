@@ -596,7 +596,30 @@
 						<!---end row-->							
 					</div>
 				</form>
-			</div>			
+			</div>
+			<!-- Modal Bootstrap -->
+			
+			<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+					<h5 class="modal-title" id="successModalLabel">Alert</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+					<p>Information successfully saved!</p>
+					</div>
+					<div class="modal-footer">
+					<!-- Botón 1 -->
+					<button type="button" class="btn btn-secondary" id="button1">Home</button>
+					<!-- Botón 2 -->
+					<button type="button" class="btn btn-primary" id="button2">Consent</button>
+					</div>
+				</div>
+				</div>
+			</div>
+			<!-- Modal Bootstrap -->  
+			  
 			{% csrf_token %}			
 			
 		</div>
