@@ -17,9 +17,9 @@ document.getElementById('formCreateClient').addEventListener('submit', function(
         }
     }
 
-    //phoneNumberFormat = validatePhoneNumber(phoneNumber.value)
-    //console.log(phoneNumberFormat)
-    //console.log(!isValid)
+    phoneNumberFormat = validatePhoneNumber(phoneNumber.value)
+    console.log(phoneNumberFormat)
+    console.log(!isValid)
 
     if (!isValid){
         return;
@@ -33,20 +33,20 @@ document.getElementById('formCreateClient').addEventListener('submit', function(
 });
 
 
-//function validatePhoneNumber(phoneNumber) {
-//    // Eliminar cualquier caracter que no sea número
-//    const cleanNumber = phoneNumber.toString().replace(/\D/g, '');
-//    
-//    // Si el número empieza con 1 y tiene 11 dígitos, es válido
-//    if (cleanNumber.startsWith('1') && cleanNumber.length === 11) {
-//        return cleanNumber;
-//    }
-//    
-//    // Si el número tiene exactamente 10 dígitos, agregar 1 al inicio
-//    if (cleanNumber.length === 10) {
-//        return '1' + cleanNumber;
-//    }
-//    
-//    // En cualquier otro caso, el número no es válido
-//    return false;
-//}
+function validatePhoneNumber(phoneNumber) {
+    // Eliminar cualquier caracter que no sea número
+    const cleanNumber = phoneNumber.toString().replace(/\D/g, '');
+    
+    // Si el número empieza con 1 y tiene 11 dígitos, es válido
+    if (cleanNumber.startsWith('1') && cleanNumber.length === 11) {
+        return cleanNumber;
+    }
+    
+    // Si el número tiene exactamente 10 dígitos, agregar 1 al inicio
+    if (cleanNumber.length === 10) {
+        return '1' + cleanNumber;
+    }
+    
+    // En cualquier otro caso, el número no es válido
+    return false;
+}

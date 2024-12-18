@@ -94,11 +94,11 @@ def formCreateClient(request):
     if request.method == 'POST':
         form = ClientForm(request.POST)
         if form.is_valid():
-            phone_number = form.cleaned_data['phone_number']
+            #phone_number = form.cleaned_data['phone_number']
             
             # Verificar si el número de teléfono ya está registrado
-            if Client.objects.filter(phone_number=phone_number).exists():
-                return render(request, 'forms/formCreateClient.html', {'error_message': 'Este numero de telefono ya esta registrado'})
+            #if Client.objects.filter(phone_number=phone_number).exists():
+            #    return render(request, 'forms/formCreateClient.html', {'error_message': 'Este numero de telefono ya esta registrado'})
             
             # Guardar el cliente
             client = form.save(commit=False)
