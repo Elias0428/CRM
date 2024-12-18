@@ -166,7 +166,7 @@ def fetchAca(request, client_id):
         # Si no hay ID, crea un nuevo registro
         aca_plan, created = ObamaCare.objects.update_or_create(
             client=client,
-            profiling_agent=request.user,
+            agent=request.user,
             defaults={
                 'taxes': request.POST.get('taxes'),
                 'agent_usa': request.POST.get('agent_usa'),
@@ -177,8 +177,7 @@ def fetchAca(request, client_id):
                 'apply': request.POST.get('applyObama'),
                 'observation': request.POST.get('observationObama'),
                 'status_color': 1,
-                'profiling':'NO',
-                'agent': request.user
+                'profiling':'NO'
             }
         )
     return JsonResponse({'success': True, 'aca_plan_id': aca_plan.id})
@@ -331,12 +330,12 @@ def clientObamacare(request):
     roleAuditar = ['S', 'C',  'AU']
     
     if request.user.role in roleAuditar:
-        obamaCare = ObamaCare.objects.select_related('profiling_agent','client').filter(is_active = True)
+        obamaCare = ObamaCare.objects.select_related('agent','client').filter(is_active = True)
     elif request.user.role == 'Admin':
-        obamaCare = ObamaCare.objects.select_related('profiling_agent', 'client').filter(is_active=True)
+        obamaCare = ObamaCare.objects.select_related('agent', 'client').filter(is_active=True)
 
     elif request.user.role == 'A':
-        obamaCare = ObamaCare.objects.select_related('profiling_agent','client').filter(agent = request.user.id, is_active = True ) 
+        obamaCare = ObamaCare.objects.select_related('agent','client').filter(agent = request.user.id, is_active = True ) 
 
     
     return render(request, 'table/clientObamacare.html', {'obamaCare':obamaCare})
@@ -347,11 +346,11 @@ def clientSupp(request):
     roleAuditar = ['S', 'C',  'AU']
     
     if request.user.role in roleAuditar:
-        supp = Supp.objects.select_related('profiling_agent','client').filter(is_active = True )
+        supp = Supp.objects.select_related('agent','client').filter(is_active = True )
     elif request.user.role == 'Admin':
-        supp = Supp.objects.select_related('profiling_agent','client')
+        supp = Supp.objects.select_related('agent','client')
     elif request.user.role == 'A':
-        supp = Supp.objects.select_related('profiling_agent','client').filter(agent = request.user.id, is_active = True)
+        supp = Supp.objects.select_related('agent','client').filter(agent = request.user.id, is_active = True)
 
     return render(request, 'table/clientSupp.html', {'supps':supp})
 
@@ -456,7 +455,7 @@ def editClient(request,agent_id):
     return client
 
 def editClientObama(request, client_id, obamacare_id):
-    obamacare = ObamaCare.objects.select_related('profiling_agent', 'client').filter(id=obamacare_id).first()
+    obamacare = ObamaCare.objects.select_related('agent', 'client').filter(id=obamacare_id).first()
     dependents = Dependent.objects.select_related('obamacare').filter(obamacare=obamacare)
 
     obsObama = ObservationAgent.objects.filter(id_obamaCare=obamacare_id)
@@ -474,13 +473,7 @@ def editClientObama(request, client_id, obamacare_id):
             editClient(request, client_id)
             dependents= editDepentsObama(request, obamacare_id)
 
-            #formateo de fecha para guardalar como se debe en BD ya que la obtengo USA
-            date_bearing = request.POST.get('date_bearing')  # Formato MM/DD/YYYY
-            date_effective_coverage = request.POST.get('date_effective_coverage')  # Formato MM/DD/YYYY
-            date_effective_coverage_end = request.POST.get('date_effective_coverage_end')  # Formato MM/DD/YYYY
-            date_bearing_new = datetime.strptime(date_bearing, '%m/%d/%Y').date()
-            date_effective_coverage_new = datetime.strptime(date_effective_coverage, '%m/%d/%Y').date()
-            date_effective_coverage_end_new = datetime.strptime(date_effective_coverage_end, '%m/%d/%Y').date()
+
             # Campos de ObamaCare
             obamacare_fields = [
                 'taxes', 'planName', 'carrierObama', 'profiling', 'subsidy', 'ffm', 'required_bearing',
@@ -490,6 +483,28 @@ def editClientObama(request, client_id, obamacare_id):
             
             # Limpiar los campos de ObamaCare convirtiendo los vacíos en None
             cleaned_obamacare_data = clean_fields_to_null(request, obamacare_fields)
+
+            #formateo de fecha para guardalar como se debe en BD ya que la obtengo USA
+            date_bearing = request.POST.get('date_bearing')  # Formato MM/DD/YYYY
+            date_effective_coverage = request.POST.get('date_effective_coverage')  # Formato MM/DD/YYYY
+            date_effective_coverage_end = request.POST.get('date_effective_coverage_end')  # Formato MM/DD/YYYY
+
+            # Conversión solo si los valores no son nulos o vacíos
+            if date_bearing not in [None, '']:
+                date_bearing_new = datetime.strptime(date_bearing, '%m/%d/%Y').date()
+            else:
+                date_bearing_new = None
+
+            if date_effective_coverage not in [None, '']:
+                date_effective_coverage_new = datetime.strptime(date_effective_coverage, '%m/%d/%Y').date()
+            else:
+                date_effective_coverage_new = None
+
+            if date_effective_coverage_end not in [None, '']:
+                date_effective_coverage_end_new = datetime.strptime(date_effective_coverage_end, '%m/%d/%Y').date()
+            else:
+                date_effective_coverage_end_new = None
+
 
             # Recibir el valor seleccionado del formulario
             selected_profiling = request.POST.get('profiling')
@@ -585,7 +600,7 @@ def editClientObama(request, client_id, obamacare_id):
 
 def editClientSupp(request, client_id,supp_id):
 
-    supp = Supp.objects.select_related('client','profiling_agent').filter(id=supp_id).first()
+    supp = Supp.objects.select_related('client','agent').filter(id=supp_id).first()
     obsSupp = ObservationAgent.objects.filter(id_supp=supp_id)
     obsCus = ObservationCustomer.objects.select_related('agent').filter(client_id=supp.client.id)
     list_drow = dropDownList.objects.filter(profiling_supp__isnull=False)
@@ -1304,10 +1319,10 @@ def sale(request):
 
 def saleObamaAgent(start_date=None, end_date=None):
     # Definir la consulta base para Supp, utilizando `select_related` para obtener el nombre del agente (User)
-    sales_query = ObamaCare.objects.select_related('profiling_agent') \
-        .values('profiling_agent__username', 'status_color') \
+    sales_query = ObamaCare.objects.select_related('agent') \
+        .values('agent__username', 'status_color') \
         .annotate(total_sales=Count('id')) \
-        .order_by('profiling_agent', 'status_color')
+        .order_by('agent', 'status_color')
 
     # Si no se proporcionan fechas, filtrar por el mes actual
     if not start_date and not end_date:
@@ -1338,7 +1353,7 @@ def saleObamaAgent(start_date=None, end_date=None):
 
     # Procesar los resultados y organizar los totales por agente
     for entry in sales_query:
-        agent_name = entry['profiling_agent__username']  # Ahora tenemos el nombre del agente
+        agent_name = entry['agent__username']  # Ahora tenemos el nombre del agente
         status_color = entry['status_color']
         total_sales = entry['total_sales']
 
@@ -1415,10 +1430,10 @@ def saleObamaAgentUsa(start_date=None, end_date=None):
 
 def saleSuppAgent(start_date=None, end_date=None):
     # Definir la consulta base para Supp, utilizando `select_related` para obtener el nombre del agente (User)
-    sales_query = Supp.objects.select_related('profiling_agent') \
-        .values('profiling_agent__username', 'status_color') \
+    sales_query = Supp.objects.select_related('agent') \
+        .values('agent__username', 'status_color') \
         .annotate(total_sales=Count('id')) \
-        .order_by('profiling_agent', 'status_color')
+        .order_by('agent', 'status_color')
 
     # Si no se proporcionan fechas, filtrar por el mes actual
     if not start_date and not end_date:
@@ -1449,7 +1464,7 @@ def saleSuppAgent(start_date=None, end_date=None):
 
     # Procesar los resultados y organizar los totales por agente
     for entry in sales_query:
-        agent_name = entry['profiling_agent__username']  # Ahora tenemos el nombre del agente
+        agent_name = entry['agent__username']  # Ahora tenemos el nombre del agente
         status_color = entry['status_color']
         total_sales = entry['total_sales']
 
@@ -1526,13 +1541,13 @@ def saleSuppAgentUsa(start_date=None, end_date=None):
 
 def salesBonusAgent(start_date=None, end_date=None):
     # Consulta para Supp
-    sales_query_supp = Supp.objects.select_related('profiling_agent') \
-        .values('profiling_agent__username', 'status_color') \
+    sales_query_supp = Supp.objects.select_related('agent') \
+        .values('agent__username', 'status_color') \
         .annotate(total_sales=Count('id'))
 
     # Consulta para ObamaCare
-    sales_query_obamacare = ObamaCare.objects.select_related('profiling_agent') \
-        .values('profiling_agent__username', 'status_color') \
+    sales_query_obamacare = ObamaCare.objects.select_related('agent') \
+        .values('agent__username', 'status_color') \
         .annotate(total_sales=Count('id'))
 
     # Si no se proporcionan fechas, filtrar por el mes actual
@@ -1565,7 +1580,7 @@ def salesBonusAgent(start_date=None, end_date=None):
 
     # Procesar los resultados de Supp
     for entry in sales_query_supp:
-        agent_name = entry['profiling_agent__username']
+        agent_name = entry['agent__username']
         status_color = entry['status_color']
         total_sales = entry['total_sales']
 
@@ -1586,7 +1601,7 @@ def salesBonusAgent(start_date=None, end_date=None):
 
     # Procesar los resultados de ObamaCare
     for entry in sales_query_obamacare:
-        agent_name = entry['profiling_agent__username']
+        agent_name = entry['agent__username']
         status_color = entry['status_color']
         total_sales = entry['total_sales']
 
