@@ -28,25 +28,25 @@ document.getElementById('formCreateClient').addEventListener('submit', function(
         return;
     }
     phoneNumber.value = phoneNumberFormat
-    console.log('Papi llego hasta aqui. lo mando mi loco')
+    //console.log('Papi llego hasta aqui. lo mando mi loco')
     this.submit();
 });
 
 
-function validatePhoneNumber(phoneNumber) {
-    // Eliminar cualquier caracter que no sea número
-    const cleanNumber = phoneNumber.toString().replace(/\D/g, '');
-    
-    // Si el número empieza con 1 y tiene 11 dígitos, es válido
-    if (cleanNumber.startsWith('1') && cleanNumber.length === 11) {
-        return cleanNumber;
-    }
-    
-    // Si el número tiene exactamente 10 dígitos, agregar 1 al inicio
-    if (cleanNumber.length === 10) {
-        return '1' + cleanNumber;
-    }
-    
-    // En cualquier otro caso, el número no es válido
-    return false;
-}
+//function validatePhoneNumber(phoneNumber) {
+//    // Eliminar cualquier caracter que no sea número
+//    const cleanNumber = phoneNumber.toString().replace(/\D/g, '');
+//    
+//    // Si el número empieza con 1 y tiene 11 dígitos, es válido
+//    if (cleanNumber.startsWith('1') && cleanNumber.length === 11) {
+//        return cleanNumber;
+//    }
+//    
+//    // Si el número tiene exactamente 10 dígitos, agregar 1 al inicio
+//    if (cleanNumber.length === 10) {
+//        return '1' + cleanNumber;
+//    }
+//    
+//    // En cualquier otro caso, el número no es válido
+//    return false;
+//}

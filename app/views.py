@@ -43,8 +43,7 @@ def login_(request):
             return render(request, 'auth/login.html', {'msg':msg})
     else:
         return render(request, 'auth/login.html')
-    
-    
+        
 def logout_(request):
 
      # Verifica si es una solicitud AJAX
@@ -782,6 +781,7 @@ def editDepentsSupp(request, supp_id):
     # Retornar los dependientes que fueron actualizados o procesados
     return dependents
 
+@login_required(login_url='/login') 
 def formCreateAlert(request):
 
     if request.method == 'POST':
@@ -840,6 +840,7 @@ def editAlert(request, alertClient_id):
 
     return render(request, 'edit/editAlert.html', {'editAlert':alert} )
 
+@login_required(login_url='/login') 
 def formCreateUser(request):
 
     users = User.objects.all()
@@ -1631,6 +1632,7 @@ def salesBonusAgent(start_date=None, end_date=None):
 
     return sales_data, total_status_color_1_obama, total_status_color_3_obama, total_status_color_1_supp, total_status_color_3_supp, total_sales                                                                            
 
+@login_required(login_url='/login')   
 def liveViewWeekly(request):
     
     userRole = [ 'A' , 'C']
@@ -1722,7 +1724,6 @@ def notify_websocket(user_id):
 def generar_reporte(request):
     form = ReporteSeleccionForm(request.GET)
     reporte_datos = None
-
            
     return render(request, 'generar_reporte.html', {'form': form, 'reporte_datos': reporte_datos})
 
