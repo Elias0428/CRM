@@ -17,9 +17,9 @@ document.getElementById('formCreateClient').addEventListener('submit', function(
         }
     }
 
-    phoneNumberFormat = validatePhoneNumber(phoneNumber.value)
-    console.log(phoneNumberFormat)
-    console.log(!isValid)
+    //phoneNumberFormat = validatePhoneNumber(phoneNumber.value)
+    //console.log(phoneNumberFormat)
+    //console.log(!isValid)
 
     if (!isValid){
         return;
