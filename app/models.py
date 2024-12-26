@@ -40,6 +40,7 @@ class Client(models.Model):
     migration_status = models.CharField(max_length=100)
     type_sales = models.CharField(max_length=100)    
     is_active = models.BooleanField(default=True)  
+    apply = models.BooleanField()
 
     class Meta:
         db_table = 'clients'
@@ -86,7 +87,6 @@ class ObamaCare(models.Model):
     img = models.FileField(null=True)
     date_effective_coverage = models.DateField(null=True)
     date_effective_coverage_end = models.DateField(null=True)
-    apply = models.CharField(max_length=50)
     observation = models.TextField(null=True)
     is_active = models.BooleanField(default=True)
 
@@ -195,10 +195,63 @@ class ClientAlert(models.Model):
     class Meta:
         db_table = 'client_alert'
 
-class dropDownList(models.Model):
+class DropDownList(models.Model):
     profiling_obama = models.CharField(max_length=255,null=True)
     profiling_supp = models.CharField(max_length=255,null=True)
 
     class Meta:
         db_table = 'drop_down_list'
+
+class ExcelFileMetadata(models.Model):
+    file_name = models.CharField(max_length=255)
+    description = models.TextField(null=True, blank=True)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'ExcelFileMetadata'
+
+
+class BdExcel(models.Model):
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255,null=True)
+    phone = models.BigIntegerField()
+    address = models.CharField(max_length=255,null=True)
+    city = models.CharField(max_length=200,null=True)
+    state = models.CharField(max_length=200,null=True)
+    zipCode = models.IntegerField(null=True)
+    agent_id = models.IntegerField(null=True)
+    excel_metadata = models.ForeignKey('ExcelFileMetadata',on_delete=models.CASCADE,related_name='records')
+
+
+    class Meta:
+        db_table = 'bd_excel'
+
+
+class ControlQuality(models.Model):
+    agent_create = models.ForeignKey(User,on_delete=models.CASCADE, related_name='created_controls' )
+    agent = models.ForeignKey(User,on_delete=models.CASCADE, related_name='assigned_controls')
+    category = models.CharField(max_length=200, null=True)
+    amount = models.BigIntegerField(null= True)
+    date = models.DateField()
+    findings = models.TextField(null= True)
+    observation = models.TextField(null= True)
+    is_active = models.BooleanField(default=True)  
+
+    class Meta:
+        db_table = 'ControlQuality'
+
+
+class ControlCall(models.Model):
+    agent_create = models.ForeignKey(User,on_delete=models.CASCADE, related_name='created_controls_call' )
+    agent = models.ForeignKey(User,on_delete=models.CASCADE, related_name='assigned_controls_call',)
+    daily = models.BigIntegerField()
+    answered = models.BigIntegerField()
+    mins = models.BigIntegerField()
+    date = models.DateField()
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = 'ControlCall'
+     
+
 
