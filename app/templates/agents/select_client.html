@@ -22,7 +22,7 @@
 	<link rel="stylesheet" href="{% static "assets/css/header-colors.css" %}" />
 {% endblock %}
 {% block page_content %}
-<h6 class="mb-0 text-uppercase">DataTable Import</h6>
+<h6 class="mb-0 text-uppercase">DataTable Client</h6>
 <hr/>
 <div class="card">
     <div class="card-body">
@@ -33,7 +33,7 @@
                         <th>Name</th>
                         <th>Phone Numbers</th>
                         <th>Current policy</th>
-                        <th>Select New Plan</th>
+                        <th>Options</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,31 +45,45 @@
                         {% if client.type_sales == "SUPLEMENTARIO" %} <td>SUPPLEMENTARY</td> {% endif %}
                         {% if client.type_sales == "ACA/SUPLEMENTARIO" %} <td>OBAMACARE / SUPPLEMENTARY</td> {% endif %}
                         <td>
-                            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="dropdown" aria-expanded="false">Dropdown</button>
+                            <button type="button" class="btn btn-outline-secondary" data-bs-toggle="dropdown" aria-expanded="false">Select action</button>
                             <ul class="dropdown-menu">
                                 {% if client.type_sales == "ACA" %}
                                     <!-- Solo mostrar ACA/SUPP si tiene ACA -->
                                     <li>
                                         <form method="POST" action="{% url 'update_type_sales' client.id %}">
                                             {% csrf_token %}
-                                            <input type="hidden" name="type_sales" value="ACA/SUPLEMENTARIO">
-                                            <button type="submit" class="dropdown-item">ACA AND SUPP</button>
+                                            <input type="hidden" name="type_sales" value="ACA">
+                                            <button type="submit" class="dropdown-item">ADD DEPENDENTS</button>
                                         </form>
                                     </li>
+                                    <li>
+                                        <form method="POST" action="{% url 'update_type_sales' client.id %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="type_sales" value="ACA/SUPLEMENTARIO">
+                                            <button type="submit" class="dropdown-item">ADD SUPP</button>
+                                        </form>
+                                    </li>                                    
                                 {% elif client.type_sales == "SUPLEMENTARIO" %}
                                     <!-- Mostrar SUPP y ACA/SUPP si tiene SUPP -->
                                     <li>
                                         <form method="POST" action="{% url 'update_type_sales' client.id %}">
                                             {% csrf_token %}
                                             <input type="hidden" name="type_sales" value="SUPLEMENTARIO">
-                                            <button type="submit" class="dropdown-item">New SUPP</button>
+                                            <button type="submit" class="dropdown-item">ADD. SUPP</button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <form method="POST" action="{% url 'update_type_sales' client.id %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="type_sales" value="SUPLEMENTARIO">
+                                            <button type="submit" class="dropdown-item">ADD. DEPENDENTS</button>
                                         </form>
                                     </li>
                                     <li>
                                         <form method="POST" action="{% url 'update_type_sales' client.id %}">
                                             {% csrf_token %}
                                             <input type="hidden" name="type_sales" value="ACA/SUPLEMENTARIO">
-                                            <button type="submit" class="dropdown-item">ACA AND SUPP</button>
+                                            <button type="submit" class="dropdown-item">ADD ACA OR SUPP</button>
                                         </form>
                                     </li>
                                 {% elif client.type_sales == "ACA/SUPLEMENTARIO" %}
@@ -78,7 +92,7 @@
                                         <form method="POST" action="{% url 'update_type_sales' client.id %}">
                                             {% csrf_token %}
                                             <input type="hidden" name="type_sales" value="ACA/SUPLEMENTARIO">
-                                            <button type="submit" class="dropdown-item">ACA AND SUPP</button>
+                                            <button type="submit" class="dropdown-item">ADD ACA OR SUPP OR DEPENDENTS</button>
                                         </form>
                                     </li>
                                 {% endif %}
@@ -92,7 +106,7 @@
                         <th>Name</th>
                         <th>Phone Numbers</th>
                         <th>Current policy</th>
-                        <th>Select New Plan</th>
+                        <th>Options</th>
                     </tr>
                 </tfoot>
             </table>

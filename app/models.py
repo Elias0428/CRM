@@ -198,6 +198,7 @@ class ClientAlert(models.Model):
 class DropDownList(models.Model):
     profiling_obama = models.CharField(max_length=255,null=True)
     profiling_supp = models.CharField(max_length=255,null=True)
+    status_bd = models.CharField(max_length=255,null=True)
 
     class Meta:
         db_table = 'drop_down_list'
@@ -206,6 +207,7 @@ class ExcelFileMetadata(models.Model):
     file_name = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
     uploaded_at = models.DateTimeField(auto_now_add=True)
+    create_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'ExcelFileMetadata'
@@ -221,6 +223,8 @@ class BdExcel(models.Model):
     zipCode = models.IntegerField(null=True)
     agent_id = models.IntegerField(null=True)
     excel_metadata = models.ForeignKey('ExcelFileMetadata',on_delete=models.CASCADE,related_name='records')
+    is_sold = models.BooleanField(default=False)  # Campo booleano para indicar si está "sold"
+    
 
 
     class Meta:
@@ -235,6 +239,7 @@ class ControlQuality(models.Model):
     date = models.DateField()
     findings = models.TextField(null= True)
     observation = models.TextField(null= True)
+    create_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)  
 
     class Meta:
@@ -248,10 +253,25 @@ class ControlCall(models.Model):
     answered = models.BigIntegerField()
     mins = models.BigIntegerField()
     date = models.DateField()
+    create_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'ControlCall'
+
+
+class CommentBD(models.Model):
+    bd_excel = models.ForeignKey(BdExcel, on_delete=models.CASCADE)
+    agent_create = models.ForeignKey(User,on_delete=models.CASCADE )
+    excel_metadata = models.ForeignKey(ExcelFileMetadata,on_delete=models.CASCADE)
+    content = models.TextField()
+    create_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'CommentBD'
+
+
+    
      
 
 

@@ -32,6 +32,10 @@
 	<link rel="stylesheet" href="{% static 'assets/css/dark-theme.css' %}" />
 	<link rel="stylesheet" href="{% static 'assets/css/semi-dark.css' %}" />
 	<link rel="stylesheet" href="{% static 'assets/css/header-colors.css' %}" />
+
+	<!-- Personalización CSS para fondo oscuro -->
+	<link href="{% static "assets/css/selectMultiple.css" %}" rel="stylesheet" />
+
 	<title>Plan information</title>
 {% endblock %}
 
@@ -79,6 +83,7 @@
 			<div class="bs-stepper-content">
 				<form onSubmit="return false" method="POST">
 					<input type="hidden" id="type_sales" name="type_sales" value="{{ client.type_sales }}">
+					<input type="hidden" id="id" name="id" value="{{ client.id }}">
 					{% if client.type_sales == 'ACA'  or client.type_sales == 'ACA/SUPLEMENTARIO' %}
 						<div id="test-l-1" role="tabpanel" class="bs-stepper-pane" aria-labelledby="stepper1trigger1">
 							<h5 class="mb-1">Your Obamacare Information</h5>
@@ -90,7 +95,7 @@
 								<div class="col-12 col-lg-6">
 									<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
 									<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa">
-										<option disabled selected value=""></option>
+										<option disabled selected value="">Please Select</option>
 										<option value="Daniel" {% if aca_plan_data.agent_usa == 'Daniel' %}selected{% endif %}>Daniel</option>
 										<option value="Zohira" {% if aca_plan_data.agent_usa == 'Zohira' %}selected{% endif %}>Zohira</option>
 										<option value="Gina" {% if aca_plan_data.agent_usa == 'Gina' %}selected{% endif %}>Gina</option>
@@ -114,7 +119,7 @@
 								<div class="col-12 col-lg-6">
 									<label for="work" class="form-label font-weight-bold">Work</label>
 									<select class="form-select" id="work" aria-label="Default select example"  name="work"   >
-										<option disabled selected value=""></option>
+										<option disabled selected value="">Please Select</option>
 										<option value="w2" {% if aca_plan_data.work == "w2" %}selected{% endif %} >W2</option>
 										<option value="1099" {% if aca_plan_data.work == "1099" %}selected{% endif %} >1099</option> 
 									</select>
@@ -126,7 +131,7 @@
 								<div class="col-12 col-lg-6">
 									<label for="carrierObama" class="form-label">Carrier</label>
 									<select class="form-select" id="carrierObama"  name="carrierObama"  >
-										<option disabled selected value=""></option>
+										<option disabled selected value="">Please Select</option>
 										<option value="AETNA" {% if aca_plan_data.carrier == "AETNA" %}selected{% endif %} >AETNA</option>
 										<option value="AMBETTER" {% if aca_plan_data.carrier == "AMBETTER" %}selected{% endif %} >AMBETTER</option>
 										<option value="ANTHEM" {% if aca_plan_data.carrier == "ANTHEM" %}selected{% endif %} >ANTHEM</option>
@@ -148,13 +153,21 @@
 										<option value="AERIHEALTH CARITAS" {% if aca_plan_data.carrier == "AERIHEALTH CARITAS" %}selected{% endif %} >AERIHEALTH CARITAS</option>
 										<option value="HEALTH FRIST" {% if aca_plan_data.carrier == "HEALTH FRIST" %}selected{% endif %} >HEALTH FRIST</option>
 									</select>
+								</div>								
+								<div class="col-12 col-lg-4">
+									<label for="doc_income" class="form-label">Income document</label>
+									<select class="form-select" id="doc_income"  name="doc_income">
+										<option value="" disabled selected>Please Select</option>
+										<option value= "1" {% if aca_plan_data.doc_income == 1 %}selected{% endif %} >Yes</option>
+										<option value= "0" {% if aca_plan_data.doc_income == 0 %}selected{% endif %}>No</option>
+									</select>
 								</div>
-								<div class="col-12 col-lg-6">
-									<label for="applyObama" class="form-label">Apply</label>
-									<select class="form-select" id="applyObama"  name="applyObama"  >
-										<option disabled selected value=""></option>
-										<option value="SI" {% if aca_plan_data.apply == "SI" %}selected{% endif %} >SI</option>
-										<option value="NO" {% if aca_plan_data.apply == "NO" %}selected{% endif %}>NO</option>
+								<div class="col-12 col-lg-4">
+									<label for="doc_migration" class="form-label">Migration document</label>
+									<select class="form-select" id="doc_migration" name="doc_migration">
+										<option value="" disabled selected>Please Select</option>
+										<option value= "1" {% if aca_plan_data.doc_migration == 1 %}selected{% endif %}>Yes</option>
+										<option value= "0" {% if aca_plan_data.doc_migration == 0 %}selected{% endif %}>No</option>
 									</select>
 								</div>
 								<div class="col-12 col-lg-12">
@@ -164,7 +177,7 @@
 								<input type="hidden" id="client_id" value="{{client.id}}">
 								<div class="col-12">
 									<div class="d-flex align-items-center gap-3">
-										<button class="btn btn-outline-secondary px-4" onclick="stepper1.previous()"><i class='bx bx-left-arrow-alt me-2'></i>Previous</button>
+										<a class="btn btn-outline-secondary px-4" href="{% url 'formEditClient' client.id %}"><i class='bx bx-left-arrow-alt me-2'></i>Previous	</a>										
 										<button class="btn btn-primary px-4" id='buttonSendObama'>Next<i class='bx bx-right-arrow-alt ms-2'></i></button>
 									</div>
 								</div>
@@ -231,7 +244,7 @@
 																	<option value="PIVOT" {% if supp_plan.company|default:'' == 'PIVOT' %}selected{% endif %}>PIVOT</option>  
 																	<option value="SUREBRIDGE" {% if supp_plan.company == 'SUREBRIDGE' %}selected{% endif %}> SUREBRIDGE </option>    
 																	<option value="UNITED" {% if supp_plan.company == 'UNITED' %}selected{% endif %}> UNITED </option>    
-																	</select>
+																</select>
 															</div>
 															<div class="col-12 col-lg-6">
 																<label for="premiumSupp" class="form-label">Premium</label>
@@ -242,15 +255,15 @@
 																<select class="form-select" id="policyTypeSupp"  name="policyTypeSupp" aria-label="Default select example">
 																	<option disabled selected value=""></option>
 																	<option value="ACCIDENTE" {% if supp_plan.policy_type == 'ACCIDENTE' %}selected{% endif %} >ACCIDENTE</option>
-																		<option value="HOSPITALIZACION" {% if supp_plan.policy_type == 'HOSPITALIZACION' %}selected{% endif %} >HOSPITALIZACION</option>
-																		<option value="DENTAL" {% if supp_plan.policy_type == 'DENTAL' %}selected{% endif %} >DENTAL</option>
-																		<option value="ENFERMEDADES CRITICAS" {% if supp_plan.policy_type == 'ENFERMEDADES CRITICAS' %}selected{% endif %} >ENFERMEDADES CRITICAS</option>
-																		<option value="VISUAL" {% if supp_plan.policy_type == 'VISUAL' %}selected{% endif %} >VISUAL</option>
-																		<option value="DENTAL Y VISUAL" {% if supp_plan.policy_type == 'DENTAL Y VISUAL' %}selected{% endif %} >DENTAL Y VISUAL</option>
-																		<option value="PLAN DE DESCUENTO" {% if supp_plan.policy_type == 'PLAN DE DESCUENTO' %}selected{% endif %} >PLAN DE DESCUENTO</option>
-																		<option value="SHORT TERM MEDICAL" {% if supp_plan.policy_type == 'SHORT TERM MEDICAL' %}selected{% endif %} >SHORT TERM MEDICAL</option>
-																		<option value="CANCER" {% if supp_plan.policy_type == 'CANCER' %}selected{% endif %} >CANCER</option>
-																	</select>
+																	<option value="HOSPITALIZACION" {% if supp_plan.policy_type == 'HOSPITALIZACION' %}selected{% endif %} >HOSPITALIZACION</option>
+																	<option value="DENTAL" {% if supp_plan.policy_type == 'DENTAL' %}selected{% endif %} >DENTAL</option>
+																	<option value="ENFERMEDADES CRITICAS" {% if supp_plan.policy_type == 'ENFERMEDADES CRITICAS' %}selected{% endif %} >ENFERMEDADES CRITICAS</option>
+																	<option value="VISUAL" {% if supp_plan.policy_type == 'VISUAL' %}selected{% endif %} >VISUAL</option>
+																	<option value="DENTAL Y VISUAL" {% if supp_plan.policy_type == 'DENTAL Y VISUAL' %}selected{% endif %} >DENTAL Y VISUAL</option>
+																	<option value="PLAN DE DESCUENTO" {% if supp_plan.policy_type == 'PLAN DE DESCUENTO' %}selected{% endif %} >PLAN DE DESCUENTO</option>
+																	<option value="SHORT TERM MEDICAL" {% if supp_plan.policy_type == 'SHORT TERM MEDICAL' %}selected{% endif %} >SHORT TERM MEDICAL</option>
+																	<option value="CANCER" {% if supp_plan.policy_type == 'CANCER' %}selected{% endif %} >CANCER</option>
+																</select>
 															</div>
 															<div class="col-12 col-lg-6">
 																<label for="preventiveSupp" class="form-label">Preventive</label>
@@ -265,18 +278,19 @@
 																<label for="coverageSupp" class="form-label">Coverage</label>
 																<select class="form-select" id="coverageSupp"  name="coverageSupp" aria-label="Default select example">
 																	<option disabled selected value=""></option>
+																	<option value="0" {% if supp_plan.coverage == 0 %}selected{% endif %} >0</option>
 																	<option value="500" {% if supp_plan.coverage == 500 %}selected{% endif %} >500</option>
-																		<option value="750" {% if supp_plan.coverage == 750 %}selected{% endif %} >750</option>
-																		<option value="1000" {% if supp_plan.coverage == 1000 %}selected{% endif %} >1000</option>
-																		<option value="1500" {% if supp_plan.coverage == 1500 %}selected{% endif %} >1500</option>
-																		<option value="2000" {% if supp_plan.coverage == 2000 %}selected{% endif %} >2000</option>
-																		<option value="2500" {% if supp_plan.coverage == 2500 %}selected{% endif %} >2500</option>
-																		<option value="3000" {% if supp_plan.coverage == 3000 %}selected{% endif %} >3000</option>
-																		<option value="3500" {% if supp_plan.coverage == 3500 %}selected{% endif %} >3500</option>
-																		<option value="4000" {% if supp_plan.coverage == 4000 %}selected{% endif %} >4000</option>
-																		<option value="4500" {% if supp_plan.coverage == 4500 %}selected{% endif %} >4500</option>
-																		<option value="5000" {% if supp_plan.coverage == 5000 %}selected{% endif %} >5000</option>
-																		<option value="10000" {% if supp_plan.coverage == 10000 %}selected{% endif %} >10000</option>
+																	<option value="750" {% if supp_plan.coverage == 750 %}selected{% endif %} >750</option>
+																	<option value="1000" {% if supp_plan.coverage == 1000 %}selected{% endif %} >1000</option>
+																	<option value="1500" {% if supp_plan.coverage == 1500 %}selected{% endif %} >1500</option>
+																	<option value="2000" {% if supp_plan.coverage == 2000 %}selected{% endif %} >2000</option>
+																	<option value="2500" {% if supp_plan.coverage == 2500 %}selected{% endif %} >2500</option>
+																	<option value="3000" {% if supp_plan.coverage == 3000 %}selected{% endif %} >3000</option>
+																	<option value="3500" {% if supp_plan.coverage == 3500 %}selected{% endif %} >3500</option>
+																	<option value="4000" {% if supp_plan.coverage == 4000 %}selected{% endif %} >4000</option>
+																	<option value="4500" {% if supp_plan.coverage == 4500 %}selected{% endif %} >4500</option>
+																	<option value="5000" {% if supp_plan.coverage == 5000 %}selected{% endif %} >5000</option>
+																	<option value="10000" {% if supp_plan.coverage == 10000 %}selected{% endif %} >10000</option>
 																</select>
 															</div>
 															<div class="col-12 col-lg-6">
@@ -284,8 +298,8 @@
 																<select class="form-select" id="deducibleSupp"  name="deducibleSupp"  aria-label="Default select example">
 																	<option disabled selected value=""></option>
 																	<option value="100" {% if supp_plan.deducible == 100 %}selected{% endif %} >100</option>
-																		<option value="50" {% if supp_plan.deducible == 50 %}selected{% endif %} >50</option>
-																		<option value="0" {% if supp_plan.deducible == 0 %}selected{% endif %} >0</option>
+																	<option value="50" {% if supp_plan.deducible == 50 %}selected{% endif %} >50</option>
+																	<option value="0" {% if supp_plan.deducible == 0 %}selected{% endif %} >0</option>
 																</select>
 															</div>
 															<div class="col-12 col-lg-12">
@@ -342,7 +356,7 @@
 																	<option value="PIVOT">PIVOT</option>  
 																	<option value="SUREBRIDGE"> SUREBRIDGE </option>    
 																	<option value="UNITED"> UNITED </option>    
-																	</select>
+																</select>
 															</div>
 															<div class="col-12 col-lg-6">
 																<label for="premiumSupp" class="form-label">Premium</label>
@@ -353,14 +367,14 @@
 																<select class="form-select" id="policyTypeSupp" name="policyTypeSupp" aria-label="Default select example">
 																	<option disabled selected value=""></option>
 																	<option value="ACCIDENTE">ACCIDENTE</option>
-																		<option value="HOSPITALIZACION">HOSPITALIZACION</option>
-																		<option value="DENTAL">DENTAL</option>
-																		<option value="ENFERMEDADES CRITICAS">ENFERMEDADES CRITICAS</option>
-																		<option value="VISUAL">VISUAL</option>
-																		<option value="DENTAL Y VISUAL">DENTAL Y VISUAL</option>
-																		<option value="PLAN DE DESCUENTO">PLAN DE DESCUENTO</option>
-																		<option value="SHORT TERM MEDICAL">SHORT TERM MEDICAL</option>
-																		<option value="CANCER">CANCER</option>
+																	<option value="HOSPITALIZACION">HOSPITALIZACION</option>
+																	<option value="DENTAL">DENTAL</option>
+																	<option value="ENFERMEDADES CRITICAS">ENFERMEDADES CRITICAS</option>
+																	<option value="VISUAL">VISUAL</option>
+																	<option value="DENTAL Y VISUAL">DENTAL Y VISUAL</option>
+																	<option value="PLAN DE DESCUENTO">PLAN DE DESCUENTO</option>
+																	<option value="SHORT TERM MEDICAL">SHORT TERM MEDICAL</option>
+																	<option value="CANCER">CANCER</option>
 																	</select>
 															</div>
 															<div class="col-12 col-lg-6">
@@ -368,14 +382,15 @@
 																<select class="form-select" id="preventiveSupp" name="preventiveSupp" aria-label="Default select example">
 																	<option disabled selected value=""></option>
 																	<option value="60">60% </option>
-																		<option value="100">100%</option>
-																		<option value="Sin Espera">Sin Espera</option>
+																	<option value="100">100%</option>
+																	<option value="Sin Espera">Sin Espera</option>
 																</select>
 															</div>
 															<div class="col-12 col-lg-6">
 																<label for="coverageSupp" class="form-label">Coverage</label>
 																<select class="form-select" id="coverageSupp" name="coverageSupp" aria-label="Default select example">
 																	<option disabled selected value=""></option>
+																	<option value="0">0</option>
 																	<option value="500">500</option>
 																	<option value="750">750</option>
 																	<option value="1000">1000</option>
@@ -415,7 +430,11 @@
 							</div>						
 							<div class="col-12 mt-4">
 								<div class="d-flex align-items-center gap-3">
-									<button class="btn btn-outline-secondary px-4" onclick="stepper1.previous()">Previous</button>
+									{% if client.type_sales == 'ACA'  or client.type_sales == 'ACA/SUPLEMENTARIO' %}
+										<a class="btn btn-outline-secondary px-4" href="{% url 'formEditClient' client.id %}"><i class='bx bx-left-arrow-alt me-2'></i>Previous	</a>	
+									{% else %}
+										<button class="btn btn-outline-secondary px-4" onclick="stepper1.previous()">Previous</button>
+									{% endif %}									
 									<button class="btn btn-primary px-4" id="buttonSendSupp" disabled>Next</button>
 								</div>
 							</div>						
@@ -452,7 +471,7 @@
 															<label class="form-label">Apply</label>
 															<select class="form-select" name="applyDependent">
 																<option disabled selected value=""></option>
-																<option value="SI" {% if dependent.apply == "SI" %}selected{% endif %}>SI</option>
+																<option value="YES" {% if dependent.apply == "YES" %}selected{% endif %}>YES</option>
 																<option value="NO" {% if dependent.apply == "NO" %}selected{% endif %}>NO</option>
 															</select>
 														</div>
@@ -526,7 +545,7 @@
 														<label class="form-label">Apply</label>
 														<select class="form-select" name="applyDependent">
 															<option disabled selected value=""></option>
-															<option value="SI">SI</option>
+															<option value="YES">YES</option>
 															<option value="NO">NO</option>
 														</select>
 													</div>
@@ -659,91 +678,5 @@
 	<!-- Incluir JS de Choices.js -->
 	<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
 
-
-	
-	<!-- Personalización CSS para fondo oscuro -->
-	<style>
-		/* Estilo general del select */
-		.choices__inner {
-			background-color: #222; /* Fondo oscuro */
-			color: #ddd; /* Texto en gris claro */
-			font-family: 'Arial', sans-serif; /* Fuente moderna */
-			border: 1px solid #444; /* Borde sutil */
-			border-radius: 8px; /* Bordes redondeados */
-			padding: 8px 12px; /* Espaciado interno */
-			transition: all 0.3s ease; /* Transición suave */
-		}
-	
-		/* Estilo para el borde cuando el select está enfocado */
-		.choices__inner--focused {
-			border-color: #3b82f6; /* Borde azul cuando está enfocado */
-			box-shadow: 0 0 10px rgba(59, 130, 246, 0.3); /* Sombra sutil azul */
-		}
-	
-		/* Estilo para las opciones dentro del dropdown */
-		.choices__list--dropdown {
-			background-color: #333; /* Fondo oscuro para el dropdown */
-			color: #ddd; /* Texto claro */
-			max-height: 250px; /* Altura máxima */
-			overflow-y: auto; /* Desplazamiento si las opciones son muchas */
-			border-radius: 8px; /* Bordes redondeados */
-			box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Sombra suave */
-			border: none; /* Sin borde */
-		}
-	
-		/* Estilo para las opciones dentro del dropdown cuando están enfocadas */
-		.choices__item--highlighted {
-			background-color: #3b82f6; /* Fondo azul cuando se resalta */
-			color: white; /* Texto blanco */
-			cursor: pointer; /* Puntero */
-		}
-	
-		/* Estilo para las opciones seleccionables dentro del dropdown */
-		.choices__item--selectable {
-			background-color: #444; /* Fondo oscuro */
-			color: #ddd; /* Texto claro */
-			padding: 8px 12px; /* Espaciado */
-			transition: background-color 0.2s ease; /* Transición de color suave */
-		}
-	
-		/* Estilo para las opciones seleccionadas en el campo */
-		.choices__item {
-			background-color: #3b82f6; /* Fondo azul */
-			color: rgb(59, 59, 59); /* Texto blanco */
-			padding: 6px 10px; /* Espaciado de las opciones seleccionadas */
-			margin: 4px; /* Separación entre opciones */
-			border-radius: 20px; /* Bordes redondeados */
-			font-weight: bold; /* Texto en negrita */
-			font-size: 14px; /* Tamaño de texto */
-		}
-	
-		/* Estilo para el botón de eliminar de las opciones seleccionadas */
-		.choices__button {
-			color: #fff; /* Eliminar en blanco */
-			font-size: 16px;
-			background-color: transparent;
-			border: none;
-			margin-left: 8px;
-			cursor: pointer;
-		}
-	
-		.choices__button:hover {
-			color: #f00; /* Cambiar color a rojo al pasar el mouse */
-		}
-	
-		/* Fondo del área de texto al estar vacío */
-		.choices__placeholder {
-			color: #888; /* Color gris claro */
-		}
-	
-		/* Ajustes para el input de búsqueda */
-		.choices__input {
-			background-color: #333; /* Fondo oscuro */
-			color: #fff; /* Texto blanco */
-			border: 1px solid #444; /* Borde oscuro */
-			padding: 8px 12px; /* Espaciado interno */
-			border-radius: 6px; /* Bordes redondeados */
-		}
-	</style>
 
 {% endblock %}

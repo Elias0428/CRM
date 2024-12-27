@@ -65,3 +65,51 @@ class ReporteSeleccionForm(forms.Form):
     )
 
     tipo_reporte = forms.ChoiceField(choices=TIPOS_DE_REPORTE, required=True)
+
+class ExcelUploadForm(forms.Form):
+    file = forms.FileField(label="Subir archivo Excel", 
+        widget=forms.FileInput(attrs={
+            'class': 'form-control',
+            'accept': '.xlsx, .xls'  # Limita a archivos Excel
+        }))
+
+class ControlQualityForm(forms.ModelForm):
+    class Meta:
+        model = ControlQuality
+        fields = '__all__'
+        exclude = ['agent_create']
+
+    #cambiamos formato de la fecha para guardarla como se debe en la BD ya que la obtenes en formato USA
+    def clean_date(self):
+        date_input = self.cleaned_data['date']
+        
+        # Si el input ya es un objeto de fecha, lo devolvemos tal cual
+        if isinstance(date_input, datetime.date):
+            return date_input
+
+        # Si es una cadena, lo convertimos al formato adecuado
+        try:
+            return datetime.strptime(date_input, '%m/%d/%Y').date()
+        except ValueError:
+            raise forms.ValidationError('Formato de fecha inválido. Use MM/DD/YYYY.')
+
+
+class ControlCallForm(forms.ModelForm):
+    class Meta:
+        model = ControlCall
+        fields = '__all__'
+        exclude = ['agent_create']
+
+    #cambiamos formato de la fecha para guardarla como se debe en la BD ya que la obtenes en formato USA
+    def clean_date(self):
+        date_input = self.cleaned_data['date']
+        
+        # Si el input ya es un objeto de fecha, lo devolvemos tal cual
+        if isinstance(date_input, datetime.date):
+            return date_input
+
+        # Si es una cadena, lo convertimos al formato adecuado
+        try:
+            return datetime.strptime(date_input, '%m/%d/%Y').date()
+        except ValueError:
+            raise forms.ValidationError('Formato de fecha inválido. Use MM/DD/YYYY.')

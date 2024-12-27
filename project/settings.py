@@ -29,8 +29,7 @@ SECRET_KEY = 'django-insecure-wxwjr&9_la5a&fe9i@=fwe(gjze$wsz$lwac&=5mmy&557vyzg
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-CSRF_TRUSTED_ORIGINS = ['https://blue.lapeira.com', 'https://www.blue.lapeira.com']
-ALLOWED_HOSTS = ['blue.lapeira.com', 'www.blue.lapeira.com']
+ALLOWED_HOSTS = []
 
 #Configuration to use own user model
 AUTH_USER_MODEL = 'app.user'  
@@ -102,11 +101,11 @@ CHANNEL_LAYERS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASS'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT'),
+        'NAME': 'CRM-2025',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
         'OPTIONS': {'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"},
     }
 }

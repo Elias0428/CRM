@@ -27,9 +27,9 @@ urlpatterns = [
 
     path('liveView/',views.liveViewWeekly,name='liveView'),
 
-    path('generar_reporte/', views.generar_reporte, name='generar_reporte'),
-
     path('formCreateClient/', views.formCreateClient, name='formCreateClient'),
+    path('formEditClient/<client_id>/', views.formEditClient, name='formEditClient'),
+
     path('check-phone-number/', views.check_phone_number, name = 'check_phone_number'),
     path('motivationalPhrase/', views.motivationalPhrase, name='motivationalPhrase'),
 
@@ -70,6 +70,19 @@ urlpatterns = [
 
     path('formCreatePlan/deleteDependent/<int:dependent_id>/', views.delete_dependent, name='delete_dependent'),
     path('formCreatePlan/deleteSupp/<int:supp_id>/', views.delete_supp, name='delete_supp'),
+
+    path('upload_excel/', views.upload_excel, name='upload_excel'),    
+    path('process_and_save/', views.process_and_save, name='process_and_save'),
+    path('save_data/', views.save_data, name='save_data'),
+    path('manage_agent_assignments/', views.manage_agent_assignments, name='manage_agent_assignments'),
+
+    path('formCreateControl/', views.formCreateControl, name='formCreateControl'),
+    path('control/', views.tableControl, name='control'),
+    path('createQuality/', views.createQuality, name='createQuality'),
+
+    path('bd/', views.commentDB, name='bd'),
+
+    path('saleProm/', views.saleProm, name='saleProm')
 
     ##path('exportUsers/', views.exportUsers, name='exportUsers'),
     ##path('testImportDb/', views.testExportDB, name='testExportDB'),

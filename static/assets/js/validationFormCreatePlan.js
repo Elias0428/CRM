@@ -32,8 +32,9 @@ function saveAcaPlan() {
     formData.append('work', document.getElementById('work').value)
     formData.append('subsidy', document.getElementById('subsidy').value)
     formData.append('carrierObama', document.getElementById('carrierObama').value)
-    formData.append('applyObama', document.getElementById('applyObama').value)
     formData.append('observationObama', document.getElementById('observationObama').value)
+    formData.append('doc_income', document.getElementById('doc_income').value)
+    formData.append('doc_migration', document.getElementById('doc_migration').value)
     formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value)
 
     var acaPlanId = document.getElementById('acaPlanId').value;

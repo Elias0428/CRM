@@ -14,17 +14,41 @@ import json
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from datetime import datetime, timedelta
+from datetime import datetime
 import calendar
 from django.db.models import Q
 from django.db.models.functions import Coalesce
 from django.db.models import Count
-from datetime import date
 
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
+from django.shortcuts import render
+from django.contrib import messages
+import pandas as pd
 
+from django.db.models import Sum
+
+import pandas as pd
+from io import BytesIO
+import base64
+from .forms import ExcelUploadForm
+from .models import BdExcel
+
+import os
+import tempfile
+
+from django.utils.timezone import now
+
+from django.template.loader import render_to_string
+from django.http import HttpResponse
+from weasyprint import HTML
+import datetime
+
+from django.shortcuts import render
+from .models import BdExcel, ExcelFileMetadata, User
+
+from django.shortcuts import redirect
 # Create your views here.
 
 def login_(request):
@@ -113,6 +137,22 @@ def formCreateClient(request):
     else:
         return render(request, 'forms/formCreateClient.html')
 
+@login_required(login_url='/login') 
+def formEditClient(request, client_id):
+    
+    client = get_object_or_404(Client, id=client_id)
+
+    if request.method == 'POST':
+        form = ClientForm(request.POST, instance=client)
+        if form.is_valid():
+            form.save()
+            return redirect('formCreatePlan', client.id) 
+        
+    # Si el método es GET, mostrar el formulario con los datos del cliente
+    form = ClientForm(instance=client)
+
+    return render(request, 'forms/formEditClient.html', {'form': form, 'client': client})
+
 # Nueva vista para verificar si el número de teléfono ya existe (usada en AJAX)
 def check_phone_number(request):
     if request.method == 'POST':
@@ -156,7 +196,8 @@ def fetchAca(request, client_id):
             work=request.POST.get('work'),
             subsidy=request.POST.get('subsidy'),
             carrier=request.POST.get('carrierObama'),
-            apply=request.POST.get('applyObama'),
+            doc_income=request.POST.get('doc_income'),
+            doc_migration=request.POST.get('doc_migration'),
             observation=request.POST.get('observationObama')
         )
         aca_plan = ObamaCare.objects.get(id=aca_plan_id)
@@ -173,8 +214,9 @@ def fetchAca(request, client_id):
                 'work': request.POST.get('work'),
                 'subsidy': request.POST.get('subsidy'),
                 'carrier': request.POST.get('carrierObama'),
-                'apply': request.POST.get('applyObama'),
                 'observation': request.POST.get('observationObama'),
+                'doc_migration': request.POST.get('doc_migration'),
+                'doc_income': request.POST.get('doc_income'),
                 'status_color': 1,
                 'profiling':'NO'
             }
@@ -331,8 +373,7 @@ def clientObamacare(request):
     if request.user.role in roleAuditar:
         obamaCare = ObamaCare.objects.select_related('agent','client').filter(is_active = True)
     elif request.user.role == 'Admin':
-        obamaCare = ObamaCare.objects.select_related('agent', 'client').filter(is_active=True)
-
+        obamaCare = ObamaCare.objects.select_related('agent', 'client')
     elif request.user.role == 'A':
         obamaCare = ObamaCare.objects.select_related('agent','client').filter(agent = request.user.id, is_active = True ) 
 
@@ -460,7 +501,7 @@ def editClientObama(request, client_id, obamacare_id):
     obsObama = ObservationAgent.objects.filter(id_obamaCare=obamacare_id)
   
     users = User.objects.filter(role='C')
-    list_drow = dropDownList.objects.filter(profiling_obama__isnull=False)
+    list_drow = DropDownList.objects.filter(profiling_obama__isnull=False)
 
     obsCus = ObservationCustomer.objects.select_related('agent').filter(client_id=obamacare.client.id)
 
@@ -602,7 +643,7 @@ def editClientSupp(request, client_id,supp_id):
     supp = Supp.objects.select_related('client','agent').filter(id=supp_id).first()
     obsSupp = ObservationAgent.objects.filter(id_supp=supp_id)
     obsCus = ObservationCustomer.objects.select_related('agent').filter(client_id=supp.client.id)
-    list_drow = dropDownList.objects.filter(profiling_supp__isnull=False)
+    list_drow = DropDownList.objects.filter(profiling_supp__isnull=False)
 
     # Obtener el objeto Supp que tiene el id `supp_id`
     supp_instance = Supp.objects.get(id=supp_id)
@@ -1184,7 +1225,7 @@ def chartSaleIndex(request):
                 agent_sale_supp__created_at__gte=start_of_month,
                 agent_sale_supp__created_at__lt=end_of_month
             ), distinct=True), 0)
-        ).values('username', 'obamacare_count', 'obamacare_count_total', 'supp_count', 'supp_count_total')
+        ).values('first_name', 'obamacare_count', 'obamacare_count_total', 'supp_count', 'supp_count_total')
 
     elif request.user.role not in roleAuditar:
         # Para usuarios con rol 'A': consultar datos solo para el usuario actual
@@ -1215,12 +1256,12 @@ def chartSaleIndex(request):
                 agent_sale_supp__agent=request.user.id,
                 agent_sale_supp__is_active=True
             ), distinct=True), 0)
-        ).values('username', 'obamacare_count', 'obamacare_count_total', 'supp_count', 'supp_count_total')
+        ).values('first_name', 'obamacare_count', 'obamacare_count_total', 'supp_count', 'supp_count_total')
 
     # Convertir los datos a una lista de diccionarios para su uso
     combined_data = [
         {
-            'username': user['username'],
+            'username': user['first_name'],
             'obamacare_count': user['obamacare_count'],
             'obamacare_count_total': user['obamacare_count_total'],
             'supp_count': user['supp_count'],
@@ -1721,13 +1762,543 @@ def notify_websocket(user_id):
         }
     )
 
-def generar_reporte(request):
-    form = ReporteSeleccionForm(request.GET)
-    reporte_datos = None
-           
-    return render(request, 'generar_reporte.html', {'form': form, 'reporte_datos': reporte_datos})
+@login_required(login_url='/login')   
+def formCreateControl(request):
+
+    userRole = [ 'A' , 'C']
+    users = User.objects.filter(role__in = userRole)
+
+    if request.method == 'POST':
+
+        if request.POST.get('Action') == 'Quality':
+            form = ControlQualityForm(request.POST)
+            if form.is_valid():
+
+                quality = form.save(commit=False)
+                quality.agent_create = request.user 
+                quality.is_active = True
+                quality.save()
+                
+                # Responder con éxito y la URL de redirección
+                return redirect('formCreateControl')
+            
+        elif request.POST.get('Action') == 'Call':
+            
+            form = ControlCallForm(request.POST)
+            if form.is_valid():
+
+                call = form.save(commit=False)
+                call.agent_create = request.user
+                call.is_active = True
+                call.save()
+                
+                # Responder con éxito y la URL de redirección
+                return redirect('formCreateControl')
+
+    context = {'users':users}
+
+    return render(request, 'forms/formCreateControl.html', context)
+
+@login_required(login_url='/login')   
+def tableControl(request):
+
+    quality = ControlQuality.objects.select_related('agent','agent_create').filter(is_active = True)
+    call = ControlCall.objects.select_related('agent','agent_create').filter(is_active = True)
+
+    context = {
+        'quality' : quality,
+        'call' : call
+    }
+
+    return render(request, 'table/control.html', context)
+
+@login_required(login_url='/login')   
+def createQuality(request):
+
+    agents = User.objects.filter(is_active = True, role = 'A')
+
+    if request.method == 'POST':
+
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+        agent = request.POST.get('agent')
+
+        consultQuality = ControlQuality.objects.filter(date__range=(start_date, end_date), agent = agent)
+        agentReport = ControlQuality.objects.select_related('agent').filter(agent = agent).first
+        date = datetime.datetime.now
+
+        callAll = ControlCall.objects.filter(date__range=(start_date, end_date), agent = agent)
+        # Sumar los valores de daily, answered y mins
+        totals = callAll.aggregate(
+            total_daily=Sum('daily'),
+            total_answered=Sum('answered'),
+            total_mins=Sum('mins')
+        )
+
+        # Acceder a los valores sumados
+        total_daily = totals['total_daily']
+        total_answered = totals['total_answered']
+        total_mins = totals['total_mins']
+
+        print(end_date)
+        
+        return generatePdfQuality(
+            request, consultQuality, agentReport, start_date, end_date, date, total_daily, total_answered, total_mins
+        )
+
+    context = {
+        'agents' : agents
+    }
+
+    return render (request,'pdf/createQuality.html', context)
+
+def generatePdfQuality(request, consultQuality,agentReport,start_date,end_date,date,total_daily, total_answered, total_mins):
+
+    context = {
+        'consultQuality' : consultQuality,
+        'agentReport' : agentReport,
+        'start_date' : start_date,
+        'end_date' : end_date,
+        'date' : date,
+        'total_daily' : total_daily,
+        'total_answered' : total_answered,
+        'total_mins' : total_mins
+    }
+
+    # Renderiza la plantilla HTML a un string
+    html_content = render_to_string('pdf/template.html', context)
+
+    # Genera el PDF
+    pdf_file = HTML(string=html_content).write_pdf()
+
+    # Devuelve el PDF como respuesta HTTP
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="output.pdf"'
+    return response
+
+@login_required(login_url='/login')   
+def upload_excel(request):
+    headers = []  # Cabeceras del archivo Excel
+    model_fields = [field.name for field in BdExcel._meta.fields if field.name not in ['id', 'agent_id', 'excel_metadata']]
+
+    if request.method == 'POST':
+        form = ExcelUploadForm(request.POST, request.FILES)
+        file_name = request.POST.get('file_name')
+        description = request.POST.get('description')
+
+        if form.is_valid() and file_name:
+            excel_file = request.FILES['file']
+
+            try:
+                # Leer el archivo Excel para extraer las cabeceras
+                df = pd.read_excel(excel_file, engine='openpyxl')
+                headers = list(df.columns)  # Extraer las cabeceras del archivo
+
+                # Convertir valores a tipos compatibles con JSON
+                df = df.applymap(
+                    lambda x: x.isoformat() if isinstance(x, pd.Timestamp) else x
+                )
+
+                # Crear un registro en ExcelFileMetadata
+                excel_metadata = ExcelFileMetadata.objects.create(
+                    file_name=file_name,
+                    description=description,
+                    uploaded_at=now()
+                )
+
+                # Guardar el DataFrame en la sesión para usarlo después
+                request.session['uploaded_data'] = df.to_dict(orient='list')  # Convertir a diccionario serializable
+                request.session['uploaded_headers'] = headers
+                request.session['metadata_id'] = excel_metadata.id  # Guardar ID del archivo para usarlo luego
+
+            except Exception as e:
+                print(f"Error al leer el archivo: {str(e)}")
+                return render(request, 'excel/upload_excel.html', {
+                    'form': form,
+                    'error': f"Error al procesar el archivo: {str(e)}"
+                })
+
+            # Renderizar la página de mapeo
+            return render(request, 'excel/map_headers.html', {
+                'headers': headers,
+                'model_fields': model_fields
+            })
+    else:
+        form = ExcelUploadForm()
+
+    return render(request, 'excel/upload_excel.html', {'form': form})
+
+def process_and_save(request):
+    if request.method == 'POST':
+        # Obtener el mapeo entre los campos del modelo y las cabeceras del archivo
+        mapping = {}
+        for key, value in request.POST.items():
+            if key.startswith('mapping_'):
+                model_field = key.replace('mapping_', '')  # Campo del modelo
+                header = value  # Cabecera del archivo seleccionada
+                mapping[model_field] = header
+
+        # Recuperar la ruta del archivo desde la sesión
+        uploaded_file_path = request.session.get('uploaded_file_path')
+        if not uploaded_file_path or not os.path.exists(uploaded_file_path):
+            return render(request, 'excel/upload_excel.html', {'error': 'No se encontró el archivo Excel. Por favor, súbelo nuevamente.'})
+
+        try:
+            # Leer el archivo Excel desde la ruta temporal
+            df = pd.read_excel(uploaded_file_path, engine='openpyxl')
+
+            # Iterar sobre las filas del DataFrame y guardar en la BD
+            for _, row in df.iterrows():
+                data = {}
+                for model_field, header in mapping.items():
+                    if header in df.columns:  # Verificar que la cabecera esté en el archivo
+                        data[model_field] = row[header]
+                BdExcel.objects.create(**data)
+
+        except Exception as e:
+            print(f"Error al procesar el archivo: {str(e)}")
+            return render(request, 'excel/upload_excel.html', {
+                'error': f"Error al procesar el archivo: {str(e)}"
+            })
+
+        # Limpiar la sesión y eliminar el archivo temporal
+        request.session.pop('uploaded_file_path', None)
+        os.remove(uploaded_file_path)
+
+        return render(request, 'excel/header_processed.html', {'mapping': mapping, 'success': True})
+    else:
+        return render(request, 'excel/upload_excel.html', {'form': ExcelUploadForm()})
+
+def save_data(request):
+    if request.method == 'POST':
+        # Obtener el mapeo entre los campos del modelo y las cabeceras del archivo
+        mapping = {}
+        for key, value in request.POST.items():
+            if key.startswith('mapping_'):
+                model_field = key.replace('mapping_', '')
+                header = value
+                if header:
+                    mapping[model_field] = header
+
+        # Recuperar los datos cargados previamente desde la sesión
+        uploaded_data = request.session.get('uploaded_data')
+        metadata_id = request.session.get('metadata_id')
+        if not uploaded_data or not metadata_id:
+            return render(request, 'excel/upload_excel.html', {'error': 'No se encontraron datos para procesar.'})
+
+        # Recuperar el registro de ExcelFileMetadata
+        excel_metadata = ExcelFileMetadata.objects.get(id=metadata_id)
+
+        # Convertir el diccionario de vuelta a un DataFrame
+        df = pd.DataFrame(uploaded_data)
+
+        # Inicializar una lista para errores
+        errors = []
+        valid_data = []  # Datos válidos para guardar
+
+        # Validar cada fila
+        for index, row in df.iterrows():
+            row_errors = {}
+            data = {}
+            for model_field, header in mapping.items():
+                if header in df.columns:
+                    value = row[header]
+                    # Validaciones por campo del modelo
+                    if model_field == 'first_name' and not isinstance(value, str):
+                        row_errors[model_field] = 'Debe ser una cadena de texto.'
+                    elif model_field == 'last_name' and value is not None and not isinstance(value, str):
+                        row_errors[model_field] = 'Debe ser una cadena de texto o nulo.'
+                    elif model_field == 'phone':
+                        try:
+                            value = int(value)
+                        except (ValueError, TypeError):
+                            row_errors[model_field] = 'Debe ser un número entero.'
+                    elif model_field == 'zipCode':
+                        try:
+                            value = int(value)
+                        except (ValueError, TypeError):
+                            row_errors[model_field] = 'Debe ser un número entero.'
+                    elif model_field == 'agent_id' and value is not None:
+                        try:
+                            value = int(value)
+                        except (ValueError, TypeError):
+                            row_errors[model_field] = 'Debe ser un número entero o nulo.'
+
+                    data[model_field] = value
+
+            if row_errors:
+                errors.append({'row': index + 1, 'errors': row_errors})
+            else:
+                # Agregar datos válidos para guardarlos más tarde
+                valid_data.append(data)
+
+        # Si hay errores, mostrarlos al usuario
+        if errors:
+            return render(request, 'excel/map_headers.html', {
+                'headers': request.session['uploaded_headers'],
+                'model_fields': [field.name for field in BdExcel._meta.fields if field.name not in ('id','agent_id' ,'excel_metadata')],
+                'errors': errors
+            })
+
+        # Guardar los datos válidos
+        for data in valid_data:
+            BdExcel.objects.create(excel_metadata=excel_metadata, **data)
+
+        # Limpiar los datos de la sesión
+        request.session.pop('uploaded_data', None)
+        request.session.pop('uploaded_headers', None)
+        request.session.pop('metadata_id', None)
+
+        return render(request, 'excel/success.html', {'message': 'Datos guardados exitosamente.'})
+    else:
+        return redirect('excel/upload_excel')
+
+@login_required(login_url='/login')   
+def manage_agent_assignments(request):
+    if request.method == 'POST':
+        # Obtener el archivo seleccionado y los agentes
+        file_id = request.POST.get('file_name')
+        user_ids = request.POST.getlist('users')  # Usuarios para asignar o quitar
+        action = request.POST.get('action')  # Determinar si es asignar o quitar
+
+        if not file_id:
+            return render(request, 'excel/manage_agent_assignments.html', {
+                'files': ExcelFileMetadata.objects.all(),
+                'users': User.objects.filter(role='A',is_active=True),
+                'error': 'Debes seleccionar un archivo.'
+            })
+
+        # Recuperar el archivo seleccionado
+        try:
+            file = ExcelFileMetadata.objects.get(id=file_id)
+        except ExcelFileMetadata.DoesNotExist:
+            return render(request, 'excel/manage_agent_assignments.html', {
+                'files': ExcelFileMetadata.objects.all(),
+                'users': User.objects.filter(role='A',is_active=True),
+                'error': 'El archivo seleccionado no es válido.'
+            })
+
+        # Validar que se seleccionen usuarios
+        if not user_ids:
+            return render(request, 'excel/manage_agent_assignments.html', {
+                'files': ExcelFileMetadata.objects.all(),
+                'users': User.objects.filter(role='A',is_active=True),
+                'error': 'Debes seleccionar al menos un usuario.'
+            })
+
+        if action == 'assign':
+            # Asignar registros equitativamente a los agentes seleccionados
+            users = User.objects.filter(id__in=user_ids, role='A')
+            if not users.exists():
+                return render(request, 'excel/manage_agent_assignments.html', {
+                    'files': ExcelFileMetadata.objects.all(),
+                    'users': User.objects.filter(role='A',is_active=True),
+                    'error': 'Los usuarios seleccionados no son válidos.'
+                })
+
+            # Recuperar registros asociados al archivo
+            records = BdExcel.objects.filter(excel_metadata=file)
+
+            # Distribuir registros equitativamente
+            user_count = len(users)
+            user_ids = list(users.values_list('id', flat=True))
+            for i, record in enumerate(records):
+                record.agent_id = user_ids[i % user_count]
+                record.save()
+
+            return render(request, 'excel/manage_agent_assignments.html', {
+                'files': ExcelFileMetadata.objects.all(),
+                'users': User.objects.filter(role='A',is_active=True),
+                'success': f'Registros de {file.file_name} distribuidos exitosamente entre los usuarios seleccionados.'
+            })
+
+        elif action == 'remove':
+            # Quitar asignaciones de los usuarios seleccionados
+            BdExcel.objects.filter(excel_metadata=file, agent_id__in=user_ids).update(agent_id=None)
+
+            return render(request, 'excel/manage_agent_assignments.html', {
+                'files': ExcelFileMetadata.objects.all(),
+                'users': User.objects.filter(role='A',is_active=True),
+                'success': f'Asignaciones eliminadas para los agentes seleccionados del archivo {file.file_name}.'
+            })
+
+        else:
+            return render(request, 'excel/manage_agent_assignments.html', {
+                'files': ExcelFileMetadata.objects.all(),
+                'users': User.objects.filter(role='A',is_active=True),
+                'error': 'Acción no válida.'
+            })
+
+    return render(request, 'excel/manage_agent_assignments.html', {
+        'files': ExcelFileMetadata.objects.all(),
+        'users': User.objects.filter(role='A',is_active=True)
+    })
+
+@login_required(login_url='/login')
+def commentDB(request):
+
+    roleAuditar = ['S', 'Admin']
+
+    # Obtén las opciones para el select desde el modelo DropDownList
+    optionBd = DropDownList.objects.values_list('status_bd', flat=True).exclude(status_bd__isnull=True)
+    comenntAgent = CommentBD.objects.all()
+
+    # Filtra los registros dependiendo del rol del usuario
+    if request.user.role in roleAuditar:
+        bd = BdExcel.objects.all()
+    else:
+        bd = BdExcel.objects.filter(agent_id=request.user.id, is_sold = False)
+
+    # Si es una solicitud POST, procesamos la observación
+    if request.method == 'POST':
+        record_id = request.POST.get('record_id')
+        observation = request.POST.get('observation')
+
+        # Validar que se envíen los datos necesarios
+        if not record_id or not observation:
+            messages.error(request, "Please select a valid option.")
+            return redirect(request.META.get('HTTP_REFERER', '/'))
+
+        try:
+            # Obtener el objeto BdExcel correspondiente al record_id
+            bd_excel_record = BdExcel.objects.get(id=record_id)
+
+            # Crear un nuevo comentario en la tabla CommentBD
+            CommentBD.objects.create(
+                bd_excel=bd_excel_record,  # Relacionar con el objeto BdExcel
+                agent_create=request.user,  # Relacionar con el usuario actual
+                content=observation,  # Guardar el comentario
+                excel_metadata=bd_excel_record.excel_metadata
+            )
+
+            # Verificar si la opción seleccionada es "sold"
+            if observation == 'SOLD':
+                # Actualizar el campo is_sold en BdExcel
+                bd_excel_record.is_sold = True
+                bd_excel_record.save()
+
+            messages.success(request, "Observation saved successfully.")
+        except BdExcel.DoesNotExist:
+            messages.error(request, "Record not found.")
+        except Exception as e:
+            messages.error(request, f"An error occurred: {str(e)}")
+
+        # Redirige a la página previa después de guardar
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+
+    # Si es una solicitud GET, simplemente renderizamos la vista con los datos
+    context = {
+        'optionBd': optionBd,
+        'bd': bd,
+        'comenntAgent':comenntAgent
+    }
+
+    return render(request, 'table/bd.html', context)
+
+from django.shortcuts import render
+from datetime import datetime
+from django.db.models import Count
+from .models import ObamaCare
+from django.db.models.functions import ExtractWeek
+import calendar
+
+from django.shortcuts import render
+from datetime import datetime
+from django.db.models import Count
+from .models import ObamaCare
+from django.db.models.functions import ExtractWeek
+import calendar
+
+from django.shortcuts import render
+from datetime import datetime, timedelta
+from django.db.models import Count
+from .models import ObamaCare
+from django.db.models.functions import ExtractWeek
+import calendar
 
 
+from django.shortcuts import render
+from datetime import datetime
+from django.db.models import Count
+from .models import ObamaCare, Supp
+from django.db.models.functions import ExtractWeek
 
+def saleProm(request):
+    agents = User.objects.all()  # O la lógica para obtener tus agentes, según lo necesites.
+    start_date = None
+    week_data = []
 
+    # Inicializamos las listas para los datos del gráfico
+    weeks = []
+    counts_obamacare = []
+    counts_supp = []
+    counts_total = []  # Lista para almacenar el total combinado
 
+    if request.method == 'POST':
+        # Obtenemos el mes seleccionado
+        month = int(request.POST.get('month'))
+        
+        # Calculamos el primer día del mes seleccionado (por ejemplo, 2024-06-01 para junio)
+        year = datetime.now().year  # Puedes cambiar esto para tomar el año de la fecha actual
+        start_date = f"{year}-{month:02d}-01"  # Formato: YYYY-MM-01
+        
+        # Convertimos el start_date a un objeto datetime
+        start_date_obj = datetime.strptime(start_date, '%Y-%m-%d')
+        
+        # Filtramos los registros de ObamaCare para el mes y año seleccionados con status_color=3
+        obamacare_data = ObamaCare.objects.filter(
+            created_at__month=month,
+            created_at__year=start_date_obj.year,
+            status_color=3  # Filtrar solo aquellos con status_color = 3
+        )
+        
+        # Filtramos los registros de Supp para el mes y año seleccionados con status_color=3
+        supp_data = Supp.objects.filter(
+            created_at__month=month,
+            created_at__year=start_date_obj.year,
+            status_color=3  # Filtrar solo aquellos con status_color = 3
+        )
+        
+        # Agrupamos los registros de ObamaCare por semana
+        obamacare_week_data = obamacare_data.annotate(week_number=ExtractWeek('created_at')).values('week_number').annotate(count=Count('id')).order_by('week_number')
+
+        # Agrupamos los registros de Supp por semana
+        supp_week_data = supp_data.annotate(week_number=ExtractWeek('created_at')).values('week_number').annotate(count=Count('id')).order_by('week_number')
+
+        # Rellenamos las semanas faltantes para ObamaCare
+        week_dict_obamacare = {i: 0 for i in range(1, 6)}  # Las primeras 5 semanas (pueden ser más dependiendo del mes)
+        
+        for week in obamacare_week_data:
+            week_number = week['week_number']
+            if week_number <= 5:  # Si la semana es una de las primeras 5
+                week_dict_obamacare[week_number] = week['count']
+        
+        # Rellenamos las semanas faltantes para Supp
+        week_dict_supp = {i: 0 for i in range(1, 6)}  # Las primeras 5 semanas (pueden ser más dependiendo del mes)
+        
+        for week in supp_week_data:
+            week_number = week['week_number']
+            if week_number <= 5:  # Si la semana es una de las primeras 5
+                week_dict_supp[week_number] = week['count']
+        
+        # Aseguramos que las semanas estén ordenadas correctamente
+        for week_number in range(1, 6):  # Asumimos que el mes tiene un máximo de 5 semanas
+            weeks.append(f"Semana {week_number}")
+            counts_obamacare.append(week_dict_obamacare[week_number])
+            counts_supp.append(week_dict_supp[week_number])
+            counts_total.append(week_dict_obamacare[week_number] + week_dict_supp[week_number])  # Sumar los conteos
+
+        # Imprimimos las listas preparadas para el gráfico
+        print("Semanas para gráfico:", weeks)
+        print("Conteos ObamaCare para gráfico:", counts_obamacare)
+        print("Conteos Supp para gráfico:", counts_supp)
+        print("Total combinado para gráfico:", counts_total)
+
+    return render(request, 'table/saleProm.html', {
+        'agents': agents,
+        'weeks': weeks,
+        'counts_obamacare': counts_obamacare,
+        'counts_supp': counts_supp,
+        'counts_total': counts_total,  # Pasamos también los totales al template
+        'start_date': start_date if start_date else None,
+    })

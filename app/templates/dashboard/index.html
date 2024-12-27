@@ -106,10 +106,11 @@
 					</ul>
 				</li>
 				{% if request.user.role == 'Admin' or request.user.role == 'S'  %}
+				<li class="menu-label">Reports</li>
 				<li>
 					<a class="has-arrow" href="javascript:;">
 						<div class="parent-icon"> <i class="fadeIn animated bx bx-spreadsheet"></i></div>
-						<div class="menu-title">Reports</div>
+						<div class="menu-title">Reports Sale</div>
 					</a>
 					<ul>
 						<li> <a href="{% url "typification" %}"><i class='bx bx-radio-circle'></i>Typification</a>
@@ -119,6 +120,41 @@
 					</ul>
 				</li>
 				{% endif %}
+				{% if request.user.role == 'Admin' or request.user.role == 'AU'  %}
+				<li class="menu-label">Reports Quality</li>
+				<li>
+					<a class="has-arrow" href="javascript:;">
+						<div class="parent-icon"> <i class="lni lni-checkbox"></i> </div>
+						<div class="menu-title">Quality</div>
+					</a>
+					<ul>
+						<li> <a href="{% url "formCreateControl" %}"><i class='bx bx-radio-circle'></i>Add Quality</a>
+						</li>
+						<li> <a href="{% url "control" %}"><i class='bx bx-radio-circle'></i>View quality</a>
+						</li>
+						<li> <a href="{% url "createQuality" %}"><i class='bx bx-radio-circle'></i>Generate pdf</a>
+						</li>
+					</ul>
+				</li>
+				{% endif %}
+				
+				<li class="menu-label">BD Excel</li>
+				<li>
+					<a class="has-arrow" href="javascript:;">
+						<div class="parent-icon"> <i class="lni lni-folder"></i> </div>
+						<div class="menu-title">Add BD</div>
+					</a>
+					<ul>
+						{% if request.user.role == 'Admin'  %}
+							<li> <a href="{% url "upload_excel" %}"><i class='bx bx-radio-circle'></i>Add Excel</a>
+							</li>
+							<li> <a href="{% url "manage_agent_assignments" %}"><i class='bx bx-radio-circle'></i>Assign BD to agents</a>
+							</li>
+						{% endif %}
+						<li> <a href="{% url "bd" %}"><i class='bx bx-radio-circle'></i>View BD</a>
+						</li>
+					</ul>
+				</li>
 				{% if request.user.role == 'Admin'  %}
 				<li class="menu-label">User</li>
 				<li>

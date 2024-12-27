@@ -1,7 +1,7 @@
 {% extends "dashboard/index.html" %}
 {% load static %}
 {% block head %}
-    <title>Client Obamacare</title>
+    <title>Table Quality</title>
 	<!--plugins-->
 	<link href="{% static "assets/plugins/simplebar/css/simplebar.css" %}" rel="stylesheet" />
 	<link href="{% static "assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" %}" rel="stylesheet" />
@@ -22,51 +22,36 @@
 	<link rel="stylesheet" href="{% static "assets/css/header-colors.css" %}" />
 {% endblock %}
 {% block page_content %}
-<h6 class="mb-0 text-uppercase">Client obamacare</h6>
+<h6 class="mb-0 text-uppercase">Quality</h6>
 <hr/>
+<h4>Filter Data Quality</h4>
 <div class="card">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table id="tableClient" class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th>Agent USA</th>
-                        <th>Agent COL</th>
-                        <th>Name</th>
-                        <th>Phone Numbers</th>
-						<th>Date</th>
-                        <th>Status</th>
-                        <th>Options</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for obamacare in obamaCare %}
-                    <tr>
-                        <td>{{obamacare.client.agent_usa}}</td>
-                        <td>{{obamacare.agent}}</td>
-                        <td>{{obamacare.client.first_name}} {{obamacare.client.last_name}}</td>
-                        <td>+ {{obamacare.client.phone_number}}</td>
-						<td>{{obamacare.client.created_at}}</td>
-						<td>{% if obamacare.status_color == 1 or obamacare.status_color == None %}
-							<span class="badge rounded-pill bg-danger">Not profiled</span>
-						{% elif obamacare.status_color == 2 %}
-							<span class="badge rounded-pill bg-warning text-dark">Process</span>
-						{% elif obamacare.status_color == 3 %}
-							<span class="badge rounded-pill bg-success">Profiling</span>
-						{% endif  %}</td>
-                        <td>
-							<div class="d-flex order-actions">
-								<a href="{% url 'editClientObama' obamacare.client_id obamacare.id  %}" class=""><i class='bx bxs-edit'></i></a>
-								{% if request.user.is_superuser %}
-								<a href="{% url 'toggleObamaStatus' obamacare.id %}" class="ms-3"><i class='bx bxs-trash'></i></a>
-								{% endif %}
-							</div>
-						</td> 
-                    </tr>
+    <div class="card-header">
+        <form method="POST" class="row">
+			{% csrf_token %}
+            <div class="col-md-4">
+                <label for="start_date" class="form-label">Start date:</label>
+                <input type="date" name="start_date" id="start_date" class="form-control" value="{{ start_date|date:'Y-m-d' }}" required>
+            </div>
+            <div class="col-md-4">
+                <label for="end_date" class="form-label">End date:</label>
+                <input type="date" name="end_date" id="end_date" class="form-control" value="{{ end_date|date:'Y-m-d' }}" required>
+            </div>
+            <div class="col-md-4">
+                <label for="agents" class="form-label">Agent</label>			
+                <select class="form-select" id="agent"  name="agent" required> 
+                    <option value="" disabled selected>Please Select</option>            
+                    {% for agent in agents %}
+                        <option value="{{agent.id}}">{{agent.first_name}} {{agent.last_name}}</option>                      
                     {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                </select>
+            </div>
+            <br> <br> <br> <br>
+            <div class="form-label">
+                <button type="submit" class="btn btn-primary">Filter</button>
+                <a href="{% url 'createQuality' %}" class="btn btn-secondary">Reset</a>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}
@@ -80,16 +65,6 @@
 	<script src="{% static "assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js" %}"></script>
 	<script src="{% static "assets/plugins/datatable/js/jquery.dataTables.min.js" %}"></script>
 	<script src="{% static "assets/plugins/datatable/js/dataTables.bootstrap5.min.js" %}"></script>
-	<script>
-		$(document).ready(function() {
-			var table = $('#tableClient').DataTable( {
-				lengthChange: false,
-			} );
-		 
-			table.buttons().container()
-				.appendTo( '#tableClient_wrapper .col-md-6:eq(0)' );
-		} );
-	</script>
 	<!--app JS-->
 	<script src="{% static "assets/js/app.js" %}"></script>
 {% endblock %}

@@ -47,7 +47,7 @@
                     {% for supp in supps %}
                     <tr>
                         <td>{{supp.client.agent_usa}}</td>
-                        <td>{{supp.profiling_agent.first_name}}</td>
+                        <td>{{supp.agent}}</td>
                         <td>{{supp.client.first_name}} {{supp.client.last_name}}</td>
                         <td>+ {{supp.client.phone_number}}</td>
 						<td>{{supp.client.created_at}}</td>

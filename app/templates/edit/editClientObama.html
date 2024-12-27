@@ -150,6 +150,14 @@
 								<option value="CURRENTLY IN PROCESS" {% if obamacare.client.migration_status == "CURRENTLY IN PROCESS" %}selected{% endif %} >Currently In Process (this means the client received an i-797)</option>
 							</select>
 						</div>
+						<div class="col-12 col-lg-2">
+							<label for="apply" class="form-label">Apply</label>
+							<select class="form-select" id="apply"  name="apply" >
+								<option value="" disabled selected>Please Select</option>
+								<option value="SI" {% if obamacare.client.apply == "SI"%}selected{% endif %} >SI</option>
+								<option value="NO" {% if obamacare.client.apply == "NO"%}selected{% endif %} >NO</option>
+							</select>
+						</div>
 						<hr>
                     <h4>Dependents</h4>
                     {% for dependent in dependents %}
@@ -162,7 +170,7 @@
 							<label class="form-label">Apply</label>
 							<select class="form-select" name="applyDependent_{{ dependent.id }}">
 								<option value="" disabled selected>Please Select</option>
-								<option value="SI" {% if dependent.apply == "SI" %}selected{% endif %}>SI</option>
+								<option value="YES" {% if dependent.apply == "YES" %}selected{% endif %}>YES</option>
 								<option value="NO" {% if dependent.apply == "NO" %}selected{% endif %}>NO</option>
 							</select>
 						</div>
@@ -279,7 +287,7 @@
 							<label for="required_bearing" class="form-label">Bearing</label>
 							<select class="form-select" id="required_bearing" aria-label="Default select example"  name="required_bearing"   >
 								<option value="" disabled selected>Please Select</option>
-								<option value=1 {% if obamacare.required_bearing == 1 %}selected{% endif %}>SI</option>
+								<option value=1 {% if obamacare.required_bearing == 1 %}selected{% endif %}>YES</option>
 								<option value=0 {% if obamacare.required_bearing == 0 %}selected{% endif %}>NO</option> 
 							</select>
 						</div>                    
@@ -291,35 +299,28 @@
 							<label for="doc_income" class="form-label">Doc Icon</label>
 							<select class="form-select" id="doc_income"  name="doc_income" required  >
 								<option value="" disabled selected>Please Select</option>
-								<option value=1 {% if obamacare.doc_income == 1 %}selected{% endif %} >SI</option>
-								<option value=0 {% if obamacare.doc_income == 0 %}selected{% endif %} >NO</option>
+								<option value="YES" {% if obamacare.doc_income == "YES" %}selected{% endif %} >YES</option>
+								<option value="NO" {% if obamacare.doc_income == "NO" %}selected{% endif %} >NO</option>
 							</select>
 						</div>
 						<div class="col-12 col-lg-2">
 							<label for="doc_migration" class="form-label">Doc Migration</label>
 							<select class="form-select" id="doc_migration"  name="doc_migration" required  >
 								<option value="" disabled selected>Please Select</option>
-								<option value= 1 {% if obamacare.doc_migration == 1 %}selected{% endif %} >SI</option>
-								<option value= 0 {% if obamacare.doc_migration == 0 %}selected{% endif %} >NO</option>
+								<option value= "YES" {% if obamacare.doc_migration == "YES" %}selected{% endif %} >YES</option>
+								<option value= "NO" {% if obamacare.doc_migration == "NO" %}selected{% endif %} >NO</option>
 							</select>
 						</div>
 						<div class="col-12 col-lg-2">
 							<label for="npm" class="form-label">NPM</label>
 							<input type="number" class="form-control" id="npm" name="npm" value="{{ obamacare.npm }}" >
 						</div>
-						<div class="col-12 col-lg-2">
-							<label for="apply" class="form-label">Apply</label>
-							<select class="form-select" id="apply"  name="apply" >
-								<option value="" disabled selected>Please Select</option>
-								<option value="SI" {% if obamacare.apply == "SI"%}selected{% endif %} >SI</option>
-								<option value="NO" {% if obamacare.apply == "NO"%}selected{% endif %} >NO</option>
-							</select>
-						</div>
+						
 						<div class="col-12 col-lg-6">
 							<label for="planName" class="form-label">Plan Name</label>
 							<input type="text" class="form-control" id="planName" name="planName" value="{{ obamacare.plan_name }}"  >
 						</div>
-						<div class="col-12 col-lg-4">
+						<div class="col-12 col-lg-3">
 							<label for="profiling" class="form-label">Profiling</label>
 							<select class="form-select" id="profiling"  name="profiling" {% for user in users %}{% if obamacare.profiling == user.username %}disabled{% endif %}{% endfor %}> 
 								<option value="" disabled selected>Please Select</option>
@@ -332,7 +333,7 @@
 								{% endfor %}
 							</select>
 						</div>
-						<div class="col-12 col-lg-4">
+						<div class="col-12 col-lg-3">
 							<label for="statusObama" class="form-label">Status</label>
 							<select class="form-select" id="statusObama"  name="statusObama" >
 								<option value="" disabled selected>Please Select</option>
@@ -340,21 +341,21 @@
 								<option value="CANCELL" {% if obamacare.status == "CANCELL" %}selected{% endif %}>CANCELL</option>
 							</select>
 						</div>
-						<div class="col-12 col-lg-4">
+						<div class="col-12 col-lg-6">
 							<label for="date_effective_coverage" class="form-label">Date Effective Coverage</label>
 							<input type="text" class="form-control" name="date_effective_coverage" id="date_effective_coverage" value="{{obamacare.date_effective_coverage|date:'m/d/Y'}}" >
 						</div>
-						<div class="col-12 col-lg-4">
+						<div class="col-12 col-lg-6">
 							<label for="date_effective_coverage_end" class="form-label">Date Effective Coverage End</label>
 							<input type="text" class="form-control" name="date_effective_coverage_end" id="date_effective_coverage_end" value="{{obamacare.date_effective_coverage_end|date:'m/d/Y'}}" >
 						</div>                    
 						<div class="col-12 col-lg-6">
 							<label for="observationObama" class="form-label">Observation</label>
-							<textarea class="form-control" id="observationObama" name="observationObama" rows="3" placeholder="Obamacare plan observation" style="resize: none">{{ obamacare.observation }}</textarea>
+							<textarea class="form-control" id="observationObama" name="observationObama" rows="3"  style="resize: none">{{ obamacare.observation }}</textarea>
 						</div>
 						<div class="col-12 col-lg-6">
 							<label for="observationObama" class="form-label">Observation Agent</label>
-							<textarea class="form-control" id="observationObama" name="observationObama" disabled rows="3" placeholder="Obamacare plan observation" style="resize: none">{{ obsObamaText }}</textarea>
+							<textarea class="form-control" id="observationObama" name="observationObama" disabled rows="3"  style="resize: none">{{ obsObamaText }}</textarea>
 						</div>
 						{% if request.user.role == 'A' %}
 						<div class="col-12 col-lg-6" id="obs_agent">

@@ -46,10 +46,10 @@
 			{% csrf_token %}
 				<div id="test-l-1" role="tabpanel" class="bs-stepper-pane" aria-labelledby="stepper1trigger1">
 					<div class="row g-3">
-						<div class="col-12 col-lg-6">
+						<div class="col-12 col-lg-4">
 							<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
 							<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa">
-								<option value="" disabled selected>Please Select</option>
+								<option value="no_valid" disabled selected>Please Select</option>
 								<option value="Daniel">Daniel</option>
 								<option value="Zohira">Zohira</option>
 								<option value="Gina">Gina</option>
@@ -62,38 +62,38 @@
 								<option value="Evelyn">Evelyn</option>
 							</select>
 						</div>
-						<div class="col-12 col-lg-6">
+						<div class="col-12 col-lg-4">
 							<label for="first_name" class="form-label">First Name</label>
 							<input type="text" class="form-control" name="first_name" id="first_name" placeholder="First Name" Required>
 						</div>
-						<div class="col-12 col-lg-6">
+						<div class="col-12 col-lg-4">
 							<label for="last_name" class="form-label">Last Name</label>
 							<input type="text" class="form-control" name="last_name" id="last_name" placeholder="Last Name" Required>
 						</div>
-						<div class="col-12 col-lg-6">
+						<div class="col-12 col-lg-4">
 							<label for="phone_number" class="form-label">Phone Number</label>
 							<input type="number" class="form-control" name ="phone_number" id="phone_number" placeholder="Phone Number" Required>
 						</div>
-						<div class="col-12 col-lg-6">
+						<div class="col-12 col-lg-4">
 							<label for="email" class="form-label">E-mail Address</label>
 							<input type="email" class="form-control" name="email" id="email" placeholder="Enter Email Address" Required>
 						</div>
-						<div class="col-12 col-lg-6">
+						<div class="col-12 col-lg-4">
 							<label for="address" class="form-label">Address</label>
 							<input type="text" class="form-control" name="address" id="address" placeholder="Address" Required>
 						</div>
-						<div class="col-12 col-lg-6">
+						<div class="col-12 col-lg-4">
 							<label for="zipcode" class="form-label">ZIP Code</label>
 							<input type="number" class="form-control" name ="zipcode" id="zipcode" placeholder="ZIP Code" Required>
 						</div>
-						<div class="col-12 col-lg-6">
+						<div class="col-12 col-lg-4">
 							<label for="city" class="form-label">City</label>
 							<input type="text" class="form-control" name ="city" id="city" Required>
 						</div>
-						<div class="col-12 col-lg-6">
+						<div class="col-12 col-lg-2">
 							<label for="state" class="form-label font-weight-bold">State</label>
 							<select id="inputState" class="form-select" id="state" name="state" >
-								<option value="" disabled selected>Please Select</option>
+								<option value="no_valid" disabled selected>Please Select</option>
 								<option value="AL"> AL </option>
 								<option value="AR"> AR </option>
 								<option value="AZ"> AZ </option>
@@ -124,64 +124,56 @@
 								<option value="OR"> OR </option>
 							</select>
 						</div>
-						<div class="col-12 col-lg-6">
-							<label for="county" class="form-label">County</label>
-							<input type="text" class="form-control" name ="county" id="county" placeholder="County" Required>
-						</div>
-						<div class="col-12 col-lg-6">
+						<div class="col-12 col-lg-2">
 							<label for="sex" class="form-label">Sex</label>
 							<select class="form-select"  name="sex" id="sex" aria-label="Default select example">
-								<option value="" disabled selected>Please Select</option>
+								<option value="no_valid" disabled selected>Please Select</option>
 								<option value="M">MALE</option>
 								<option value="F">FEMALE</option>
 							</select>
 						</div>
-						<div class="col-12 col-lg-6">
+						<div class="col-12 col-lg-4">
+							<label for="county" class="form-label">County</label>
+							<input type="text" class="form-control" name ="county" id="county" placeholder="County" Required>
+						</div>						
+						<div class="col-12 col-lg-4">
 							<label for="old" class="form-label">Old</label>
 							<input type="number" nim="1" class="form-control" name ="old" id="old" placeholder="Old" Required>
 						</div>
-						<div class="col-12 col-lg-6">
+						<div class="col-12 col-lg-4">
 							<label for="date_birth" class="form-label">Date Birth</label>
 							<input type="text" class="form-control" name="date_birth" id="date_birth" required>
 						</div>
-						<div class="col-12 col-lg-6">
+						<div class="col-12 col-lg-4">
 							<label for="migration_status" class="form-label">Migration Status</label>
 							<select class="form-select" id="migration_status"  name="migration_status">
-								<option value="" disabled selected>Please Select</option>
-								<option value="EMPLOYMENT_AUTHORIZATION">Employment Authorization</option>
-								<option value="NOTICE_OF_ACTION">Notice of Action (i-797)</option>
+								<option value="no_valid" disabled selected>Please Select</option>
+								<option value="EMPLOYMENT AUTHORIZATION">Employment Authorization</option>
+								<option value="NOTICE OF ACTION">Notice of Action (i-797)</option>
 								<option value="REFUGEE">Refugee</option>
 								<option value="ASYLUM">Asylum</option>
 								<option value="TPS">Temporary Protection Status (TPS)</option>
-								<option value="DOMESTIC_VIOLENCE">Domestic Violence</option>
-								<option value="PERMANENT_RESIDENT">Permanent Resident (Green Card)</option>
-								<option value="CONDITIONAL_RESIDENT">Conditional Resident</option>
+								<option value="DOMESTIC VIOLENCE">Domestic Violence</option>
+								<option value="PERMANENT RESIDENT">Permanent Resident (Green Card)</option>
+								<option value="CONDITIONAL RESIDENT">Conditional Resident</option>
 								<option value="PAROLE">Parole</option>
-								<option value="US_CITIZEN">US Citizen (Driver's License)</option>
-								<option value="STUDENT_VISA">Student Visa (I-20)</option>
-								<option value="CURRENTLY_IN_PROCESS">Currently In Process (this means the client received an i-797)</option>
+								<option value="US CITIZEN">US Citizen (Driver's License)</option>
+								<option value="STUDENT VISA">Student Visa (I-20)</option>
+								<option value="CURRENTLY IN PROCESS">Currently In Process (this means the client received an i-797)</option>
 							</select>
 						</div>
-						<div class="col-12 col-lg-6">
-							<label for="doc_income" class="form-label">Income document</label>
-							<select class="form-select" id="doc_income"  name="doc_income">
-								<option value="" disabled selected>Please Select</option>
-								<option value="1">Yes</option>
-								<option value="2">No</option>
+						<div class="col-12 col-lg-4">
+							<label for="applyObama" class="form-label">Apply</label>
+							<select class="form-select" id="applyObama"  name="applyObama"  >
+								<option disabled selected value="">Please Select</option>
+								<option value=1 >YES</option>
+								<option value=0 >NO</option>
 							</select>
-						</div>
-						<div class="col-12 col-lg-6">
-							<label for="doc_migration" class="form-label">Migration document</label>
-							<select class="form-select" id="doc_migration" name="doc_migration">
-								<option value="" disabled selected>Please Select</option>
-								<option value="1">Yes</option>
-								<option value="2">No</option>
-							</select>
-						</div>
-						<div class="col-12 col-lg-6">
+						</div>						
+						<div class="col-12 col-lg-4">
 							<label for="type_sales" class="form-label">type of sale</label>
 							<select class="form-select"  name="type_sales" id="type_sales" aria-label="Default select example" >
-								<option value="" disabled selected>Please Select</option>
+								<option value="no_valid" disabled selected>Please Select</option>
 								<option value="ACA">OBAMACARE</option>
 								<option value="SUPLEMENTARIO">SUPPLEMENTARY</option>
 								<option value="ACA/SUPLEMENTARIO">OBAMACARE/SUPPLEMENTARY</option>
