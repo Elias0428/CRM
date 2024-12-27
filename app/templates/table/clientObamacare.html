@@ -57,10 +57,12 @@
                         <td>
 							<div class="d-flex order-actions">
 								<a href="{% url 'editClientObama' obamacare.client_id obamacare.id  %}" class=""><i class='bx bxs-edit'></i></a>
+								<a href="{% url 'consent1' obamacare.id %}" class=""><i class='bx bxs-edit'></i></a>
 								{% if request.user.is_superuser %}
 								<a href="{% url 'toggleObamaStatus' obamacare.id %}" class="ms-3"><i class='bx bxs-trash'></i></a>
 								{% endif %}
 							</div>
+							<img src="{{ obamacare.signature.url }}" alt="no sirve chamo">
 						</td> 
                     </tr>
                     {% endfor %}

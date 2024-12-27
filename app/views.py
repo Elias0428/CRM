@@ -14,43 +14,18 @@ import json
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from datetime import datetime
+from datetime import datetime, timedelta
 import calendar
 from django.db.models import Q
 from django.db.models.functions import Coalesce
 from django.db.models import Count
+from datetime import date
 
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
-from django.shortcuts import render
-from django.contrib import messages
-import pandas as pd
 
-from django.db.models import Sum
-
-import pandas as pd
-from io import BytesIO
-import base64
-from .forms import ExcelUploadForm
-from .models import BdExcel
-
-import os
-import tempfile
-
-from django.utils.timezone import now
-
-from django.template.loader import render_to_string
-from django.http import HttpResponse
-from weasyprint import HTML
-import datetime
-
-from django.shortcuts import render
-from .models import BdExcel, ExcelFileMetadata, User
-
-from django.shortcuts import redirect
 # Create your views here.
-
 def login_(request):
     if request.user.is_authenticated:
         return redirect(index)
@@ -69,8 +44,7 @@ def login_(request):
         return render(request, 'auth/login.html')
         
 def logout_(request):
-
-     # Verifica si es una solicitud AJAX
+    # Verifica si es una solicitud AJAX
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         logout(request)
         return JsonResponse({
@@ -1193,10 +1167,10 @@ def chartSaleIndex(request):
     current_year = now.year
 
     # Calcular inicio y fin del mes actual
-    start_of_month = timezone.make_aware(datetime(current_year, current_month, 1), timezone.get_current_timezone())
+    start_of_month = timezone.make_aware(datetime.datetime(current_year, current_month, 1), timezone.get_current_timezone())
     last_day_of_month = calendar.monthrange(current_year, current_month)[1]
     end_of_month = timezone.make_aware(
-        datetime(current_year, current_month, last_day_of_month, 23, 59, 59), 
+        datetime.datetime(current_year, current_month, last_day_of_month, 23, 59, 59), 
         timezone.get_current_timezone()
     )
 
@@ -1280,8 +1254,8 @@ def tableStatusObama(request):
     current_year = now.year
 
     # Obtener el primer y último día del mes actual (con zona horaria)
-    start_of_month = timezone.make_aware(datetime(current_year, current_month, 1), timezone.get_current_timezone())
-    end_of_month = timezone.make_aware(datetime(current_year, current_month + 1, 1), timezone.get_current_timezone()) if current_month < 12 else timezone.make_aware(datetime(current_year + 1, 1, 1), timezone.get_current_timezone())
+    start_of_month = timezone.make_aware(datetime.datetime(current_year, current_month, 1), timezone.get_current_timezone())
+    end_of_month = timezone.make_aware(datetime.datetime(current_year, current_month + 1, 1), timezone.get_current_timezone()) if current_month < 12 else timezone.make_aware(datetime.datetime(current_year + 1, 1, 1), timezone.get_current_timezone())
 
     roleAuditar = ['S', 'C', 'AU', 'Admin']
 
@@ -1307,8 +1281,8 @@ def tableStatusSupp(request):
     current_year = now.year
 
     # Obtener el primer y último día del mes actual (con zona horaria)
-    start_of_month = timezone.make_aware(datetime(current_year, current_month, 1), timezone.get_current_timezone())
-    end_of_month = timezone.make_aware(datetime(current_year, current_month + 1, 1), timezone.get_current_timezone()) if current_month < 12 else timezone.make_aware(datetime(current_year + 1, 1, 1), timezone.get_current_timezone())
+    start_of_month = timezone.make_aware(datetime.datetime(current_year, current_month, 1), timezone.get_current_timezone())
+    end_of_month = timezone.make_aware(datetime.datetime(current_year, current_month + 1, 1), timezone.get_current_timezone()) if current_month < 12 else timezone.make_aware(datetime.datetime(current_year + 1, 1, 1), timezone.get_current_timezone())
 
     # Roles con acceso ampliado
     roleAuditar = ['S', 'C', 'AU', 'Admin']
@@ -1685,7 +1659,6 @@ def liveViewWeekly(request):
     return render(request, 'dashboard/liveView.html', context)
 
 def getSalesForWekkly():
-
     # Inicializamos un diccionario por defecto para contar las instancias
     user_counts = defaultdict(lambda: {
         'lunes': {'obama': 0, 'supp': 0},
@@ -2195,110 +2168,12 @@ def commentDB(request):
 
     return render(request, 'table/bd.html', context)
 
-from django.shortcuts import render
-from datetime import datetime
-from django.db.models import Count
-from .models import ObamaCare
-from django.db.models.functions import ExtractWeek
-import calendar
-
-from django.shortcuts import render
-from datetime import datetime
-from django.db.models import Count
-from .models import ObamaCare
-from django.db.models.functions import ExtractWeek
-import calendar
-
-from django.shortcuts import render
-from datetime import datetime, timedelta
-from django.db.models import Count
-from .models import ObamaCare
-from django.db.models.functions import ExtractWeek
-import calendar
+def generar_reporte(request):
+    form = ReporteSeleccionForm(request.GET)
+    reporte_datos = None
+    return render(request, 'generar_reporte.html', {'form': form, 'reporte_datos': reporte_datos})
 
 
-from django.shortcuts import render
-from datetime import datetime
-from django.db.models import Count
-from .models import ObamaCare, Supp
-from django.db.models.functions import ExtractWeek
 
-def saleProm(request):
-    agents = User.objects.all()  # O la lógica para obtener tus agentes, según lo necesites.
-    start_date = None
-    week_data = []
 
-    # Inicializamos las listas para los datos del gráfico
-    weeks = []
-    counts_obamacare = []
-    counts_supp = []
-    counts_total = []  # Lista para almacenar el total combinado
 
-    if request.method == 'POST':
-        # Obtenemos el mes seleccionado
-        month = int(request.POST.get('month'))
-        
-        # Calculamos el primer día del mes seleccionado (por ejemplo, 2024-06-01 para junio)
-        year = datetime.now().year  # Puedes cambiar esto para tomar el año de la fecha actual
-        start_date = f"{year}-{month:02d}-01"  # Formato: YYYY-MM-01
-        
-        # Convertimos el start_date a un objeto datetime
-        start_date_obj = datetime.strptime(start_date, '%Y-%m-%d')
-        
-        # Filtramos los registros de ObamaCare para el mes y año seleccionados con status_color=3
-        obamacare_data = ObamaCare.objects.filter(
-            created_at__month=month,
-            created_at__year=start_date_obj.year,
-            status_color=3  # Filtrar solo aquellos con status_color = 3
-        )
-        
-        # Filtramos los registros de Supp para el mes y año seleccionados con status_color=3
-        supp_data = Supp.objects.filter(
-            created_at__month=month,
-            created_at__year=start_date_obj.year,
-            status_color=3  # Filtrar solo aquellos con status_color = 3
-        )
-        
-        # Agrupamos los registros de ObamaCare por semana
-        obamacare_week_data = obamacare_data.annotate(week_number=ExtractWeek('created_at')).values('week_number').annotate(count=Count('id')).order_by('week_number')
-
-        # Agrupamos los registros de Supp por semana
-        supp_week_data = supp_data.annotate(week_number=ExtractWeek('created_at')).values('week_number').annotate(count=Count('id')).order_by('week_number')
-
-        # Rellenamos las semanas faltantes para ObamaCare
-        week_dict_obamacare = {i: 0 for i in range(1, 6)}  # Las primeras 5 semanas (pueden ser más dependiendo del mes)
-        
-        for week in obamacare_week_data:
-            week_number = week['week_number']
-            if week_number <= 5:  # Si la semana es una de las primeras 5
-                week_dict_obamacare[week_number] = week['count']
-        
-        # Rellenamos las semanas faltantes para Supp
-        week_dict_supp = {i: 0 for i in range(1, 6)}  # Las primeras 5 semanas (pueden ser más dependiendo del mes)
-        
-        for week in supp_week_data:
-            week_number = week['week_number']
-            if week_number <= 5:  # Si la semana es una de las primeras 5
-                week_dict_supp[week_number] = week['count']
-        
-        # Aseguramos que las semanas estén ordenadas correctamente
-        for week_number in range(1, 6):  # Asumimos que el mes tiene un máximo de 5 semanas
-            weeks.append(f"Semana {week_number}")
-            counts_obamacare.append(week_dict_obamacare[week_number])
-            counts_supp.append(week_dict_supp[week_number])
-            counts_total.append(week_dict_obamacare[week_number] + week_dict_supp[week_number])  # Sumar los conteos
-
-        # Imprimimos las listas preparadas para el gráfico
-        print("Semanas para gráfico:", weeks)
-        print("Conteos ObamaCare para gráfico:", counts_obamacare)
-        print("Conteos Supp para gráfico:", counts_supp)
-        print("Total combinado para gráfico:", counts_total)
-
-    return render(request, 'table/saleProm.html', {
-        'agents': agents,
-        'weeks': weeks,
-        'counts_obamacare': counts_obamacare,
-        'counts_supp': counts_supp,
-        'counts_total': counts_total,  # Pasamos también los totales al template
-        'start_date': start_date if start_date else None,
-    })

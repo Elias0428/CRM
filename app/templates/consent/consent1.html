@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consent Form</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .rights-section {
+            background-color: #ff94bc;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .signature-pad {
+            border: 2px solid #dee2e6;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .roboto-light {
+            font-family: "Roboto", sans-serif;
+            font-weight: 300;
+            font-style: normal;
+        }
+        .roboto-medium {
+            font-family: "Roboto", sans-serif;
+            font-weight: 500;
+            font-style: normal;
+        }
+
+        .roboto-black {
+            font-family: "Roboto", sans-serif;
+            font-weight: 900;
+            font-style: normal;
+        }
+        .color-blue{
+            color: #12458d;
+        }
+
+        body {
+            background-color: #1565c0;
+            padding: 20px;
+        }
+
+        /* Backgrounds Colors */
+        .bg-orange{
+            background-color: #fc792f;
+        }
+        .bg-lila{
+            background-color: #9de430;
+        }
+        .bg-morado{
+            background-color: #8d4aff;
+        }
+        .bg-rosa{
+            background-color: #ff94bc;
+        }
+        canvas {
+            border: 2px solid red; /* Para visualizar mejor los bordes */
+            border-radius: 8px;
+            background: #fff;
+            touch-action: none; /* Disable default touch gestures */
+        }
+
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="form-container roboto-medium color-blue">
+        <h2 class="text-center mb-4 roboto-black color-blue">AGENTE EN REGISTRO</h2>
+        <h6 class="text-center mb-4 roboto-medium color-blue container">AUTORIZACION DE ENTREGA INFORMACIÓN PARA ENROLAMIENTO EN EL MERCADO DE SALUD</h6>
+
+        <form id="signatureForm" method="POST">
+            <!-- Personal Information -->
+            <div class="bg-orange p-3 rounded mb-3">
+                <label class="form-label">Nombre del Aplicante <span class="text-danger">*</span></label>
+                <div class="row g-2">
+                    <div class="col">
+                        <input id="inputName" name="first_name" type="text" class="form-control" value="{{obamacare.client.first_name}}">
+                    </div>
+                    <div class="col">
+                        <input id="inputLastName" name="last_name" type="text" class="form-control" value="{{obamacare.client.last_name}}">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Information -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="bg-info p-3 rounded">
+                        <label class="form-label">Teléfono <span class="text-danger">*</span></label>
+                        <input name="phone_number" type="tel" class="form-control" value="{{obamacare.client.phone_number}}">
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="bg-lila p-3 rounded">
+                        <label class="form-label">Email</label>
+                        <input name="email" class="form-control" value="{{obamacare.client.email}}">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col">
+                    <div class="bg-morado p-3 rounded">
+                        <label class="form-label">Acepto a ser contactado por mi broker y/o el mercado de salud vía:</label>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="" />
+                                    <label class="form-check-label" for="">Telefono</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id=""/>
+                                    <label class="form-check-label" for="">Mensajes de Texto</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="" />
+                                    <label class="form-check-label" for="">Email</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id=""/>
+                                    <label class="form-check-label" for="">Whatsapp</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="bg-warning p-3 rounded">
+                        <label class="form-label">Aplica <span class="text-danger">*</span></label>
+                        <select name="apply" class="form-select" id="apply">
+                            <option disabled selected>Please Select</option>
+                            <option {%if obamacare.client.apply %}selected{%endif%} value="True">SI</option>
+                            <option {%if not obamacare.client.apply.apply %}selected{%endif%} value="False">NO</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+                
+
+            <div class="row mb-3">
+                <div class="col">
+                    <div class="bg-morado p-3 rounded">
+                        <label class="form-label">Aplicante (s) Adicional (es) (Nombre Completo, Fecha Nacimiento, Sexo, Status, Parentesco) <span class="text-danger">*</span></label>
+                        <div class="mb-3">
+                            <textarea class="form-control" name="applicants" id="inputApplicants" rows="5" placeholder="Escriba aquí: Aplicante (s) Adicional (es) (Nombre Completo, Fecha Nacimiento, Sexo, Status, Parentesco)">{% for dependent in dependents %}{{dependent.name}}, {{dependent.date_birth}}, {{dependent.sex}}, {{dependent.migration_status}}, {{dependent.kinship}}
+{% endfor %}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="bg-warning p-3 rounded">
+                        <label class="form-label">Direccion <span class="text-danger">*</span></label>
+                        <div class="row">
+                            <div class="col-12 mb-3">
+                                <input name="address" class="form-control" value="{{obamacare.client.address}}">
+                                <small>Direccion</small>
+                            </div>
+                            <div class="col-12 mb-3">
+                                <input class="form-control">
+                                <small>Apto</small>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <input name="city" class="form-control" value="{{obamacare.client.city}}">
+                                <small>Ciudad</small>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <input name="state" class="form-control" value="{{obamacare.client.state}}">
+                                <small>Estado</small>
+                            </div>
+                            <div class="col-12">
+                                <input name="zipcode" class="form-control" value="{{obamacare.client.zipcode}}">
+                                <small>ZipCode</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-12 bg-rosa p-3 rounded mb-3">
+                            <label class="form-label">Fecha de Nacimiento <span class="text-danger">*</span></label>
+                            <input name="date_birth" type="date" class="form-control" value="{{obamacare.client.date_birth|date:'Y-m-d'}}"/>
+                        </div>
+                        <div class="col-12 bg-orange p-3 rounded mb-3">
+                            <label class="form-label">Ingreso Anual Estimado <span class="text-danger">*</span></label>
+                            <input name="taxes" type="number" class="form-control" value="{{obamacare.taxes}}"/>
+                        </div>
+                        <div class="col-12 bg-info p-3 rounded">
+                            <label class="form-label">Tipo de Ingreso <span class="text-danger">*</span></label>
+                            <select name="work" name="carrier" class="form-select" id="selectCarrier">
+                                <option>Please Select</option>
+                                <option {%if obamacare.work == 'W2'%}selected{%endif%} value="W2">W2</option>
+                                <option {%if obamacare.work == '1099'%}selected{%endif%} value="1099">1099</option>
+                                <option {%if obamacare.work == 'otro'%}selected{%endif%} value="otro">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <!-- Estatus de Inmigración -->
+                <div class="col-md-6">
+                    <div class="p-3 rounded" style="background-color: #9de430;">
+                        <label class="form-label">Estatus de Inmigración <span class="text-danger">*</span></label>
+                        <select name="migration_status" class="form-select">
+                            <option value="" disabled selected>Please Select</option>
+                            <option {%if obamacare.client.migration_status == 'EMPLOYMENT_AUTHORIZATION'%}selected{%endif%} value="EMPLOYMENT_AUTHORIZATION">Employment Authorization</option>
+                            <option {%if obamacare.client.migration_status == 'NOTICE_OF_ACTION'%}selected{%endif%} value="NOTICE_OF_ACTION">Notice of Action (i-797)</option>
+                            <option {%if obamacare.client.migration_status == 'REFUGEE'%}selected{%endif%} value="REFUGEE">Refugee</option>
+                            <option {%if obamacare.client.migration_status == 'ASYLUM'%}selected{%endif%} value="ASYLUM">Asylum</option>
+                            <option {%if obamacare.client.migration_status == 'TPS'%}selected{%endif%} value="TPS">Temporary Protection Status (TPS)</option>
+                            <option {%if obamacare.client.migration_status == 'DOMESTIC_VIOLENCE'%}selected{%endif%} value="DOMESTIC_VIOLENCE">Domestic Violence</option>
+                            <option {%if obamacare.client.migration_status == 'PERMANENT_RESIDENT'%}selected{%endif%} value="PERMANENT_RESIDENT">Permanent Resident (Green Card)</option>
+                            <option {%if obamacare.client.migration_status == 'CONDITIONAL_RESIDENT'%}selected{%endif%} value="CONDITIONAL_RESIDENT">Conditional Resident</option>
+                            <option {%if obamacare.client.migration_status == 'PAROLE'%}selected{%endif%} value="PAROLE">Parole</option>
+                            <option {%if obamacare.client.migration_status == 'US_CITIZEN'%}selected{%endif%} value="US_CITIZEN">US Citizen (Driver's License)</option>
+                            <option {%if obamacare.client.migration_status == 'STUDENT_VISA'%}selected{%endif%} value="STUDENT_VISA">Student Visa (I-20)</option>
+                            <option {%if obamacare.client.migration_status == 'CURRENTLY_IN_PROCESS'%}selected{%endif%} value="CURRENTLY_IN_PROCESS">Currently In Process (this means the client received an i-797)</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- Social Security -->
+                <div class="p-3 rounded col-md-6" style="background-color: #8d4aff;" >
+                    <label class="form-label">Social Security <span class="text-danger">*</span></label>
+                    <select {% if obamacare.client.migration_status in valid_migration_statuses %}disabled{% endif %} name="socialSecurity" class="form-select">
+                        <option>Please Select</option>
+                        <option {% if obamacare.client.migration_status in valid_migration_statuses %}selected{% endif %} value="SI">SI</option>
+                        <option value="NO">NO</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <!-- Agente Autorizado de Registro -->
+                <div class="col-md-6">
+                    <div class="p-3 rounded" style="background-color: #fc792f;">
+                        <label class="form-label">Agente Autorizado de Registro <span class="text-danger">*</span></label>
+                        <select name="agent_usa" id="selectAgent" class="form-select">
+                            <option>Please Select</option>
+                            <option {% if obamacare.client.agent_usa == 'GINA PAOLA LAPEIRA - NPN 19944280' %}selected{% endif %} value="GINA PAOLA LAPEIRA - NPN 19944280">GINA PAOLA LAPEIRA - NPN 19944280</option>
+                            <option {% if obamacare.client.agent_usa == 'LUIS EDUARDO LAPEIRA - NPN 20556081' %}selected{% endif %} value="LUIS EDUARDO LAPEIRA - NPN 20556081">LUIS EDUARDO LAPEIRA - NPN 20556081</option>
+                            <option {% if obamacare.client.agent_usa == 'DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958' %}selected{% endif %} value="DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958">DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958</option>
+                            <option {% if obamacare.client.agent_usa == 'ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295' %}selected{% endif %} value="ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295">ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295</option>
+                            <option {% if obamacare.client.agent_usa == 'DANIESKA LOPEZ SEQUEIRA - NPN 20134539' %}selected{% endif %} value="DANIESKA LOPEZ SEQUEIRA - NPN 20134539">DANIESKA LOPEZ SEQUEIRA - NPN 20134539</option>
+                            <option {% if obamacare.client.agent_usa == 'VLADIMIR DE LA HOZ FONTALVO - NPN 19915005' %}selected{% endif %} value="VLADIMIR DE LA HOZ FONTALVO - NPN 19915005">VLADIMIR DE LA HOZ FONTALVO - NPN 19915005</option>
+                            <option {% if obamacare.client.agent_usa == 'FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603' %}selected{% endif %} value="FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603">FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603</option>
+                            <option {% if obamacare.client.agent_usa == 'BORJA G CANTON HERRERA - NPN 20673324' %}selected{% endif %} value="BORJA G CANTON HERRERA - NPN 20673324">BORJA G CANTON HERRERA - NPN 20673324</option>
+                            <option {% if obamacare.client.agent_usa == 'RODRIGO G CANTON - NPN 20670005' %}selected{% endif %} value="RODRIGO G CANTON - NPN 20670005">RODRIGO G CANTON - NPN 20670005</option>
+                            <option {% if obamacare.client.agent_usa == 'EVELYN BEATRIZ HERRERA - NPN 20671818' %}selected{% endif %} value="EVELYN BEATRIZ HERRERA - NPN 20671818">EVELYN BEATRIZ HERRERA - NPN 20671818</option>
+                        </select>
+                        <small class="text-muted">TELÉFONO: 1.855.963.6900</small>
+                    </div>
+                </div>
+                <!-- Agencia de Seguros -->
+                <div class="col-md-6 p-3 rounded" style="background-color: #ff94bc;">
+                    <label class="form-label">Agencia de Seguros <span class="text-danger">*</span></label>
+                    <input readonly id="insuranceAgency" type="text" class="form-control"/>
+                </div>
+            </div>
+            
+            <!-- Cargar Documentos -->
+            <div class="p-3 rounded mb-3" style="background-color: #fc792f;">
+                <label class="form-label">
+                    Cargar documento de inmigración, SSN, ID, foto selfie con ID en mano
+                </label>
+                <div class="border rounded bg-light text-center p-4" style="border: 2px dashed #ddd;" id="dropzone">
+                    <div class="mb-2">
+                        <i class="bi bi-cloud-upload" style="font-size: 2rem;"></i>
+                    </div>
+                    <p class="roboto-medium">Subir Archivo o Foto (Frente y Atrás)</p>
+                    <small class="text-muted">Drag and drop files here</small>
+                    <input type="file" id="fileInput" multiple hidden />
+                </div>
+                <!-- Lista de archivos -->
+                <ul class="list-group mt-3" id="fileList"></ul>
+            </div>
+
+
+            <!-- Rights Section -->
+            <div class="rights-section">
+                <h5 class="mb-3 roboto-black">Mis Derechos como Paciente</h5>
+                <p class="roboto-light">Yo, <span id="textName" class="roboto-black">____________</span>, autorizo a <span id="textAgent" class="roboto-black">Please Select</span> de <span class="roboto-black" id="textCarrier">Please Select</span> para servir como mi agente y broker de seguros de salud, es decir mi Agente de Registro, para mi y las personas en mi núcleo familiar, cuando aplica, para el propósito de enrolamiento en un Plan Médico Calificado ofrecido en el Mercado de Salud Federal.</p>
+                <p class="roboto-light">Al firmar esta forma, autorizo a <span class="roboto-black" id="textCarrier2">Please Select</span>, y su staff, a trabajar para mi y las personas en mi núcleo familiar, cuando aplica, en las siguientes funciones de apoyo de seguro y cualquier otra tarea administrativa necesaria para mantener mi solicitud y cobertura en buen estado, como sigue:</p>
+                <ol class="roboto-light">
+                    <li>Realizar búsquedas de aplicaciones nuevas o actuales en el mercado de salud.</li>
+                    <li>Completar una aplicación para búsqueda de eligibilidad y enrolamiento en el Mercado de Salud Federal, o en programas de gobierno tales como Medicaid y CHIP, en los sitios de Enrolamiento Directo del Mercado de Salud, o enrolamiento en programas del mercado de salud que ayudan a aplicar a crédito fiscales o enrolamiento de productos de seguros en planes a nivel estatal.</li>
+                    <li>Proveer mantenimiento de mi cuenta en el Mercado de Salud Federal, asistencia en enrolamiento, información sobre los beneficios de los planes, nuevos productos, beneficios de nuevos productos, y asesoría en los pagos de transacciones si es necesario.</li>
+                    <li>Apoyar si es necesario en responder inquietudes del Mercado de Salud Federal en lo referente a mi aplicación.</li>
+                    <li>Contactarme vía telefónica o por cualquier medio electrónico o escrito para ayudarme y asistirme en cualquier acción necesaria para mantener mi póliza en buen estado.</li>
+                </ol>
+                <p class="roboto-light">Entiendo que mi Agente de Registro no utilizará o compartirá mi información de identificación personal (PII) para ningún propósito excepto los aquí listados en esta autorización.</p>
+                <p class="roboto-light">Entiendo que esta autorización será válida hasta que sea revocada por mi en cualquier momento. Para revocar esta autorización, debo hacerlo por escrito y enviarlo a la persona correspondiente a través del correo electrónico: client@lapeira.com.</p>
+                <p class="roboto-light">Entiendo que la información que yo le suministre a mi Agente de Registro se va a utilizar ÚNICAMENTE para asistirme en verificar mi elegibilidad y mi aplicacion o enrolamiento en el mercado de salud federal (Marketplace). Así mismo, entiendo que no tengo que compatir otra informacion adicional excepto la que es requerida para mi enrolamiento o verificacion de eligibilidad en el mercado de salud federal (Marketplace)</p>
+                <p class="roboto-light">Nombre del Agente en Registro: <span class="roboto-black" id="textAgent2">Please Select</span><br>
+                    Nombre de la Agencia en Registro: <span class="roboto-black" id="textCarrier3">Please Select</span><br>
+                    Teléfono de la Agencia: <span class="roboto-black">+1 (855) 963 6900</span>
+                </p>
+            </div>
+
+            <!-- Signature Section -->
+            <div class="bg-orange p-3 rounded mb-3 row m-1">
+                <div class="col-12">
+                    <label class="form-label">Firma Aplicante o Representante Autorizado <span class="text-danger">*</span></label>
+                </div>
+                <div class="col-12 container-fluid">
+                    <canvas width="330px" id="drawingCanvas" class="signature-pad"></canvas>
+                    <input type="hidden" id="signatureInput" name="signature">
+                </div>
+                <button type="button" id="clearCanvas" class="btn btn-secondary btn-sm">Clear</button>
+            </div>
+
+            <!-- Additional Information -->
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="bg-info p-3 rounded">
+                        <label class="form-label">Representante Autorizado (en caso que sea el Rep Aut quien firme)</label>
+                        <div class="row">
+                            <div class="col">
+                                <input type="text" class="form-control" placeholder="Nombre">
+                            </div>
+                            <div class="col">
+                                <input type="text" class="form-control" placeholder="Apellido">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="bg-lila p-3 rounded">
+                        <label class="form-label">Relación con el Aplicante</label>
+                        <select class="form-select">
+                            <option>Please Select</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Date and Time -->
+            <div class="bg-morado p-3 rounded mb-3">
+                <label class="form-label">Fecha y Hora de Firma</label>
+                <div class="row">
+                    <div class="col">
+                        <input type="date" class="form-control">
+                    </div>
+                    <div class="col">
+                        <input type="time" class="form-control">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Buttons -->
+            <div class="row">
+                <div class="col-2 text-center">
+                    <button id="submitButton" class="btn btn-outline-primary ps-4 pe-4">Save</button>
+                </div>
+                <div class="col-4 text-center">
+                    <button type="button" class="btn btn-outline-dark">Revise su información</button>
+                </div>
+            </div>
+            {% csrf_token %}
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('drawingCanvas');
+            const ctx = canvas.getContext('2d');
+            const form = document.getElementById('signatureForm');
+            const signatureInput = document.getElementById('signatureInput');
+            const clearCanvasButton = document.getElementById('clearCanvas');
+        
+            let drawing = false;
+        
+            // Configurar el estilo del dibujo
+            ctx.lineWidth = 5;
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#000';
+        
+            const startDrawing = (event) => {
+                drawing = true;
+                ctx.beginPath();
+                ctx.moveTo(getX(event), getY(event));
+            };
+        
+            const draw = (event) => {
+                if (!drawing) return;
+                ctx.lineTo(getX(event), getY(event));
+                ctx.stroke();
+            };
+        
+            const stopDrawing = () => {
+                drawing = false;
+                ctx.closePath();
+            };
+        
+            const getX = (event) => {
+                const rect = canvas.getBoundingClientRect();
+                return event.touches ? event.touches[0].clientX - rect.left : event.clientX - rect.left;
+            };
+        
+            const getY = (event) => {
+                const rect = canvas.getBoundingClientRect();
+                return event.touches ? event.touches[0].clientY - rect.top : event.clientY - rect.top;
+            };
+        
+            // Eventos de dibujo
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            canvas.addEventListener('touchstart', startDrawing);
+            canvas.addEventListener('touchmove', draw);
+            canvas.addEventListener('touchend', stopDrawing);
+            canvas.addEventListener('touchcancel', stopDrawing);
+        
+            // Limpiar canvas
+            clearCanvasButton.addEventListener('click', () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            });
+        
+            // Antes de enviar el formulario, convierte el canvas a Base64
+            form.addEventListener('submit', () => {
+                const canvasData = canvas.toDataURL('image/png'); // Base64 de la firma
+                signatureInput.value = canvasData; // Pasa la firma al campo oculto
+            });
+        });
+        </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+
+
+    <script>
+        const dropzone = document.getElementById("dropzone");
+        const fileInput = document.getElementById("fileInput");
+        const fileList = document.getElementById("fileList");
+    
+        // Lista para almacenar los archivos acumulados
+        let uploadedFiles = [];
+    
+        // Hacer clic en el área de arrastre para abrir el selector de archivos
+        dropzone.addEventListener("click", () => fileInput.click());
+    
+        // Manejar la carga de archivos con el selector
+        fileInput.addEventListener("change", (event) => {
+            const files = Array.from(event.target.files);
+            handleFiles(files);
+        });
+    
+        // Manejar el arrastre y suelta
+        dropzone.addEventListener("dragover", (event) => {
+            event.preventDefault();
+            dropzone.style.borderColor = "#fc792f";
+        });
+    
+        dropzone.addEventListener("dragleave", () => {
+            dropzone.style.borderColor = "#ddd";
+        });
+    
+        dropzone.addEventListener("drop", (event) => {
+            event.preventDefault();
+            dropzone.style.borderColor = "#ddd";
+            const files = Array.from(event.dataTransfer.files);
+            handleFiles(files);
+        });
+    
+        // Función para manejar los archivos
+        function handleFiles(files) {
+            files.forEach((file) => {
+                // Evitar duplicados
+                if (!uploadedFiles.find((f) => f.name === file.name && f.size === file.size)) {
+                    uploadedFiles.push(file);
+                    addFileToList(file);
+                }
+            });
+        }
+    
+        // Agregar archivo a la lista visual
+        function addFileToList(file) {
+            const listItem = document.createElement("li");
+            listItem.className = "list-group-item d-flex justify-content-between align-items-center";
+    
+            const fileInfo = document.createElement("div");
+            fileInfo.innerHTML = `
+                <i class="bi bi-file-earmark"></i>
+                <span>${file.name}</span>
+            `;
+    
+            const fileSize = document.createElement("span");
+            fileSize.className = "text-muted small";
+            fileSize.textContent = `${(file.size / 1024).toFixed(1)}KB`;
+    
+            const deleteButton = document.createElement("button");
+            deleteButton.className = "btn btn-sm btn-outline-danger";
+            deleteButton.innerHTML = '<i class="bi bi-trash"></i>';
+            deleteButton.onclick = () => {
+                // Eliminar archivo de la lista
+                uploadedFiles = uploadedFiles.filter((f) => f !== file);
+                fileList.removeChild(listItem);
+            };
+    
+            listItem.appendChild(fileInfo);
+            listItem.appendChild(fileSize);
+            listItem.appendChild(deleteButton);
+            fileList.appendChild(listItem);
+        }
+    </script>
+
+    <script>
+        // Obtener elementos del DOM
+        const inputName = document.getElementById('inputName');
+        const inputLastName = document.getElementById('inputLastName');
+        const selectAgent = document.getElementById('selectAgent');
+        const selectCarrier = document.getElementById('selectCarrier');
+        const insuranceAgency = document.getElementById('insuranceAgency');
+
+        // Crear un array dinámicamente de los inputs
+        const inputs = [inputName, inputLastName];
+
+        // Agregar eventos de entrada a cada input
+        inputs.forEach(input => {
+            input.addEventListener('input', updateSpan);
+        });
+
+        // Actualizar el span con los valores de los inputs
+        function updateSpan() {
+            changeSpan('textName', `${inputName.value} ${inputLastName.value}`);
+        }
+
+        // Agregar evento al cambio del selectAgent
+        selectAgent.addEventListener('change', function () {
+            // Obtener el texto del option seleccionado en lugar del value
+            const selectedText = selectAgent.options[selectAgent.selectedIndex].text;
+            changeSpan('textAgent', selectedText);
+            changeSpan('textAgent2', selectedText);
+
+            updateCarrierByAgent(selectedText);
+        });
+
+        // Agregar evento al cambio del selectCarrier
+        selectCarrier.addEventListener('change', function () {
+            // Obtener el texto del option seleccionado en lugar del value
+            const carrierText = selectCarrier.options[selectCarrier.selectedIndex].text;
+            changeCarrierSpans(carrierText);
+        });
+
+        // Función para actualizar el contenido de un span
+        function changeSpan(id, text) {
+            const span = document.getElementById(id);
+            if (span) {
+                span.innerText = text;
+            }
+        }
+
+        // Función para actualizar los spans relacionados al carrier
+        function changeCarrierSpans(carrier) {
+            changeSpan('textCarrier', carrier);
+            changeSpan('textCarrier2', carrier);
+            changeSpan('textCarrier3', carrier);
+        }
+
+        // Función para determinar y actualizar los spans del carrier según el agente
+        function updateCarrierByAgent(agent) {
+            if (agent.includes('GINA') || agent.includes('LUIS')) {
+                changeCarrierSpans('TRUINSURANCE GROUP LLC');
+                insuranceAgency.value = 'TRUINSURANCE GROUP LLC'
+            } else if (
+                agent.includes('DANIEL') ||
+                agent.includes('ZOHIRA') ||
+                agent.includes('DANIESKA') ||
+                agent.includes('VLADIMIR') ||
+                agent.includes('FRANK')
+            ) {
+                changeCarrierSpans('LAPEIRA & ASSOCIATES LLC');
+                insuranceAgency.value = 'LAPEIRA & ASSOCIATES LLC'
+            } else if (
+                agent.includes('BORJA') ||
+                agent.includes('RODRIGO') ||
+                agent.includes('EVELYN')
+            ) {
+                changeCarrierSpans('SECUREPLUS INSURANCE LLC');
+                insuranceAgency.value = 'SECUREPLUS INSURANCE LLC'
+            } else {
+                changeCarrierSpans(''); // Default value if no match
+            }
+        }
+    </script>
+    
+    <script>
+        // Prevenir envío predeterminado y agregar el canvas como archivo
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            // Convertir canvas a base64 y luego a un archivo Blob
+            const canvasData = canvas.toDataURL('image/png'); // Base64 de la imagen
+            const blob = dataURItoBlob(canvasData);
+            const file = new File([blob], 'signature.png', { type: 'image/png' });
+
+            // Crear un FormData para enviar el archivo
+            const formData = new FormData(form);
+            formData.append('signature', file);
+
+            // Enviar la solicitud con fetch
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+            })
+            .then((response) => {
+                if (response.ok) {
+                    alert('Formulario enviado correctamente.');
+                } else {
+                    alert('Error al enviar el formulario.');
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+
+        // Convertir Base64 a Blob
+        function dataURItoBlob(dataURI) {
+            const byteString = atob(dataURI.split(',')[1]);
+            const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) {
+                ia[i] = byteString.charCodeAt(i);
+            }
+            return new Blob([ab], { type: mimeString });
+        }
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Información</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        .container {
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            margin: 0;
+            color: #2c3e50;
+            text-transform: uppercase;
+        }
+
+        .header p {
+            font-size: 16px;
+            margin: 5px 0;
+            color: #7f8c8d;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #34495e;
+            border-bottom: 3px solid #ecf0f1;
+            padding-bottom: 8px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .table th {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: #fff;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 5px;
+            text-align: left;
+        }
+
+        .table td {
+            padding: 20px;
+            text-align: left;
+            font-size: 15px;
+            background-color: #f9f9f9;
+        }
+
+        .table tr:nth-child(even) td {
+            background-color: #eef3f7;
+        }
+
+        .highlight {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+
+        ul {
+            list-style: disc;
+            padding-left: 20px;
+            color: #34495e;
+        }
+
+        ul li {
+            margin-bottom: 10px;
+        }
+
+        .bold {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .footer {
+            font-size: 14px;
+            color: #7f8c8d;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #3498db;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .center {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>INFORMACIÓN DE MIEMBRO APLICANTE</h1>
+            <p>PARA ENROLAMIENTO EN EL MERCADO DE SALUD</p>
+            <p><strong>Submission IP:</strong> {{ip}}</p>
+        </div>
+
+        <div class="section">
+            <table class="table">
+                <tr>
+                    <th>Nombre del Aplicante</th>
+                    <td>{{obamacare.client.first_name}} {{obamacare.client.last_name}}</td>
+                </tr>
+                <tr>
+                    <th>Teléfono</th>
+                    <td>{{obamacare.client.phone_number}}</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>{{obamacare.client.email}}</td>
+                </tr>
+                <tr>
+                    <th>Fecha de Nacimiento</th>
+                    <td>{{obamacare.client.date_birth}}</td>
+                </tr>
+                <tr>
+                    <th>Aplica</th>
+                    <td>{%if obamacare.client.apply%}SI{%else%}NO{%endif%}</td>
+                </tr>
+                <tr>
+                    <th>Dirección</th>
+                    <td>{{obamacare.client.address}}, {{obamacare.client.city}}, {{obamacare.client.state}}, {{obamacare.client.zipcode}}</td>
+                </tr>
+                <tr>
+                    <th>Estatus de Inmigración</th>
+                    <td>{{obamacare.client.migration_status}}</td>
+                </tr>
+                <tr>
+                    <th>Social Security</th>
+                    <td>{% if obamacare.client.migration_status in valid_migration_statuses %}SI{%else%}{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>Tipo de Ingreso</th>
+                    <td>{{obamacare.work}}</td>
+                </tr>
+                <tr>
+                    <th>Ingreso Anual Estimado</th>
+                    <td>{{obamacare.taxes}}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Mis Derechos como Paciente</h2>
+            <div class="highlight">
+                <p>
+                    Yo, <span class="bold">{{obamacare.client.first_name}} {{obamacare.client.last_name}}</span>, autorizo a <span class="bold">{{obamacare.agent_usa}}</span> de <span class="bold">{{company}}</span> para servir como mi agente y broker de seguros de salud, es decir mi Agente de Registro, para mi y las personas en mi núcleo familiar, cuando aplica, para el propósito de enrolamiento en un Plan Médico Calificado ofrecido en el Mercado de Salud Federal.
+                </p>
+                <p>
+                    Al firmar esta forma, autorizo a <span class="bold">{{company}}</span>, y su staff, a trabajar para mi y las personas en mi núcleo familiar, cuando aplica, en las siguientes funciones de apoyo de seguro y cualquier otra tarea administrativa necesaria para mantener mi solicitud y cobertura en buen estado, como sigue:
+                </p>
+            </div>
+            <ul>
+                <li>Realizar búsquedas de aplicaciones nuevas o actuales en el mercado de salud.</li>
+                <li>Completar una aplicación para búsqueda de eligibilidad y enrolamiento en el Mercado de Salud Federal, o en programas de gobierno tales como Medicaid y CHIP, en los sitios de Enrolamiento Directo del Mercado de Salud, o enrolamiento en programas del mercado de salud que ayudan a aplicar a crédito fiscales o enrolamiento de productos de seguros en planes a nivel estatal.</li>
+                <li>Proveer mantenimiento de mi cuenta en el Mercado de Salud Federal, asistencia en enrolamiento, información sobre los beneficios de los planes, nuevos productos, beneficios de nuevos productos, y asesoría en los pagos de transacciones si es necesario.</li>
+                <li>Apoyar si es necesario en responder inquietudes del Mercado de Salud Federal en lo referente a mi aplicación.</li>
+                <li>Contactarme vía telefónica o por cualquier medio electrónico o escrito para ayudarme y asistirme en cualquier acción necesaria para mantener mi póliza en buen estado.</li>
+            </ul>
+            <p>
+                Entiendo que mi Agente de Registro no utilizará o compartirá mi información de identificación personal (PII) para ningún propósito excepto los aquí listados en esta autorización. Entiendo que esta autorización será válida hasta que sea revocada por mi en cualquier momento. Para revocar esta autorización, debo hacerlo por escrito y enviarlo a la persona correspondiente a través del correo electrónico: client@lapeira.com.
+            </p>
+            <p>
+                Yo, <span class="bold">{{obamacare.client.first_name}} {{obamacare.client.last_name}}</span>, he revisado y confirmado que la información para mi aplicación en el mercado de salud es CORRECTA Y VERIDICA y estará disponible como es requerido por el Centro de Servicios de Medicare & Medicaid (CMS) para efectos de elegibilidad y enrolamiento.
+            </p>
+            <p>
+                Entiendo que la información que yo le suministre a mi Agente de Registro se va a utilizar ÚNICAMENTE para asistirme en verificar mi elegibilidad y mi aplicacion o enrolamiento en el mercado de salud federal (Marketplace). Esta aprobación incluye la búsqueda de una aplicacion activa utilizando la páginas web aprobadas para el enrolamiento clásico directo (DE) o el Enhanced Direct Enrollment (EDE). Así mismo, entiendo que no tengo que compatir otra informacion adicional excepto la que es requerida para mi enrolamiento o verificacion de eligibilidad en el mercado de salud federal (Marketplace)
+            </p>
+        </div>
+
+        <div class="section">
+            <h2>Información Adicional</h2>
+            <p>Yo, <span class="bold">{{obamacare.client.first_name}} {{obamacare.client.last_name}}</span>, confirmo que la información para mi aplicación es correcta y válida según los requisitos del Mercado de Salud Federal.</p>
+            <ul>
+                <li>Nombre del Aplicante: <span class="bold">{{obamacare.client.first_name}} {{obamacare.client.last_name}}</span></li>
+                <li>Nombre Agente en Registro [AOR]: <span class="bold">{{obamacare.agent_usa}}</span></li>
+                <li>Nombre Agencia en Registro: <span class="bold">{{company}}</span></li>
+                <li>Teléfono Agencia: <span class="bold">1.855.963.6900</span></li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Firma</h2>
+            <p>Firma Aplicante o Representante Autorizado:</p>
+            <div class="highlight">
+                <img src="{{ obamacare.signature.url }}" alt="">
+            </div>
+            <p><strong>Fecha y Hora de Firma:</strong> {{current_date}}</p>
+        </div>
+
+        <div class="section">
+            <h2>Carga de Documentos</h2>
+            <p>Cargar documento de inmigración, SSN, ID, foto selfie con ID en mano:</p>
+            <ul>
+                <li>Documento de Inmigración</li>
+                <li>SSN</li>
+                <li>ID</li>
+                <li>Foto selfie con ID</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Validez de la Autorización</h2>
+            <p><strong>Autorización válida hasta:</strong> {{date_more_3_months}}</p>
+        </div>
+
+        <div class="footer">
+            <p>© 2024 - SECURE PLUS INSURANCE LLC. Todos los derechos reservados.</p>
+            <a href="{{ obamacare.signature.url }}">{{ obamacare.signature }}</a>
+        </div>
+    </div>
+</body>
+</html>

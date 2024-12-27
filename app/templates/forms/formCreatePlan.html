@@ -40,6 +40,7 @@
 {% endblock %}
 
 {% block page_content %}
+
 <div id="stepper1" class="bs-stepper">
 	<div class="card">
 		<div class="card-header">
@@ -85,6 +86,7 @@
 					<input type="hidden" id="type_sales" name="type_sales" value="{{ client.type_sales }}">
 					<input type="hidden" id="id" name="id" value="{{ client.id }}">
 					{% if client.type_sales == 'ACA'  or client.type_sales == 'ACA/SUPLEMENTARIO' %}
+					<!-- Stepper Aca -->
 						<div id="test-l-1" role="tabpanel" class="bs-stepper-pane" aria-labelledby="stepper1trigger1">
 							<h5 class="mb-1">Your Obamacare Information</h5>
 							<p class="mb-4">Enter data related to your Obamacare plan information.</p>
@@ -121,7 +123,8 @@
 									<select class="form-select" id="work" aria-label="Default select example"  name="work"   >
 										<option disabled selected value="">Please Select</option>
 										<option value="w2" {% if aca_plan_data.work == "w2" %}selected{% endif %} >W2</option>
-										<option value="1099" {% if aca_plan_data.work == "1099" %}selected{% endif %} >1099</option> 
+										<option value="1099" {% if aca_plan_data.work == "1099" %}selected{% endif %} >1099</option>
+										<option value="otro" {%if aca_plan_data.work == 'otro'%}selected{% endif %}>Otro</option> 
 									</select>
 								</div>
 								<div class="col-12 col-lg-6">
@@ -186,6 +189,7 @@
 						</div>
 					{% endif %}
 					{% if client.type_sales == 'SUPLEMENTARIO'  or client.type_sales == 'ACA/SUPLEMENTARIO' %}
+					<!-- Stepper Supp -->
 						<div id="test-l-2" role="tabpanel" class="bs-stepper-pane" aria-labelledby="stepper1trigger2">
 							<h5 class="mb-1">Your Supplementary Information</h5>
 							<p class="mb-4">Enter data related to your Supplementary plan information.</p>
@@ -442,6 +446,7 @@
 						</div>
 						<!---end row-->
 					{% endif %}
+					<!-- Stepper Dependents -->
 					<div id="test-l-3" role="tabpanel" class="bs-stepper-pane" aria-labelledby="stepper1trigger3">				
 						<div id="repeater2">
 							<!-- Repeater Heading -->

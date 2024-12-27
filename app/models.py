@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.utils import timezone
+from storages.backends.s3boto3 import S3Boto3Storage
 
 class User(AbstractUser):
 
@@ -23,7 +23,7 @@ class User(AbstractUser):
 
 class Client(models.Model):
     agent = models.ForeignKey(User, on_delete=models.CASCADE)
-    agent_usa = models.CharField(max_length=20)
+    agent_usa = models.CharField(max_length=100)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     phone_number = models.BigIntegerField()
@@ -67,7 +67,7 @@ class ObamaCare(models.Model):
     profiling_agent = models.ForeignKey(User, on_delete=models.CASCADE, related_name='profiling_agent_aca' ,null=True)
     agent = models.ForeignKey(User, on_delete=models.CASCADE,related_name='agent_sale_aca')
     client = models.OneToOneField(Client, on_delete=models.CASCADE,null=True)
-    agent_usa = models.CharField(max_length=20)
+    agent_usa = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)  
     taxes = models.IntegerField()
     plan_name = models.CharField(max_length=200)
@@ -88,6 +88,10 @@ class ObamaCare(models.Model):
     date_effective_coverage = models.DateField(null=True)
     date_effective_coverage_end = models.DateField(null=True)
     observation = models.TextField(null=True)
+    signature = models.FileField(
+        upload_to='files',
+        storage=S3Boto3Storage(),
+        null=True)
     is_active = models.BooleanField(default=True)
 
     class Meta:
