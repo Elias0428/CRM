@@ -1,28 +1,27 @@
-from collections import defaultdict
-from django.shortcuts import render, HttpResponse
-from app.models import *
-import random
-from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, redirect
-from django.contrib.auth.hashers import make_password
-from django.http import JsonResponse
-from app.forms import *
-from django.views.decorators.http import require_POST
-from django.shortcuts import get_object_or_404
-import json
-
-from django.http import JsonResponse, HttpResponse
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from datetime import datetime, timedelta
+# Standard Python libraries
 import calendar
-from django.db.models import Q
-from django.db.models.functions import Coalesce
-from django.db.models import Count
-from datetime import date
+import json
+import random
+from collections import defaultdict
+from datetime import datetime
 
-from channels.layers import get_channel_layer
+# Third-party libraries
 from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+
+# Django core libraries
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import make_password
+from django.db.models import Count, Q
+from django.db.models.functions import Coalesce
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+
+# Application-specific imports
+from app.forms import *
+from app.models import *
 
 
 # Create your views here.
@@ -2173,7 +2172,138 @@ def generar_reporte(request):
     reporte_datos = None
     return render(request, 'generar_reporte.html', {'form': form, 'reporte_datos': reporte_datos})
 
+from django.template.loader import render_to_string
+from django.db.models.fields.related import ForeignKey
+from django.http import HttpResponse
+from weasyprint import HTML
+import datetime
+import base64
+from django.core.files.base import ContentFile
+
+def consent(request, obamacare_id):
+    obamacare = ObamaCare.objects.select_related('client').get(id=obamacare_id)
+    dependents = Dependent.objects.filter(client=obamacare.client)
+    supps = Supp.objects.filter(client_id=obamacare.client.id)
+    print(supps)
+    
+    if request.method == 'POST':
+        objectObamacare = saveConsent(request, obamacare)
+        return generatePdf(request, objectObamacare, dependents, supps)
+    context = {
+        'valid_migration_statuses': ['PERMANENT_RESIDENT', 'US_CITIZEN', 'EMPLOYMENT_AUTHORIZATION'],
+        'obamacare':obamacare,
+        'dependents':dependents,
+    }
+    return render(request, 'consent/consent1.html', context)
+
+def saveConsent(request, obamacare):
+    objectClient = save_data_from_request(Client, request.POST, obamacare.client)
+    objectObamacare = save_data_from_request(ObamaCare, request.POST, ['signature'], obamacare)
+    signature_data = request.POST.get('signature')
+    format, imgstr = signature_data.split(';base64,')
+    ext = format.split('/')[-1]
+    image = ContentFile(base64.b64decode(imgstr), name=f'firma.{ext}')
+    objectObamacare.signature = image
+    objectObamacare.save()
+    print(objectObamacare.signature.url) 
+
+
+    print('Guardo la foto perfectamente chamooooo')
+    if objectObamacare:
+        return objectObamacare
+    else:
+        return HttpResponse('No guardo pri')
+
+
+def generatePdf(request, obamacare, dependents, supps):
+    current_date = datetime.datetime.now().strftime("%A, %B %d, %Y %I:%M")
+    date_more_3_months = (datetime.datetime.now() + datetime.timedelta(days=90)).strftime("%A, %B %d, %Y %I:%M")
+
+    context = {
+        'valid_migration_statuses': ['PERMANENT_RESIDENT', 'US_CITIZEN', 'EMPLOYMENT_AUTHORIZATION'],
+        'obamacare':obamacare,
+        'dependents':dependents,
+        'supps':supps,
+        'company':getCompanyPerAgent(obamacare.agent_usa),
+        'current_date':current_date,
+        'date_more_3_months':date_more_3_months,
+        'ip':getIPClient(request)
+    }
+
+    # Renderiza la plantilla HTML a un string
+    html_content = render_to_string('consent/test.html', context)
+
+    # Genera el PDF
+    pdf_file = HTML(string=html_content).write_pdf()
+
+    # Devuelve el PDF como respuesta HTTP
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="output.pdf"'
+    return response
+
+
+def save_data_from_request(model_class, post_data, exempted_fields, instance=None):
+    """
+    Guarda o actualiza los datos de un request.POST en la base de datos utilizando un modelo específico.
+
+    Args:
+        model_class (models.Model): Modelo de Django al que se guardarán los datos.
+        post_data (QueryDict): Datos enviados en el request.POST.
+        instance (models.Model, optional): Instancia existente del modelo para actualizar.
+                                        Si es None, se creará un nuevo registro.
+
+    Returns:
+        models.Model: Instancia del modelo guardada o actualizada.
+        False: Si ocurre algún error durante el proceso.
+    """
+    try:
+        # Crear un diccionario con las columnas del modelo y sus valores correspondientes
+        model_fields = [field.name for field in model_class._meta.fields]
+        data_to_save = {}
+
+        for field in model_fields:
+            if field in exempted_fields:
+                continue
+            if field in post_data:
+                data_to_save[field] = post_data[field]
+                print(f'Se intento guardar en {field}: {post_data[field]}')
+
+        if instance:
+            # Si se proporciona una instancia, actualizamos sus campos
+            for field, value in data_to_save.items():
+                setattr(instance, field, value)
+            instance.save()
+            return instance
+        else:
+            # Si no hay instancia, creamos una nueva
+            instance = model_class(**data_to_save)
+            instance.save()
+            return instance
+
+    except Exception as e:
+        print(f"Error al guardar/actualizar datos: {e}")
+        return False
 
 
 
+def getCompanyPerAgent(agent):
+    agent_upper = agent.upper()
 
+    if "GINA" in agent_upper or "LUIS" in agent_upper:
+        company = "TRUINSURANCE GROUP LLC"
+    elif any(substring in agent_upper for substring in ["DANIEL", "ZOHIRA", "DANIESKA", "VLADIMIR", "FRANK"]):
+        company = "LAPEIRA & ASSOCIATES LLC"
+    elif any(substring in agent_upper for substring in ["BORJA", "RODRIGO", "EVELYN"]):
+        company = "SECUREPLUS INSURANCE LLC"
+    else:
+        company = ""  # Valor predeterminado si no hay coincidencia
+    return company
+
+def getIPClient(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]  # Puede haber múltiples IPs separadas por comas
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    print(ip)
+    return ip
