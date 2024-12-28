@@ -1171,10 +1171,10 @@ def chartSaleIndex(request):
     current_year = now.year
 
     # Calcular inicio y fin del mes actual
-    start_of_month = timezone.make_aware(datetime.datetime(current_year, current_month, 1), timezone.get_current_timezone())
+    start_of_month = timezone.make_aware(datetime(current_year, current_month, 1), timezone.get_current_timezone())
     last_day_of_month = calendar.monthrange(current_year, current_month)[1]
     end_of_month = timezone.make_aware(
-        datetime.datetime(current_year, current_month, last_day_of_month, 23, 59, 59), 
+        datetime(current_year, current_month, last_day_of_month, 23, 59, 59), 
         timezone.get_current_timezone()
     )
 
@@ -1258,8 +1258,8 @@ def tableStatusObama(request):
     current_year = now.year
 
     # Obtener el primer y último día del mes actual (con zona horaria)
-    start_of_month = timezone.make_aware(datetime.datetime(current_year, current_month, 1), timezone.get_current_timezone())
-    end_of_month = timezone.make_aware(datetime.datetime(current_year, current_month + 1, 1), timezone.get_current_timezone()) if current_month < 12 else timezone.make_aware(datetime.datetime(current_year + 1, 1, 1), timezone.get_current_timezone())
+    start_of_month = timezone.make_aware(datetime(current_year, current_month, 1), timezone.get_current_timezone())
+    end_of_month = timezone.make_aware(datetime(current_year, current_month + 1, 1), timezone.get_current_timezone()) if current_month < 12 else timezone.make_aware(datetime(current_year + 1, 1, 1), timezone.get_current_timezone())
 
     roleAuditar = ['S', 'C', 'AU', 'Admin']
 
@@ -1285,8 +1285,8 @@ def tableStatusSupp(request):
     current_year = now.year
 
     # Obtener el primer y último día del mes actual (con zona horaria)
-    start_of_month = timezone.make_aware(datetime.datetime(current_year, current_month, 1), timezone.get_current_timezone())
-    end_of_month = timezone.make_aware(datetime.datetime(current_year, current_month + 1, 1), timezone.get_current_timezone()) if current_month < 12 else timezone.make_aware(datetime.datetime(current_year + 1, 1, 1), timezone.get_current_timezone())
+    start_of_month = timezone.make_aware(datetime(current_year, current_month, 1), timezone.get_current_timezone())
+    end_of_month = timezone.make_aware(datetime(current_year, current_month + 1, 1), timezone.get_current_timezone()) if current_month < 12 else timezone.make_aware(datetime(current_year + 1, 1, 1), timezone.get_current_timezone())
 
     # Roles con acceso ampliado
     roleAuditar = ['S', 'C', 'AU', 'Admin']
@@ -2296,3 +2296,94 @@ def getIPClient(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+
+
+from datetime import datetime, timedelta
+from django.db.models import Q
+
+def saleProm(request):
+    agents = User.objects.filter(is_active=True)
+    weeks = ["Semana 1", "Semana 2", "Semana 3", "Semana 4", "Semana 5"]
+    counts_obamacare = [0, 0, 0, 0, 0]
+    counts_supp = [0, 0, 0, 0, 0]
+    counts_total = [0, 0, 0, 0, 0]
+
+    if request.method == "POST":
+        start_date = request.POST.get("month")  # Obtén el mes enviado
+        print("Mes seleccionado:", start_date)
+        if start_date:
+            try:
+                # Convertir el mes seleccionado en un rango de fechas
+                year = datetime.now().year
+                month = int(start_date)
+                first_day = datetime(year, month, 1)
+                if month == 12:
+                    last_day = datetime(year + 1, 1, 1) - timedelta(days=1)
+                else:
+                    last_day = datetime(year, month + 1, 1) - timedelta(days=1)
+
+                print("Rango de fechas:", first_day, "a", last_day)
+
+                print(f"Rango de fechas para filtros: {first_day} - {last_day}")
+
+                # Filtro de ObamaCare
+                obamacare_records = ObamaCare.objects.filter(
+                    created_at__range=(first_day, last_day),
+                    status_color=3
+                )
+                print(f"Total ObamaCare encontrados: {obamacare_records.count()}")
+
+                # Imprimir detalles de cada registro
+                for record in obamacare_records:
+                    print(f"ObamaCare ID: {record.id}, Fecha: {record.create_at}, Status Color: {record.status_color}")                                                                 
+
+                # Filtrar Supp
+                supp_records = Supp.objects.filter(
+                    created_at__range=(first_day, last_day),
+                    status_color=3
+                )
+                print("Registros Supp encontrados:", supp_records.count())
+                for record in supp_records:
+                    print("Registro Supp:", record.id, record.created_at)
+
+                # Calcular la semana del mes
+                def get_week_of_month(date):
+                    first_day_of_month = date.replace(day=1)
+                    adjusted_day = date.day + first_day_of_month.weekday()
+                    return (adjusted_day - 1) // 7
+
+                # Contar registros por semana
+                for record in obamacare_records:
+                    week_number = get_week_of_month(record.create_at.date())
+                    if 0 <= week_number < 5:  # Validar que la semana esté en el rango
+                        counts_obamacare[week_number] += 1
+                        print(f"ObamaCare {record.id} asignado a {weeks[week_number]}")
+
+                for record in supp_records:
+                    week_number = get_week_of_month(record.created_at.date())
+                    if 0 <= week_number < 5:  # Validar que la semana esté en el rango
+                        counts_supp[week_number] += 1
+                        print(f"Supp {record.id} asignado a {weeks[week_number]}")
+
+                # Calcular el total combinado
+                counts_total = [
+                    counts_obamacare[i] + counts_supp[i] for i in range(len(weeks))
+                ]
+
+                print("Totales por semana:")
+                for i in range(len(weeks)):
+                    print(f"{weeks[i]} - ObamaCare: {counts_obamacare[i]}, Supp: {counts_supp[i]}, Total: {counts_total[i]}")
+
+            except ValueError as e:
+                print("Error al procesar la fecha:", e)
+
+    # Renderizar la respuesta
+    return render(request, 'table/saleProm.html', {
+        'agents': agents,
+        'weeks': weeks,
+        'counts_obamacare': counts_obamacare,
+        'counts_supp': counts_supp,
+        'counts_total': counts_total,
+    })
+
+

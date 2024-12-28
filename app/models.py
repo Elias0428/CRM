@@ -88,6 +88,7 @@ class ObamaCare(models.Model):
     date_effective_coverage = models.DateField(null=True)
     date_effective_coverage_end = models.DateField(null=True)
     observation = models.TextField(null=True)
+    create_at = models.DateTimeField(auto_now_add=True)
     signature = models.FileField(
         upload_to='files',
         storage=S3Boto3Storage(),
@@ -131,7 +132,7 @@ class Supp(models.Model):
     payment_type = models.CharField(max_length=50,null=True)
     observation = models.TextField(null=True)
     is_active = models.BooleanField(default=True)
-
+    create_at = models.DateTimeField(auto_now_add=True)
     dependents = models.ManyToManyField(Dependent, related_name='SuppDependents')
 
     class Meta:
