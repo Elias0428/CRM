@@ -4,6 +4,10 @@ import json
 import random
 from collections import defaultdict
 from datetime import datetime
+from django.utils import timezone
+import pandas as pd
+import datetime
+import os 
 
 # Third-party libraries
 from asgiref.sync import async_to_sync
@@ -14,7 +18,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Sum
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -1875,7 +1879,7 @@ def upload_excel(request):
                 excel_metadata = ExcelFileMetadata.objects.create(
                     file_name=file_name,
                     description=description,
-                    uploaded_at=now()
+                    uploaded_at=datetime.datetime.now()
                 )
 
                 # Guardar el DataFrame en la sesión para usarlo después
