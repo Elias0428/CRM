@@ -1,17 +1,19 @@
 # Standard Python libraries
+import base64
 import calendar
+import datetime
 import json
+import os
 import random
 from collections import defaultdict
-from datetime import datetime
-from django.utils import timezone
-import pandas as pd
-import datetime
-import os 
 
-# Third-party libraries
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
+import pandas as pd
+
+# Django utilities
+from django.core.files.base import ContentFile
+from django.http import HttpResponse, JsonResponse
+from django.template.loader import render_to_string
+from django.utils import timezone
 
 # Django core libraries
 from django.contrib import messages
@@ -20,12 +22,17 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.db.models import Count, Q, Sum
 from django.db.models.functions import Coalesce
-from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+
+# Third-party libraries
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+from weasyprint import HTML
 
 # Application-specific imports
 from app.forms import *
 from app.models import *
+
 
 
 # Create your views here.
@@ -95,12 +102,6 @@ def formCreateClient(request):
     if request.method == 'POST':
         form = ClientForm(request.POST)
         if form.is_valid():
-            #phone_number = form.cleaned_data['phone_number']
-            
-            # Verificar si el número de teléfono ya está registrado
-            #if Client.objects.filter(phone_number=phone_number).exists():
-            #    return render(request, 'forms/formCreateClient.html', {'error_message': 'Este numero de telefono ya esta registrado'})
-            
             # Guardar el cliente
             client = form.save(commit=False)
             client.agent = request.user
@@ -2176,19 +2177,10 @@ def generar_reporte(request):
     reporte_datos = None
     return render(request, 'generar_reporte.html', {'form': form, 'reporte_datos': reporte_datos})
 
-from django.template.loader import render_to_string
-from django.db.models.fields.related import ForeignKey
-from django.http import HttpResponse
-from weasyprint import HTML
-import datetime
-import base64
-from django.core.files.base import ContentFile
-
 def consent(request, obamacare_id):
     obamacare = ObamaCare.objects.select_related('client').get(id=obamacare_id)
     dependents = Dependent.objects.filter(client=obamacare.client)
     supps = Supp.objects.filter(client_id=obamacare.client.id)
-    print(supps)
     
     if request.method == 'POST':
         objectObamacare = saveConsent(request, obamacare)
@@ -2203,21 +2195,18 @@ def consent(request, obamacare_id):
 def saveConsent(request, obamacare):
     objectClient = save_data_from_request(Client, request.POST, obamacare.client)
     objectObamacare = save_data_from_request(ObamaCare, request.POST, ['signature'], obamacare)
+
     signature_data = request.POST.get('signature')
     format, imgstr = signature_data.split(';base64,')
     ext = format.split('/')[-1]
     image = ContentFile(base64.b64decode(imgstr), name=f'firma.{ext}')
     objectObamacare.signature = image
     objectObamacare.save()
-    print(objectObamacare.signature.url) 
 
-
-    print('Guardo la foto perfectamente chamooooo')
     if objectObamacare:
         return objectObamacare
     else:
         return HttpResponse('No guardo pri')
-
 
 def generatePdf(request, obamacare, dependents, supps):
     current_date = datetime.datetime.now().strftime("%A, %B %d, %Y %I:%M")
@@ -2244,7 +2233,6 @@ def generatePdf(request, obamacare, dependents, supps):
     response = HttpResponse(pdf_file, content_type='application/pdf')
     response['Content-Disposition'] = 'inline; filename="output.pdf"'
     return response
-
 
 def save_data_from_request(model_class, post_data, exempted_fields, instance=None):
     """
@@ -2288,8 +2276,6 @@ def save_data_from_request(model_class, post_data, exempted_fields, instance=Non
         print(f"Error al guardar/actualizar datos: {e}")
         return False
 
-
-
 def getCompanyPerAgent(agent):
     agent_upper = agent.upper()
 
@@ -2309,5 +2295,4 @@ def getIPClient(request):
         ip = x_forwarded_for.split(',')[0]  # Puede haber múltiples IPs separadas por comas
     else:
         ip = request.META.get('REMOTE_ADDR')
-    print(ip)
     return ip
