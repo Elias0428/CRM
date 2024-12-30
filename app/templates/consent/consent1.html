@@ -223,18 +223,18 @@
                         <label class="form-label">Estatus de Inmigración <span class="text-danger">*</span></label>
                         <select id="migration_status" name="migration_status" class="form-select">
                             <option value="no_valid" disabled selected>Please Select</option>
-                            <option {%if obamacare.client.migration_status == 'EMPLOYMENT_AUTHORIZATION'%}selected{%endif%} value="EMPLOYMENT_AUTHORIZATION">Employment Authorization</option>
-                            <option {%if obamacare.client.migration_status == 'NOTICE_OF_ACTION'%}selected{%endif%} value="NOTICE_OF_ACTION">Notice of Action (i-797)</option>
+                            <option {%if obamacare.client.migration_status == 'EMPLOYMENT AUTHORIZATION'%}selected{%endif%} value="EMPLOYMENT_AUTHORIZATION">Employment Authorization</option>
+                            <option {%if obamacare.client.migration_status == 'NOTICE OF ACTION'%}selected{%endif%} value="NOTICE_OF_ACTION">Notice of Action (i-797)</option>
                             <option {%if obamacare.client.migration_status == 'REFUGEE'%}selected{%endif%} value="REFUGEE">Refugee</option>
                             <option {%if obamacare.client.migration_status == 'ASYLUM'%}selected{%endif%} value="ASYLUM">Asylum</option>
                             <option {%if obamacare.client.migration_status == 'TPS'%}selected{%endif%} value="TPS">Temporary Protection Status (TPS)</option>
-                            <option {%if obamacare.client.migration_status == 'DOMESTIC_VIOLENCE'%}selected{%endif%} value="DOMESTIC_VIOLENCE">Domestic Violence</option>
-                            <option {%if obamacare.client.migration_status == 'PERMANENT_RESIDENT'%}selected{%endif%} value="PERMANENT_RESIDENT">Permanent Resident (Green Card)</option>
-                            <option {%if obamacare.client.migration_status == 'CONDITIONAL_RESIDENT'%}selected{%endif%} value="CONDITIONAL_RESIDENT">Conditional Resident</option>
+                            <option {%if obamacare.client.migration_status == 'DOMESTIC VIOLENCE'%}selected{%endif%} value="DOMESTIC_VIOLENCE">Domestic Violence</option>
+                            <option {%if obamacare.client.migration_status == 'PERMANENT RESIDENT'%}selected{%endif%} value="PERMANENT_RESIDENT">Permanent Resident (Green Card)</option>
+                            <option {%if obamacare.client.migration_status == 'CONDITIONAL RESIDENT'%}selected{%endif%} value="CONDITIONAL_RESIDENT">Conditional Resident</option>
                             <option {%if obamacare.client.migration_status == 'PAROLE'%}selected{%endif%} value="PAROLE">Parole</option>
-                            <option {%if obamacare.client.migration_status == 'US_CITIZEN'%}selected{%endif%} value="US_CITIZEN">US Citizen (Driver's License)</option>
-                            <option {%if obamacare.client.migration_status == 'STUDENT_VISA'%}selected{%endif%} value="STUDENT_VISA">Student Visa (I-20)</option>
-                            <option {%if obamacare.client.migration_status == 'CURRENTLY_IN_PROCESS'%}selected{%endif%} value="CURRENTLY_IN_PROCESS">Currently In Process (this means the client received an i-797)</option>
+                            <option {%if obamacare.client.migration_status == 'US CITIZEN'%}selected{%endif%} value="US_CITIZEN">US Citizen (Driver's License)</option>
+                            <option {%if obamacare.client.migration_status == 'STUDENT VISA'%}selected{%endif%} value="STUDENT_VISA">Student Visa (I-20)</option>
+                            <option {%if obamacare.client.migration_status == 'CURRENTLY IN PROCESS'%}selected{%endif%} value="CURRENTLY_IN_PROCESS">Currently In Process (this means the client received an i-797)</option>
                         </select>
                     </div>
                 </div>
@@ -319,7 +319,7 @@
             <!-- Signature Section -->
             <div class="bg-orange p-3 rounded mb-3 row m-1">
                 <div class="col-12">
-                    <label class="form-label">Firma Aplicante o Representante Autorizado <span class="text-danger">*</span></label>
+                    <label class="form-label">Firma Aplicante o Representante Autorizado <span class="text-danger">*</span> {% if consent %}<strong style="color: chartreuse; text-shadow: 1px 1px 2px black, 0 0 25px green, 0 0 5px darkgreen;"> Firmado </strong> {% endif %} </label>
                 </div>
                 <div class="col-12 container-fluid">
                     <canvas width="330px" id="drawingCanvas" class="signature-pad"></canvas>

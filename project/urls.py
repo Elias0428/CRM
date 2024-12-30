@@ -82,7 +82,7 @@ urlpatterns = [
 
     path('bd/', views.commentDB, name='bd'),
 
-    # path('saleProm/', views.saleProm, name='saleProm'),
+    path('saleProm/', views.saleProm, name='saleProm'),
 
     path('viewConsent/<obamacare_id>/', views.consent, name='viewConsent'),
 

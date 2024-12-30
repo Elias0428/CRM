@@ -369,6 +369,7 @@
 								<button type="submit" name="action" value="save_obamacare" id="enviar" class="btn btn-primary px-4"  >Submit</button>
 								<button type="submit" name="action" id="enviar2" value="save_observation_agent" class="btn btn-primary px-4" style="display: none;">Submits</button>
 								<a href="{% url 'clientObamacare' %}" class="btn btn-light px-4">Back</a>
+								<a href="{% url 'clientObamacare' %}" class="btn btn-light px-4" data-bs-toggle="modal" data-bs-target="#verConsent">View Consent</a>
 							</div>
 						</div>
                     {% csrf_token %}	
@@ -487,6 +488,31 @@
 											{% for observation in obsCustomer %}
 												<li class="list-group-item">
 													<strong>{{ observation.agent }}:</strong> {{ observation.content }} <strong>Date:</strong> {{ observation.created_at }}
+												</li>
+											{% endfor %}
+										</ul>
+									{% else %}
+										<p>No hay observaciones guardadas.</p>
+									{% endif %}
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Modal para ver las consent -->
+					<div class="modal fade" id="verConsent" tabindex="-1" aria-labelledby="verConsentLabel" aria-hidden="true">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="verConsentLabel">Saved Remarks</h5>
+									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+								</div>
+								<div class="modal-body">
+									{% if consent %}
+										<ul class="list-group">
+											{% for consents in consent %}											
+												<li class="list-group-item">
+													<strong>Consent #{{forloop.counter}}:</strong> <a href="{{ consents.pdf.url }} ">View  <i class="lni lni-display"></i></a> 
 												</li>
 											{% endfor %}
 										</ul>

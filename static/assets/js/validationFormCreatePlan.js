@@ -272,11 +272,11 @@ function saveDependents() {
 
           // Botón 1: Redirigir a la página de inicio
           document.getElementById('buttonHome').addEventListener('click', () => {
-            // window.location.href = '/';
+            window.location.href = '/';
           });
 
           // Botón 2: Redirigir a los detalles
-          document.getElementById('button2').addEventListener('click', () => {
+          document.getElementById('buttonConsent').addEventListener('click', () => {
             window.location.href = `/viewConsent/${id_aca_plan}/`;
           });
 

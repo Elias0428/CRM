@@ -364,6 +364,12 @@ def clientObamacare(request):
     elif request.user.role == 'A':
         obamaCare = ObamaCare.objects.select_related('agent','client').filter(agent = request.user.id, is_active = True ) 
 
+    for item in obamaCare:
+        client_name = item.client.agent_usa if item.client.agent_usa else "Sin Name"
+        
+        item.client.short_name = client_name.split()[0] + " ..." if " " in client_name else client_name
+
+
     
     return render(request, 'table/clientObamacare.html', {'obamaCare':obamaCare})
 
@@ -481,6 +487,7 @@ def editClient(request,agent_id):
 
     return client
 
+@login_required(login_url='/login')
 def editClientObama(request, client_id, obamacare_id):
     obamacare = ObamaCare.objects.select_related('agent', 'client').filter(id=obamacare_id).first()
     dependents = Dependent.objects.select_related('obamacare').filter(obamacare=obamacare)
@@ -491,6 +498,8 @@ def editClientObama(request, client_id, obamacare_id):
     list_drow = DropDownList.objects.filter(profiling_obama__isnull=False)
 
     obsCus = ObservationCustomer.objects.select_related('agent').filter(client_id=obamacare.client.id)
+
+    consent = Consents.objects.select_related('obamacare').filter(obamacare = obamacare_id )
 
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -620,11 +629,13 @@ def editClientObama(request, client_id, obamacare_id):
         'obsObamaText': '\n'.join([obs.content for obs in obsObama]),
         'obsCustomer': obsCus,
         'list_drow': list_drow,
-        'dependents' : dependents
+        'dependents' : dependents,
+        'consent':consent
     }
 
     return render(request, 'edit/editClientObama.html', context)
 
+@login_required(login_url='/login')
 def editClientSupp(request, client_id,supp_id):
 
     supp = Supp.objects.select_related('client','agent').filter(id=supp_id).first()
@@ -2322,6 +2333,7 @@ def consent(request, obamacare_id):
     obamacare = ObamaCare.objects.select_related('client').get(id=obamacare_id)
     dependents = Dependent.objects.filter(client=obamacare.client)
     supps = Supp.objects.filter(client_id=obamacare.client.id)
+    consent = Consents.objects.select_related('obamacare').filter(obamacare = obamacare_id ).last()
     
     if request.method == 'POST':
         objectObamacare = saveConsent(request, obamacare)
@@ -2330,6 +2342,7 @@ def consent(request, obamacare_id):
         'valid_migration_statuses': ['PERMANENT_RESIDENT', 'US_CITIZEN', 'EMPLOYMENT_AUTHORIZATION'],
         'obamacare':obamacare,
         'dependents':dependents,
+        'consent':consent
     }
     return render(request, 'consent/consent1.html', context)
 
