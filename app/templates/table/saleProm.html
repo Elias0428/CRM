@@ -1,7 +1,7 @@
 {% extends "dashboard/index.html" %}
 {% load static %}
 {% block head %}
-    <title>Table Alert</title>
+    <title>Average Sale</title>
 	<!--plugins-->
 	<link href="{% static "assets/plugins/simplebar/css/simplebar.css" %}" rel="stylesheet" />
 	<link href="{% static "assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" %}" rel="stylesheet" />
@@ -22,7 +22,7 @@
 	<link rel="stylesheet" href="{% static "assets/css/header-colors.css" %}" />
 {% endblock %}
 {% block page_content %}
-<h6 class="mb-0 text-uppercase">Alert</h6>
+<h6 class="mb-0 text-uppercase">average sales per agent</h6>
 <hr/>
 <div class="card">
     <div class="card-header">
@@ -50,13 +50,14 @@
             <div class="col-md-4">
                 <label for="agent" class="form-label">Agent</label>
                 <!-- El select para el agente, ya está correcto -->
-                <select class="form-select" id="agent" name="agent" >
+                <select class="form-select" id="agent" name="agent" required>
                     <option value="" disabled selected>Please Select</option>
                     {% for agent in agents %}
                         <option value="{{ agent.id }}">{{ agent.first_name }} {{ agent.last_name }}</option>
                     {% endfor %}
                 </select>
             </div>
+            <br><br><br><br>
             <div class="form-label">
                 <button type="submit" class="btn btn-primary">Filter</button>
                 <a href="{% url 'createQuality' %}" class="btn btn-secondary">Reset</a>
@@ -95,73 +96,88 @@
 		var counts_obamacare = {{ counts_obamacare|safe }};  // Conteos de ObamaCare
 		var counts_supp = {{ counts_supp|safe }};  // Conteos de Supp
 		var counts_total = {{ counts_total|safe }};  // Total combinado de ObamaCare y Supp
+        var nameChart = '{{ nameChart }}';
 
-    var options = {
-        series: [{
-            name: 'OBAMACARE',
-            data: counts_obamacare  // Usamos los datos de ObamaCare
-        }, {
-            name: 'SUPPLEMENTARY',
-            data: counts_supp  // Usamos los datos de Supp
-        }, {
-            name: 'OBAMACARE/SUPPLEMENTARY',
-            data: counts_total  // Usamos los datos del total combinado
-        }],
-        chart: {
-            type: 'bar',
-            height: 350
-        },
-        plotOptions: {
-            bar: {
-                horizontal: false,
-                columnWidth: '55%',
-                borderRadius: 5,
-                borderRadiusApplication: 'end'
+        // Determinamos el valor máximo para el eje Y
+        var maxValue = Math.max(Math.max(...counts_obamacare), Math.max(...counts_supp), Math.max(...counts_total));
+        if (maxValue <= 20) {
+            maxValue = 20;  // Si el máximo es menor o igual a 20, lo dejamos en 20
+        } else {
+            maxValue = Math.ceil(maxValue / 10) * 10;  // Redondeamos hacia arriba al siguiente múltiplo de 10
+        }
+
+        var options = {
+            series: [{
+                name: 'OBAMACARE',
+                data: counts_obamacare  // Usamos los datos de ObamaCare
+            }, {
+                name: 'SUPPLEMENTARY',
+                data: counts_supp  // Usamos los datos de Supp
+            }, {
+                name: 'OBAMACARE/SUPPLEMENTARY',
+                data: counts_total  // Usamos los datos del total combinado
+            }],
+            chart: {
+                type: 'bar',
+                height: 350
             },
-        },
-        dataLabels: {
-            enabled: false
-        },
-        stroke: {
-            show: true,
-            width: 2,
-            colors: ['transparent']
-        },
-        xaxis: {
-            categories: weeks  // Usamos las semanas como categorías en el eje X
-        },
-        yaxis: {
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '55%',
+                    borderRadius: 5,
+                    borderRadiusApplication: 'end'
+                },
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                show: true,
+                width: 2,
+                colors: ['transparent']
+            },
+            xaxis: {
+                categories: weeks  // Usamos las semanas como categorías en el eje X
+            },
+            yaxis: {
+                title: {
+                    text: 'Cantidad'
+                },
+                max: maxValue
+            },
+            fill: {
+                opacity: 1
+            },
             title: {
-                text: 'Cantidad'
-            }
-        },
-        fill: {
-            opacity: 1
-        },
-        tooltip: {
-            y: {
-                formatter: function (val) {
-                    return val + " registros";
+                text: nameChart,
+            },
+            tooltip: {
+                theme: 'dark',  // Esto asegura que el tooltip tenga un fondo oscuro
+                y: {
+                    formatter: function (val) {
+                        return val + " registros";
+                    }
                 }
+            },
+            annotations: {
+                yaxis: [{
+                y: 15,
+                borderColor: '#FF0000',
+                label: {
+                    borderColor: '#FF0000',
+                    style: {
+                    color: '#fff',
+                    background: '#FF0000'
+                    },
+                    text: 'Dead'
+                }
+                }]
             }
-        },
-		  annotations: {
-			yaxis: [{
-			  y: 15,
-			  borderColor: '#FF0000',
-			  label: {
-				borderColor: '#FF0000',
-				style: {
-				  color: '#fff',
-				  background: '#FF0000'
-				},
-				text: 'Dead'
-			  }
-			}]
-		  }
-		};  
+        };  
   
-		  var chart = new ApexCharts(document.querySelector("#pulsarns200"), options);
-		  chart.render();
+        var chart = new ApexCharts(document.querySelector("#pulsarns200"), options);
+        chart.render();
+
 	</script>
 {% endblock %}

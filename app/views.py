@@ -6,6 +6,7 @@ import json
 import os
 import random
 from collections import defaultdict
+import calendar
 
 import pandas as pd
 
@@ -32,6 +33,11 @@ from weasyprint import HTML
 # Application-specific imports
 from app.forms import *
 from app.models import *
+
+from datetime import datetime, timedelta
+from django.db.models import Q
+
+
 
 
 
@@ -82,7 +88,7 @@ def select_client(request):
     if request.user.role in roleAuditar:
         clients = Client.objects.all()
     else:
-        clients = Client.objects.filter(agent = request.user.id)
+        clients = Client.objects.filter(agent = request.user.id).exclude(type_sale = '')
     
     return render(request, 'agents/select_client.html', {'clients':clients})
 
@@ -1318,6 +1324,9 @@ def sale(request):
     saleSuppUsa = saleSuppAgentUsa(start_date, end_date)
     sales_data, total_status_color_1_obama, total_status_color_3_obama, total_status_color_1_supp, total_status_color_3_supp, total_sales = salesBonusAgent(start_date, end_date)
 
+    registered, proccessing, profiling, canceled, countRegistered,countProccsing,countProfiling,countCanceled = saleClientStatusObama(start_date=None, end_date=None)
+    registeredSupp, proccessingSupp, activeSupp, canceledSupp,countRegisteredSupp,countProccsingSupp,countActiveSupp,countCanceledSupp = saleClientStatusSupp(start_date=None, end_date=None)
+
     # Calcular los totales por agente antes de pasar los datos a la plantilla
     for agent, data in sales_data.items():
         data['total'] = data['status_color_1_obama'] + data['status_color_3_obama'] + data['status_color_1_supp'] + data['status_color_3_supp']
@@ -1332,14 +1341,32 @@ def sale(request):
         'total_status_color_3_obama': total_status_color_3_obama,
         'total_status_color_1_supp': total_status_color_1_supp,
         'total_status_color_3_supp': total_status_color_3_supp,
-        'total_sales': total_sales
+        'total_sales': total_sales,
+        'registered':registered,
+        'proccessing' : proccessing,
+        'profiling':profiling,
+        'canceled':canceled,
+        'registeredSupp': registeredSupp, 
+        'proccessingSupp':proccessingSupp,
+        'activeSupp':activeSupp,
+        'canceledSupp':canceledSupp,
+        'countRegistered':countRegistered,
+        'countProccsing': countProccsing,
+        'countProfiling':countProfiling,
+        'countCanceled':countCanceled,
+        'countRegisteredSupp':countRegisteredSupp,
+        'countProccsingSupp': countProccsingSupp,
+        'countActiveSupp':countActiveSupp,
+        'countCanceledSupp':countCanceledSupp
+
+
     }
 
     return render (request, 'table/sale.html', context)
 
 def saleObamaAgent(start_date=None, end_date=None):
     # Definir la consulta base para Supp, utilizando `select_related` para obtener el nombre del agente (User)
-    sales_query = ObamaCare.objects.select_related('agent') \
+    sales_query = ObamaCare.objects.select_related('agent').filter(is_active = True) \
         .values('agent__username', 'status_color') \
         .annotate(total_sales=Count('id')) \
         .order_by('agent', 'status_color')
@@ -1395,7 +1422,7 @@ def saleObamaAgent(start_date=None, end_date=None):
 
 def saleObamaAgentUsa(start_date=None, end_date=None):
     # Definir la consulta base para Supp, utilizando `values` para obtener el nombre del agente (agent_usa)
-    sales_query = ObamaCare.objects.values('agent_usa', 'status_color') \
+    sales_query = ObamaCare.objects.values('agent_usa', 'status_color').filter(is_active = True) \
         .annotate(total_sales=Count('id')) \
         .order_by('agent_usa', 'status_color')
 
@@ -1450,7 +1477,7 @@ def saleObamaAgentUsa(start_date=None, end_date=None):
 
 def saleSuppAgent(start_date=None, end_date=None):
     # Definir la consulta base para Supp, utilizando `select_related` para obtener el nombre del agente (User)
-    sales_query = Supp.objects.select_related('agent') \
+    sales_query = Supp.objects.select_related('agent').filter(is_active = True) \
         .values('agent__username', 'status_color') \
         .annotate(total_sales=Count('id')) \
         .order_by('agent', 'status_color')
@@ -1506,7 +1533,7 @@ def saleSuppAgent(start_date=None, end_date=None):
 
 def saleSuppAgentUsa(start_date=None, end_date=None):
     # Definir la consulta base para Supp, utilizando `values` para obtener el nombre del agente (agent_usa)
-    sales_query = Supp.objects.values('agent_usa', 'status_color') \
+    sales_query = Supp.objects.values('agent_usa', 'status_color').filter(is_active = True) \
         .annotate(total_sales=Count('id')) \
         .order_by('agent_usa', 'status_color')
 
@@ -1561,7 +1588,7 @@ def saleSuppAgentUsa(start_date=None, end_date=None):
 
 def salesBonusAgent(start_date=None, end_date=None):
     # Consulta para Supp
-    sales_query_supp = Supp.objects.select_related('agent') \
+    sales_query_supp = Supp.objects.select_related('agent').filter(is_active = True) \
         .values('agent__username', 'status_color') \
         .annotate(total_sales=Count('id'))
 
@@ -1650,6 +1677,117 @@ def salesBonusAgent(start_date=None, end_date=None):
     total_sales = total_status_color_1_obama + total_status_color_3_obama + total_status_color_1_supp + total_status_color_3_supp
 
     return sales_data, total_status_color_1_obama, total_status_color_3_obama, total_status_color_1_supp, total_status_color_3_supp, total_sales                                                                            
+
+def saleClientStatusObama(start_date=None, end_date=None):
+
+    # Consulta para Registered
+    sales_query_registered = ObamaCare.objects.select_related('agent','client').filter(status_color = 1, is_active = True)
+    
+    # Consulta para Proccessing
+    sales_query_proccessing = ObamaCare.objects.select_related('agent','client').filter(status_color = 2, is_active = True ) 
+
+    # Consulta para Profiling
+    sales_query_profiling = ObamaCare.objects.select_related('agent','client').filter(status_color = 3, is_active = True ) 
+    
+    # Consulta para Canceled
+    sales_query_canceled = ObamaCare.objects.select_related('agent','client').filter(status_color = 4, is_active = True )
+
+    # Si no se proporcionan fechas, filtrar por el mes actual
+    if not start_date and not end_date:
+        today = timezone.now()
+        first_day_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+        if today.month == 12:
+            last_day_of_month = today.replace(day=31, hour=23, minute=59, second=59, microsecond=999999)
+        else:
+            last_day_of_month = (first_day_of_month.replace(month=first_day_of_month.month + 1) - timezone.timedelta(seconds=1))
+
+        sales_query_registered = sales_query_registered.filter(created_at__range=[first_day_of_month, last_day_of_month])
+        sales_query_proccessing = sales_query_proccessing.filter(created_at__range=[first_day_of_month, last_day_of_month])
+        sales_query_profiling = sales_query_profiling.filter(created_at__range=[first_day_of_month, last_day_of_month])
+        sales_query_canceled = sales_query_canceled.filter(created_at__range=[first_day_of_month, last_day_of_month])
+
+        countRegistered = sales_query_registered.count()
+        countProccsing = sales_query_proccessing.count()
+        countProfiling = sales_query_profiling.count()
+        countCanceled = sales_query_canceled.count()
+
+    # Si se proporcionan fechas, filtrar por el rango de fechas
+    elif start_date and end_date:
+        start_date = timezone.make_aware(
+            datetime.strptime(start_date, '%Y-%m-%d').replace(hour=0, minute=0, second=0, microsecond=0)
+        )
+        end_date = timezone.make_aware(
+            datetime.strptime(end_date, '%Y-%m-%d').replace(hour=23, minute=59, second=59, microsecond=999999)
+        )
+
+        sales_query_registered = sales_query_registered.filter(created_at__range=[start_date, end_date])
+        sales_query_proccessing = sales_query_proccessing.filter(created_at__range=[start_date, end_date])
+        sales_query_profiling = sales_query_profiling.filter(created_at__range=[start_date, end_date])
+        sales_query_canceled = sales_query_canceled.filter(created_at__range=[start_date, end_date])
+
+        countRegistered = sales_query_registered.count()
+        countProccsing = sales_query_proccessing.count()
+        countProfiling = sales_query_profiling.count()
+        countCanceled = sales_query_canceled.count()
+    
+    return sales_query_registered,sales_query_proccessing,sales_query_profiling,sales_query_canceled,countRegistered,countProccsing,countProfiling,countCanceled
+
+def saleClientStatusSupp(start_date=None, end_date=None):
+
+    # Consulta para Registered
+    registered_supp = Supp.objects.select_related('agent','client').filter(status_color = 1, is_active = True)
+    
+    # Consulta para Proccessing
+    proccessing_supp = Supp.objects.select_related('agent','client').filter(status_color = 2, is_active = True ) 
+
+    # Consulta para Active
+    active_supp = Supp.objects.select_related('agent','client').filter(status_color = 3, is_active = True ) 
+    
+    # Consulta para Canceled
+    canceled_supp = Supp.objects.select_related('agent','client').filter(status_color = 4, is_active = True )
+
+    # Si no se proporcionan fechas, filtrar por el mes actual
+    if not start_date and not end_date:
+        today = timezone.now()
+        first_day_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+        if today.month == 12:
+            last_day_of_month = today.replace(day=31, hour=23, minute=59, second=59, microsecond=999999)
+        else:
+            last_day_of_month = (first_day_of_month.replace(month=first_day_of_month.month + 1) - timezone.timedelta(seconds=1))
+
+        registered_supp = registered_supp.filter(created_at__range=[first_day_of_month, last_day_of_month])
+        proccessing_supp = proccessing_supp.filter(created_at__range=[first_day_of_month, last_day_of_month])
+        active_supp = active_supp.filter(created_at__range=[first_day_of_month, last_day_of_month])
+        canceled_supp = canceled_supp.filter(created_at__range=[first_day_of_month, last_day_of_month])
+
+        countRegisteredSupp = registered_supp.count()
+        countProccsingSupp = proccessing_supp.count()
+        countActiveSupp = active_supp.count()
+        countCanceledSupp = canceled_supp.count()
+
+    # Si se proporcionan fechas, filtrar por el rango de fechas
+    elif start_date and end_date:
+        start_date = timezone.make_aware(
+            datetime.strptime(start_date, '%Y-%m-%d').replace(hour=0, minute=0, second=0, microsecond=0)
+        )
+        end_date = timezone.make_aware(
+            datetime.strptime(end_date, '%Y-%m-%d').replace(hour=23, minute=59, second=59, microsecond=999999)
+        )
+
+        registered_supp = registered_supp.filter(created_at__range=[start_date, end_date])
+        proccessing_supp = proccessing_supp.filter(created_at__range=[start_date, end_date])
+        active_supp = active_supp.filter(created_at__range=[start_date, end_date])
+        canceled_supp = canceled_supp.filter(created_at__range=[start_date, end_date])
+
+        countRegisteredSupp = registered_supp.count()
+        countProccsingSupp = proccessing_supp.count()
+        countActiveSupp = active_supp.count()
+        countCanceledSupp = canceled_supp.count()
+
+    
+    return registered_supp,proccessing_supp,active_supp,canceled_supp,countRegisteredSupp,countProccsingSupp,countActiveSupp,countCanceledSupp
 
 @login_required(login_url='/login')   
 def liveViewWeekly(request):
@@ -2297,12 +2435,9 @@ def getIPClient(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
-
-from datetime import datetime, timedelta
-from django.db.models import Q
-
 def saleProm(request):
     agents = User.objects.filter(is_active=True)
+    nameChart = 'Select filter data'
     weeks = ["Semana 1", "Semana 2", "Semana 3", "Semana 4", "Semana 5"]
     counts_obamacare = [0, 0, 0, 0, 0]
     counts_supp = [0, 0, 0, 0, 0]
@@ -2310,7 +2445,7 @@ def saleProm(request):
 
     if request.method == "POST":
         start_date = request.POST.get("month")  # Obtén el mes enviado
-        print("Mes seleccionado:", start_date)
+        agentReport = request.POST.get('agent')
         if start_date:
             try:
                 # Convertir el mes seleccionado en un rango de fechas
@@ -2322,57 +2457,77 @@ def saleProm(request):
                 else:
                     last_day = datetime(year, month + 1, 1) - timedelta(days=1)
 
-                print("Rango de fechas:", first_day, "a", last_day)
-
-                print(f"Rango de fechas para filtros: {first_day} - {last_day}")
+                #print("Rango de fechas:", first_day, "a", last_day)
 
                 # Filtro de ObamaCare
                 obamacare_records = ObamaCare.objects.filter(
                     created_at__range=(first_day, last_day),
-                    status_color=3
+                    status_color=3, 
+                    agent = agentReport,
+                    is_active = True
                 )
-                print(f"Total ObamaCare encontrados: {obamacare_records.count()}")
+                #print(f"Total ObamaCare encontrados: {obamacare_records.count()}")
 
-                # Imprimir detalles de cada registro
-                for record in obamacare_records:
-                    print(f"ObamaCare ID: {record.id}, Fecha: {record.create_at}, Status Color: {record.status_color}")                                                                 
-
-                # Filtrar Supp
+                # Filtro de Supp
                 supp_records = Supp.objects.filter(
                     created_at__range=(first_day, last_day),
-                    status_color=3
+                    status_color=3,
+                    agent = agentReport,
+                    is_active = True
                 )
-                print("Registros Supp encontrados:", supp_records.count())
-                for record in supp_records:
-                    print("Registro Supp:", record.id, record.created_at)
+                #print("Registros Supp encontrados:", supp_records.count())
 
-                # Calcular la semana del mes
+                nameAgentChart = User.objects.filter(id = agentReport).first()
+                nameChart = nameAgentChart.first_name, nameAgentChart.last_name
+
+                # Función para calcular la semana correcta dentro del mes
                 def get_week_of_month(date):
+                    # Primer día del mes
                     first_day_of_month = date.replace(day=1)
-                    adjusted_day = date.day + first_day_of_month.weekday()
-                    return (adjusted_day - 1) // 7
+                    
+                    # Calculamos la diferencia en días entre la fecha y el primer día del mes
+                    days_since_first_day = (date - first_day_of_month).days
 
-                # Contar registros por semana
+                    # Calcular la semana del mes: Dividimos los días por 7
+                    week_of_month = days_since_first_day // 7
+
+                    # Asegurarse de no exceder 5 semanas (en algunos meses puede haber 5 semanas)
+                    if week_of_month >= 4:
+                        week_of_month = 4
+
+                    return week_of_month
+
+                # Mostrar los días asignados a cada semana para verificación
+                week_days = {week: [] for week in weeks}  # Diccionario para almacenar los días asignados a cada semana
+
+                # Contar registros por semana y mostrar los días asignados
                 for record in obamacare_records:
                     week_number = get_week_of_month(record.create_at.date())
                     if 0 <= week_number < 5:  # Validar que la semana esté en el rango
                         counts_obamacare[week_number] += 1
-                        print(f"ObamaCare {record.id} asignado a {weeks[week_number]}")
+                        week_days[weeks[week_number]].append(record.create_at.date())
+                        #print(f"ObamaCare {record.id} (Fecha: {record.create_at.date()}) asignado a {weeks[week_number]}")
 
                 for record in supp_records:
                     week_number = get_week_of_month(record.created_at.date())
                     if 0 <= week_number < 5:  # Validar que la semana esté en el rango
                         counts_supp[week_number] += 1
-                        print(f"Supp {record.id} asignado a {weeks[week_number]}")
+                        week_days[weeks[week_number]].append(record.created_at.date())
+                        #print(f"Supp {record.id} (Fecha: {record.created_at.date()}) asignado a {weeks[week_number]}")
+
+                # Mostrar los días en cada semana
+                #print("\nDías asignados a cada semana:")
+                #for i, week in enumerate(weeks):
+                    #print(f"{week}: {week_days[week]}")
 
                 # Calcular el total combinado
                 counts_total = [
                     counts_obamacare[i] + counts_supp[i] for i in range(len(weeks))
                 ]
 
-                print("Totales por semana:")
-                for i in range(len(weeks)):
-                    print(f"{weeks[i]} - ObamaCare: {counts_obamacare[i]}, Supp: {counts_supp[i]}, Total: {counts_total[i]}")
+                #print("Totales por semana:")
+                #for i in range(len(weeks)):
+                    #print(f"{weeks[i]} - ObamaCare: {counts_obamacare[i]}, Supp: {counts_supp[i]}, Total: {counts_total[i]}")
 
             except ValueError as e:
                 print("Error al procesar la fecha:", e)
@@ -2384,6 +2539,8 @@ def saleProm(request):
         'counts_obamacare': counts_obamacare,
         'counts_supp': counts_supp,
         'counts_total': counts_total,
+        'nameChart' : nameChart
     })
+
 
 

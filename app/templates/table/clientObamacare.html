@@ -36,6 +36,11 @@
                         <th>Phone Numbers</th>
 						<th>Date</th>
                         <th>Status</th>
+						{% if request.user.role == 'Admin' %}
+							<th>
+								Active
+							</th>
+						{% endif %}
                         <th>Options</th>
                     </tr>
                 </thead>
@@ -48,12 +53,18 @@
                         <td>+ {{obamacare.client.phone_number}}</td>
 						<td>{{obamacare.client.created_at}}</td>
 						<td>{% if obamacare.status_color == 1 or obamacare.status_color == None %}
-							<span class="badge rounded-pill bg-danger">Not profiled</span>
-						{% elif obamacare.status_color == 2 %}
-							<span class="badge rounded-pill bg-warning text-dark">Process</span>
-						{% elif obamacare.status_color == 3 %}
-							<span class="badge rounded-pill bg-success">Profiling</span>
-						{% endif  %}</td>
+								<span class="badge rounded-pill bg-danger">Not profiled</span>
+							{% elif obamacare.status_color == 2 %}
+								<span class="badge rounded-pill bg-warning text-dark">Process</span>
+							{% elif obamacare.status_color == 3 %}
+								<span class="badge rounded-pill bg-success">Profiling</span>
+							{% endif  %}
+						</td>
+						{% if request.user.role == 'Admin' %}
+							<td>
+								{{obamacare.is_active}}
+							</td>
+						{% endif  %}
                         <td>
 							<div class="d-flex order-actions">
 								<a href="{% url 'editClientObama' obamacare.client_id obamacare.id  %}" class=""><i class='bx bxs-edit'></i></a>
