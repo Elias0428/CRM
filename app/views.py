@@ -2,17 +2,18 @@
 import base64
 import calendar
 import datetime
+import io
 import json
 import os
 import random
 from collections import defaultdict
-import calendar
 from datetime import timedelta
 
 import pandas as pd
 
 # Django utilities
 from django.core.files.base import ContentFile
+from django.core.signing import Signer, BadSignature
 from django.http import HttpResponse, JsonResponse
 from django.template.loader import render_to_string
 from django.utils import timezone
@@ -25,6 +26,8 @@ from django.contrib.auth.hashers import make_password
 from django.db.models import Count, Q, Sum
 from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
 # Third-party libraries
 from asgiref.sync import async_to_sync
@@ -36,7 +39,6 @@ from app.forms import *
 from app.models import *
 
 from datetime import datetime, timedelta
-from django.db.models import Q
 
 
 
@@ -2366,6 +2368,19 @@ def generatePdf(request, obamacare, dependents, supps):
 
     # Genera el PDF
     pdf_file = HTML(string=html_content).write_pdf()
+
+    # Usa BytesIO para convertir el PDF en un archivo
+    pdf_io = io.BytesIO(pdf_file)
+    pdf_io.seek(0)  # Asegúrate de que el cursor esté al principio del archivo
+
+    # Guarda el PDF en el modelo usando un ContentFile
+    pdf_name = "consent_" + str(obamacare.id) + ".pdf"  # Nombre del archivo
+    consent = Consents.objects.create(
+        obamacare=obamacare,
+    )
+    consent.pdf.save(pdf_name, ContentFile(pdf_io.read()), save=True)
+
+    # temporaly_URL = generate_temporary_url(request, obamacare.client)
 
     # Devuelve el PDF como respuesta HTTP
     response = HttpResponse(pdf_file, content_type='application/pdf')

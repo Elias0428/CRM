@@ -1,5 +1,6 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db import models
+from django.utils import timezone
 from storages.backends.s3boto3 import S3Boto3Storage
 
 class User(AbstractUser):
@@ -230,8 +231,6 @@ class BdExcel(models.Model):
     excel_metadata = models.ForeignKey('ExcelFileMetadata',on_delete=models.CASCADE,related_name='records')
     is_sold = models.BooleanField(default=False)  # Campo booleano para indicar si está "sold"
     
-
-
     class Meta:
         db_table = 'bd_excel'
 
@@ -276,7 +275,22 @@ class CommentBD(models.Model):
         db_table = 'CommentBD'
 
 
-    
-     
+class Consents(models.Model):
+    pdf = models.FileField(
+        upload_to='consents',
+        storage=S3Boto3Storage(),
+        null=True)
+    obamacare = models.ForeignKey(ObamaCare, on_delete=models.CASCADE)
 
 
+class TemporaryURL(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    token = models.TextField()  # Guardar el token firmado
+    expiration = models.DateTimeField()
+    is_active = models.BooleanField(default=True)  # Para invalidar manualmente
+
+    def is_expired(self):
+        return timezone.now() > self.expiration
+
+    def __str__(self):
+        return f"Temporary URL for {self.client.name} (Active: {self.is_active})"
