@@ -614,7 +614,7 @@
 						<div class="col-12 mt-4">
 							<div class="d-flex align-items-center gap-3">
 								<button class="btn btn-outline-secondary px-4" onclick="stepper1.previous()">Previous</button>
-								<button class="btn btn-primary px-4" id="buttonSendDepend" >Send</button>
+								<button class="btn btn-primary px-4" id="buttonSendDepend">Send</button>
 							</div>
 						</div>						
 						<!---end row-->							
@@ -622,27 +622,29 @@
 				</form>
 			</div>
 			<!-- Modal Bootstrap -->
-			
 			<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
 				<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-					<h5 class="modal-title" id="successModalLabel">Alert</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="successModalLabel">Alert</h5>
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<p>Information successfully saved!</p>
+						</div>
+						<div class="modal-footer">
+							<!-- Botón 1 -->
+							<a class="btn btn-primary" id="buttonHome">Home {{client.type_sales}}</a>
+							{% if client.type_sales == 'ACA' or client.type_sales == 'ACA/SUPLEMENTARIO' %}
+							<!-- Botón 2 -->
+							<a class="btn btn-primary" role="button">Views Consent</a>
+							<button type="button" class="btn btn-primary" id="button2">Consent</button>
+							{% endif %}
+						</div>
 					</div>
-					<div class="modal-body">
-					<p>Information successfully saved!</p>
-					</div>
-					<div class="modal-footer">
-					<!-- Botón 1 -->
-					<button type="button" class="btn btn-secondary" id="button1">Home</button>
-					<!-- Botón 2 -->
-					<button type="button" class="btn btn-primary" id="button2">Consent</button>
-					</div>
-				</div>
 				</div>
 			</div>
-			<!-- Modal Bootstrap -->  
+			<!-- Modal Bootstrap -->
 			  
 			{% csrf_token %}			
 			

@@ -17,8 +17,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from app import views
-from django.conf import settings
-from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -84,9 +82,9 @@ urlpatterns = [
 
     path('bd/', views.commentDB, name='bd'),
 
-    path('saleProm/', views.saleProm, name='saleProm'),
+    # path('saleProm/', views.saleProm, name='saleProm'),
 
-    path('consent1/<obamacare_id>/', views.consent, name='consent1'),
+    path('viewConsent/<obamacare_id>/', views.consent, name='viewConsent'),
 
     ##path('exportUsers/', views.exportUsers, name='exportUsers'),
     ##path('testImportDb/', views.testExportDB, name='testExportDB'),

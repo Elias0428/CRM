@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 var idAcaPlan
+var id_aca_plan
 
 function saveAcaPlan() {
 
@@ -40,7 +41,7 @@ function saveAcaPlan() {
     var acaPlanId = document.getElementById('acaPlanId').value;
     var acaPlan = document.getElementById('acaPlan').value;
     if (acaPlanId) {
-        formData.append('acaPlanId', acaPlanId);
+      formData.append('acaPlanId', acaPlanId);
     }
 
   
@@ -52,6 +53,7 @@ function saveAcaPlan() {
     .then(data => {
       if (data.success) {
         // Actualizar la interfaz de usuario según sea necesario
+        id_aca_plan = data.aca_plan_id
         stepper1.next();
         idAcaPlan = acaPlan
         if (idAcaPlan == 'ACA') {
@@ -269,13 +271,13 @@ function saveDependents() {
           successModal.show();
 
           // Botón 1: Redirigir a la página de inicio
-          document.getElementById('button1').addEventListener('click', () => {
-            window.location.href = '/';
+          document.getElementById('buttonHome').addEventListener('click', () => {
+            // window.location.href = '/';
           });
 
           // Botón 2: Redirigir a los detalles
           document.getElementById('button2').addEventListener('click', () => {
-            window.location.href = '/details';
+            window.location.href = `/viewConsent/${id_aca_plan}/`;
           });
 
 

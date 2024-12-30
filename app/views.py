@@ -7,6 +7,7 @@ import os
 import random
 from collections import defaultdict
 import calendar
+from datetime import timedelta
 
 import pandas as pd
 
@@ -2331,7 +2332,7 @@ def consent(request, obamacare_id):
     return render(request, 'consent/consent1.html', context)
 
 def saveConsent(request, obamacare):
-    objectClient = save_data_from_request(Client, request.POST, obamacare.client)
+    objectClient = save_data_from_request(Client, request.POST, ['agent'],obamacare.client)
     objectObamacare = save_data_from_request(ObamaCare, request.POST, ['signature'], obamacare)
 
     signature_data = request.POST.get('signature')
@@ -2347,22 +2348,21 @@ def saveConsent(request, obamacare):
         return HttpResponse('No guardo pri')
 
 def generatePdf(request, obamacare, dependents, supps):
-    current_date = datetime.datetime.now().strftime("%A, %B %d, %Y %I:%M")
-    date_more_3_months = (datetime.datetime.now() + datetime.timedelta(days=90)).strftime("%A, %B %d, %Y %I:%M")
-
+    current_date = datetime.now().strftime("%A, %B %d, %Y %I:%M")
+    date_more_3_months = (datetime.now() + timedelta(days=90)).strftime("%A, %B %d, %Y %I:%M")
     context = {
-        'valid_migration_statuses': ['PERMANENT_RESIDENT', 'US_CITIZEN', 'EMPLOYMENT_AUTHORIZATION'],
         'obamacare':obamacare,
         'dependents':dependents,
         'supps':supps,
         'company':getCompanyPerAgent(obamacare.agent_usa),
+        'social_security':request.POST.get('socialSecurity'),
         'current_date':current_date,
         'date_more_3_months':date_more_3_months,
         'ip':getIPClient(request)
     }
 
     # Renderiza la plantilla HTML a un string
-    html_content = render_to_string('consent/test.html', context)
+    html_content = render_to_string('consent/templatePdfConsent.html', context)
 
     # Genera el PDF
     pdf_file = HTML(string=html_content).write_pdf()

@@ -144,7 +144,7 @@
                     <div class="bg-warning p-3 rounded">
                         <label class="form-label">Aplica <span class="text-danger">*</span></label>
                         <select name="apply" class="form-select" id="apply">
-                            <option disabled selected>Please Select</option>
+                            <option disabled value="no_valid" selected>Please Select</option>
                             <option {%if obamacare.client.apply %}selected{%endif%} value="True">SI</option>
                             <option {%if not obamacare.client.apply.apply %}selected{%endif%} value="False">NO</option>
                         </select>
@@ -156,9 +156,9 @@
             <div class="row mb-3">
                 <div class="col">
                     <div class="bg-morado p-3 rounded">
-                        <label class="form-label">Aplicante (s) Adicional (es) (Nombre Completo, Fecha Nacimiento, Sexo, Status, Parentesco) <span class="text-danger">*</span></label>
+                        <label class="form-label">Aplicante (s) Adicional (es) (Nombre Completo, Fecha Nacimiento, Sexo, Status, Parentesco)</label>
                         <div class="mb-3">
-                            <textarea class="form-control" name="applicants" id="inputApplicants" rows="5" placeholder="Escriba aquí: Aplicante (s) Adicional (es) (Nombre Completo, Fecha Nacimiento, Sexo, Status, Parentesco)">{% for dependent in dependents %}{{dependent.name}}, {{dependent.date_birth}}, {{dependent.sex}}, {{dependent.migration_status}}, {{dependent.kinship}}
+                            <textarea disabled class="form-control" name="applicants" id="inputApplicants" rows="5" >{% for dependent in dependents %}{{dependent.name}}, {{dependent.date_birth}}, {{dependent.sex}}, {{dependent.migration_status}}, {{dependent.kinship}}
 {% endfor %}</textarea>
                         </div>
                     </div>
@@ -205,8 +205,8 @@
                         </div>
                         <div class="col-12 bg-info p-3 rounded">
                             <label class="form-label">Tipo de Ingreso <span class="text-danger">*</span></label>
-                            <select name="work" name="carrier" class="form-select" id="selectCarrier">
-                                <option>Please Select</option>
+                            <select name="work" class="form-select" id="work">
+                                <option value="no_valid">Please Select</option>
                                 <option {%if obamacare.work == 'W2'%}selected{%endif%} value="W2">W2</option>
                                 <option {%if obamacare.work == '1099'%}selected{%endif%} value="1099">1099</option>
                                 <option {%if obamacare.work == 'otro'%}selected{%endif%} value="otro">Otro</option>
@@ -221,8 +221,8 @@
                 <div class="col-md-6">
                     <div class="p-3 rounded" style="background-color: #9de430;">
                         <label class="form-label">Estatus de Inmigración <span class="text-danger">*</span></label>
-                        <select name="migration_status" class="form-select">
-                            <option value="" disabled selected>Please Select</option>
+                        <select id="migration_status" name="migration_status" class="form-select">
+                            <option value="no_valid" disabled selected>Please Select</option>
                             <option {%if obamacare.client.migration_status == 'EMPLOYMENT_AUTHORIZATION'%}selected{%endif%} value="EMPLOYMENT_AUTHORIZATION">Employment Authorization</option>
                             <option {%if obamacare.client.migration_status == 'NOTICE_OF_ACTION'%}selected{%endif%} value="NOTICE_OF_ACTION">Notice of Action (i-797)</option>
                             <option {%if obamacare.client.migration_status == 'REFUGEE'%}selected{%endif%} value="REFUGEE">Refugee</option>
@@ -241,8 +241,8 @@
                 <!-- Social Security -->
                 <div class="p-3 rounded col-md-6" style="background-color: #8d4aff;" >
                     <label class="form-label">Social Security <span class="text-danger">*</span></label>
-                    <select {% if obamacare.client.migration_status in valid_migration_statuses %}disabled{% endif %} name="socialSecurity" class="form-select">
-                        <option>Please Select</option>
+                    <select id="socialSecurity" {% if obamacare.client.migration_status in valid_migration_statuses %}disabled{% endif %} name="socialSecurity" class="form-select">
+                        <option value="no_valid">Please Select</option>
                         <option {% if obamacare.client.migration_status in valid_migration_statuses %}selected{% endif %} value="SI">SI</option>
                         <option value="NO">NO</option>
                     </select>
@@ -255,7 +255,7 @@
                     <div class="p-3 rounded" style="background-color: #fc792f;">
                         <label class="form-label">Agente Autorizado de Registro <span class="text-danger">*</span></label>
                         <select name="agent_usa" id="selectAgent" class="form-select">
-                            <option>Please Select</option>
+                            <option value="no_valid">Please Select</option>
                             <option {% if obamacare.client.agent_usa == 'GINA PAOLA LAPEIRA - NPN 19944280' %}selected{% endif %} value="GINA PAOLA LAPEIRA - NPN 19944280">GINA PAOLA LAPEIRA - NPN 19944280</option>
                             <option {% if obamacare.client.agent_usa == 'LUIS EDUARDO LAPEIRA - NPN 20556081' %}selected{% endif %} value="LUIS EDUARDO LAPEIRA - NPN 20556081">LUIS EDUARDO LAPEIRA - NPN 20556081</option>
                             <option {% if obamacare.client.agent_usa == 'DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958' %}selected{% endif %} value="DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958">DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958</option>
@@ -328,44 +328,6 @@
                 <button type="button" id="clearCanvas" class="btn btn-secondary btn-sm">Clear</button>
             </div>
 
-            <!-- Additional Information -->
-            <div class="row mb-3">
-                <div class="col-md-6">
-                    <div class="bg-info p-3 rounded">
-                        <label class="form-label">Representante Autorizado (en caso que sea el Rep Aut quien firme)</label>
-                        <div class="row">
-                            <div class="col">
-                                <input type="text" class="form-control" placeholder="Nombre">
-                            </div>
-                            <div class="col">
-                                <input type="text" class="form-control" placeholder="Apellido">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="bg-lila p-3 rounded">
-                        <label class="form-label">Relación con el Aplicante</label>
-                        <select class="form-select">
-                            <option>Please Select</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Date and Time -->
-            <div class="bg-morado p-3 rounded mb-3">
-                <label class="form-label">Fecha y Hora de Firma</label>
-                <div class="row">
-                    <div class="col">
-                        <input type="date" class="form-control">
-                    </div>
-                    <div class="col">
-                        <input type="time" class="form-control">
-                    </div>
-                </div>
-            </div>
-
             <!-- Form Buttons -->
             <div class="row">
                 <div class="col-2 text-center">
@@ -420,6 +382,17 @@
                 const rect = canvas.getBoundingClientRect();
                 return event.touches ? event.touches[0].clientY - rect.top : event.clientY - rect.top;
             };
+
+            // Verificar si el canvas está vacío
+            const isCanvasEmpty = () => {
+                const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                for (let i = 0; i < pixels.length; i += 4) {
+                    if (pixels[i + 3] !== 0) { // Comprueba si hay algún píxel no transparente
+                        return false;
+                    }
+                }
+                return true;
+            };
         
             // Eventos de dibujo
             canvas.addEventListener('mousedown', startDrawing);
@@ -437,15 +410,52 @@
             });
         
             // Antes de enviar el formulario, convierte el canvas a Base64
-            form.addEventListener('submit', () => {
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+                if (isCanvasEmpty()) {
+                    canvas.focus()
+                    alert('Por favor, firma antes de enviar el formulario.');
+                    return;
+                }
                 const canvasData = canvas.toDataURL('image/png'); // Base64 de la firma
                 signatureInput.value = canvasData; // Pasa la firma al campo oculto
+                if (!validateSelects()) {
+                    return;
+                }
+                form.submit()
             });
         });
-        </script>
+    </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 
+    <script>
+        function validateSelects() {
+        const idsSelectWithValidation = ['apply', 'work', 'migration_status', 'socialSecurity', 'selectAgent']
+        console.log(idsSelectWithValidation)
+        let isValid = true;
+        const phoneNumber = document.getElementById('phone_number')
+
+
+        // Función para validar los Select
+        for (let i = 0; i < idsSelectWithValidation.length; i++) {
+            var idSelect = idsSelectWithValidation[i];
+            console.log(idSelect)
+            var select = document.getElementById(idSelect);
+            console.log(select)
+            if (select.value == 'no_valid') {
+            isValid = false;
+            select.focus(); // Hace foco en el select inválido
+            break; // Detiene la iteración
+            }
+        }
+
+        if (!isValid){
+            return false;
+        }
+        return true;
+        }
+    </script>
 
     <script>
         const dropzone = document.getElementById("dropzone");
@@ -603,10 +613,11 @@
         }
     </script>
     
-    <script>
+    <!-- <script>
         // Prevenir envío predeterminado y agregar el canvas como archivo
         form.addEventListener('submit', (event) => {
             event.preventDefault();
+            console.log(!validateSelects())
 
             // Convertir canvas a base64 y luego a un archivo Blob
             const canvasData = canvas.toDataURL('image/png'); // Base64 de la imagen
@@ -645,7 +656,7 @@
             }
             return new Blob([ab], { type: mimeString });
         }
-    </script>
+    </script> -->
     
 </body>
 </html>
