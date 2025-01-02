@@ -75,12 +75,12 @@ urlpatterns = [
     path('process_and_save/', views.process_and_save, name='process_and_save'),
     path('save_data/', views.save_data, name='save_data'),
     path('manage_agent_assignments/', views.manage_agent_assignments, name='manage_agent_assignments'),
+    path('bd/', views.commentDB, name='bd'),
+    path('reportBd/', views.reportBd, name='reportBd'),
 
     path('formCreateControl/', views.formCreateControl, name='formCreateControl'),
     path('control/', views.tableControl, name='control'),
     path('createQuality/', views.createQuality, name='createQuality'),
-
-    path('bd/', views.commentDB, name='bd'),
 
     path('saleProm/', views.saleProm, name='saleProm'),
 

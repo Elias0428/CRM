@@ -98,16 +98,16 @@
 									<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
 									<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa">
 										<option disabled selected value="">Please Select</option>
-										<option value="Daniel" {% if aca_plan_data.agent_usa == 'Daniel' %}selected{% endif %}>Daniel</option>
-										<option value="Zohira" {% if aca_plan_data.agent_usa == 'Zohira' %}selected{% endif %}>Zohira</option>
-										<option value="Gina" {% if aca_plan_data.agent_usa == 'Gina' %}selected{% endif %}>Gina</option>
-										<option value="Diego" {% if aca_plan_data.agent_usa == 'Diego' %}selected{% endif %}>Diego</option>
-										<option value="Danieska" {% if aca_plan_data.agent_usa == 'Danieska' %}selected{% endif %}>Danieska</option>
-										<option value="Vladimir" {% if aca_plan_data.agent_usa == 'Vladimir' %}selected{% endif %}>Vladimir</option>
-										<option value="Luis" {% if aca_plan_data.agent_usa == 'Luis' %}selected{% endif %}>Luis</option>
-										<option value="Borja" {% if aca_plan_data.agent_usa == 'Borja' %}selected{% endif %}>Borja</option>
-										<option value="Rodrigo" {% if aca_plan_data.agent_usa == 'Rodrigo' %}selected{% endif %}>Rodrigo</option>
-										<option value="Evelyn" {% if aca_plan_data.agent_usa == 'Evelyn' %}selected{% endif %}>Evelyn</option>
+										<option {% if aca_plan_data.agent_usa == 'GINA PAOLA LAPEIRA - NPN 19944280' %}selected{% endif %} value="GINA PAOLA LAPEIRA - NPN 19944280">GINA PAOLA LAPEIRA - NPN 19944280</option>
+										<option {% if aca_plan_data.agent_usa == 'LUIS EDUARDO LAPEIRA - NPN 20556081' %}selected{% endif %} value="LUIS EDUARDO LAPEIRA - NPN 20556081">LUIS EDUARDO LAPEIRA - NPN 20556081</option>
+										<option {% if aca_plan_data.agent_usa == 'DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958' %}selected{% endif %} value="DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958">DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958</option>
+										<option {% if aca_plan_data.agent_usa == 'ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295' %}selected{% endif %} value="ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295">ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295</option>
+										<option {% if aca_plan_data.agent_usa == 'DANIESKA LOPEZ SEQUEIRA - NPN 20134539' %}selected{% endif %} value="DANIESKA LOPEZ SEQUEIRA - NPN 20134539">DANIESKA LOPEZ SEQUEIRA - NPN 20134539</option>
+										<option {% if aca_plan_data.agent_usa == 'VLADIMIR DE LA HOZ FONTALVO - NPN 19915005' %}selected{% endif %} value="VLADIMIR DE LA HOZ FONTALVO - NPN 19915005">VLADIMIR DE LA HOZ FONTALVO - NPN 19915005</option>
+										<option {% if aca_plan_data.agent_usa == 'FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603' %}selected{% endif %} value="FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603">FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603</option>
+										<option {% if aca_plan_data.agent_usa == 'BORJA G CANTON HERRERA - NPN 20673324' %}selected{% endif %} value="BORJA G CANTON HERRERA - NPN 20673324">BORJA G CANTON HERRERA - NPN 20673324</option>
+										<option {% if aca_plan_data.agent_usa == 'RODRIGO G CANTON - NPN 20670005' %}selected{% endif %} value="RODRIGO G CANTON - NPN 20670005">RODRIGO G CANTON - NPN 20670005</option>
+										<option {% if aca_plan_data.agent_usa == 'EVELYN BEATRIZ HERRERA - NPN 20671818' %}selected{% endif %} value="EVELYN BEATRIZ HERRERA - NPN 20671818">EVELYN BEATRIZ HERRERA - NPN 20671818</option>
 									</select>
 								</div>
 								<div class="col-12 col-lg-6">
@@ -118,11 +118,11 @@
 									<label for="planName" class="form-label">Plan Name</label>
 									<input type="text" class="form-control" id="planName" value="{{aca_plan_data.plan_name}}" name="planName" >
 								</div>
-								<div class="col-12 col-lg-6">
+								<div class="col-12 col-lg-6">	
 									<label for="work" class="form-label font-weight-bold">Work</label>
 									<select class="form-select" id="work" aria-label="Default select example"  name="work"   >
 										<option disabled selected value="">Please Select</option>
-										<option value="w2" {% if aca_plan_data.work == "w2" %}selected{% endif %} >W2</option>
+										<option value="W2" {% if aca_plan_data.work == "W2" %}selected{% endif %} >W2</option>
 										<option value="1099" {% if aca_plan_data.work == "1099" %}selected{% endif %} >1099</option>
 										<option value="otro" {%if aca_plan_data.work == 'otro'%}selected{% endif %}>Otro</option> 
 									</select>
@@ -217,16 +217,16 @@
 																<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
 																<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa">
 																	<option disabled selected value=""></option>
-																	<option value="Daniel" {% if supp_plan.agent_usa == 'Daniel' %}selected{% endif %}>Daniel</option>
-																	<option value="Zohira" {% if supp_plan.agent_usa == 'Zohira' %}selected{% endif %}>Zohira</option>
-																	<option value="Gina" {% if supp_plan.agent_usa == 'Gina' %}selected{% endif %}>Gina</option>
-																	<option value="Diego" {% if supp_plan.agent_usa == 'Diego' %}selected{% endif %}>Diego</option>
-																	<option value="Danieska" {% if supp_plan.agent_usa == 'Danieska' %}selected{% endif %}>Danieska</option>
-																	<option value="Vladimir" {% if supp_plan.agent_usa == 'Vladimir' %}selected{% endif %}>Vladimir</option>
-																	<option value="Luis" {% if supp_plan.agent_usa == 'Luis' %}selected{% endif %}>Luis</option>
-																	<option value="Borja" {% if supp_plan.agent_usa == 'Borja' %}selected{% endif %}>Borja</option>
-																	<option value="Rodrigo" {% if supp_plan.agent_usa == 'Rodrigo' %}selected{% endif %}>Rodrigo</option>
-																	<option value="Evelyn" {% if supp_plan.agent_usa == 'Evelyn' %}selected{% endif %}>Evelyn</option>
+																	<option {% if supp_plan.agent_usa == 'GINA PAOLA LAPEIRA - NPN 19944280' %}selected{% endif %} value="GINA PAOLA LAPEIRA - NPN 19944280">GINA PAOLA LAPEIRA - NPN 19944280</option>
+																	<option {% if supp_plan.agent_usa == 'LUIS EDUARDO LAPEIRA - NPN 20556081' %}selected{% endif %} value="LUIS EDUARDO LAPEIRA - NPN 20556081">LUIS EDUARDO LAPEIRA - NPN 20556081</option>
+																	<option {% if supp_plan.agent_usa == 'DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958' %}selected{% endif %} value="DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958">DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958</option>
+																	<option {% if supp_plan.agent_usa == 'ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295' %}selected{% endif %} value="ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295">ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295</option>
+																	<option {% if supp_plan.agent_usa == 'DANIESKA LOPEZ SEQUEIRA - NPN 20134539' %}selected{% endif %} value="DANIESKA LOPEZ SEQUEIRA - NPN 20134539">DANIESKA LOPEZ SEQUEIRA - NPN 20134539</option>
+																	<option {% if supp_plan.agent_usa == 'VLADIMIR DE LA HOZ FONTALVO - NPN 19915005' %}selected{% endif %} value="VLADIMIR DE LA HOZ FONTALVO - NPN 19915005">VLADIMIR DE LA HOZ FONTALVO - NPN 19915005</option>
+																	<option {% if supp_plan.agent_usa == 'FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603' %}selected{% endif %} value="FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603">FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603</option>
+																	<option {% if supp_plan.agent_usa == 'BORJA G CANTON HERRERA - NPN 20673324' %}selected{% endif %} value="BORJA G CANTON HERRERA - NPN 20673324">BORJA G CANTON HERRERA - NPN 20673324</option>
+																	<option {% if supp_plan.agent_usa == 'RODRIGO G CANTON - NPN 20670005' %}selected{% endif %} value="RODRIGO G CANTON - NPN 20670005">RODRIGO G CANTON - NPN 20670005</option>
+																	<option {% if supp_plan.agent_usa == 'EVELYN BEATRIZ HERRERA - NPN 20671818' %}selected{% endif %} value="EVELYN BEATRIZ HERRERA - NPN 20671818">EVELYN BEATRIZ HERRERA - NPN 20671818</option>
 																</select>
 															</div>
 															<div class="col-12 col-lg-6">
@@ -245,7 +245,7 @@
 																	<option value="MANHATTAN LIFE" {% if supp_plan.company == 'MANHATTAN LIFE' %}selected{% endif %}> MANHATTAN LIFE </option>
 																	<option value="METLIFE" {% if supp_plan.company == 'METLIFE' %}selected{% endif %}> METLIFE </option>
 																	<option value="OSCAR" {% if supp_plan.company == 'OSCAR' %}selected{% endif %}> OSCAR</option> 
-																	<option value="PIVOT" {% if supp_plan.company|default:'' == 'PIVOT' %}selected{% endif %}>PIVOT</option>  
+																	<option value="PIVOT" {% if supp_plan.company == 'PIVOT' %}selected{% endif %}>PIVOT</option>  
 																	<option value="SUREBRIDGE" {% if supp_plan.company == 'SUREBRIDGE' %}selected{% endif %}> SUREBRIDGE </option>    
 																	<option value="UNITED" {% if supp_plan.company == 'UNITED' %}selected{% endif %}> UNITED </option>    
 																</select>

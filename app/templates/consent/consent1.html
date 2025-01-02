@@ -223,18 +223,18 @@
                         <label class="form-label">Estatus de Inmigración <span class="text-danger">*</span></label>
                         <select id="migration_status" name="migration_status" class="form-select">
                             <option value="no_valid" disabled selected>Please Select</option>
-                            <option {%if obamacare.client.migration_status == 'EMPLOYMENT AUTHORIZATION'%}selected{%endif%} value="EMPLOYMENT_AUTHORIZATION">Employment Authorization</option>
-                            <option {%if obamacare.client.migration_status == 'NOTICE OF ACTION'%}selected{%endif%} value="NOTICE_OF_ACTION">Notice of Action (i-797)</option>
+                            <option {%if obamacare.client.migration_status == 'EMPLOYMENT AUTHORIZATION'%}selected{%endif%} value="EMPLOYMENT AUTHORIZATION">Employment Authorization</option>
+                            <option {%if obamacare.client.migration_status == 'NOTICE OF ACTION'%}selected{%endif%} value="NOTICE OF ACTION">Notice of Action (i-797)</option>
                             <option {%if obamacare.client.migration_status == 'REFUGEE'%}selected{%endif%} value="REFUGEE">Refugee</option>
                             <option {%if obamacare.client.migration_status == 'ASYLUM'%}selected{%endif%} value="ASYLUM">Asylum</option>
                             <option {%if obamacare.client.migration_status == 'TPS'%}selected{%endif%} value="TPS">Temporary Protection Status (TPS)</option>
-                            <option {%if obamacare.client.migration_status == 'DOMESTIC VIOLENCE'%}selected{%endif%} value="DOMESTIC_VIOLENCE">Domestic Violence</option>
-                            <option {%if obamacare.client.migration_status == 'PERMANENT RESIDENT'%}selected{%endif%} value="PERMANENT_RESIDENT">Permanent Resident (Green Card)</option>
-                            <option {%if obamacare.client.migration_status == 'CONDITIONAL RESIDENT'%}selected{%endif%} value="CONDITIONAL_RESIDENT">Conditional Resident</option>
+                            <option {%if obamacare.client.migration_status == 'DOMESTIC VIOLENCE'%}selected{%endif%} value="DOMESTIC VIOLENCE">Domestic Violence</option>
+                            <option {%if obamacare.client.migration_status == 'PERMANENT RESIDENT'%}selected{%endif%} value="PERMANENT RESIDENT">Permanent Resident (Green Card)</option>
+                            <option {%if obamacare.client.migration_status == 'CONDITIONAL RESIDENT'%}selected{%endif%} value="CONDITIONAL RESIDENT">Conditional Resident</option>
                             <option {%if obamacare.client.migration_status == 'PAROLE'%}selected{%endif%} value="PAROLE">Parole</option>
-                            <option {%if obamacare.client.migration_status == 'US CITIZEN'%}selected{%endif%} value="US_CITIZEN">US Citizen (Driver's License)</option>
-                            <option {%if obamacare.client.migration_status == 'STUDENT VISA'%}selected{%endif%} value="STUDENT_VISA">Student Visa (I-20)</option>
-                            <option {%if obamacare.client.migration_status == 'CURRENTLY IN PROCESS'%}selected{%endif%} value="CURRENTLY_IN_PROCESS">Currently In Process (this means the client received an i-797)</option>
+                            <option {%if obamacare.client.migration_status == 'US CITIZEN'%}selected{%endif%} value="US CITIZEN">US Citizen (Driver's License)</option>
+                            <option {%if obamacare.client.migration_status == 'STUDENT VISA'%}selected{%endif%} value="STUDENT VISA">Student Visa (I-20)</option>
+                            <option {%if obamacare.client.migration_status == 'CURRENTLY IN PROCESS'%}selected{%endif%} value="CURRENTLY IN PROCESS">Currently In Process (this means the client received an i-797)</option>
                         </select>
                     </div>
                 </div>

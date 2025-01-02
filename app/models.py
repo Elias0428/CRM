@@ -113,7 +113,7 @@ class Supp(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     agent = models.ForeignKey(User, on_delete=models.CASCADE, related_name='agent_sale_supp')
     dependent = models.ForeignKey(Dependent, on_delete=models.CASCADE, null=True)
-    agent_usa = models.CharField(max_length=20)
+    agent_usa = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)  
     effective_date = models.DateField()
     company = models.CharField(max_length=200)

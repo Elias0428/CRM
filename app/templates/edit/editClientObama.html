@@ -33,22 +33,7 @@
             <div class="card-body p-4">
                 <form class="row g-3 needs-validation" method="POST" Action="{% url 'editClientObama' obamacare.client_id obamacare.id  %}">
                     <h4>Client</h4>
-						<div class="col-12 col-lg-2">
-							<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
-							<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa"  >
-								<option value="" disabled selected>Please Select</option>
-								<option value="Daniel" {% if obamacare.client.agent_usa == "Daniel" %}selected{% endif %} >Daniel</option>
-								<option value="Zohira" {% if obamacare.client.agent_usa == "Zohira" %}selected{% endif %}  >Zohira</option>
-								<option value="Gina" {% if obamacare.client.agent_usa == "Gina" %}selected{% endif %} >Gina</option>
-								<option value="Diego" {% if obamacare.client.agent_usa == "Diego" %}selected{% endif %} >Diego</option>
-								<option value="Danieska" {% if obamacare.client.agent_usa == "Danieska" %}selected{% endif %} >Danieska</option>
-								<option value="Vladimir" {% if obamacare.client.agent_usa == "Vladimir" %}selected{% endif %} >Vladimir</option>
-								<option value="Luis" {% if obamacare.client.agent_usa == "Luis" %}selected{% endif %} >Luis</option>
-								<option value="Borja" {% if obamacare.client.agent_usa == "Borja" %}selected{% endif %} >Borja</option>
-								<option value="Rodrigo" {% if obamacare.client.agent_usa == "Rodrigo" %}selected{% endif %} >Rodrigo</option>
-								<option value="Evelyn" {% if obamacare.client.agent_usa == "Evelyn" %}selected{% endif %} >Evelyn</option>
-							</select>
-						</div>
+						
 						<div class="col-12 col-lg-5">
 							<label for="first_name" class="form-label">First Name</label>
 							<input type="text" class="form-control" name="first_name" id="first_name" placeholder="First Name" value="{{obamacare.client.first_name}}">
@@ -116,7 +101,7 @@
 							<label for="county" class="form-label">County</label>
 							<input type="text" class="form-control" name ="county" id="county" value="{{obamacare.client.county}}">
 						</div>
-						<div class="col-12 col-lg-3">
+						<div class="col-12 col-lg-2">
 							<label for="sex" class="form-label">Sex</label>
 							<select class="form-select"  name="sex" id="sex" aria-label="Default select example">
 								<option value="" disabled selected>Please Select</option>
@@ -124,7 +109,7 @@
 								<option value="F" {% if obamacare.client.sex == "F" %}selected{% endif %} >FEMALE</option>
 							</select>
 						</div>
-						<div class="col-12 col-lg-2">
+						<div class="col-12 col-lg-1">
 							<label for="old" class="form-label">Old</label>
 							<input type="number" nim="1" class="form-control" name ="old" id="old" placeholder="Old" value="{{obamacare.client.old}}">
 						</div>
@@ -154,8 +139,24 @@
 							<label for="apply" class="form-label">Apply</label>
 							<select class="form-select" id="apply"  name="apply" >
 								<option value="" disabled selected>Please Select</option>
-								<option value="SI" {% if obamacare.client.apply == "SI"%}selected{% endif %} >SI</option>
-								<option value="NO" {% if obamacare.client.apply == "NO"%}selected{% endif %} >NO</option>
+								<option value = True {% if obamacare.client.apply == True %}selected{% endif %} >SI</option>
+								<option value = False {% if obamacare.client.apply == False %}selected{% endif %} >NO</option>
+							</select>
+						</div>
+						<div class="col-12 col-lg-6">
+							<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
+							<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa"  >
+								<option value="" disabled selected>Please Select</option>
+								<option {% if obamacare.client.agent_usa == 'GINA PAOLA LAPEIRA - NPN 19944280' %}selected{% endif %} value="GINA PAOLA LAPEIRA - NPN 19944280">GINA PAOLA LAPEIRA - NPN 19944280</option>
+								<option {% if obamacare.client.agent_usa == 'LUIS EDUARDO LAPEIRA - NPN 20556081' %}selected{% endif %} value="LUIS EDUARDO LAPEIRA - NPN 20556081">LUIS EDUARDO LAPEIRA - NPN 20556081</option>
+								<option {% if obamacare.client.agent_usa == 'DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958' %}selected{% endif %} value="DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958">DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958</option>
+								<option {% if obamacare.client.agent_usa == 'ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295' %}selected{% endif %} value="ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295">ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295</option>
+								<option {% if obamacare.client.agent_usa == 'DANIESKA LOPEZ SEQUEIRA - NPN 20134539' %}selected{% endif %} value="DANIESKA LOPEZ SEQUEIRA - NPN 20134539">DANIESKA LOPEZ SEQUEIRA - NPN 20134539</option>
+								<option {% if obamacare.client.agent_usa == 'VLADIMIR DE LA HOZ FONTALVO - NPN 19915005' %}selected{% endif %} value="VLADIMIR DE LA HOZ FONTALVO - NPN 19915005">VLADIMIR DE LA HOZ FONTALVO - NPN 19915005</option>
+								<option {% if obamacare.client.agent_usa == 'FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603' %}selected{% endif %} value="FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603">FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603</option>
+								<option {% if obamacare.client.agent_usa == 'BORJA G CANTON HERRERA - NPN 20673324' %}selected{% endif %} value="BORJA G CANTON HERRERA - NPN 20673324">BORJA G CANTON HERRERA - NPN 20673324</option>
+								<option {% if obamacare.client.agent_usa == 'RODRIGO G CANTON - NPN 20670005' %}selected{% endif %} value="RODRIGO G CANTON - NPN 20670005">RODRIGO G CANTON - NPN 20670005</option>
+								<option {% if obamacare.client.agent_usa == 'EVELYN BEATRIZ HERRERA - NPN 20671818' %}selected{% endif %} value="EVELYN BEATRIZ HERRERA - NPN 20671818">EVELYN BEATRIZ HERRERA - NPN 20671818</option>
 							</select>
 						</div>
 						<hr>
@@ -221,27 +222,27 @@
 					<hr>
 
                     <H4>Plan</H4>
-						<div class="col-12 col-lg-3">
+						<div class="col-12 col-lg-6">
 							<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
 							<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa">
-								<option value="" disabled selected>Please Select</option>
-								<option value="Daniel" {% if obamacare.agent_usa == 'Daniel' %}selected{% endif %}>Daniel</option>
-								<option value="Zohira" {% if obamacare.agent_usa == 'Zohira' %}selected{% endif %}>Zohira</option>
-								<option value="Gina" {% if obamacare.agent_usa == 'Gina' %}selected{% endif %}>Gina</option>
-								<option value="Diego" {% if obamacare.agent_usa == 'Diego' %}selected{% endif %}>Diego</option>
-								<option value="Danieska" {% if obamacare.agent_usa == 'Danieska' %}selected{% endif %}>Danieska</option>
-								<option value="Vladimir" {% if obamacare.agent_usa == 'Vladimir' %}selected{% endif %}>Vladimir</option>
-								<option value="Luis" {% if obamacare.agent_usa == 'Luis' %}selected{% endif %}>Luis</option>
-								<option value="Borja" {% if obamacare.agent_usa == 'Borja' %}selected{% endif %}>Borja</option>
-								<option value="Rodrigo" {% if obamacare.agent_usa == 'Rodrigo' %}selected{% endif %}>Rodrigo</option>
-								<option value="Evelyn" {% if obamacare.agent_usa == 'Evelyn' %}selected{% endif %}>Evelyn</option>
+								<option value="no_valid">Please Select</option>
+								<option {% if obamacare.agent_usa == 'GINA PAOLA LAPEIRA - NPN 19944280' %}selected{% endif %} value="GINA PAOLA LAPEIRA - NPN 19944280">GINA PAOLA LAPEIRA - NPN 19944280</option>
+								<option {% if obamacare.agent_usa == 'LUIS EDUARDO LAPEIRA - NPN 20556081' %}selected{% endif %} value="LUIS EDUARDO LAPEIRA - NPN 20556081">LUIS EDUARDO LAPEIRA - NPN 20556081</option>
+								<option {% if obamacare.agent_usa == 'DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958' %}selected{% endif %} value="DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958">DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958</option>
+								<option {% if obamacare.agent_usa == 'ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295' %}selected{% endif %} value="ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295">ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295</option>
+								<option {% if obamacare.agent_usa == 'DANIESKA LOPEZ SEQUEIRA - NPN 20134539' %}selected{% endif %} value="DANIESKA LOPEZ SEQUEIRA - NPN 20134539">DANIESKA LOPEZ SEQUEIRA - NPN 20134539</option>
+								<option {% if obamacare.agent_usa == 'VLADIMIR DE LA HOZ FONTALVO - NPN 19915005' %}selected{% endif %} value="VLADIMIR DE LA HOZ FONTALVO - NPN 19915005">VLADIMIR DE LA HOZ FONTALVO - NPN 19915005</option>
+								<option {% if obamacare.agent_usa == 'FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603' %}selected{% endif %} value="FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603">FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603</option>
+								<option {% if obamacare.agent_usa == 'BORJA G CANTON HERRERA - NPN 20673324' %}selected{% endif %} value="BORJA G CANTON HERRERA - NPN 20673324">BORJA G CANTON HERRERA - NPN 20673324</option>
+								<option {% if obamacare.agent_usa == 'RODRIGO G CANTON - NPN 20670005' %}selected{% endif %} value="RODRIGO G CANTON - NPN 20670005">RODRIGO G CANTON - NPN 20670005</option>
+								<option {% if obamacare.agent_usa == 'EVELYN BEATRIZ HERRERA - NPN 20671818' %}selected{% endif %} value="EVELYN BEATRIZ HERRERA - NPN 20671818">EVELYN BEATRIZ HERRERA - NPN 20671818</option>
 							</select>
 						</div>
 						<div class="col-12 col-lg-2">
 							<label for="taxes" class="form-label">Taxes</label>
 							<input type="number" class="form-control" id="taxes" name="taxes" value="{{ obamacare.taxes }}" >
 						</div>
-						<div class="col-12 col-lg-3">
+						<div class="col-12 col-lg-4">
 							<label for="carrierObama" class="form-label">Carrier</label>
 							<select class="form-select" id="carrierObama"  name="carrierObama" required  >
 								<option value="" disabled selected>Please Select</option>
@@ -271,7 +272,7 @@
 							<label for="work" class="form-label font-weight-bold">Work</label>
 							<select class="form-select" id="work" aria-label="Default select example"  name="work"   >
 								<option value="" disabled selected>Please Select</option>
-								<option value="w2" {% if obamacare.work == "w2" %}selected{% endif %} >W2</option>
+								<option value="W2" {% if obamacare.work == "W2" %}selected{% endif %} >W2</option>
 								<option value="1099"{% if obamacare.work == "1099"%}selected{% endif %} >1099</option> 
 							</select>
 						</div>
@@ -298,17 +299,17 @@
 						<div class="col-12 col-lg-2">
 							<label for="doc_income" class="form-label">Doc Icon</label>
 							<select class="form-select" id="doc_income"  name="doc_income" required  >
-								<option value="" disabled selected>Please Select</option>
-								<option value="YES" {% if obamacare.doc_income == "YES" %}selected{% endif %} >YES</option>
-								<option value="NO" {% if obamacare.doc_income == "NO" %}selected{% endif %} >NO</option>
+								<option value ="" disabled selected>Please Select</option>
+								<option value = True {% if obamacare.doc_income == True %}selected{% endif %} >YES</option>
+								<option value = False {% if obamacare.doc_income == False %}selected{% endif %} >NO</option>
 							</select>
 						</div>
 						<div class="col-12 col-lg-2">
 							<label for="doc_migration" class="form-label">Doc Migration</label>
 							<select class="form-select" id="doc_migration"  name="doc_migration" required  >
 								<option value="" disabled selected>Please Select</option>
-								<option value= "YES" {% if obamacare.doc_migration == "YES" %}selected{% endif %} >YES</option>
-								<option value= "NO" {% if obamacare.doc_migration == "NO" %}selected{% endif %} >NO</option>
+								<option value = True {% if obamacare.doc_migration == True %}selected{% endif %} >YES</option>
+								<option value = False {% if obamacare.doc_migration == False %}selected{% endif %} >NO</option>
 							</select>
 						</div>
 						<div class="col-12 col-lg-2">
@@ -316,11 +317,11 @@
 							<input type="number" class="form-control" id="npm" name="npm" value="{{ obamacare.npm }}" >
 						</div>
 						
-						<div class="col-12 col-lg-6">
+						<div class="col-12 col-lg-8">
 							<label for="planName" class="form-label">Plan Name</label>
 							<input type="text" class="form-control" id="planName" name="planName" value="{{ obamacare.plan_name }}"  >
 						</div>
-						<div class="col-12 col-lg-3">
+						<div class="col-12 col-lg-4">
 							<label for="profiling" class="form-label">Profiling</label>
 							<select class="form-select" id="profiling"  name="profiling" {% for user in users %}{% if obamacare.profiling == user.username %}disabled{% endif %}{% endfor %}> 
 								<option value="" disabled selected>Please Select</option>
@@ -369,7 +370,10 @@
 								<button type="submit" name="action" value="save_obamacare" id="enviar" class="btn btn-primary px-4"  >Submit</button>
 								<button type="submit" name="action" id="enviar2" value="save_observation_agent" class="btn btn-primary px-4" style="display: none;">Submits</button>
 								<a href="{% url 'clientObamacare' %}" class="btn btn-light px-4">Back</a>
-								<a href="{% url 'clientObamacare' %}" class="btn btn-light px-4" data-bs-toggle="modal" data-bs-target="#verConsent">View Consent</a>
+								{% if request.user.role != 'A' %}
+									<a href="{% url 'clientObamacare' %}" class="btn btn-light px-4" data-bs-toggle="modal" data-bs-target="#verConsent">View Consent</a>
+									<a href="{% url 'clientObamacare' %}" class="btn btn-light px-4" data-bs-toggle="modal" data-bs-target="#verIncomeLetter">View Income Letter</a>
+								{% endif %}
 							</div>
 						</div>
                     {% csrf_token %}	
@@ -504,7 +508,7 @@
 						<div class="modal-dialog">
 							<div class="modal-content">
 								<div class="modal-header">
-									<h5 class="modal-title" id="verConsentLabel">Saved Remarks</h5>
+									<h5 class="modal-title" id="verConsentLabel">Saved Consent</h5>
 									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 								</div>
 								<div class="modal-body">
@@ -513,6 +517,31 @@
 											{% for consents in consent %}											
 												<li class="list-group-item">
 													<strong>Consent #{{forloop.counter}}:</strong> <a href="{{ consents.pdf.url }} ">View  <i class="lni lni-display"></i></a> 
+												</li>
+											{% endfor %}
+										</ul>
+									{% else %}
+										<p>No hay observaciones guardadas.</p>
+									{% endif %}
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Modal para ver las Income -->
+					<div class="modal fade" id="verIncomeLetter" tabindex="-1" aria-labelledby="verIncomeLetter" aria-hidden="true">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="verIncomeLetter">Saved Income Letter</h5>
+									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+								</div>
+								<div class="modal-body">
+									{% if consent %}
+										<ul class="list-group">
+											{% for consents in consent %}											
+												<li class="list-group-item">
+													<strong>Letter Income #{{forloop.counter}}:</strong> <a href="{{ consents.pdf.url }} ">View  <i class="lni lni-display"></i></a> 
 												</li>
 											{% endfor %}
 										</ul>

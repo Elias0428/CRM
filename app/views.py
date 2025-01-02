@@ -24,7 +24,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AnonymousUser
-from django.db.models import Count, Q, Sum
+from django.db.models import Count, Q, Sum, Value, TextField
 from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.encoding import force_bytes, force_str
@@ -92,7 +92,7 @@ def select_client(request):
     if request.user.role in roleAuditar:
         clients = Client.objects.all()
     else:
-        clients = Client.objects.filter(agent = request.user.id).exclude(type_sale = '')
+        clients = Client.objects.filter(agent = request.user.id).exclude(type_sales = '')
     
     return render(request, 'agents/select_client.html', {'clients':clients})
 
@@ -2541,6 +2541,7 @@ def getIPClient(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
+@login_required(login_url='/login')
 def saleProm(request):
     agents = User.objects.filter(is_active=True)
     nameChart = 'Select filter data'
@@ -2672,7 +2673,6 @@ def generate_temporary_token(request, obamacare):
     # Retornar solo el token (no se genera ni guarda la URL temporal)
     return token
 
-
 # Vista para verificar y procesar la URL temporal
 def validate_temporary_url(request):
     token = request.POST.get('token') or request.GET.get('token')
@@ -2704,3 +2704,53 @@ def validate_temporary_url(request):
     
     except (BadSignature, ValueError, KeyError):
         return False, 'Token inválido o alterado. Invalid token.'
+
+@login_required(login_url='/login')
+def reportBd(request):
+    BD = ExcelFileMetadata.objects.all()
+
+    if request.method == "POST":
+
+        filterBd = request.POST.get("bd")
+        
+        # Verificar si 'filterBd' no está vacío y convertirlo a entero
+        if not filterBd:
+            return render(request, 'table/reportBd.html', {'BDS': BD, 'error': 'Please select a BD'})
+        
+        # Filtrar el ExcelFileMetadata
+        filterBd = int(filterBd)  # Asegurarnos de que el filtro sea un número entero
+        nameBd = ExcelFileMetadata.objects.filter(id=filterBd).first()
+        
+        # Contar los comentarios existentes agrupados por contenido para el BD seleccionado
+        comment_with_content = (
+            CommentBD.objects
+            .filter(excel_metadata=filterBd)  # Filtramos por 'excel_metadata'
+            .exclude(content__isnull=True, content__exact='')  # Excluimos los comentarios vacíos
+            .values(content_label=Coalesce('content', Value('PENDING', output_field=TextField())))
+            .annotate(amount=Count('content'))
+        )
+
+        # Contar registros en BdExcel sin comentarios para el BD seleccionado
+        pending_count = (
+            BdExcel.objects
+            .filter(excel_metadata_id=filterBd)  # Filtramos por 'excel_metadata' específico
+            .exclude(id__in=CommentBD.objects.filter(excel_metadata=filterBd).values_list('bd_excel', flat=True))  # Excluimos los BD que ya tienen comentarios
+            .count()  # Contamos los registros sin comentarios
+        )
+
+        # Agregar los registros pendientes como un solo grupo
+        all_comments = list(comment_with_content)
+        if pending_count > 0:
+            all_comments.append({'content_label': 'PENDING', 'amount': pending_count})
+
+        context = {
+            'BDS': BD,
+            'all_comments': all_comments,
+            'nameBd': nameBd
+        }
+
+        return render(request, 'table/reportBd.html', context)
+
+    return render(request, 'table/reportBd.html', {'BDS': BD})
+
+
