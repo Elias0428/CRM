@@ -23,6 +23,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import AnonymousUser
 from django.db.models import Count, Q, Sum
 from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404, redirect, render
@@ -2330,14 +2331,26 @@ def generar_reporte(request):
     return render(request, 'generar_reporte.html', {'form': form, 'reporte_datos': reporte_datos})
 
 def consent(request, obamacare_id):
+    # Validar si el usuario no está logueado y verificar el token
+    if isinstance(request.user, AnonymousUser):
+        result = validate_temporary_url(request)
+        is_valid_token, *note = result
+        if not is_valid_token:
+            return HttpResponse(note)
+    elif request.user.is_authenticated:
+        print('Usuario autenticado')
+    else:
+        # Si el usuario no está logueado y no hay token válido
+        return HttpResponse('Acceso denegado. Por favor, inicie sesión o use un enlace válido.')
+    
     obamacare = ObamaCare.objects.select_related('client').get(id=obamacare_id)
     dependents = Dependent.objects.filter(client=obamacare.client)
     supps = Supp.objects.filter(client_id=obamacare.client.id)
     consent = Consents.objects.select_related('obamacare').filter(obamacare = obamacare_id ).last()
     
     if request.method == 'POST':
-        objectObamacare = saveConsent(request, obamacare)
-        return generatePdf(request, objectObamacare, dependents, supps)
+        return generateConsentPdf(request, obamacare, dependents, supps)
+
     context = {
         'valid_migration_statuses': ['PERMANENT_RESIDENT', 'US_CITIZEN', 'EMPLOYMENT_AUTHORIZATION'],
         'obamacare':obamacare,
@@ -2345,6 +2358,28 @@ def consent(request, obamacare_id):
         'consent':consent
     }
     return render(request, 'consent/consent1.html', context)
+
+def incomeLetter(request, obamacare_id):
+    # Validar si el usuario no está logueado y verificar el token
+    if isinstance(request.user, AnonymousUser):
+        result = validate_temporary_url(request)
+        is_valid_token, *note = result
+        if not is_valid_token:
+            return HttpResponse(note)
+    elif request.user.is_authenticated:
+        print('Usuario autenticado')
+    else:
+        # Si el usuario no está logueado y no hay token válido
+        return HttpResponse('Acceso denegado. Por favor, inicie sesión o use un enlace válido.')
+    obamacare = ObamaCare.objects.select_related('client').get(id=obamacare_id)
+    
+    context = {
+        'obamacare': obamacare
+    }
+    if request.method == 'POST':
+        generateIncomeLetterPDF(request, obamacare)
+
+    return render(request, 'consent/incomeLetter.html', context)
 
 def saveConsent(request, obamacare):
     objectClient = save_data_from_request(Client, request.POST, ['agent'],obamacare.client)
@@ -2362,13 +2397,27 @@ def saveConsent(request, obamacare):
     else:
         return HttpResponse('No guardo pri')
 
-def generatePdf(request, obamacare, dependents, supps):
+def generateConsentPdf(request, obamacare, dependents, supps):
     current_date = datetime.now().strftime("%A, %B %d, %Y %I:%M")
     date_more_3_months = (datetime.now() + timedelta(days=90)).strftime("%A, %B %d, %Y %I:%M")
+
+    consent = Consents.objects.create(
+        obamacare=obamacare,
+    )
+
+    signature_data = request.POST.get('signature')
+    format, imgstr = signature_data.split(';base64,')
+    ext = format.split('/')[-1]
+    image = ContentFile(base64.b64decode(imgstr), name=f'firma.{ext}')
+
+    consent.signature = image
+    consent.save()
+
     context = {
         'obamacare':obamacare,
         'dependents':dependents,
         'supps':supps,
+        'consent':consent,
         'company':getCompanyPerAgent(obamacare.agent_usa),
         'social_security':request.POST.get('socialSecurity'),
         'current_date':current_date,
@@ -2387,18 +2436,47 @@ def generatePdf(request, obamacare, dependents, supps):
     pdf_io.seek(0)  # Asegúrate de que el cursor esté al principio del archivo
 
     # Guarda el PDF en el modelo usando un ContentFile
-    pdf_name = "consent_" + str(obamacare.id) + ".pdf"  # Nombre del archivo
-    consent = Consents.objects.create(
-        obamacare=obamacare,
-    )
+    pdf_name = f'Consent{obamacare.client.first_name}_{obamacare.client.last_name}#{obamacare.client.phone_number} {datetime.now().strftime("%m-%d-%Y-%H:%M")}.pdf'  # Nombre del archivo
+
     consent.pdf.save(pdf_name, ContentFile(pdf_io.read()), save=True)
 
-    # temporaly_URL = generate_temporary_url(request, obamacare.client)
+    temporaly_URL = generate_temporary_token(request, obamacare)
+    return redirect(incomeLetter, obamacare.id)
 
-    # Devuelve el PDF como respuesta HTTP
-    response = HttpResponse(pdf_file, content_type='application/pdf')
-    response['Content-Disposition'] = 'inline; filename="output.pdf"'
-    return response
+def generateIncomeLetterPDF(request, obamacare):
+    current_date = datetime.now().strftime("%A, %B %d, %Y %I:%M")
+
+    incomeLetter = IncomeLetter.objects.create(
+        obamacare=obamacare,
+    )
+    signature_data = request.POST.get('signature')
+    format, imgstr = signature_data.split(';base64,')
+    ext = format.split('/')[-1]
+    image = ContentFile(base64.b64decode(imgstr), name=f'firma.{ext}')
+    incomeLetter.signature = image
+    incomeLetter.save()
+
+    context = {
+        'obamacare':obamacare,
+        'current_date':current_date,
+        'ip':getIPClient(request),
+        'incomeLetter':incomeLetter
+    }
+
+    # Renderiza la plantilla HTML a un string
+    html_content = render_to_string('consent/templatePdfIncomeLetter.html', context)
+
+    # Genera el PDF
+    pdf_file = HTML(string=html_content).write_pdf()
+
+    # Usa BytesIO para convertir el PDF en un archivo
+    pdf_io = io.BytesIO(pdf_file)
+    pdf_io.seek(0)  # Asegúrate de que el cursor esté al principio del archivo
+
+    # Guarda el PDF en el modelo usando un ContentFile
+    pdf_name = f'IncomeOfLetter{obamacare.client.first_name}_{obamacare.client.last_name}#{obamacare.client.phone_number} {datetime.now().strftime("%A, %B %d, %Y %I:%M")}.pdf'  # Nombre del archivo
+
+    incomeLetter.pdf.save(pdf_name, ContentFile(pdf_io.read()), save=True)
 
 def save_data_from_request(model_class, post_data, exempted_fields, instance=None):
     """
@@ -2570,5 +2648,59 @@ def saleProm(request):
         'nameChart' : nameChart
     })
 
+# View para generar solo el token
+def generate_temporary_token(request, obamacare):
+    signer = Signer()
+
+    expiration_time = timezone.now() + timedelta(minutes=90)
+
+    # Crear el token con la fecha de expiración usando JSON
+    data = {
+        'client_id': obamacare.client.id,
+        'expiration': expiration_time.isoformat(),
+    }
+    signed_data = signer.sign(json.dumps(data))  # Firmar los datos serializados
+    token = urlsafe_base64_encode(force_bytes(signed_data))  # Codificar seguro para URL
+
+    # Guardar solo el token en la base de datos
+    TemporaryToken.objects.create(
+        client=obamacare.client,
+        token=token,
+        expiration=expiration_time
+    )
+
+    # Retornar solo el token (no se genera ni guarda la URL temporal)
+    return token
 
 
+# Vista para verificar y procesar la URL temporal
+def validate_temporary_url(request):
+    token = request.POST.get('token') or request.GET.get('token')
+
+    if not token:
+        return False, 'Token no proporcionado. Not found token.'
+
+    signer = Signer()
+    
+    try:
+        signed_data = force_str(urlsafe_base64_decode(token))
+        data = json.loads(signer.unsign(signed_data))
+
+        client_id = data.get('client_id')
+        expiration_time = timezone.datetime.fromisoformat(data['expiration'])
+        # Verificar si el token está activo y no ha expirado
+        temp_url = TemporaryToken.objects.get(token=token, client_id=client_id)
+
+        if not temp_url.is_active:
+            return False, 'Enlace desactivado. Link deactivated.'
+
+        if temp_url.is_expired():
+            return False, 'Enlace ha expirado. Link expired.'
+
+        # Procesar si la URL es válida
+        client = temp_url.client
+        
+        return True
+    
+    except (BadSignature, ValueError, KeyError):
+        return False, 'Token inválido o alterado. Invalid token.'

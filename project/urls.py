@@ -85,6 +85,8 @@ urlpatterns = [
     path('saleProm/', views.saleProm, name='saleProm'),
 
     path('viewConsent/<obamacare_id>/', views.consent, name='viewConsent'),
+    path('viewIncomeLetter/<obamacare_id>/', views.incomeLetter, name='incomeLetter'),
+    
 
     ##path('exportUsers/', views.exportUsers, name='exportUsers'),
     ##path('testImportDb/', views.testExportDB, name='testExportDB'),

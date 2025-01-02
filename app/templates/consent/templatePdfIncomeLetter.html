@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carta Explicativa de los Ingresos Anuales</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        .container {
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            margin: 0;
+            color: #2c3e50;
+            text-transform: uppercase;
+        }
+
+        .header p {
+            font-size: 16px;
+            margin: 5px 0;
+            color: #7f8c8d;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #34495e;
+            border-bottom: 3px solid #ecf0f1;
+            padding-bottom: 8px;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .table th {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: #fff;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 5px;
+            text-align: left;
+        }
+
+        .table td {
+            padding: 20px;
+            text-align: left;
+            font-size: 15px;
+            background-color: #f9f9f9;
+        }
+
+        .table tr:nth-child(even) td {
+            background-color: #eef3f7;
+        }
+
+        .highlight {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+
+        ul {
+            list-style: disc;
+            padding-left: 20px;
+            color: #34495e;
+        }
+
+        ul li {
+            margin-bottom: 10px;
+        }
+
+        .bold {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .footer {
+            font-size: 14px;
+            color: #7f8c8d;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .footer p {
+            margin: 5px 0;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #3498db;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .center {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="">
+        <div class="header">
+            <h1>Carta Explicativa de los Ingresos Anuales</h1>
+            <p>Friday, April 12, 2024</p>
+        </div>
+
+        <div class="section">
+            <table class="table">
+                <tr>
+                    <th>Fecha de Hoy</th>
+                    <td>Friday, April 12, 2024</td>
+                </tr>
+                <tr>
+                    <th>Nombre Completo</th>
+                    <td>{{obamacare.client.first_name}} {{obamacare.client.last_name}}</td>
+                </tr>
+                <tr>
+                    <th>Fecha de Nacimiento del Aplicante Principal</th>
+                    <td>{{obamacare.client.date_birth|date:'Y-m-d'}}</td>
+                </tr>
+                <tr>
+                    <th>Mi hogar espera recibir</th>
+                    <td>${{obamacare.taxes}}</td>
+                </tr>
+                <tr>
+                    <th>Durante el año</th>
+                    <td>2025</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Cómo enviar por correo:</h2>
+            <p>
+                Incluya la página de código de barras impresa que vino con su carta. Si no tiene un código de barras, incluya su nombre completo impreso y la identificación de la solicitud en cada página de su formulario. Su ID de solicitud está cerca de su dirección postal en la parte superior de su carta.
+            </p>
+            <p>Envíe el formulario a:</p>
+            <div class="highlight">
+                Mercado de Seguros Médicos<br>
+                Attn: Coverage Processing<br>
+                465 Industrial Blvd.<br>
+                London, KY 40750
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Nota</h2>
+            <p>
+                El ingreso anual que informe debe coincidir con el ingreso que informó en su solicitud del Mercado u otra solicitud de seguro médico. Si no es así, actualice su solicitud del Mercado.
+            </p>
+            <p>
+                Visite <a href="https://CuidadoDeSalud.gov/es/income-and-household-information/how-to-report/">CuidadoDeSalud.gov</a> o <a href="https://CuidadoDeSalud.gov/es/income-calculator">CuidadoDeSalud.gov/es/income-calculator</a> si necesita ayuda para estimar su ingreso anual esperado.
+            </p>
+        </div>
+
+        <div class="section">
+            <h2>Firma</h2>
+            <div class="signature">
+                <p>Firma:</p>
+                <img src="{{incomeLetter.signature.url}}" alt="Firma">
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2024 - Mercado de Seguros Médicos. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</body>
+</html>

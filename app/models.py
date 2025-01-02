@@ -90,10 +90,6 @@ class ObamaCare(models.Model):
     date_effective_coverage_end = models.DateField(null=True)
     observation = models.TextField(null=True)
     create_at = models.DateTimeField(auto_now_add=True)
-    signature = models.FileField(
-        upload_to='files',
-        storage=S3Boto3Storage(),
-        null=True)
     is_active = models.BooleanField(default=True)
 
     class Meta:
@@ -281,9 +277,31 @@ class Consents(models.Model):
         storage=S3Boto3Storage(),
         null=True)
     obamacare = models.ForeignKey(ObamaCare, on_delete=models.CASCADE)
+    signature = models.FileField(
+        upload_to='SignatureConsents',
+        storage=S3Boto3Storage(),
+        null=True)
+
+    class Meta:
+        db_table = 'Consents'
 
 
-class TemporaryURL(models.Model):
+class IncomeLetter(models.Model):
+    pdf = models.FileField(
+        upload_to='incomeLetter',
+        storage=S3Boto3Storage(),
+        null=True)
+    signature = models.FileField(
+        upload_to='SignatureLetterIncome',
+        storage=S3Boto3Storage(),
+        null=True)
+    obamacare = models.ForeignKey(ObamaCare, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'IncomeLetter'
+
+
+class TemporaryToken(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     token = models.TextField()  # Guardar el token firmado
     expiration = models.DateTimeField()

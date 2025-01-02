@@ -612,51 +612,6 @@
             }
         }
     </script>
-    
-    <!-- <script>
-        // Prevenir envío predeterminado y agregar el canvas como archivo
-        form.addEventListener('submit', (event) => {
-            event.preventDefault();
-            console.log(!validateSelects())
-
-            // Convertir canvas a base64 y luego a un archivo Blob
-            const canvasData = canvas.toDataURL('image/png'); // Base64 de la imagen
-            const blob = dataURItoBlob(canvasData);
-            const file = new File([blob], 'signature.png', { type: 'image/png' });
-
-            // Crear un FormData para enviar el archivo
-            const formData = new FormData(form);
-            formData.append('signature', file);
-
-            // Enviar la solicitud con fetch
-            fetch(form.action, {
-                method: 'POST',
-                body: formData,
-            })
-            .then((response) => {
-                if (response.ok) {
-                    alert('Formulario enviado correctamente.');
-                } else {
-                    alert('Error al enviar el formulario.');
-                }
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-        });
-
-        // Convertir Base64 a Blob
-        function dataURItoBlob(dataURI) {
-            const byteString = atob(dataURI.split(',')[1]);
-            const mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-            const ab = new ArrayBuffer(byteString.length);
-            const ia = new Uint8Array(ab);
-            for (let i = 0; i < byteString.length; i++) {
-                ia[i] = byteString.charCodeAt(i);
-            }
-            return new Blob([ab], { type: mimeString });
-        }
-    </script> -->
-    
+ 
 </body>
 </html>
