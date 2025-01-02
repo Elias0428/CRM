@@ -270,10 +270,17 @@ class CommentBD(models.Model):
     class Meta:
         db_table = 'CommentBD'
 
+    
+class DocumentsClient(models.Model):
+    file = models.FileField(
+        upload_to='consents',
+        storage=S3Boto3Storage(),
+        null=True)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
 
 class Consents(models.Model):
     pdf = models.FileField(
-        upload_to='consents',
+        upload_to='DocumentsClient',
         storage=S3Boto3Storage(),
         null=True)
     obamacare = models.ForeignKey(ObamaCare, on_delete=models.CASCADE)
@@ -312,3 +319,6 @@ class TemporaryToken(models.Model):
 
     def __str__(self):
         return f"Temporary URL for {self.client.name} (Active: {self.is_active})"
+
+    class Meta:
+        db_table = 'TemporaryToken'

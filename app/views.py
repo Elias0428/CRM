@@ -2349,13 +2349,22 @@ def consent(request, obamacare_id):
     consent = Consents.objects.select_related('obamacare').filter(obamacare = obamacare_id ).last()
     
     if request.method == 'POST':
+        documents = request.FILES.getlist('documents')  # Lista de archivos subidos
+        
+        for document in documents:
+            photo = DocumentsClient(
+                file=document,
+                client=obamacare.client)  # Crear una nueva instancia de Foto
+            photo.save()  # Guardar el archivo en la base de datos
+            print('Guardado perfectamente mi broder')
         return generateConsentPdf(request, obamacare, dependents, supps)
 
     context = {
         'valid_migration_statuses': ['PERMANENT_RESIDENT', 'US_CITIZEN', 'EMPLOYMENT_AUTHORIZATION'],
         'obamacare':obamacare,
         'dependents':dependents,
-        'consent':consent
+        'consent':consent,
+        'company':getCompanyPerAgent(obamacare.agent_usa),
     }
     return render(request, 'consent/consent1.html', context)
 
@@ -2377,25 +2386,12 @@ def incomeLetter(request, obamacare_id):
         'obamacare': obamacare
     }
     if request.method == 'POST':
-        generateIncomeLetterPDF(request, obamacare)
+        objectClient = save_data_from_request(Client, request.POST, ['agent'],obamacare.client)
+        objectObamacare = save_data_from_request(ObamaCare, request.POST, ['signature'], obamacare)
+        generateIncomeLetterPDF(request, objectObamacare)
 
     return render(request, 'consent/incomeLetter.html', context)
 
-def saveConsent(request, obamacare):
-    objectClient = save_data_from_request(Client, request.POST, ['agent'],obamacare.client)
-    objectObamacare = save_data_from_request(ObamaCare, request.POST, ['signature'], obamacare)
-
-    signature_data = request.POST.get('signature')
-    format, imgstr = signature_data.split(';base64,')
-    ext = format.split('/')[-1]
-    image = ContentFile(base64.b64decode(imgstr), name=f'firma.{ext}')
-    objectObamacare.signature = image
-    objectObamacare.save()
-
-    if objectObamacare:
-        return objectObamacare
-    else:
-        return HttpResponse('No guardo pri')
 
 def generateConsentPdf(request, obamacare, dependents, supps):
     current_date = datetime.now().strftime("%A, %B %d, %Y %I:%M")
