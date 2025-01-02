@@ -1969,8 +1969,6 @@ def createQuality(request):
         total_daily = totals['total_daily']
         total_answered = totals['total_answered']
         total_mins = totals['total_mins']
-
-        print(end_date)
         
         return generatePdfQuality(
             request, consultQuality, agentReport, start_date, end_date, date, total_daily, total_answered, total_mins
@@ -2042,7 +2040,6 @@ def upload_excel(request):
                 request.session['metadata_id'] = excel_metadata.id  # Guardar ID del archivo para usarlo luego
 
             except Exception as e:
-                print(f"Error al leer el archivo: {str(e)}")
                 return render(request, 'excel/upload_excel.html', {
                     'form': form,
                     'error': f"Error al procesar el archivo: {str(e)}"
@@ -2086,7 +2083,6 @@ def process_and_save(request):
                 BdExcel.objects.create(**data)
 
         except Exception as e:
-            print(f"Error al procesar el archivo: {str(e)}")
             return render(request, 'excel/upload_excel.html', {
                 'error': f"Error al procesar el archivo: {str(e)}"
             })
@@ -2356,7 +2352,6 @@ def consent(request, obamacare_id):
                 file=document,
                 client=obamacare.client)  # Crear una nueva instancia de Foto
             photo.save()  # Guardar el archivo en la base de datos
-            print('Guardado perfectamente mi broder')
         return generateConsentPdf(request, obamacare, dependents, supps)
 
     context = {
@@ -2498,7 +2493,6 @@ def save_data_from_request(model_class, post_data, exempted_fields, instance=Non
                 continue
             if field in post_data:
                 data_to_save[field] = post_data[field]
-                print(f'Se intento guardar en {field}: {post_data[field]}')
 
         if instance:
             # Si se proporciona una instancia, actualizamos sus campos
@@ -2513,7 +2507,6 @@ def save_data_from_request(model_class, post_data, exempted_fields, instance=Non
             return instance
 
     except Exception as e:
-        print(f"Error al guardar/actualizar datos: {e}")
         return False
 
 def getCompanyPerAgent(agent):
@@ -2560,8 +2553,6 @@ def saleProm(request):
                 else:
                     last_day = datetime(year, month + 1, 1) - timedelta(days=1)
 
-                #print("Rango de fechas:", first_day, "a", last_day)
-
                 # Filtro de ObamaCare
                 obamacare_records = ObamaCare.objects.filter(
                     created_at__range=(first_day, last_day),
@@ -2569,7 +2560,6 @@ def saleProm(request):
                     agent = agentReport,
                     is_active = True
                 )
-                #print(f"Total ObamaCare encontrados: {obamacare_records.count()}")
 
                 # Filtro de Supp
                 supp_records = Supp.objects.filter(
@@ -2578,7 +2568,6 @@ def saleProm(request):
                     agent = agentReport,
                     is_active = True
                 )
-                #print("Registros Supp encontrados:", supp_records.count())
 
                 nameAgentChart = User.objects.filter(id = agentReport).first()
                 nameChart = nameAgentChart.first_name, nameAgentChart.last_name
@@ -2609,28 +2598,17 @@ def saleProm(request):
                     if 0 <= week_number < 5:  # Validar que la semana esté en el rango
                         counts_obamacare[week_number] += 1
                         week_days[weeks[week_number]].append(record.create_at.date())
-                        #print(f"ObamaCare {record.id} (Fecha: {record.create_at.date()}) asignado a {weeks[week_number]}")
 
                 for record in supp_records:
                     week_number = get_week_of_month(record.created_at.date())
                     if 0 <= week_number < 5:  # Validar que la semana esté en el rango
                         counts_supp[week_number] += 1
                         week_days[weeks[week_number]].append(record.created_at.date())
-                        #print(f"Supp {record.id} (Fecha: {record.created_at.date()}) asignado a {weeks[week_number]}")
-
-                # Mostrar los días en cada semana
-                #print("\nDías asignados a cada semana:")
-                #for i, week in enumerate(weeks):
-                    #print(f"{week}: {week_days[week]}")
 
                 # Calcular el total combinado
                 counts_total = [
                     counts_obamacare[i] + counts_supp[i] for i in range(len(weeks))
                 ]
-
-                #print("Totales por semana:")
-                #for i in range(len(weeks)):
-                    #print(f"{weeks[i]} - ObamaCare: {counts_obamacare[i]}, Supp: {counts_supp[i]}, Total: {counts_total[i]}")
 
             except ValueError as e:
                 print("Error al procesar la fecha:", e)
