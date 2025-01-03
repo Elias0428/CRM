@@ -467,7 +467,7 @@ def editClient(request,agent_id):
     # Campos de Client
     client_fields = [
         'agent_usa', 'first_name', 'last_name', 'phone_number', 'email', 'address', 'zipcode',
-        'city', 'state', 'county', 'sex', 'old', 'migration_status'
+        'city', 'state', 'county', 'sex', 'old', 'migration_status', 'apply'
     ]
     
     #formateo de fecha para guardalar como se debe en BD ya que la obtengo USA
@@ -492,6 +492,7 @@ def editClient(request,agent_id):
         sex=cleaned_client_data['sex'],
         old=cleaned_client_data['old'],
         date_birth=dateNew,
+        apply=cleaned_client_data['apply'],
         migration_status=cleaned_client_data['migration_status']
     )
 
@@ -526,7 +527,7 @@ def editClientObama(request, client_id, obamacare_id):
             obamacare_fields = [
                 'taxes', 'planName', 'carrierObama', 'profiling', 'subsidy', 'ffm', 'required_bearing',
                 'doc_income', 'doc_migration', 'statusObama', 'work', 'npm', 'date_effective_coverage',
-                'date_effective_coverage_end', 'apply', 'observationObama', 'agent_usa'
+                'date_effective_coverage_end', 'observationObama', 'agent_usa'
             ]
             
             # Limpiar los campos de ObamaCare convirtiendo los vacíos en None
@@ -609,7 +610,6 @@ def editClientObama(request, client_id, obamacare_id):
                 npm=cleaned_obamacare_data['npm'],
                 date_effective_coverage=date_effective_coverage_new,
                 date_effective_coverage_end=date_effective_coverage_end_new,
-                apply=cleaned_obamacare_data['apply'],
                 observation=cleaned_obamacare_data['observationObama']
             )
 
