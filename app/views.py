@@ -1031,32 +1031,41 @@ def saveCustomerObservation(request):
 
 @login_required(login_url='/login') 
 def typification(request):
-
-    # Obtener parámetros de fecha del request
-    start_date = request.GET.get('start_date')
-    end_date = request.GET.get('end_date')
-
+        
+    start_date = request.POST.get('start_date')
+    end_date = request.POST.get('end_date')
+    agent = User.objects.filter(role__in=['A', 'C'])
+    
     # Consulta base
     typification = ObservationCustomer.objects.select_related('agent', 'client').filter(is_active = True)
 
-    # Si no se proporcionan fechas, mostrar registros del mes actual
-    if not start_date and not end_date:
-        # Obtener el primer día del mes actual con zona horaria
-        today = timezone.now()
-        first_day_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-        
-        # Obtener el último día del mes actual
-        if today.month == 12:
-            # Si es diciembre, el último día será el 31
-            last_day_of_month = today.replace(day=31, hour=23, minute=59, second=59, microsecond=999999)
-        else:
-            # Para otros meses, usar el día anterior al primer día del siguiente mes
-            last_day_of_month = (first_day_of_month.replace(month=first_day_of_month.month+1) - timezone.timedelta(seconds=1))
-        
-        typification = typification.filter(created_at__range=[first_day_of_month, last_day_of_month])
+    # Si no se proporcionan fechas, mostrar registros del mes actual   
+    # Obtener el primer día del mes actual con zona horaria
+    today = timezone.now()
+    first_day_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     
-    # Si se proporcionan fechas, filtrar por el rango de fechas
-    elif start_date and end_date:
+    # Obtener el último día del mes actual
+    if today.month == 12:
+        # Si es diciembre, el último día será el 31
+        last_day_of_month = today.replace(day=31, hour=23, minute=59, second=59, microsecond=999999)
+    else:
+        # Para otros meses, usar el día anterior al primer día del siguiente mes
+        last_day_of_month = (first_day_of_month.replace(month=first_day_of_month.month+1) - timezone.timedelta(seconds=1))
+    
+    typification = typification.filter(created_at__range=[first_day_of_month, last_day_of_month])
+
+    if request.method == 'POST':
+
+        # Obtener parámetros de fecha del request
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')       
+        nameAgent = request.POST.get('agent')
+        nameTypification = request.POST.get('typification')
+
+        # Consulta base
+        typification = ObservationCustomer.objects.select_related('agent', 'client').filter(is_active = True)   
+        
+     
         # Convertir fechas a objetos datetime con zona horaria
         start_date = timezone.make_aware(
             datetime.strptime(start_date, '%Y-%m-%d').replace(hour=0, minute=0, second=0, microsecond=0)
@@ -1066,17 +1075,27 @@ def typification(request):
         )
         
         typification = typification.filter(
-            created_at__range=[start_date, end_date]
+            created_at__range=[start_date, end_date],
+            agent = nameAgent,
+            typification__contains = nameTypification
         )
 
-    # Ordenar por fecha de creación descendente
-    typification = typification.order_by('-created_at')
+        # Ordenar por fecha de creación descendente
+        typification = typification.order_by('-created_at')
+
+        return render(request, 'table/typification.html', {
+            'typification': typification,
+            'start_date': start_date,
+            'end_date': end_date,
+            'agents' : agent
+        })
 
     return render(request, 'table/typification.html', {
-        'typification': typification,
-        'start_date': start_date,
-        'end_date': end_date
-    })
+            'typification': typification,
+            'start_date': start_date,
+            'end_date': end_date,
+            'agents' : agent
+        })
 
 def get_observation_detail(request, observation_id):
     try:
@@ -2788,3 +2807,6 @@ def downloadBdExcelByCategory(filterBd, content_label):
 
     return response
 
+def averageCustomer(request):
+
+    return render (request, 'chart')

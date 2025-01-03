@@ -121,6 +121,21 @@
 						</li>
 					</ul>
 				</li>
+				<li class="menu-label">Chart</li>
+				<li>
+					<a class="has-arrow" href="javascript:;">
+						<div class="parent-icon"> <i class="fadeIn animated bx bx-spreadsheet"></i></div>
+						<div class="menu-title">Graphical reports</div>
+					</a>
+					<ul>
+						<li> <a href="{% url 'typification' %}"><i class='bx bx-radio-circle'></i>Typification</a>
+						</li>
+						<li> <a href="{% url 'sale' %}"><i class='bx bx-radio-circle'></i>Sale</a>
+						</li>
+						<li> <a href="{% url 'averageSales' %}"><i class='bx bx-radio-circle'></i>Average Sales</a>
+						</li>
+					</ul>
+				</li>
 				{% endif %}
 				{% if request.user.role == 'Admin' or request.user.role == 'AU'  %}
 				<li class="menu-label">Reports Quality</li>
