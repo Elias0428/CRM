@@ -1222,7 +1222,7 @@ def chartSaleIndex(request):
             obamacare_count=Count('agent_sale_aca', filter=Q(
                 agent_sale_aca__status_color=3,
                 agent_sale_aca__created_at__gte=start_of_month,
-                agent_sale_aca__created_at__lt=end_of_month
+                agent_sale_aca__created_at__lt=end_of_month,
             ), distinct=True),
             obamacare_count_total=Count('agent_sale_aca', filter=Q(
                 agent_sale_aca__created_at__gte=start_of_month,
@@ -1237,7 +1237,7 @@ def chartSaleIndex(request):
                 agent_sale_supp__created_at__gte=start_of_month,
                 agent_sale_supp__created_at__lt=end_of_month
             ), distinct=True), 0)
-        ).values('first_name', 'obamacare_count', 'obamacare_count_total', 'supp_count', 'supp_count_total')
+        ).filter(role__in=['A', 'C']).values('first_name', 'obamacare_count', 'obamacare_count_total', 'supp_count', 'supp_count_total')
 
     elif request.user.role not in roleAuditar:
         # Para usuarios con rol 'A': consultar datos solo para el usuario actual
