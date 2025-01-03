@@ -286,6 +286,9 @@ class DocumentsClient(models.Model):
         null=True)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
 
+    class Meta:
+        db_table = 'DocumentsClient'
+
 class Consents(models.Model):
     pdf = models.FileField(
         upload_to='DocumentsClient',
