@@ -33,21 +33,7 @@
             <div class="card-body p-4">
                 <form class="row g-3 needs-validation" method="POST">
                     <h4>Client</h4>
-                    <div class="col-12 col-lg-2">
-						<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
-						<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa"  >
-							<option value="Daniel" {% if supps.client.agent_usa == "Daniel" %}selected{% endif %} >Daniel</option>
-							<option value="Zohira" {% if supps.client.agent_usa == "Zohira" %}selected{% endif %}  >Zohira</option>
-							<option value="Gina" {% if supps.client.agent_usa == "Gina" %}selected{% endif %} >Gina</option>
-							<option value="Diego" {% if supps.client.agent_usa == "Diego" %}selected{% endif %} >Diego</option>
-							<option value="Danieska" {% if supps.client.agent_usa == "Danieska" %}selected{% endif %} >Danieska</option>
-							<option value="Vladimir" {% if supps.client.agent_usa == "Vladimir" %}selected{% endif %} >Vladimir</option>
-							<option value="Luis" {% if supps.client.agent_usa == "Luis" %}selected{% endif %} >Luis</option>
-							<option value="Borja" {% if supps.client.agent_usa == "Borja" %}selected{% endif %} >Borja</option>
-							<option value="Rodrigo" {% if supps.client.agent_usa == "Rodrigo" %}selected{% endif %} >Rodrigo</option>
-							<option value="Evelyn" {% if supps.client.agent_usa == "Evelyn" %}selected{% endif %} >Evelyn</option>
-						</select>
-					</div>
+                    
 					<div class="col-12 col-lg-5">
 						<label for="first_name" class="form-label">First Name</label>
 						<input type="text" class="form-control" name="first_name" id="first_name" placeholder="First Name" value="{{supps.client.first_name}}">
@@ -115,7 +101,7 @@
 						<label for="county" class="form-label">Country</label>
 						<input type="text" class="form-control" name ="county" id="county"  value="{{supps.client.county}}">
 					</div>
-					<div class="col-12 col-lg-4">
+					<div class="col-12 col-lg-2">
 						<label for="sex" class="form-label">Sex</label>
 						<select class="form-select"  name="sex" id="sex" aria-label="Default select example">
 							<option value="" disabled selected>Please Select</option>
@@ -127,11 +113,11 @@
 						<label for="old" class="form-label">Old</label>
 						<input type="number" nim="1" class="form-control" name ="old" id="old" placeholder="Old" value="{{supps.client.old}}">
 					</div>
-					<div class="col-12 col-lg-3">
+					<div class="col-12 col-lg-2">
 						<label for="date_birth" class="form-label">Date Birth</label>
 						<input type="text" class="form-control" name="date_birth" id="date_birth" value="{{ supps.client.date_birth|date:'m/d/Y' }}" >
 					</div>
-					<div class="col-12 col-lg-7">
+					<div class="col-12 col-lg-6">
 						<label for="migration_status" class="form-label">Migration Status</label>
 						<select class="form-select" id="migration_status"  name="migration_status" required  >
 							<option value="" disabled selected>Please Select</option>
@@ -147,6 +133,21 @@
 							<option value="US CITIZEN" {% if supps.client.migration_status  == "US CITIZEN" %}selected{% endif %} >US Citizen (Driver's License)</option>
 							<option value="STUDENT VISA" {% if supps.client.migration_status  == "STUDENT VISA" %}selected{% endif %} >Student Visa (I-20)</option>
 							<option value="CURRENTLY IN PROCESS" {% if supps.client.migration_status  == "CURRENTLY IN PROCESS" %}selected{% endif %} >Currently In Process (this means the client received an i-797)</option>
+						</select>
+					</div>
+					<div class="col-12 col-lg-6">
+						<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
+						<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa"  >
+							<option {% if supps.client.agent_usa == 'GINA PAOLA LAPEIRA - NPN 19944280' %}selected{% endif %} value="GINA PAOLA LAPEIRA - NPN 19944280">GINA PAOLA LAPEIRA - NPN 19944280</option>
+							<option {% if supps.client.agent_usa == 'LUIS EDUARDO LAPEIRA - NPN 20556081' %}selected{% endif %} value="LUIS EDUARDO LAPEIRA - NPN 20556081">LUIS EDUARDO LAPEIRA - NPN 20556081</option>
+							<option {% if supps.client.agent_usa == 'DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958' %}selected{% endif %} value="DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958">DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958</option>
+							<option {% if supps.client.agent_usa == 'ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295' %}selected{% endif %} value="ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295">ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295</option>
+							<option {% if supps.client.agent_usa == 'DANIESKA LOPEZ SEQUEIRA - NPN 20134539' %}selected{% endif %} value="DANIESKA LOPEZ SEQUEIRA - NPN 20134539">DANIESKA LOPEZ SEQUEIRA - NPN 20134539</option>
+							<option {% if supps.client.agent_usa == 'VLADIMIR DE LA HOZ FONTALVO - NPN 19915005' %}selected{% endif %} value="VLADIMIR DE LA HOZ FONTALVO - NPN 19915005">VLADIMIR DE LA HOZ FONTALVO - NPN 19915005</option>
+							<option {% if supps.client.agent_usa == 'FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603' %}selected{% endif %} value="FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603">FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603</option>
+							<option {% if supps.client.agent_usa == 'BORJA G CANTON HERRERA - NPN 20673324' %}selected{% endif %} value="BORJA G CANTON HERRERA - NPN 20673324">BORJA G CANTON HERRERA - NPN 20673324</option>
+							<option {% if supps.client.agent_usa == 'RODRIGO G CANTON - NPN 20670005' %}selected{% endif %} value="RODRIGO G CANTON - NPN 20670005">RODRIGO G CANTON - NPN 20670005</option>
+							<option {% if supps.client.agent_usa == 'EVELYN BEATRIZ HERRERA - NPN 20671818' %}selected{% endif %} value="EVELYN BEATRIZ HERRERA - NPN 20671818">EVELYN BEATRIZ HERRERA - NPN 20671818</option>
 						</select>
 					</div>
                     <hr>
@@ -211,27 +212,27 @@
 						{% endfor %}
 						<hr/>
                     <H4>Plan</H4>
-						<div class="col-12 col-lg-4">
+						<div class="col-12 col-lg-6">
 							<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
 							<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa">
 								<option value="" disabled selected>Please Select</option>
-								<option value="Daniel" {% if supps.agent_usa == 'Daniel' %}selected{% endif %}>Daniel</option>
-								<option value="Zohira" {% if supps.agent_usa == 'Zohira' %}selected{% endif %}>Zohira</option>
-								<option value="Gina" {% if supps.agent_usa == 'Gina' %}selected{% endif %}>Gina</option>
-								<option value="Diego" {% if supps.agent_usa == 'Diego' %}selected{% endif %}>Diego</option>
-								<option value="Danieska" {% if supps.agent_usa == 'Danieska' %}selected{% endif %}>Danieska</option>
-								<option value="Vladimir" {% if supps.agent_usa == 'Vladimir' %}selected{% endif %}>Vladimir</option>
-								<option value="Luis" {% if supps.agent_usa == 'Luis' %}selected{% endif %}>Luis</option>
-								<option value="Borja" {% if supps.agent_usa == 'Borja' %}selected{% endif %}>Borja</option>
-								<option value="Rodrigo" {% if supps.agent_usa == 'Rodrigo' %}selected{% endif %}>Rodrigo</option>
-								<option value="Evelyn" {% if supps.agent_usa == 'Evelyn' %}selected{% endif %}>Evelyn</option>
+								<option {% if supps.agent_usa == 'GINA PAOLA LAPEIRA - NPN 19944280' %}selected{% endif %} value="GINA PAOLA LAPEIRA - NPN 19944280">GINA PAOLA LAPEIRA - NPN 19944280</option>
+								<option {% if supps.agent_usa == 'LUIS EDUARDO LAPEIRA - NPN 20556081' %}selected{% endif %} value="LUIS EDUARDO LAPEIRA - NPN 20556081">LUIS EDUARDO LAPEIRA - NPN 20556081</option>
+								<option {% if supps.agent_usa == 'DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958' %}selected{% endif %} value="DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958">DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958</option>
+								<option {% if supps.agent_usa == 'ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295' %}selected{% endif %} value="ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295">ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295</option>
+								<option {% if supps.agent_usa == 'DANIESKA LOPEZ SEQUEIRA - NPN 20134539' %}selected{% endif %} value="DANIESKA LOPEZ SEQUEIRA - NPN 20134539">DANIESKA LOPEZ SEQUEIRA - NPN 20134539</option>
+								<option {% if supps.agent_usa == 'VLADIMIR DE LA HOZ FONTALVO - NPN 19915005' %}selected{% endif %} value="VLADIMIR DE LA HOZ FONTALVO - NPN 19915005">VLADIMIR DE LA HOZ FONTALVO - NPN 19915005</option>
+								<option {% if supps.agent_usa == 'FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603' %}selected{% endif %} value="FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603">FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603</option>
+								<option {% if supps.agent_usa == 'BORJA G CANTON HERRERA - NPN 20673324' %}selected{% endif %} value="BORJA G CANTON HERRERA - NPN 20673324">BORJA G CANTON HERRERA - NPN 20673324</option>
+								<option {% if supps.agent_usa == 'RODRIGO G CANTON - NPN 20670005' %}selected{% endif %} value="RODRIGO G CANTON - NPN 20670005">RODRIGO G CANTON - NPN 20670005</option>
+								<option {% if supps.agent_usa == 'EVELYN BEATRIZ HERRERA - NPN 20671818' %}selected{% endif %} value="EVELYN BEATRIZ HERRERA - NPN 20671818">EVELYN BEATRIZ HERRERA - NPN 20671818</option>
 							</select>
 						</div>
-						<div class="col-12 col-lg-3">
+						<div class="col-12 col-lg-2">
 							<label for="effectiveDateSupp" class="form-label">Effective Date</label>
 							<input type="text" class="form-control" id="effectiveDateSupp"  name="effectiveDateSupp"  value="{{ supps.effective_date|date:'m-d-y' }}" >
 						</div>
-						<div class="col-12 col-lg-5">
+						<div class="col-12 col-lg-4">
 							<label for="carrierSuple" class="form-label">Carrier</label>
 							<select class="form-select" id="carrierSuple"  aria-label="Default select example" name="carrierSuple">
 								<option value="" disabled selected>Please Select</option>
@@ -319,11 +320,11 @@
 						</div> 
 						<div class="col-12 col-lg-6">
 							<label for="observationSuple" class="form-label">Observation</label>
-							<textarea class="form-control" id="observationSuple" name="observationSuple" rows="3" type="text" placeholder="Supplementary plan remark" style="resize: none">{{supps.observation}}</textarea>
+							<textarea class="form-control" id="observationSuple" name="observationSuple" rows="3" type="text" style="resize: none">{{supps.observation}}</textarea>
 						</div>
 						<div class="col-12 col-lg-6">
 							<label for="observationObama" class="form-label">Observation Agent</label>
-							<textarea class="form-control" id="observationObama" name="observationObama" disabled rows="3" placeholder="supps plan observation" style="resize: none">{{ obsSuppText }}</textarea>
+							<textarea class="form-control" id="observationObama" name="observationObama" disabled rows="3" style="resize: none">{{ obsSuppText }}</textarea>
 						</div>
 						{% if request.user.role == 'A' %}
 						<div class="col-12 col-lg-6" id="obs_agent">

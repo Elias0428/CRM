@@ -170,6 +170,7 @@ def formCreatePlan(request, client_id):
         'type_sale':type_sale
     })
 
+@login_required(login_url='/login') 
 def fetchAca(request, client_id):
     client = Client.objects.get(id=client_id)
     aca_plan_id = request.POST.get('acaPlanId')
@@ -214,6 +215,7 @@ def fetchAca(request, client_id):
         )
     return JsonResponse({'success': True, 'aca_plan_id': aca_plan.id})
 
+@login_required(login_url='/login') 
 def fetchSupp(request, client_id):
     client = Client.objects.get(id=client_id)
     supp_data = {}
@@ -276,7 +278,8 @@ def fetchSupp(request, client_id):
                 )
                 updated_supp_ids.append(new_supp.id)  # Agregar el ID creado a la lista
     return JsonResponse({'success': True,  'supp_ids': updated_supp_ids})
-        
+
+@login_required(login_url='/login')      
 def fetchDependent(request, client_id):
     client = Client.objects.get(id=client_id)
     dependents_data = {}
@@ -369,8 +372,7 @@ def clientObamacare(request):
         obamaCare = ObamaCare.objects.select_related('agent','client').filter(agent = request.user.id, is_active = True ) 
 
     for item in obamaCare:
-        client_name = item.client.agent_usa if item.client.agent_usa else "Sin Name"
-        
+        client_name = item.client.agent_usa if item.client.agent_usa else "Sin Name"        
         item.client.short_name = client_name.split()[0] + " ..." if " " in client_name else client_name
 
 
@@ -388,6 +390,10 @@ def clientSupp(request):
         supp = Supp.objects.select_related('agent','client')
     elif request.user.role == 'A':
         supp = Supp.objects.select_related('agent','client').filter(agent = request.user.id, is_active = True)
+
+    for item in supp:
+        client_name = item.client.agent_usa if item.client.agent_usa else "Sin Name"    
+        item.client.short_name = client_name.split()[0] + " ..." if " " in client_name else client_name
 
     return render(request, 'table/clientSupp.html', {'supps':supp})
 
