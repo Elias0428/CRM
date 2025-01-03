@@ -994,7 +994,7 @@ def saveCustomerObservation(request):
         content = request.POST.get('textoIngresado')
         plan_id = request.POST.get('plan_id')
         type_plan = request.POST.get('type_plan')
-        typeCall = request.POST.get('typeCall')
+        typeCall = request.POST.get('typeCall')        
 
         # Obtenemos las observaciones seleccionadas
         observations = request.POST.getlist('observaciones[]')  # Lista de valores seleccionados
