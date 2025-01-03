@@ -15,6 +15,12 @@ class User(AbstractUser):
         ('Admin', 'Admin'),
     )
     role = models.CharField(max_length=20, choices=ROLES_CHOICES)
+    # Sobrescribimos solo el campo email
+    email = models.EmailField(
+        blank=True, 
+        null=True,
+        unique=False
+    )
     
     class Meta:
         db_table = 'users'
