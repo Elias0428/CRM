@@ -73,6 +73,19 @@
         </div>
     </div>
 </div>
+<div class="row">
+    {% for agent in agents %}
+    <div class="col-6">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <div id=""></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
 {% endblock %}
 {% block end_js %}
 	<!-- Bootstrap JS -->

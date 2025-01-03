@@ -82,7 +82,7 @@ urlpatterns = [
     path('control/', views.tableControl, name='control'),
     path('createQuality/', views.createQuality, name='createQuality'),
 
-    path('saleProm/', views.saleProm, name='saleProm'),
+    path('averageSales/', views.averageSales, name='averageSales'),
 
     path('viewConsent/<obamacare_id>/', views.consent, name='viewConsent'),
     path('viewIncomeLetter/<obamacare_id>/', views.incomeLetter, name='incomeLetter'),

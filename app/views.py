@@ -2546,7 +2546,7 @@ def getIPClient(request):
     return ip
 
 @login_required(login_url='/login')
-def saleProm(request):
+def averageSales(request):
     agents = User.objects.filter(is_active=True)
     nameChart = 'Select filter data'
     weeks = ["Semana 1", "Semana 2", "Semana 3", "Semana 4", "Semana 5"]
@@ -2629,7 +2629,7 @@ def saleProm(request):
                 print("Error al procesar la fecha:", e)
 
     # Renderizar la respuesta
-    return render(request, 'table/saleProm.html', {
+    return render(request, 'table/averageSales.html', {
         'agents': agents,
         'weeks': weeks,
         'counts_obamacare': counts_obamacare,
