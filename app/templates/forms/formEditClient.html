@@ -190,10 +190,10 @@
 						</div>	
 						<div class="col-12 col-lg-6">
 							<label for="applyObama" class="form-label">Apply Titutlar</label>
-							<select class="form-select" id="applyObama"  name="applyObama"  >
+							<select class="form-select" id="applyObama"  name="apply"  >
 								<option disabled selected value="">Please Select</option>
-								<option value = True {% if client.apply == True %}selected{% endif %} >YES</option>
-								<option value = False {% if client.apply == False %}selected{% endif %}>NO</option>
+								<option value = "True" {% if client.apply  %}selected{% endif %} >YES</option>
+								<option value = "False" {% if not client.apply  %}selected{% endif %}>NO</option>
 							</select>	
 						</div>
 										

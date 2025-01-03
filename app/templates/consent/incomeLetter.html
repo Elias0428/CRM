@@ -121,7 +121,7 @@
             <!-- Signature Section -->
             <div class="bg-orange p-3 rounded mb-3 row m-1">
                 <div class="col-12">
-                    <label class="form-label">Firma Aplicante o Representante Autorizado <span class="text-danger">*</span></label>
+                    <label class="form-label">Firma Aplicante o Representante Autorizado <span class="text-danger">*</span> <span class="text-danger">*</span> {% if signed %}<strong style="color: chartreuse; text-shadow: 1px 1px 2px black, 0 0 25px green, 0 0 5px darkgreen;"> Firmado </strong> {% endif %}</label>
                 </div>
                 <div class="col-12 container-fluid">
                     <canvas width="330px" id="drawingCanvas" class="signature-pad"></canvas>

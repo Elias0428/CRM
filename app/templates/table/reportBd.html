@@ -25,22 +25,54 @@
 <h4>Filter Data BD</h4>
 <div class="card">
     <div class="card-header">
-        <form method="POST" class="row">
-			{% csrf_token %}
-            <div class="col-md-6">
-                <label for="bd" class="form-label">Select BD</label>			
-                <select class="form-select" id="bd"  name="bd" required> 
-                    <option value="" disabled selected>Please Select</option>            
-                    {% for BD in BDS %}
-                        <option value="{{BD.id}}">{{BD.file_name}}</option>                      
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-6 mt-4">
-                <button type="submit" class="btn btn-primary">Filter</button>
-                <a href="{% url 'reportBd' %}" class="btn btn-secondary">Reset</a>
+        <!-- Formulario para mostrar la tabla -->
+        <form method="POST" action="{% url 'reportBd' %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="show">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="bd" class="form-label">Select BD</label>
+                    <select class="form-select" id="bd" name="bd" required>
+                        <option value="" {% if not filterBd %}selected{% endif %} disabled selected>Please Select</option>
+                        {% for BD in BDS %}
+                            <option value="{{ BD.id }}" {% if BD.id == filterBd %}selected{% endif %}> {{ BD.file_name }} </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 mt-4">
+                    <button type="submit" class="btn btn-primary">Show Table</button>
+                    <a href="{% url 'reportBd' %}" class="btn btn-secondary">Reset</a>
+                </div>
             </div>
         </form>
+
+        {% if all_comments %}
+
+        <hr/>
+
+        <!-- Formulario para descargar archivo -->
+        <form method="POST" action="{% url 'reportBd' %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="download">
+            <input type="hidden" name="filterBd" value="{{ filterBd }}"> <!-- Mantener el BD seleccionado -->
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="content_label" class="form-label">Select Category</label>
+                    <select class="form-select" id="content_label" name="content_label" required>
+                        <option value="" disabled selected>Please Select</option>
+                        {% for comment in all_comments %}
+                            <option value="{{ comment.content_label }}">{{ comment.content_label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 mt-4">
+                    <button type="submit" class="btn btn-success">Download CSV</button>
+                </div>
+            </div>
+        </form>
+
+        {% endif %}
+
     </div>
 </div>
 <h6 class="mb-0 text-uppercase">Report  BD {{ nameBd.file_name }}</h6>
@@ -67,27 +99,7 @@
         </div>
     </div>
 </div>
-<hr/>
-<div class="card">
-    <div class="card-header">
-        <form method="POST" class="row">
-			{% csrf_token %}
-            <div class="col-md-6">
-                <label for="bd" class="form-label">Select BD</label>			
-                <select class="form-select" id="bd"  name="bd" required> 
-                    <option value="" disabled selected>Please Select</option>            
-                    {% for item in all_comments %}
-                        <option value="{{item.content_label}}">{{item.content_label}}</option>                      
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-6 mt-4">
-                <button type="submit" class="btn btn-primary">Filter</button>
-                <button type="submit" class="btn btn-success" name="action" value="download">Download BDExcel CSV</button>
-            </div>
-        </form>
-    </div>
-</div>
+
 
 
 {% endblock %}

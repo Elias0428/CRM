@@ -5,6 +5,7 @@ import datetime
 import io
 import json
 import os
+import csv
 import random
 from collections import defaultdict
 from datetime import timedelta
@@ -133,7 +134,9 @@ def formEditClient(request, client_id):
     if request.method == 'POST':
         form = ClientForm(request.POST, instance=client)
         if form.is_valid():
-            form.save()
+            client = form.save(commit=False)
+            client.is_active = 1
+            client.save()
             return redirect('formCreatePlan', client.id) 
         
     # Si el método es GET, mostrar el formulario con los datos del cliente
@@ -500,7 +503,9 @@ def editClientObama(request, client_id, obamacare_id):
 
     obsCus = ObservationCustomer.objects.select_related('agent').filter(client_id=obamacare.client.id)
 
-    consent = Consents.objects.select_related('obamacare').filter(obamacare = obamacare_id )
+    consent = Consents.objects.filter(obamacare = obamacare_id )
+    income = IncomeLetter.objects.filter(obamacare = obamacare_id)
+    document = DocumentsClient.objects.filter(client = client_id)
 
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -631,7 +636,9 @@ def editClientObama(request, client_id, obamacare_id):
         'obsCustomer': obsCus,
         'list_drow': list_drow,
         'dependents' : dependents,
-        'consent':consent
+        'consent': consent,
+        'income': income,
+        'document' : document
     }
 
     return render(request, 'edit/editClientObama.html', context)
@@ -2376,9 +2383,11 @@ def incomeLetter(request, obamacare_id):
         # Si el usuario no está logueado y no hay token válido
         return HttpResponse('Acceso denegado. Por favor, inicie sesión o use un enlace válido.')
     obamacare = ObamaCare.objects.select_related('client').get(id=obamacare_id)
+    signed = IncomeLetter.objects.filter(obamacare = obamacare_id).first()
     
     context = {
-        'obamacare': obamacare
+        'obamacare': obamacare,
+        'signed' : signed
     }
     if request.method == 'POST':
         objectClient = save_data_from_request(Client, request.POST, ['agent'],obamacare.client)
@@ -2684,47 +2693,92 @@ def reportBd(request):
     BD = ExcelFileMetadata.objects.all()
 
     if request.method == "POST":
+        action = request.POST.get("action")  # Identificar qué formulario se está enviando
 
-        filterBd = request.POST.get("bd")
-        
-        # Verificar si 'filterBd' no está vacío y convertirlo a entero
-        if not filterBd:
-            return render(request, 'table/reportBd.html', {'BDS': BD, 'error': 'Please select a BD'})
-        
-        # Filtrar el ExcelFileMetadata
-        filterBd = int(filterBd)  # Asegurarnos de que el filtro sea un número entero
-        nameBd = ExcelFileMetadata.objects.filter(id=filterBd).first()
-        
-        # Contar los comentarios existentes agrupados por contenido para el BD seleccionado
-        comment_with_content = (
-            CommentBD.objects
-            .filter(excel_metadata=filterBd)  # Filtramos por 'excel_metadata'
-            .exclude(content__isnull=True, content__exact='')  # Excluimos los comentarios vacíos
-            .values(content_label=Coalesce('content', Value('PENDING', output_field=TextField())))
-            .annotate(amount=Count('content'))
-        )
+        if action == "show":
+            # Procesar formulario de listar
+            filterBd = request.POST.get("bd")
+            if not filterBd:
+                return render(request, 'table/reportBd.html', {'BDS': BD, 'error': 'Please select a BD'})
 
-        # Contar registros en BdExcel sin comentarios para el BD seleccionado
-        pending_count = (
-            BdExcel.objects
-            .filter(excel_metadata_id=filterBd)  # Filtramos por 'excel_metadata' específico
-            .exclude(id__in=CommentBD.objects.filter(excel_metadata=filterBd).values_list('bd_excel', flat=True))  # Excluimos los BD que ya tienen comentarios
-            .count()  # Contamos los registros sin comentarios
-        )
+            filterBd = int(filterBd)
+            nameBd = ExcelFileMetadata.objects.filter(id=filterBd).first()
 
-        # Agregar los registros pendientes como un solo grupo
-        all_comments = list(comment_with_content)
-        if pending_count > 0:
-            all_comments.append({'content_label': 'PENDING', 'amount': pending_count})
+            # Generar datos para mostrar en la tabla
+            comment_with_content = (
+                CommentBD.objects
+                .filter(excel_metadata=filterBd)
+                .exclude(content__isnull=True, content__exact='')
+                .values(content_label=Coalesce('content', Value('PENDING', output_field=TextField())))
+                .annotate(amount=Count('content'))
+            )
 
-        context = {
-            'BDS': BD,
-            'all_comments': all_comments,
-            'nameBd': nameBd
-        }
+            pending_count = (
+                BdExcel.objects
+                .filter(excel_metadata_id=filterBd)
+                .exclude(id__in=CommentBD.objects.filter(excel_metadata=filterBd).values_list('bd_excel', flat=True))
+                .count()
+            )
 
-        return render(request, 'table/reportBd.html', context)
+            all_comments = list(comment_with_content)
+            if pending_count > 0:
+                all_comments.append({'content_label': 'PENDING', 'amount': pending_count})
+
+            context = {
+                'BDS': BD,
+                'all_comments': all_comments,
+                'nameBd': nameBd,
+                'filterBd': filterBd,  # Pasamos el BD seleccionado al contexto
+            }
+
+            return render(request, 'table/reportBd.html', context)
+
+        elif action == "download":
+            # Procesar formulario de descargar
+            filterBd = request.POST.get("filterBd")  # Recibimos el BD ya seleccionado
+            content_label = request.POST.get("content_label")
+            if not filterBd or not content_label:
+                return render(request, 'table/reportBd.html', {'BDS': BD, 'error': 'Please select a category'})
+
+            # Llamar a la función de descarga
+            return downloadBdExcelByCategory(int(filterBd), content_label)
 
     return render(request, 'table/reportBd.html', {'BDS': BD})
 
+def downloadBdExcelByCategory(filterBd, content_label):
+    if content_label == "PENDING":
+        # Obtener registros sin comentarios
+        bd_excel_data = BdExcel.objects.filter(
+            excel_metadata_id=filterBd
+        ).exclude(
+            id__in=CommentBD.objects.filter(excel_metadata=filterBd).values_list('bd_excel', flat=True)
+        )
+    else:
+        # Obtener registros relacionados con la categoría
+        bd_excel_data = BdExcel.objects.filter(
+            excel_metadata_id=filterBd,
+            commentbd__content=content_label
+        ).distinct()
+
+    # Crear el archivo CSV
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = f'attachment; filename="Excel_{content_label}.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['First Name', 'Last Name', 'Phone', 'Address', 'City', 'State', 'Zip Code', 'Agent ID', 'Is Sold'])
+
+    for item in bd_excel_data:
+        writer.writerow([
+            item.first_name,
+            item.last_name or '',
+            item.phone,
+            item.address or '',
+            item.city or '',
+            item.state or '',
+            item.zipCode or '',
+            item.agent_id or '',
+            'Yes' if item.is_sold else 'No'
+        ])
+
+    return response
 
