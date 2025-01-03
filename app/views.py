@@ -499,7 +499,7 @@ def editClient(request,agent_id):
     return client
 
 @login_required(login_url='/login')
-def editClientObama(request, client_id, obamacare_id):
+def editClientObama(request, obamacare_id):
     obamacare = ObamaCare.objects.select_related('agent', 'client').filter(id=obamacare_id).first()
     dependents = Dependent.objects.select_related('obamacare').filter(obamacare=obamacare)
 
@@ -512,14 +512,14 @@ def editClientObama(request, client_id, obamacare_id):
 
     consent = Consents.objects.filter(obamacare = obamacare_id )
     income = IncomeLetter.objects.filter(obamacare = obamacare_id)
-    document = DocumentsClient.objects.filter(client = client_id)
+    document = DocumentsClient.objects.filter(client = obamacare.client)
 
     if request.method == 'POST':
         action = request.POST.get('action')
 
         if action == 'save_obamacare':
 
-            editClient(request, client_id)
+            editClient(request, obamacare.client.id)
             dependents= editDepentsObama(request, obamacare_id)
 
 
