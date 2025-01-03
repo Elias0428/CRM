@@ -33,7 +33,7 @@
 			<div class="card-body p-4">
 				<form class="row g-3 needs-validation" method="POST" >
 					<div class="col-md-4">
-						<label for="frist_name" class="form-label">Frist Name</label>
+						<label for="frist_name" class="form-label">First Name</label>
 						<input type="text" class="form-control" id="first_name" name="first_name"required>
 					</div>
 					<div class="col-md-4">
@@ -53,7 +53,7 @@
 						<input type="password" class="form-control" id="password" name="password" required>
 					</div>
 					<div class="col-md-4">
-						<label for="role" class="form-label">Roll</label>
+						<label for="role" class="form-label">Role</label>
 						<select id="inputState" class="form-select" id="role" name="role" required >								
 							{% for value, label in roles %}
 								<option value="{{ value }}" {% if user.role == value %}selected{% endif %}>{{ label }}</option>
