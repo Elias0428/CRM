@@ -905,20 +905,17 @@ def formCreateUser(request):
         last_name = request.POST.get('last_name')
         username = request.POST.get('username')
         password = request.POST.get('password')
-        email = request.POST.get('email')
         role = request.POST.get('role')
         
         try:
             # Validar si el username ya existe
             if User.objects.filter(username=username).exists():
-                
                 return render(request, 'forms/formCreateUser.html', {'msg':f'El nombre de usuario "{username}" ya está en uso.','users':users, 'type':'error'})
             
             # Crear el usuario si no existe el username
             user = User.objects.create(
                 username=username,
                 password=make_password(password),  # Encriptar la contraseña
-                email=email,
                 last_name=last_name,
                 first_name=first_name,
                 role=role
