@@ -527,7 +527,8 @@ def editClientObama(request, client_id, obamacare_id):
             obamacare_fields = [
                 'taxes', 'planName', 'carrierObama', 'profiling', 'subsidy', 'ffm', 'required_bearing',
                 'doc_income', 'doc_migration', 'statusObama', 'work', 'npm', 'date_effective_coverage',
-                'date_effective_coverage_end', 'observationObama', 'agent_usa'
+                'date_effective_coverage_end', 'observationObama', 'agent_usa_obamacare','usernameCarrier',
+                'passwordCarrier'
             ]
             
             # Limpiar los campos de ObamaCare convirtiendo los vacíos en None
@@ -593,7 +594,7 @@ def editClientObama(request, client_id, obamacare_id):
             # Actualizar ObamaCare
             ObamaCare.objects.filter(id=obamacare_id).update(
                 taxes=cleaned_obamacare_data['taxes'],
-                agent_usa=cleaned_obamacare_data['agent_usa'],
+                agent_usa=cleaned_obamacare_data['agent_usa_obamacare'],
                 plan_name=cleaned_obamacare_data['planName'],
                 carrier=cleaned_obamacare_data['carrierObama'],
                 profiling=profiling,
@@ -610,7 +611,9 @@ def editClientObama(request, client_id, obamacare_id):
                 npm=cleaned_obamacare_data['npm'],
                 date_effective_coverage=date_effective_coverage_new,
                 date_effective_coverage_end=date_effective_coverage_end_new,
-                observation=cleaned_obamacare_data['observationObama']
+                observation=cleaned_obamacare_data['observationObama'],
+                username_carrier=cleaned_obamacare_data['usernameCarrier'],
+                password_carrier=cleaned_obamacare_data['passwordCarrier']
             )
 
             return redirect('clientObamacare')
