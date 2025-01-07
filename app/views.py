@@ -25,7 +25,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AnonymousUser
-from django.db.models import Count, Q, Sum, Value, TextField
+from django.db.models import Count, Q, Sum, Value, TextField, F
 from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.encoding import force_bytes, force_str
@@ -2829,9 +2829,62 @@ def downloadBdExcelByCategory(filterBd, content_label):
 
     return response
 
+@login_required(login_url='/login')
 def averageCustomer(request):
+    data = list(ObservationCustomer.objects.filter(
+        typification__icontains="EFFECTIVE MANAGEMENT"
+    ).values('agent__username').annotate(total_llamadas=Count('id')).order_by('-total_llamadas'))
 
-    return render (request, 'chart')
+    # Si se proporcionan fechas, filtrar por el rango de fechas
+    if request.method == 'POST':
+        start_date = timezone.make_aware(
+            datetime.strptime(start_date, '%Y-%m-%d').replace(hour=0, minute=0, second=0, microsecond=0)
+        )
+        end_date = timezone.make_aware(
+            datetime.strptime(end_date, '%Y-%m-%d').replace(hour=23, minute=59, second=59, microsecond=999999)
+        )
+
+        data = data.filter(created_at__range=[start_date, end_date])
+
+    context = {
+        'data': json.dumps(data)  # Convertir los datos a JSON válido
+    }
+
+    return render(request, 'chart/averageCustomer.html', context)
+
+
+def customerTypification(request) :
+    agents = ObservationCustomer.objects.values('agent__username', 'agent__first_name', 'agent__last_name').distinct()
+    agent_data = []
+
+    for agent in agents:
+        username = agent['agent__username']
+        full_name = f"{agent['agent__first_name']} {agent['agent__last_name']}"
+        
+        typifications = ObservationCustomer.objects.filter(
+            agent__username=username
+        ).annotate(
+            individual_types=F('typification')
+        ).values('individual_types')
+        
+        type_count = {}
+        total = 0
+        for t in typifications:
+            types = [typ.strip() for typ in t['individual_types'].split(',')]
+            for typ in types:
+                type_count[typ] = type_count.get(typ, 0) + 1
+                total += 1
+
+        agent_data.append({
+            'username': username,
+            'full_name': full_name,
+            'typifications': type_count,
+            'total': total
+        })
+    
+    
+    return render(request, 'table/customerTypification.html', {'agent_data': agent_data})
+
 
 from urllib.parse import urlencode
 from django.urls import reverse

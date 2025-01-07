@@ -36,70 +36,9 @@
                 <label for="end_date">End date:</label>
                 <input type="date" name="end_date" id="end_date" class="form-control" value="{{ end_date|date:'Y-m-d'|default:'' }}">
             </div>
-            <div class="col-md-3">
-                <label for="agent">Agent:</label>
-                <select class="form-select" name="agent" id="agent" required>
-                    <option value="" disabled selected>Select Please</option>
-                    {% for agent in agents %}
-                        <option value="{{ agent.id }}">{{ agent.first_name }} {{ agent.last_name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-3">
-                <label for="typification">Typification:</label>
-                <select class="form-select" id="typification" name="typification" required>
-                    <option value="" disabled selected>Select Please</option>
-                    <option value="1095-A">1095-A</option>
-                    <option value="AUDITED">Audited</option>
-                    <option value="ACTIVE">Active</option>
-                    <option value="CANCEL">Cancel</option>
-                    <option value="PLAN CHANGE">Plan Change</option>
-                    <option value="AGENT CHANGE">Agent Change</option>
-                    <option value="T/C CHANGE">T/C Change</option>
-                    <option value="CARRIER">Carrier</option>
-                    <option value="APPOINTMENTS">Appointments</option>
-                    <option value="SATISFIED CUSTOMER">Satisfied Customer</option>
-                    <option value="CORRECTION">Correction</option>
-                    <option value="PAYMENT ERROR CORRECTION">Payment Error Correction</option>
-                    <option value="PORTAL CREATION">Portal/Member ID/Brochure Creation</option>
-                    <option value="DEMOGRAPHIC DATA">Demographic Data</option>
-                    <option value="DOCUMENTS IN SHERPA">Documents in Sherpa</option>
-                    <option value="DOCUMENTS RECEIVED">Documents Received</option>
-                    <option value="ID SHIPMENT">ID Shipment</option>
-                    <option value="DENTIST SHIPMENT">Dentist Shipment</option>
-                    <option value="OPTOMETRIST SHIPMENT">Optometrist Shipment</option>
-                    <option value="PLAN EXPLANATION">Plan Explanation</option>
-                    <option value="OUT OF SERVICE">Out of Service</option>
-                    <option value="HEALTHSAFE ID">HEALTHSAFE ID</option>
-                    <option value="ID MEMBER">ID Member</option>
-                    <option value="ID SUPERVISOR">ID Supervisor</option>
-                    <option value="CARRIER SUP CALL">Carrier Supervisor Call</option>
-                    <option value="EFFECTIVE MANAGEMENT">Effective Management</option>
-                    <option value="WELCOME MESSAGE">Welcome Message</option>
-                    <option value="INFORMATIVE MESSAGE">Informative Message</option>
-                    <option value="NO ANSWER">No Answer</option>
-                    <option value="OTHER PARTY">Other Party</option>
-                    <option value="DENTAL PAYMENT UHC">Dental Payment via UHC</option>
-                    <option value="VISION PAYMENT UHC">Vision Payment via UHC</option>
-                    <option value="CARRIER ACA PORTAL">Carrier ACA Portal</option>
-                    <option value="CARD RECEIPT">Card Receipt</option>
-                    <option value="RECOVERED">Recovered</option>
-                    <option value="REFERRALS">Referrals</option>
-                    <option value="ROLLED OVER">Rolled Over</option>
-                    <option value="PREMIUM PAYMENT">Premium Payment</option>
-                    <option value="PCP">PCP</option>
-                    <option value="REQUEST DOCUMENTS">Request Documents</option>
-                    <option value="SUPPLEMENTARY">Supplementary</option>
-                    <option value="TRANSFER">Transfer</option>
-                    <option value="UHC ID READY">UHC ID Ready</option>
-                    <option value="CALL BACK">Call Back</option>
-                    <option value="INFORMATIVE CALLS ACA SUP">Informative Calls ACA/Supplementaries</option>
-                    <option value="HANGS UP">Hangs Up</option>
-                </select>
-            </div>
             <div class="col-md-4 align-self-end mt-2">
                 <button type="submit" class="btn btn-primary">Filtrar</button>
-                <a href="{% url 'typification' %}" class="btn btn-secondary">Restablecer</a>
+                <a href="{% url 'averageCustomer' %}" class="btn btn-secondary">Restablecer</a>
             </div>
         </form>
     </div>
@@ -112,19 +51,7 @@
         </div>
     </div>
 </div>
-<div class="row">
-    {% for agent in agents %}
-    <div class="col-6">
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <div id=""></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    {% endfor %}
-</div>
+
 {% endblock %}
 {% block end_js %}
 	<!-- Bootstrap JS -->
@@ -143,90 +70,41 @@
 	<script src="{% static "assets/js/app.js" %}"></script>
 
 	<script>
-		// Recuperamos los datos de Django y los pasamos a JavaScript
-		var weeks = {{ weeks|safe }};  // Semanas
-		var counts_obamacare = {{ counts_obamacare|safe }};  // Conteos de ObamaCare
-		var counts_supp = {{ counts_supp|safe }};  // Conteos de Supp
-		var counts_total = {{ counts_total|safe }};  // Total combinado de ObamaCare y Supp
-        var nameChart = '{{ nameChart }}';
+       // Reemplazar '{{ data|safe }}' con los datos proporcionados desde Django
+       const data = {{ data|safe }}; // Asegúrate de que sea JSON válido
 
-        // Determinamos el valor máximo para el eje Y
-        var maxValue = Math.max(Math.max(...counts_obamacare), Math.max(...counts_supp), Math.max(...counts_total));
-        if (maxValue <= 20) {
-            maxValue = 20;  // Si el máximo es menor o igual a 20, lo dejamos en 20
-        } else {
-            maxValue = Math.ceil(maxValue / 10) * 10;  // Redondeamos hacia arriba al siguiente múltiplo de 10
-        }
+           // Extraer nombres de agentes y valores
+           const agentes = data.map(item => item.agent__username || "Desconocido");
+           const llamadas = data.map(item => item.total_llamadas || 0);
 
-        var options = {
-            series: [{
-                name: 'OBAMACARE',
-                data: counts_obamacare  // Usamos los datos de ObamaCare
-            }, {
-                name: 'SUPPLEMENTARY',
-                data: counts_supp  // Usamos los datos de Supp
-            }, {
-                name: 'OBAMACARE/SUPPLEMENTARY',
-                data: counts_total  // Usamos los datos del total combinado
-            }],
-            chart: {
-                type: 'bar',
-                height: 350
-            },
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                    columnWidth: '55%',
-                    borderRadius: 5,
-                    borderRadiusApplication: 'end'
-                },
-            },
-            dataLabels: {
-                enabled: false
-            },
-            stroke: {
-                show: true,
-                width: 2,
-                colors: ['transparent']
-            },
-            xaxis: {
-                categories: weeks  // Usamos las semanas como categorías en el eje X
-            },
-            yaxis: {
-                title: {
-                    text: 'Cantidad'
-                },
-                max: maxValue
-            },
-            fill: {
-                opacity: 1
-            },
-            title: {
-                text: nameChart,
-            },
-            tooltip: {
-                theme: 'dark',  // Esto asegura que el tooltip tenga un fondo oscuro
-                y: {
-                    formatter: function (val) {
-                        return val + " registros";
-                    }
-                }
-            },
-            annotations: {
-                yaxis: [{
-                y: 15,
-                borderColor: '#FF0000',
-                label: {
-                    borderColor: '#FF0000',
-                    style: {
-                    color: '#fff',
-                    background: '#FF0000'
-                    },
-                    text: 'Dead'
-                }
-                }]
-            }
-        };  
+           // Configuración de ApexCharts
+           const options = {
+               chart: {
+                   type: 'bar', // Cambia a 'column' si prefieres columnas
+                   height: 400,
+               },
+               series: [{
+                   name: 'Effective calls',
+                   data: llamadas,
+               }],
+               xaxis: {
+                   categories: agentes,
+                   title: {
+                       text: 'Agent',
+                   },
+               },
+               yaxis: {
+                   title: {
+                       text: 'Amount effective calls',
+                   },
+               },
+               title: {
+                   text: 'Total effective calls',
+                   align: 'center',
+               },
+               colors: ['#008FFB'], // Personaliza los colores
+           };
+
   
         var chart = new ApexCharts(document.querySelector("#pulsarns200"), options);
         chart.render();

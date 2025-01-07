@@ -86,6 +86,9 @@ urlpatterns = [
 
     path('viewConsent/<obamacare_id>/', views.consent, name='viewConsent'),
     path('viewIncomeLetter/<obamacare_id>/', views.incomeLetter, name='incomeLetter'),
+
+    path('averageCustomer', views.averageCustomer, name='averageCustomer'),
+    path('customerTypification', views.customerTypification, name='customerTypification')
     
 
     ##path('exportUsers/', views.exportUsers, name='exportUsers'),
