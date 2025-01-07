@@ -329,7 +329,7 @@ class TemporaryToken(models.Model):
         return timezone.now() > self.expiration
 
     def __str__(self):
-        return f"Temporary URL for {self.client.name} (Active: {self.is_active})"
+        return f"Temporary URL for {self.client.first_name} (Active: {self.is_active})"
 
     class Meta:
         db_table = 'TemporaryToken'

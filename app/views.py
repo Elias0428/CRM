@@ -2359,23 +2359,26 @@ def generar_reporte(request):
     return render(request, 'generar_reporte.html', {'form': form, 'reporte_datos': reporte_datos})
 
 def consent(request, obamacare_id):
+    obamacare = ObamaCare.objects.select_related('client').get(id=obamacare_id)
+    temporalyURL = None
     # Validar si el usuario no está logueado y verificar el token
     if isinstance(request.user, AnonymousUser):
-        result = validate_temporary_url(request)
+        result = validateTemporaryToken(request)
         is_valid_token, *note = result
         if not is_valid_token:
             return HttpResponse(note)
     elif request.user.is_authenticated:
+        temporalyURL = f"{request.build_absolute_uri('/viewConsent/')}{obamacare_id}?token={generateTemporaryToken(obamacare)}"
         print('Usuario autenticado')
     else:
         # Si el usuario no está logueado y no hay token válido
         return HttpResponse('Acceso denegado. Por favor, inicie sesión o use un enlace válido.')
     
-    obamacare = ObamaCare.objects.select_related('client').get(id=obamacare_id)
     dependents = Dependent.objects.filter(client=obamacare.client)
     supps = Supp.objects.filter(client_id=obamacare.client.id)
     consent = Consents.objects.select_related('obamacare').filter(obamacare = obamacare_id ).last()
-    
+
+
     if request.method == 'POST':
         documents = request.FILES.getlist('documents')  # Lista de archivos subidos
         
@@ -2392,13 +2395,14 @@ def consent(request, obamacare_id):
         'dependents':dependents,
         'consent':consent,
         'company':getCompanyPerAgent(obamacare.agent_usa),
+        'temporalyURL': temporalyURL,
     }
     return render(request, 'consent/consent1.html', context)
 
 def incomeLetter(request, obamacare_id):
     # Validar si el usuario no está logueado y verificar el token
     if isinstance(request.user, AnonymousUser):
-        result = validate_temporary_url(request)
+        result = validateTemporaryToken(request)
         is_valid_token, *note = result
         if not is_valid_token:
             return HttpResponse(note)
@@ -2412,17 +2416,20 @@ def incomeLetter(request, obamacare_id):
     
     context = {
         'obamacare': obamacare,
-        'signed' : signed
+        'signed' : signed,
     }
     if request.method == 'POST':
         objectClient = save_data_from_request(Client, request.POST, ['agent'],obamacare.client)
         objectObamacare = save_data_from_request(ObamaCare, request.POST, ['signature'], obamacare)
         generateIncomeLetterPDF(request, objectObamacare)
+        deactivateTemporaryToken(request)
+        return render(request, 'consent/endView.html')
 
     return render(request, 'consent/incomeLetter.html', context)
 
-
 def generateConsentPdf(request, obamacare, dependents, supps):
+    token = request.GET.get('token')
+
     current_date = datetime.now().strftime("%A, %B %d, %Y %I:%M")
     date_more_3_months = (datetime.now() + timedelta(days=90)).strftime("%A, %B %d, %Y %I:%M")
 
@@ -2465,8 +2472,11 @@ def generateConsentPdf(request, obamacare, dependents, supps):
 
     consent.pdf.save(pdf_name, ContentFile(pdf_io.read()), save=True)
 
-    temporaly_URL = generate_temporary_token(request, obamacare)
-    return redirect(incomeLetter, obamacare.id)
+    base_url = reverse('incomeLetter', args=[obamacare.id])
+    query_params = urlencode({'token': token})
+    url = f'{base_url}?{query_params}'
+
+    return redirect(url)
 
 def generateIncomeLetterPDF(request, obamacare):
     current_date = datetime.now().strftime("%A, %B %d, %Y %I:%M")
@@ -2566,7 +2576,7 @@ def getIPClient(request):
 
 @login_required(login_url='/login')
 def averageSales(request):
-    agents = User.objects.filter(is_active=True)
+    agents = User.objects.filter(is_active=True, role__in=['A', 'C'])
     nameChart = 'Select filter data'
     weeks = ["Semana 1", "Semana 2", "Semana 3", "Semana 4", "Semana 5"]
     counts_obamacare = [0, 0, 0, 0, 0]
@@ -2658,7 +2668,7 @@ def averageSales(request):
     })
 
 # View para generar solo el token
-def generate_temporary_token(request, obamacare):
+def generateTemporaryToken(obamacare):
     signer = Signer()
 
     expiration_time = timezone.now() + timedelta(minutes=90)
@@ -2682,7 +2692,7 @@ def generate_temporary_token(request, obamacare):
     return token
 
 # Vista para verificar y procesar la URL temporal
-def validate_temporary_url(request):
+def validateTemporaryToken(request):
     token = request.POST.get('token') or request.GET.get('token')
 
     if not token:
@@ -2697,21 +2707,33 @@ def validate_temporary_url(request):
         client_id = data.get('client_id')
         expiration_time = timezone.datetime.fromisoformat(data['expiration'])
         # Verificar si el token está activo y no ha expirado
-        temp_url = TemporaryToken.objects.get(token=token, client_id=client_id)
+        tempToken = TemporaryToken.objects.get(token=token, client_id=client_id)
 
-        if not temp_url.is_active:
+        if not tempToken.is_active:
             return False, 'Enlace desactivado. Link deactivated.'
 
-        if temp_url.is_expired():
+        if tempToken.is_expired():
             return False, 'Enlace ha expirado. Link expired.'
 
         # Procesar si la URL es válida
-        client = temp_url.client
+        client = tempToken.client
         
-        return True
+        return True, 'Success'
     
     except (BadSignature, ValueError, KeyError):
         return False, 'Token inválido o alterado. Invalid token.'
+
+def deactivateTemporaryToken(request):
+    token = request.POST.get('token') or request.GET.get('token')
+    print(f'Cogi el token {token}')
+    if not token:
+        return False, 'Token no proporcionado. Not found token.'
+    
+    tempToken = TemporaryToken.objects.get(token=token)
+    print(f'Encontre al token {tempToken}')
+    tempToken.is_active = False
+    tempToken.save()
+    print(f'Desactive al token mmgv')
 
 @login_required(login_url='/login')
 def reportBd(request):
@@ -2810,3 +2832,13 @@ def downloadBdExcelByCategory(filterBd, content_label):
 def averageCustomer(request):
 
     return render (request, 'chart')
+
+from urllib.parse import urlencode
+from django.urls import reverse
+
+def redirect_with_token(request, view_name, *args, **kwargs):
+    token = request.GET.get('token')
+    url = reverse(view_name, args=args, kwargs=kwargs)
+    query_params = urlencode({'token': token})
+    return redirect(f'{url}?{query_params}')
+
