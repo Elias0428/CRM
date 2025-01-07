@@ -129,7 +129,7 @@
 								</div>
 								<div class="col-12 col-lg-6">
 									<label for="subsidy" class="form-label">Subsidy</label>
-									<input type="text" class="form-control" id="subsidy" value="{{aca_plan_data.subsidy}}" name="subsidy">
+									<input type="number" class="form-control" id="subsidy" value="{{aca_plan_data.subsidy}}" name="subsidy">
 								</div>								
 								<div class="col-12 col-lg-6">
 									<label for="carrierObama" class="form-label">Carrier</label>
@@ -434,7 +434,7 @@
 							</div>						
 							<div class="col-12 mt-4">
 								<div class="d-flex align-items-center gap-3">
-									{% if client.type_sales == 'ACA'  or client.type_sales == 'ACA/SUPLEMENTARIO' %}
+									{% if client.type_sales == 'SUPLEMENTARIO' %}
 										<a class="btn btn-outline-secondary px-4" href="{% url 'formEditClient' client.id %}"><i class='bx bx-left-arrow-alt me-2'></i>Previous	</a>	
 									{% else %}
 										<button class="btn btn-outline-secondary px-4" onclick="stepper1.previous()">Previous</button>

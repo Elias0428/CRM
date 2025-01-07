@@ -52,6 +52,19 @@ class Client(models.Model):
     class Meta:
         db_table = 'clients'
 
+class ContactClient(models.Model):
+
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    agent = models.ForeignKey(User, on_delete=models.CASCADE)
+    phone = models.BooleanField(default=True) 
+    email = models.BooleanField(default=True) 
+    sms = models.BooleanField(default=True)  
+    whatsapp = models.BooleanField(default=True) 
+
+    class Meta:
+        db_table = 'ContactClient'
+
+
 class Call(models.Model):
     id_client = models.ForeignKey(Client, on_delete=models.CASCADE)
     id_agent = models.ForeignKey(User, on_delete=models.CASCADE)

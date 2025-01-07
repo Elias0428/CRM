@@ -113,3 +113,6 @@ class ControlCallForm(forms.ModelForm):
             return datetime.strptime(date_input, '%m/%d/%Y').date()
         except ValueError:
             raise forms.ValidationError('Formato de fecha inválido. Use MM/DD/YYYY.')
+
+
+    

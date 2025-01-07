@@ -118,6 +118,8 @@ def formCreateClient(request):
             client.agent = request.user
             client.is_active = 1
             client.save()
+
+            contact = ContactClient.objects.create(client=client,agent=request.user)
             
             # Responder con éxito y la URL de redirección
             return redirect('formCreatePlan', client.id)
@@ -125,6 +127,7 @@ def formCreateClient(request):
             return render(request, 'forms/formCreateClient.html', {'error_message': form.errors})
     else:
         return render(request, 'forms/formCreateClient.html')
+            
 
 @login_required(login_url='/login') 
 def formEditClient(request, client_id):
@@ -2852,7 +2855,7 @@ def averageCustomer(request):
 
     return render(request, 'chart/averageCustomer.html', context)
 
-
+@login_required(login_url='/login')
 def customerTypification(request) :
     agents = ObservationCustomer.objects.values('agent__username', 'agent__first_name', 'agent__last_name').distinct()
     agent_data = []

@@ -1,6 +1,7 @@
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 
+
 # Lista de modelos que quieres aplicar la transformación a mayúsculas
 models_to_convert = [
     'Client', 'ObamaCare', 'Dependent', 'Supp'
@@ -26,3 +27,5 @@ def apply_uppercase_conversion(sender, instance, **kwargs):
     # Aplica solo a los modelos de la lista
     if sender.__name__ in models_to_convert:
         convert_fields_to_uppercase(instance)
+
+

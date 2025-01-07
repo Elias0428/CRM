@@ -48,7 +48,7 @@
                     {% for obamacare in obamaCare %}
                     <tr>
                         <td>{{ obamacare.client.short_name }}</td>
-                        <td>{{obamacare.client.phone_number}}</td>
+                        <td>{{obamacare.agent.first_name}} {{obamacare.agent.last_name}}</td>
                         <td>{{obamacare.client.first_name}} {{obamacare.client.last_name}}</td>
                         <td>+ {{obamacare.client.phone_number}}</td>
 						<td>{{obamacare.client.created_at}}</td>
