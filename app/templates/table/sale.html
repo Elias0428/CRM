@@ -92,14 +92,14 @@
 							</tr>
 						</thead>
 						<tbody>
-							{% for agent, sales in saleACA.items %}
+							{% for agent, sales_data in agents_sales.items %}
 								<tr>
-									<td>{{ agent }}</td>
-									<td>{{ sales.status_color_1 }}</td>
-									<td>{{ sales.status_color_2 }}</td>
-									<td>{{ sales.status_color_3 }}</td>
-									<td>{{ sales.status_color_4 }}</td>
-									<td>{{ sales.total_sales }}</td>
+									<td>{{ sales_data.first_name }} {{ sales_data.last_name }} ({{ agent }})</td>
+									<td>{{ sales_data.total_sales }}</td>
+									<td>{{ sales_data.status_color_1 }}</td>
+									<td>{{ sales_data.status_color_2 }}</td>
+									<td>{{ sales_data.status_color_3 }}</td>
+									<td>{{ sales_data.status_color_4 }}</td>
 								</tr>
 							{% endfor %}
 						</tbody>
@@ -126,9 +126,9 @@
 							</tr>
 						</thead>
 						<tbody>
-							{% for agent, sales in agents_sales.items %}
+							{% for agent, sales in saleACAUsa.items %}
 								<tr>
-									<td>{{ sales_data.first_name }} {{ sales_data.last_name }} ({{ agent }})</td>
+									<td>{{ agent }}</td>
 									<td>{{ sales.status_color_1 }}</td>
 									<td>{{ sales.status_color_2 }}</td>
 									<td>{{ sales.status_color_3 }}</td>
