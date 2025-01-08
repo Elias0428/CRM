@@ -117,7 +117,7 @@
 						<label for="date_birth" class="form-label">Date Birth</label>
 						<input type="text" class="form-control" name="date_birth" id="date_birth" value="{{ supps.client.date_birth|date:'m/d/Y' }}" >
 					</div>
-					<div class="col-12 col-lg-4">
+					<div class="col-12 col-lg-5">
 						<label for="migration_status" class="form-label">Migration Status</label>
 						<select class="form-select" id="migration_status"  name="migration_status" required  >
 							<option value="" disabled selected>Please Select</option>
@@ -135,7 +135,7 @@
 							<option value="CURRENTLY IN PROCESS" {% if supps.client.migration_status  == "CURRENTLY IN PROCESS" %}selected{% endif %} >Currently In Process (this means the client received an i-797)</option>
 						</select>
 					</div>
-					<div class="col-12 col-lg-4">
+					<div class="col-12 col-lg-5">
 						<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
 						<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa"  >
 							<option {% if supps.client.agent_usa == 'GINA PAOLA LAPEIRA - NPN 19944280' %}selected{% endif %} value="GINA PAOLA LAPEIRA - NPN 19944280">GINA PAOLA LAPEIRA - NPN 19944280</option>
