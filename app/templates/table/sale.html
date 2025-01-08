@@ -28,23 +28,22 @@
 <h4>Filter Data</h4>
 <div class="card">
     <div class="card-header">
-        <form method="get" class="row">
+        <form method="POST" class="row">
             <div class="col-md-4">
-                <label for="start_date">Start date:</label>
-                <input type="date" name="start_date" id="start_date" 
-                       class="form-control" 
-                       value="{{ start_date|date:'Y-m-d'|default:'' }}">
+				<label for="start_date">Start date:</label>
+				<input type="date" name="start_date" id="start_date" 
+					   class="form-control" value="{{ start_date }}">
             </div>
             <div class="col-md-4">
-                <label for="end_date">End date:</label>
+                <label for="end_date">End date: </label>
                 <input type="date" name="end_date" id="end_date" 
-                       class="form-control"
-                       value="{{ end_date|date:'Y-m-d'|default:'' }}">
+                       class="form-control" value="{{ end_date}}">
             </div>
             <div class="col-md-4 align-self-end">
                 <button type="submit" class="btn btn-primary">Filter</button>
                 <a href="{% url 'sale' %}" class="btn btn-secondary">Reset</a>
             </div>
+			{% csrf_token %}
         </form>
     </div>
 </div>
@@ -92,14 +91,14 @@
 							</tr>
 						</thead>
 						<tbody>
-							{% for agent, sales in saleACA.items %}
+							{% for agent, data in saleACA.items %}
 								<tr>
 									<td>{{ agent }}</td>
-									<td>{{ sales.status_color_1 }}</td>
-									<td>{{ sales.status_color_2 }}</td>
-									<td>{{ sales.status_color_3 }}</td>
-									<td>{{ sales.status_color_4 }}</td>
-									<td>{{ sales.total_sales }}</td>
+									<td>{{ data.status_color_1 }}</td>
+									<td>{{ data.status_color_2 }}</td>
+									<td>{{ data.status_color_3 }}</td>
+									<td>{{ data.status_color_4 }}</td>
+									<td>{{ data.total_sales }}</td>
 								</tr>
 							{% endfor %}
 						</tbody>

@@ -42,6 +42,8 @@ from app.models import *
 
 from datetime import datetime, timedelta
 
+from django.utils.text import Truncator  # Importar herramienta para truncar textos
+
 
 
 
@@ -683,8 +685,6 @@ def editClientSupp(request, client_id,supp_id):
             date_effective_coverage = request.POST.get('date_effective_coverage')  # Formato MM/DD/YYYY
             date_effective_coverage_end = request.POST.get('date_effective_coverage_end')  # Formato MM/DD/YYYY
             effectiveDateSupp = request.POST.get('effectiveDateSupp')  # Formato MM/DD/YYYY
-            print(date_effective_coverage)
-            print(date_effective_coverage_end)
 
 
             # Si la fecha no viene vacia la convertimos y si viene vacia la colocamos null
@@ -1382,19 +1382,23 @@ def tableStatusSupp(request):
 @login_required(login_url='/login') 
 def sale(request): 
 
-    # Obtener los parámetros de fecha del request
-    start_date = request.GET.get('start_date')
-    end_date = request.GET.get('end_date')
+    start_date = None
+    end_date = None
+
+    if request.method == 'POST':
+        # Obtener los parámetros de fecha del request
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
 
     # Llamar a la función que procesa los datos de ventas y obtiene la información agrupada
-    saleACA = saleObamaAgent(start_date, end_date)
+    saleACA =  saleObamaAgent (start_date, end_date)
     saleACAUsa = saleObamaAgentUsa(start_date, end_date)
     saleSupp = saleSuppAgent(start_date, end_date)
     saleSuppUsa = saleSuppAgentUsa(start_date, end_date)
     sales_data, total_status_color_1_obama, total_status_color_3_obama, total_status_color_1_supp, total_status_color_3_supp, total_sales = salesBonusAgent(start_date, end_date)
 
-    registered, proccessing, profiling, canceled, countRegistered,countProccsing,countProfiling,countCanceled = saleClientStatusObama(start_date=None, end_date=None)
-    registeredSupp, proccessingSupp, activeSupp, canceledSupp,countRegisteredSupp,countProccsingSupp,countActiveSupp,countCanceledSupp = saleClientStatusSupp(start_date=None, end_date=None)
+    registered, proccessing, profiling, canceled, countRegistered,countProccsing,countProfiling,countCanceled = saleClientStatusObama(start_date, end_date)
+    registeredSupp, proccessingSupp, activeSupp, canceledSupp,countRegisteredSupp,countProccsingSupp,countActiveSupp,countCanceledSupp = saleClientStatusSupp(start_date, end_date)
 
     # Calcular los totales por agente antes de pasar los datos a la plantilla
     for agent, data in sales_data.items():
@@ -1426,17 +1430,17 @@ def sale(request):
         'countRegisteredSupp':countRegisteredSupp,
         'countProccsingSupp': countProccsingSupp,
         'countActiveSupp':countActiveSupp,
-        'countCanceledSupp':countCanceledSupp
-
-
+        'countCanceledSupp':countCanceledSupp,
+        'start_date' : start_date,
+        'end_date': end_date
     }
 
     return render (request, 'table/sale.html', context)
 
 def saleObamaAgent(start_date=None, end_date=None):
-    # Definir la consulta base para Supp, utilizando `select_related` para obtener el nombre del agente (User)
-    sales_query = ObamaCare.objects.select_related('agent').filter(is_active = True) \
-        .values('agent__username', 'status_color') \
+    # Definir la consulta base para Supp, utilizando `select_related` para obtener el nombre completo del agente (User)
+    sales_query = ObamaCare.objects.select_related('agent').filter(is_active=True) \
+        .values('agent__username', 'agent__first_name', 'agent__last_name', 'status_color') \
         .annotate(total_sales=Count('id')) \
         .order_by('agent', 'status_color')
 
@@ -1469,29 +1473,38 @@ def saleObamaAgent(start_date=None, end_date=None):
 
     # Procesar los resultados y organizar los totales por agente
     for entry in sales_query:
-        agent_name = entry['agent__username']  # Ahora tenemos el nombre del agente
+        agent_username = entry['agent__username']
+        first_name = entry['agent__first_name']
+        last_name = entry['agent__last_name']
+        agent_full_name = f"{first_name} {last_name} "
         status_color = entry['status_color']
         total_sales = entry['total_sales']
 
-        if agent_name not in agents_sales:
-            agents_sales[agent_name] = {'status_color_1': 0, 'status_color_2': 0, 'status_color_3': 0, 'status_color_4': 0, 'total_sales': 0}
+        if agent_full_name not in agents_sales:
+            agents_sales[agent_full_name] = {'status_color_1': 0, 'status_color_2': 0, 'status_color_3': 0, 'status_color_4': 0, 'total_sales': 0}
 
         if status_color == 1:
-            agents_sales[agent_name]['status_color_1'] = total_sales
+            agents_sales[agent_full_name]['status_color_1'] = total_sales
         elif status_color == 2:
-            agents_sales[agent_name]['status_color_2'] = total_sales
+            agents_sales[agent_full_name]['status_color_2'] = total_sales
         elif status_color == 3:
-            agents_sales[agent_name]['status_color_3'] = total_sales
+            agents_sales[agent_full_name]['status_color_3'] = total_sales
         elif status_color == 4:
-            agents_sales[agent_name]['status_color_4'] = total_sales
+            agents_sales[agent_full_name]['status_color_4'] = total_sales
 
-        agents_sales[agent_name]['total_sales'] += total_sales
+        agents_sales[agent_full_name]['total_sales'] += total_sales
+
+    # Imprimir el resultado para verificar
+    #print("Sales Data:")
+    #for agent, data in agents_sales.items():
+    #    print(f"Agent: {agent}, Data: {data}")
 
     return agents_sales
 
 def saleObamaAgentUsa(start_date=None, end_date=None):
+
     # Definir la consulta base para Supp, utilizando `values` para obtener el nombre del agente (agent_usa)
-    sales_query = ObamaCare.objects.values('agent_usa', 'status_color').filter(is_active = True) \
+    sales_query = ObamaCare.objects.values('agent_usa', 'status_color').filter(is_active=True) \
         .annotate(total_sales=Count('id')) \
         .order_by('agent_usa', 'status_color')
 
@@ -1525,29 +1538,33 @@ def saleObamaAgentUsa(start_date=None, end_date=None):
     # Procesar los resultados y organizar los totales por agente
     for entry in sales_query:
         agent_name = entry['agent_usa']  # Ahora tenemos el nombre del agente usando el campo `agent_usa`
+        
+        # Truncar el nombre del agente a un máximo de 15 caracteres
+        short_name = Truncator(agent_name).chars(8)
+
         status_color = entry['status_color']
         total_sales = entry['total_sales']
 
-        if agent_name not in agents_sales:
-            agents_sales[agent_name] = {'status_color_1': 0, 'status_color_2': 0, 'status_color_3': 0, 'status_color_4': 0, 'total_sales': 0}
+        if short_name not in agents_sales:
+            agents_sales[short_name] = {'status_color_1': 0, 'status_color_2': 0, 'status_color_3': 0, 'status_color_4': 0, 'total_sales': 0}
 
         if status_color == 1:
-            agents_sales[agent_name]['status_color_1'] = total_sales
+            agents_sales[short_name]['status_color_1'] = total_sales
         elif status_color == 2:
-            agents_sales[agent_name]['status_color_2'] = total_sales
+            agents_sales[short_name]['status_color_2'] = total_sales
         elif status_color == 3:
-            agents_sales[agent_name]['status_color_3'] = total_sales
+            agents_sales[short_name]['status_color_3'] = total_sales
         elif status_color == 4:
-            agents_sales[agent_name]['status_color_4'] = total_sales
+            agents_sales[short_name]['status_color_4'] = total_sales
 
-        agents_sales[agent_name]['total_sales'] += total_sales
+        agents_sales[short_name]['total_sales'] += total_sales
 
     return agents_sales
 
 def saleSuppAgent(start_date=None, end_date=None):
-    # Definir la consulta base para Supp, utilizando `select_related` para obtener el nombre del agente (User)
-    sales_query = Supp.objects.select_related('agent').filter(is_active = True) \
-        .values('agent__username', 'status_color') \
+    # Definir la consulta base para Supp, utilizando `select_related` para obtener el nombre completo del agente (User)
+    sales_query = Supp.objects.select_related('agent').filter(is_active=True) \
+        .values('agent__username', 'agent__first_name', 'agent__last_name', 'status_color') \
         .annotate(total_sales=Count('id')) \
         .order_by('agent', 'status_color')
 
@@ -1580,23 +1597,31 @@ def saleSuppAgent(start_date=None, end_date=None):
 
     # Procesar los resultados y organizar los totales por agente
     for entry in sales_query:
-        agent_name = entry['agent__username']  # Ahora tenemos el nombre del agente
+        agent_username = entry['agent__username']
+        first_name = entry['agent__first_name']
+        last_name = entry['agent__last_name']
+        agent_full_name = f"{first_name} {last_name}"
         status_color = entry['status_color']
         total_sales = entry['total_sales']
 
-        if agent_name not in agents_sales:
-            agents_sales[agent_name] = {'status_color_1': 0, 'status_color_2': 0, 'status_color_3': 0, 'status_color_4': 0, 'total_sales': 0}
+        if agent_full_name not in agents_sales:
+            agents_sales[agent_full_name] = {'status_color_1': 0, 'status_color_2': 0, 'status_color_3': 0, 'status_color_4': 0, 'total_sales': 0}
 
         if status_color == 1:
-            agents_sales[agent_name]['status_color_1'] = total_sales
+            agents_sales[agent_full_name]['status_color_1'] = total_sales
         elif status_color == 2:
-            agents_sales[agent_name]['status_color_2'] = total_sales
+            agents_sales[agent_full_name]['status_color_2'] = total_sales
         elif status_color == 3:
-            agents_sales[agent_name]['status_color_3'] = total_sales
+            agents_sales[agent_full_name]['status_color_3'] = total_sales
         elif status_color == 4:
-            agents_sales[agent_name]['status_color_4'] = total_sales
+            agents_sales[agent_full_name]['status_color_4'] = total_sales
 
-        agents_sales[agent_name]['total_sales'] += total_sales
+        agents_sales[agent_full_name]['total_sales'] += total_sales
+
+    # Imprimir el resultado para verificar los datos
+    #print("Sales Data for Supp:")
+    #for agent, data in agents_sales.items():
+    #    print(f"Agent: {agent}, Data: {data}")
 
     return agents_sales
 
@@ -1639,31 +1664,34 @@ def saleSuppAgentUsa(start_date=None, end_date=None):
         status_color = entry['status_color']
         total_sales = entry['total_sales']
 
-        if agent_name not in agents_sales:
-            agents_sales[agent_name] = {'status_color_1': 0, 'status_color_2': 0, 'status_color_3': 0, 'status_color_4': 0, 'total_sales': 0}
+        # Truncar el nombre del agente a un máximo de 15 caracteres
+        short_name = Truncator(agent_name).chars(8)
+
+        if short_name not in agents_sales:
+            agents_sales[short_name] = {'status_color_1': 0, 'status_color_2': 0, 'status_color_3': 0, 'status_color_4': 0, 'total_sales': 0}
 
         if status_color == 1:
-            agents_sales[agent_name]['status_color_1'] = total_sales
+            agents_sales[short_name]['status_color_1'] = total_sales
         elif status_color == 2:
-            agents_sales[agent_name]['status_color_2'] = total_sales
+            agents_sales[short_name]['status_color_2'] = total_sales
         elif status_color == 3:
-            agents_sales[agent_name]['status_color_3'] = total_sales
+            agents_sales[short_name]['status_color_3'] = total_sales
         elif status_color == 4:
-            agents_sales[agent_name]['status_color_4'] = total_sales
+            agents_sales[short_name]['status_color_4'] = total_sales
 
-        agents_sales[agent_name]['total_sales'] += total_sales
+        agents_sales[short_name]['total_sales'] += total_sales
 
     return agents_sales
 
 def salesBonusAgent(start_date=None, end_date=None):
     # Consulta para Supp
-    sales_query_supp = Supp.objects.select_related('agent').filter(is_active = True) \
-        .values('agent__username', 'status_color') \
+    sales_query_supp = Supp.objects.select_related('agent').filter(is_active=True) \
+        .values('agent__username', 'agent__first_name', 'agent__last_name', 'status_color') \
         .annotate(total_sales=Count('id'))
 
     # Consulta para ObamaCare
     sales_query_obamacare = ObamaCare.objects.select_related('agent') \
-        .values('agent__username', 'status_color') \
+        .values('agent__username', 'agent__first_name', 'agent__last_name', 'status_color') \
         .annotate(total_sales=Count('id'))
 
     # Si no se proporcionan fechas, filtrar por el mes actual
@@ -1696,12 +1724,15 @@ def salesBonusAgent(start_date=None, end_date=None):
 
     # Procesar los resultados de Supp
     for entry in sales_query_supp:
-        agent_name = entry['agent__username']
+        first_name = entry['agent__first_name']
+        last_name = entry['agent__last_name']
+        username = entry['agent__username']
+        agent_full_name = f"{first_name} {last_name} ({username})"
         status_color = entry['status_color']
         total_sales = entry['total_sales']
 
-        if agent_name not in sales_data:
-            sales_data[agent_name] = {
+        if agent_full_name not in sales_data:
+            sales_data[agent_full_name] = {
                 'status_color_1_obama': 0,
                 'status_color_3_obama': 0,
                 'status_color_1_supp': 0,
@@ -1711,18 +1742,21 @@ def salesBonusAgent(start_date=None, end_date=None):
 
         # Sumar las ventas solo por status_color_1 y status_color_3 en Supp
         if status_color == 1:
-            sales_data[agent_name]['status_color_1_supp'] += total_sales
+            sales_data[agent_full_name]['status_color_1_supp'] += total_sales
         elif status_color == 3:
-            sales_data[agent_name]['status_color_3_supp'] += total_sales
+            sales_data[agent_full_name]['status_color_3_supp'] += total_sales
 
     # Procesar los resultados de ObamaCare
     for entry in sales_query_obamacare:
-        agent_name = entry['agent__username']
+        first_name = entry['agent__first_name']
+        last_name = entry['agent__last_name']
+        username = entry['agent__username']
+        agent_full_name = f"{first_name} {last_name} ({username})"
         status_color = entry['status_color']
         total_sales = entry['total_sales']
 
-        if agent_name not in sales_data:
-            sales_data[agent_name] = {
+        if agent_full_name not in sales_data:
+            sales_data[agent_full_name] = {
                 'status_color_1_obama': 0,
                 'status_color_3_obama': 0,
                 'status_color_1_supp': 0,
@@ -1732,9 +1766,9 @@ def salesBonusAgent(start_date=None, end_date=None):
 
         # Sumar las ventas solo por status_color_1 y status_color_3 en ObamaCare
         if status_color == 1:
-            sales_data[agent_name]['status_color_1_obama'] += total_sales
+            sales_data[agent_full_name]['status_color_1_obama'] += total_sales
         elif status_color == 3:
-            sales_data[agent_name]['status_color_3_obama'] += total_sales
+            sales_data[agent_full_name]['status_color_3_obama'] += total_sales
 
     # Sumar los totales generales solo para status_color_1 y status_color_3
     total_status_color_1_obama = sum([data['status_color_1_obama'] for data in sales_data.values()])
@@ -1745,7 +1779,12 @@ def salesBonusAgent(start_date=None, end_date=None):
     # Total general de las sumas de status_color_1 y status_color_3
     total_sales = total_status_color_1_obama + total_status_color_3_obama + total_status_color_1_supp + total_status_color_3_supp
 
-    return sales_data, total_status_color_1_obama, total_status_color_3_obama, total_status_color_1_supp, total_status_color_3_supp, total_sales                                                                            
+    # Imprimir para verificar los datos
+    #print("Sales Data for Bonus:")
+    #for agent, data in sales_data.items():
+    #    print(f"Agent: {agent}, Data: {data}")
+
+    return sales_data, total_status_color_1_obama, total_status_color_3_obama, total_status_color_1_supp, total_status_color_3_supp, total_sales
 
 def saleClientStatusObama(start_date=None, end_date=None):
 
@@ -1776,10 +1815,6 @@ def saleClientStatusObama(start_date=None, end_date=None):
         sales_query_profiling = sales_query_profiling.filter(created_at__range=[first_day_of_month, last_day_of_month])
         sales_query_canceled = sales_query_canceled.filter(created_at__range=[first_day_of_month, last_day_of_month])
 
-        countRegistered = sales_query_registered.count()
-        countProccsing = sales_query_proccessing.count()
-        countProfiling = sales_query_profiling.count()
-        countCanceled = sales_query_canceled.count()
 
     # Si se proporcionan fechas, filtrar por el rango de fechas
     elif start_date and end_date:
@@ -1795,10 +1830,10 @@ def saleClientStatusObama(start_date=None, end_date=None):
         sales_query_profiling = sales_query_profiling.filter(created_at__range=[start_date, end_date])
         sales_query_canceled = sales_query_canceled.filter(created_at__range=[start_date, end_date])
 
-        countRegistered = sales_query_registered.count()
-        countProccsing = sales_query_proccessing.count()
-        countProfiling = sales_query_profiling.count()
-        countCanceled = sales_query_canceled.count()
+    countRegistered = sales_query_registered.count()
+    countProccsing = sales_query_proccessing.count()
+    countProfiling = sales_query_profiling.count()
+    countCanceled = sales_query_canceled.count()
     
     return sales_query_registered,sales_query_proccessing,sales_query_profiling,sales_query_canceled,countRegistered,countProccsing,countProfiling,countCanceled
 
