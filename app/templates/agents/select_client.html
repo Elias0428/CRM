@@ -83,7 +83,7 @@
                                         <form method="POST" action="{% url 'update_type_sales' client.id %}">
                                             {% csrf_token %}
                                             <input type="hidden" name="type_sales" value="ACA/SUPLEMENTARIO">
-                                            <button type="submit" class="dropdown-item">ADD ACA OR SUPP</button>
+                                            <button type="submit" class="dropdown-item">ADD ACA</button>
                                         </form>
                                     </li>
                                 {% elif client.type_sales == "ACA/SUPLEMENTARIO" %}
