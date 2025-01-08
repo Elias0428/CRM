@@ -1325,7 +1325,7 @@ def tableStatusObama(request):
         # Realizamos la consulta y agrupamos por el campo 'profiling'
         result = ObamaCare.objects.filter(created_at__gte=start_of_month, created_at__lt=end_of_month).values('profiling').annotate(count=Count('profiling')).order_by('profiling')
     
-    elif request.user.role == 'A':
+    elif request.user.role in ['A','SUPP']:
         
         # Realizamos la consulta y agrupamos por el campo 'profiling'
         result = ObamaCare.objects.filter(created_at__gte=start_of_month, created_at__lt=end_of_month).values('profiling').filter(agent=request.user.id).annotate(count=Count('profiling')).order_by('profiling')
