@@ -682,8 +682,27 @@ def editClientSupp(request, client_id,supp_id):
             #formateo de fecha para guardalar como se debe en BD ya que la obtengo USA
             date_effective_coverage = request.POST.get('date_effective_coverage')  # Formato MM/DD/YYYY
             date_effective_coverage_end = request.POST.get('date_effective_coverage_end')  # Formato MM/DD/YYYY
-            date_effective_coverage_new = datetime.strptime(date_effective_coverage, '%m/%d/%Y').date()
-            date_effective_coverage_end_new = datetime.strptime(date_effective_coverage_end, '%m/%d/%Y').date()
+            effectiveDateSupp = request.POST.get('effectiveDateSupp')  # Formato MM/DD/YYYY
+            print(date_effective_coverage)
+            print(date_effective_coverage_end)
+
+
+            # Si la fecha no viene vacia la convertimos y si viene vacia la colocamos null
+            if date_effective_coverage not in [None, '']:
+                date_effective_coverage_new = datetime.strptime(date_effective_coverage, '%m/%d/%Y').date()
+            else:
+                date_effective_coverage_new = None
+
+            if date_effective_coverage_end not in [None, '']:
+                date_effective_coverage_end_new = datetime.strptime(date_effective_coverage_end, '%m/%d/%Y').date()
+            else:
+                date_effective_coverage_end_new = None
+
+            if effectiveDateSupp not in [None, '']:
+                effectiveDateSupp_new = datetime.strptime(effectiveDateSupp, '%m/%d/%Y').date()
+            else:
+                effectiveDateSupp_new = None
+            
                 
             # Campos de Supp
             supp_fields = [
@@ -711,7 +730,7 @@ def editClientSupp(request, client_id,supp_id):
 
             # Actualizar Supp
             Supp.objects.filter(id=supp_id).update(
-                effective_date=cleaned_supp_data['effectiveDateSupp'],
+                effective_date=effectiveDateSupp_new,
                 agent_usa=cleaned_supp_data['agent_usa'],
                 company=cleaned_supp_data['carrierSuple'],
                 premium=cleaned_supp_data['premiumSupp'],

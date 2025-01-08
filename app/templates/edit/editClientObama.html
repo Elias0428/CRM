@@ -34,16 +34,16 @@
                 <form class="row g-3 needs-validation" method="POST" Action="{% url 'editClientObama' obamacare.id  %}">
                     <h4>Client</h4>
 						
-						<div class="col-12 col-lg-5">
+						<div class="col-12 col-lg-4">
 							<label for="first_name" class="form-label">First Name</label>
 							<input type="text" class="form-control" name="first_name" id="first_name" placeholder="First Name" value="{{obamacare.client.first_name}}">
 							<input class="form-control" hidden name="id_client" id="id_client"  value="{{obamacare.client.id}}">
 						</div>
-						<div class="col-12 col-lg-5">
+						<div class="col-12 col-lg-4">
 							<label for="last_name" class="form-label">Last Name</label>
 							<input type="text" class="form-control" name="last_name" id="last_name" placeholder="Last Name" value="{{obamacare.client.last_name}}">
 						</div>
-						<div class="col-12 col-lg-2">
+						<div class="col-12 col-lg-4">
 							<label for="phone_number" class="form-label">Phone Number</label>
 							<input type="number" class="form-control" name ="phone_number" id="phone_number" placeholder="Phone Number" value="{{obamacare.client.phone_number}}">
 						</div>
@@ -59,7 +59,7 @@
 							<label for="zipcode" class="form-label">zipCode</label>
 							<input type="number" class="form-control" name ="zipcode" id="zipcode" placeholder="ZIP-CODE" value="{{obamacare.client.zipcode}}">
 						</div>
-						<div class="col-12 col-lg-3">
+						<div class="col-12 col-lg-2">
 							<label for="city" class="form-label">City</label>
 							<input type="text" class="form-control" name ="city" id="city" value="{{obamacare.client.city}}">
 						</div>
@@ -109,7 +109,7 @@
 								<option value="F" {% if obamacare.client.sex == "F" %}selected{% endif %} >FEMALE</option>
 							</select>
 						</div>
-						<div class="col-12 col-lg-1">
+						<div class="col-12 col-lg-2">
 							<label for="old" class="form-label">Old</label>
 							<input type="number" nim="1" class="form-control" name ="old" id="old" placeholder="Old" value="{{obamacare.client.old}}">
 						</div>
@@ -160,7 +160,10 @@
 							</select>
 						</div>
 						<hr>
-                    <h4>Dependents</h4>
+						{% if dependents %}
+							<h4>Dependents</h4>
+						{% endif %}
+                    
                     {% for dependent in dependents %}
 						<div class="col-12 col-lg-6">
 							<label class="form-label">Name of Dependent #{{ forloop.counter }}</label>
@@ -217,9 +220,8 @@
 								<option value="CURRENTLY IN PROCESS" {% if  dependent.migration_status == "CURRENTLY IN PROCESS" %}selected{% endif %} >Currently In Process (this means the client received an i-797)</option>
 							</select>
 						</div>
-					{% endfor %}
-
 					<hr>
+					{% endfor %}
 
                     <H4>Plan</H4>
 						<div class="col-12 col-lg-6">
