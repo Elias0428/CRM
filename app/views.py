@@ -371,7 +371,7 @@ def clientObamacare(request):
         obamaCare = ObamaCare.objects.select_related('agent','client').filter(is_active = True)
     elif request.user.role == 'Admin':
         obamaCare = ObamaCare.objects.select_related('agent', 'client')
-    elif request.user.role == 'A':
+    elif request.user.role in ['A', 'SUPP']:
         obamaCare = ObamaCare.objects.select_related('agent','client').filter(agent = request.user.id, is_active = True ) 
 
     for item in obamaCare:
@@ -385,7 +385,7 @@ def clientObamacare(request):
 @login_required(login_url='/login')
 def clientSupp(request):
 
-    roleAuditar = ['S', 'C',  'AU']
+    roleAuditar = ['S', 'SUPP',  'AU']
     
     if request.user.role in roleAuditar:
         supp = Supp.objects.select_related('agent','client').filter(is_active = True )
