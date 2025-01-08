@@ -84,7 +84,6 @@ class Typification(models.Model):
         db_table = 'typifications'
 
 class ObamaCare(models.Model):
-    profiling_agent = models.ForeignKey(User, on_delete=models.CASCADE, related_name='profiling_agent_aca' ,null=True)
     agent = models.ForeignKey(User, on_delete=models.CASCADE,related_name='agent_sale_aca')
     client = models.OneToOneField(Client, on_delete=models.CASCADE,null=True)
     agent_usa = models.CharField(max_length=100)
