@@ -1416,8 +1416,8 @@ def sale(request):
 
 def saleObamaAgent(start_date=None, end_date=None):
     # Definir la consulta base para Supp, utilizando `select_related` para obtener el nombre del agente (User)
-    sales_query = ObamaCare.objects.select_related('agent').filter(is_active = True) \
-        .values('agent__username', 'status_color') \
+    sales_query = ObamaCare.objects.select_related('agent').filter(is_active=True) \
+        .values('agent__username', 'agent__first_name', 'agent__last_name', 'status_color') \
         .annotate(total_sales=Count('id')) \
         .order_by('agent', 'status_color')
 
@@ -1451,11 +1451,21 @@ def saleObamaAgent(start_date=None, end_date=None):
     # Procesar los resultados y organizar los totales por agente
     for entry in sales_query:
         agent_name = entry['agent__username']  # Ahora tenemos el nombre del agente
+        agent_first_name = entry['agent__first_name']  # Primer nombre del agente
+        agent_last_name = entry['agent__last_name']  # Apellido del agente
         status_color = entry['status_color']
         total_sales = entry['total_sales']
 
         if agent_name not in agents_sales:
-            agents_sales[agent_name] = {'status_color_1': 0, 'status_color_2': 0, 'status_color_3': 0, 'status_color_4': 0, 'total_sales': 0}
+            agents_sales[agent_name] = {
+                'first_name': agent_first_name,
+                'last_name': agent_last_name,
+                'status_color_1': 0,
+                'status_color_2': 0,
+                'status_color_3': 0,
+                'status_color_4': 0,
+                'total_sales': 0
+            }
 
         if status_color == 1:
             agents_sales[agent_name]['status_color_1'] = total_sales
@@ -1469,6 +1479,7 @@ def saleObamaAgent(start_date=None, end_date=None):
         agents_sales[agent_name]['total_sales'] += total_sales
 
     return agents_sales
+
 
 def saleObamaAgentUsa(start_date=None, end_date=None):
     # Definir la consulta base para Supp, utilizando `values` para obtener el nombre del agente (agent_usa)
