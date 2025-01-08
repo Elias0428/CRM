@@ -391,7 +391,7 @@ def clientSupp(request):
         supp = Supp.objects.select_related('agent','client').filter(is_active = True )
     elif request.user.role == 'Admin':
         supp = Supp.objects.select_related('agent','client')
-    elif request.user.role == 'A':
+    elif request.user.role in ['A', 'C']:
         supp = Supp.objects.select_related('agent','client').filter(agent = request.user.id, is_active = True)
 
     for item in supp:

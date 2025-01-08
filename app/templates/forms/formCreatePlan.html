@@ -258,13 +258,13 @@
 																<label for="policyTypeSupp" class="form-label">Policy Type</label>
 																<select class="form-select" id="policyTypeSupp"  name="policyTypeSupp" aria-label="Default select example">
 																	<option disabled selected value=""></option>
-																	<option value="ACCIDENTE" {% if supp_plan.policy_type == 'ACCIDENTE' %}selected{% endif %} >ACCIDENTE</option>
-																	<option value="HOSPITALIZACION" {% if supp_plan.policy_type == 'HOSPITALIZACION' %}selected{% endif %} >HOSPITALIZACION</option>
+																	<option value="ACCIDENT" {% if supp_plan.policy_type == 'ACCIDENT' %}selected{% endif %} >ACCIDENT</option>
+																	<option value="HOSPITALIZATION" {% if supp_plan.policy_type == 'HOSPITALIZATION' %}selected{% endif %} >HOSPITALIZATION</option>
 																	<option value="DENTAL" {% if supp_plan.policy_type == 'DENTAL' %}selected{% endif %} >DENTAL</option>
-																	<option value="ENFERMEDADES CRITICAS" {% if supp_plan.policy_type == 'ENFERMEDADES CRITICAS' %}selected{% endif %} >ENFERMEDADES CRITICAS</option>
+																	<option value="CRITICAL ILLNESSES" {% if supp_plan.policy_type == 'CRITICAL ILLNESSES' %}selected{% endif %} >CRITICAL ILLNESSES</option>
 																	<option value="VISUAL" {% if supp_plan.policy_type == 'VISUAL' %}selected{% endif %} >VISUAL</option>
-																	<option value="DENTAL Y VISUAL" {% if supp_plan.policy_type == 'DENTAL Y VISUAL' %}selected{% endif %} >DENTAL Y VISUAL</option>
-																	<option value="PLAN DE DESCUENTO" {% if supp_plan.policy_type == 'PLAN DE DESCUENTO' %}selected{% endif %} >PLAN DE DESCUENTO</option>
+																	<option value="DENTAL AND VISUAL" {% if supp_plan.policy_type == 'DENTAL AND VISUAL' %}selected{% endif %} >DENTAL AND VISUAL</option>
+																	<option value="DISCOUNT PLAN" {% if supp_plan.policy_type == 'DISCOUNT PLAN' %}selected{% endif %} >DISCOUNT PLAN</option>
 																	<option value="SHORT TERM MEDICAL" {% if supp_plan.policy_type == 'SHORT TERM MEDICAL' %}selected{% endif %} >SHORT TERM MEDICAL</option>
 																	<option value="CANCER" {% if supp_plan.policy_type == 'CANCER' %}selected{% endif %} >CANCER</option>
 																</select>
@@ -370,13 +370,13 @@
 																<label for="policyTypeSupp" class="form-label">Policy Type</label>
 																<select class="form-select" id="policyTypeSupp" name="policyTypeSupp" aria-label="Default select example">
 																	<option disabled selected value=""></option>
-																	<option value="ACCIDENTE">ACCIDENTE</option>
-																	<option value="HOSPITALIZACION">HOSPITALIZACION</option>
+																	<option value="ACCIDENT">ACCIDENT</option>
+																	<option value="HOSPITALIZATION">HOSPITALIZATION</option>
 																	<option value="DENTAL">DENTAL</option>
-																	<option value="ENFERMEDADES CRITICAS">ENFERMEDADES CRITICAS</option>
+																	<option value="CRITICAL ILLNESSES">CRITICAL ILLNESSES</option>
 																	<option value="VISUAL">VISUAL</option>
-																	<option value="DENTAL Y VISUAL">DENTAL Y VISUAL</option>
-																	<option value="PLAN DE DESCUENTO">PLAN DE DESCUENTO</option>
+																	<option value="DENTAL AND VISUAL">DENTAL AND VISUAL</option>
+																	<option value="DISCOUNT PLAN">DISCOUNT PLAN</option>
 																	<option value="SHORT TERM MEDICAL">SHORT TERM MEDICAL</option>
 																	<option value="CANCER">CANCER</option>
 																	</select>
@@ -563,17 +563,17 @@
 														<select class="form-select" name="migrationStatusDependent">															
 															<option value="" disabled selected>Please Select</option>
 															<option value="EMPLOYMENT_AUTHORIZATION">Employment Authorization</option>
-															<option value="NOTICE_OF_ACTION">Notice of Action (i-797)</option>
+															<option value="NOTICE OF ACTION">Notice of Action (i-797)</option>
 															<option value="REFUGEE">Refugee</option>
 															<option value="ASYLUM">Asylum</option>
 															<option value="TPS">Temporary Protection Status (TPS)</option>
-															<option value="DOMESTIC_VIOLENCE">Domestic Violence</option>
-															<option value="PERMANENT_RESIDENT">Permanent Resident (Green Card)</option>
+															<option value="DOMESTIC VIOLENCE">Domestic Violence</option>
+															<option value="PERMANENT RESIDENT">Permanent Resident (Green Card)</option>
 															<option value="CONDITIONAL_RESIDENT">Conditional Resident</option>
 															<option value="PAROLE">Parole</option>
-															<option value="US_CITIZEN">US Citizen (Driver's License)</option>
-															<option value="STUDENT_VISA">Student Visa (I-20)</option>
-															<option value="CURRENTLY_IN_PROCESS">Currently In Process (this means the client received an i-797)</option>	  
+															<option value="US CITIZEN">US Citizen (Driver's License)</option>
+															<option value="STUDENT VISA">Student Visa (I-20)</option>
+															<option value="CURRENTLY IN PROCESS">Currently In Process (this means the client received an i-797)</option>	  
 														</select>
 													</div>
 													<div class="col-12 col-lg-6">
