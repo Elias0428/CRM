@@ -117,7 +117,7 @@
 						<label for="date_birth" class="form-label">Date Birth</label>
 						<input type="text" class="form-control" name="date_birth" id="date_birth" value="{{ supps.client.date_birth|date:'m/d/Y' }}" >
 					</div>
-					<div class="col-12 col-lg-6">
+					<div class="col-12 col-lg-4">
 						<label for="migration_status" class="form-label">Migration Status</label>
 						<select class="form-select" id="migration_status"  name="migration_status" required  >
 							<option value="" disabled selected>Please Select</option>
@@ -135,7 +135,7 @@
 							<option value="CURRENTLY IN PROCESS" {% if supps.client.migration_status  == "CURRENTLY IN PROCESS" %}selected{% endif %} >Currently In Process (this means the client received an i-797)</option>
 						</select>
 					</div>
-					<div class="col-12 col-lg-6">
+					<div class="col-12 col-lg-4">
 						<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
 						<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa"  >
 							<option {% if supps.client.agent_usa == 'GINA PAOLA LAPEIRA - NPN 19944280' %}selected{% endif %} value="GINA PAOLA LAPEIRA - NPN 19944280">GINA PAOLA LAPEIRA - NPN 19944280</option>
@@ -148,6 +148,14 @@
 							<option {% if supps.client.agent_usa == 'BORJA G CANTON HERRERA - NPN 20673324' %}selected{% endif %} value="BORJA G CANTON HERRERA - NPN 20673324">BORJA G CANTON HERRERA - NPN 20673324</option>
 							<option {% if supps.client.agent_usa == 'RODRIGO G CANTON - NPN 20670005' %}selected{% endif %} value="RODRIGO G CANTON - NPN 20670005">RODRIGO G CANTON - NPN 20670005</option>
 							<option {% if supps.client.agent_usa == 'EVELYN BEATRIZ HERRERA - NPN 20671818' %}selected{% endif %} value="EVELYN BEATRIZ HERRERA - NPN 20671818">EVELYN BEATRIZ HERRERA - NPN 20671818</option>
+						</select>
+					</div>
+					<div class="col-12 col-lg-2">
+						<label for="apply" class="form-label">Apply</label>
+						<select class="form-select" id="apply"  name="apply" >
+							<option value="" disabled selected>Please Select</option>
+							<option value = True {% if supps.client.apply == True %}selected{% endif %} >SI</option>
+							<option value = False {% if supps.client.apply == False %}selected{% endif %} >NO</option>
 						</select>
 					</div>
                     <hr>
