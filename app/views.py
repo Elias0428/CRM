@@ -1343,12 +1343,12 @@ def tableStatusObama(request):
     if request.user.role in roleAuditar:
 
         # Realizamos la consulta y agrupamos por el campo 'profiling'
-        result = ObamaCare.objects.filter(created_at__gte=start_of_month, created_at__lt=end_of_month).values('profiling').annotate(count=Count('profiling')).order_by('profiling')
+        result = ObamaCare.objects.filter(created_at__gte=start_of_month, created_at__lt=end_of_month).values('profiling', 'agent__first_name', 'agent__last_name').annotate(count=Count('profiling')).order_by('profiling')
     
     elif request.user.role in ['A','SUPP']:
         
         # Realizamos la consulta y agrupamos por el campo 'profiling'
-        result = ObamaCare.objects.filter(created_at__gte=start_of_month, created_at__lt=end_of_month).values('profiling').filter(agent=request.user.id).annotate(count=Count('profiling')).order_by('profiling')
+        result = ObamaCare.objects.filter(created_at__gte=start_of_month, created_at__lt=end_of_month).values('profiling', 'agent__first_name', 'agent__last_name').filter(agent=request.user.id).annotate(count=Count('profiling')).order_by('profiling')
     
 
     return result

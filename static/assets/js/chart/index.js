@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 fontSize: '14px'
             }
         },
-        colors: ["#212529", '#0d6efd', '#ffc107', '#28a745'],
+        colors: ["#0d6efd", '#f01118', '#28a745', '#ffc107'],
         xaxis: {
             categories: usernames,  // Nombres de usuario como categorías
         },
