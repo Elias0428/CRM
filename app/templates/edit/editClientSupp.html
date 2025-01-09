@@ -302,7 +302,7 @@
 									<option value="0" {% if supps.deducible == 0 %}selected{% endif %} >0</option>
 							</select>
 						</div>
-						<div class="col-12 col-lg-8">
+						<div class="col-12 col-lg-5">
 							<label for="statusSupp" class="form-label">Status</label>
 							<select class="form-select" id="statusSupp"  name="statusSupp"  aria-label="Default select example">
 								<option value="" disabled selected>Please Select</option>
@@ -310,6 +310,10 @@
 										<option value="{{list_drow.profiling_supp}}" {% if supps.status == list_drow.profiling_supp %}selected{% endif %} >{{list_drow.profiling_supp}}</option>                      
 									{% endfor %}						
 							</select>
+						</div>
+						<div class="col-12 col-lg-5">
+							<label for="policyNumber" class="form-label">Policy Number</label>
+							<input type="number" name="policyNumber" id="policyNumber" value="{{supps.policyNumber}}">
 						</div>
 						<div class="col-12 col-lg-4">
 							<label for="typePaymeSupp" class="form-label">Type Paymet</label>

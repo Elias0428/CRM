@@ -299,7 +299,7 @@
 							<input type="text" class="form-control" name="date_bearing" id="date_bearing" value="{{obamacare.date_bearing|date:'m/d/Y'}}" >
 						</div>
 						<div class="col-12 col-lg-2">
-							<label for="doc_income" class="form-label">Doc Icon</label>
+							<label for="doc_income" class="form-label">Income Doc</label>
 							<select class="form-select" id="doc_income"  name="doc_income" required  >
 								<option value ="" disabled selected>Please Select</option>
 								<option value = True {% if obamacare.doc_income == True %}selected{% endif %} >YES</option>
@@ -307,16 +307,12 @@
 							</select>
 						</div>
 						<div class="col-12 col-lg-2">
-							<label for="doc_migration" class="form-label">Doc Migration</label>
+							<label for="doc_migration" class="form-label">Inmigration Doc</label>
 							<select class="form-select" id="doc_migration"  name="doc_migration" required  >
 								<option value="" disabled selected>Please Select</option>
 								<option value = True {% if obamacare.doc_migration == True %}selected{% endif %} >YES</option>
 								<option value = False {% if obamacare.doc_migration == False %}selected{% endif %} >NO</option>
 							</select>
-						</div>
-						<div class="col-12 col-lg-2">
-							<label for="npm" class="form-label">NPM</label>
-							<input type="number" class="form-control" id="npm" name="npm" value="{{ obamacare.npm }}" >
 						</div>
 						
 						<div class="col-12 col-lg-8">
@@ -324,7 +320,7 @@
 							<input type="text" class="form-control" id="planName" name="planName" value="{{ obamacare.plan_name }}"  >
 						</div>
 						<div class="col-12 col-lg-4">
-							<label for="profiling" class="form-label">Profiling</label>
+							<label for="profiling" class="form-label">Profiling by</label>
 							<select class="form-select" id="profiling"  name="profiling" {% for user in users %}{% if obamacare.profiling == user.username %}disabled{% endif %}{% endfor %}> 
 								<option value="" disabled selected>Please Select</option>
 								<option value="NO" {% if obamacare.profiling == "NO" %}selected{% endif %}>NO</option>                           
@@ -337,7 +333,7 @@
 							</select>
 						</div>
 						<div class="col-12 col-lg-2">
-							<label for="statusObama" class="form-label">Status</label>
+							<label for="statusObama" class="form-label">Status Blue</label>
 							<select class="form-select" id="statusObama"  name="statusObama" >
 								<option value="" disabled selected>Please Select</option>
 								<option value="ACTIVE" {% if obamacare.status == "ACTIVE" %}selected{% endif %}>ACTIVE</option>
