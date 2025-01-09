@@ -1326,7 +1326,7 @@ def chartSaleIndex(request):
 
     return combined_data
 
-
+ 
 def tableStatusObama(request):
 
     # Obtener la fecha y hora actual
@@ -1343,13 +1343,29 @@ def tableStatusObama(request):
     # Construcción de la consulta basada en el rol del usuario
     if request.user.role in roleAuditar:
 
-       result = ObamaCare.objects.filter(
+       # Consulta básica para obtener el conteo
+        result = ObamaCare.objects.filter(
             created_at__gte=start_of_month, 
             created_at__lt=end_of_month
         ).values('profiling').annotate(
-            count=Count('profiling'),
-            usernames=GroupConcat('user__username', distinct=True)
+            count=Count('profiling')
         ).order_by('profiling')
+
+        # Convertimos el queryset a lista para poder modificarlo
+        result = list(result)
+
+        # Agregamos los usuarios para cada profiling
+        for item in result:
+            usuarios = ObamaCare.objects.filter(
+                created_at__gte=start_of_month,
+                created_at__lt=end_of_month,
+                profiling=item['profiling']
+            ).select_related('agent').values_list(
+                'agent__username', 
+                flat=True
+            ).distinct()
+            
+            item['usernames'] = ', '.join(usuarios)
     
     elif request.user.role in ['A','SUPP']:
         

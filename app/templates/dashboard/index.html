@@ -440,13 +440,7 @@
 											{% for result in tableStatusObama %}
 											
 											<tr>
-												<td>
-													{% if result.usernames|is_list %}
-														{{ result.usernames|join:", " }}
-													{% else %}
-														{{ result.usernames }}
-													{% endif %}
-												</td>
+												<td>{{result.usernames}} </td>
 												<td>{{result.count}}</td>
 											</tr>
 											{% endfor %}
