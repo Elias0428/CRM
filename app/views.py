@@ -1343,24 +1343,13 @@ def tableStatusObama(request):
     # Construcción de la consulta basada en el rol del usuario
     if request.user.role in roleAuditar:
 
-        # Realizamos la consulta y agrupamos por el campo 'profiling'
-        # Primero obtenemos el conteo por profiling
-            result = ObamaCare.objects.filter(
-                created_at__gte=start_of_month, 
-                created_at__lt=end_of_month
-            ).values('profiling').annotate(
-                count=Count('profiling')
-            ).order_by('profiling')
-
-            # Luego obtenemos los usuarios para cada profiling
-            for item in result:
-                users = ObamaCare.objects.filter(
-                    created_at__gte=start_of_month,
-                    created_at__lt=end_of_month,
-                    profiling=item['profiling']
-                ).values_list('agent__username', flat=True).distinct()
-                
-                item['usernames'] = list(users)
+       result = ObamaCare.objects.filter(
+            created_at__gte=start_of_month, 
+            created_at__lt=end_of_month
+        ).values('profiling').annotate(
+            count=Count('profiling'),
+            usernames=GroupConcat('user__username', distinct=True)
+        ).order_by('profiling')
     
     elif request.user.role in ['A','SUPP']:
         
