@@ -320,7 +320,7 @@
 							<input type="text" class="form-control" id="planName" name="planName" value="{{ obamacare.plan_name }}"  >
 						</div>
 						<div class="col-12 col-lg-4">
-							<label for="profiling" class="form-label">Profiling by</label>
+							<label for="profiling" class="form-label">Enrolled by</label>
 							<select class="form-select" id="profiling"  name="profiling" {% for user in users %}{% if obamacare.profiling == user.username %}disabled{% endif %}{% endfor %}> 
 								<option value="" disabled selected>Please Select</option>
 								<option value="NO" {% if obamacare.profiling == "NO" %}selected{% endif %}>NO</option>                           
@@ -333,7 +333,7 @@
 							</select>
 						</div>
 						<div class="col-12 col-lg-2">
-							<label for="statusObama" class="form-label">Status Blue</label>
+							<label for="statusObama" class="form-label">Status</label>
 							<select class="form-select" id="statusObama"  name="statusObama" >
 								<option value="" disabled selected>Please Select</option>
 								<option value="ACTIVE" {% if obamacare.status == "ACTIVE" %}selected{% endif %}>ACTIVE</option>
@@ -459,7 +459,7 @@
 												<option value="PREMIUM PAYMENT">Premium Payment</option>
 												<option value="PCP">PCP</option>
 												<option value="REQUEST DOCUMENTS">Request Documents</option>
-												<option value="SUPPLEMENTARY">Supplementary</option>
+												<option value="SUPPLEMENTARY">Supplemental</option>
 												<option value="TRANSFER">Transfer</option>
 												<option value="UHC ID READY">UHC ID Ready</option>
 												<option value="CALL BACK">Call Back</option>

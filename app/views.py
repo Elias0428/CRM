@@ -707,7 +707,7 @@ def editClientSupp(request, client_id,supp_id):
             # Campos de Supp
             supp_fields = [
                 'effectiveDateSupp', 'carrierSuple', 'premiumSupp', 'preventiveSupp', 'coverageSupp', 'deducibleSupp',
-                'statusSupp', 'typePaymeSupp', 'observationSuple', 'agent_usa'
+                'statusSupp', 'typePaymeSupp', 'observationSuple', 'agent_usa','policyNumber'
             ]
             
             # Limpiar los campos de ObamaCare convirtiendo los vacíos en None
@@ -738,6 +738,7 @@ def editClientSupp(request, client_id,supp_id):
                 coverage=cleaned_supp_data['coverageSupp'],
                 deducible=cleaned_supp_data['deducibleSupp'],
                 status=cleaned_supp_data['statusSupp'],
+                policyNumber=cleaned_supp_data['policyNumber'],
                 status_color=color,
                 date_effective_coverage=date_effective_coverage_new,
                 date_effective_coverage_end=date_effective_coverage_end_new,
@@ -1395,14 +1396,14 @@ def sale(request):
     saleACAUsa = saleObamaAgentUsa(start_date, end_date)
     saleSupp = saleSuppAgent(start_date, end_date)
     saleSuppUsa = saleSuppAgentUsa(start_date, end_date)
-    sales_data, total_status_color_1_obama, total_status_color_3_obama, total_status_color_1_supp, total_status_color_3_supp, total_sales = salesBonusAgent(start_date, end_date)
+    sales_data, total_status_color_1_2_obama, total_status_color_3_obama, total_status_color_1_2_supp, total_status_color_3_supp, total_sales = salesBonusAgent(start_date, end_date)
 
     registered, proccessing, profiling, canceled, countRegistered,countProccsing,countProfiling,countCanceled = saleClientStatusObama(start_date, end_date)
     registeredSupp, proccessingSupp, activeSupp, canceledSupp,countRegisteredSupp,countProccsingSupp,countActiveSupp,countCanceledSupp = saleClientStatusSupp(start_date, end_date)
 
     # Calcular los totales por agente antes de pasar los datos a la plantilla
     for agent, data in sales_data.items():
-        data['total'] = data['status_color_1_obama'] + data['status_color_3_obama'] + data['status_color_1_supp'] + data['status_color_3_supp']
+        data['total'] = data['status_color_1_2_obama'] + data['status_color_3_obama'] + data['status_color_1_2_supp'] + data['status_color_3_supp']
 
     context = {
         'saleACA': saleACA,
@@ -1410,9 +1411,9 @@ def sale(request):
         'saleSupp': saleSupp,
         'saleSuppUsa': saleSuppUsa,
         'sales_data': sales_data,
-        'total_status_color_1_obama': total_status_color_1_obama,
+        'total_status_color_1_obama': total_status_color_1_2_obama,
         'total_status_color_3_obama': total_status_color_3_obama,
-        'total_status_color_1_supp': total_status_color_1_supp,
+        'total_status_color_1_supp': total_status_color_1_2_supp,
         'total_status_color_3_supp': total_status_color_3_supp,
         'total_sales': total_sales,
         'registered':registered,
@@ -1683,6 +1684,7 @@ def saleSuppAgentUsa(start_date=None, end_date=None):
 
     return agents_sales
 
+
 def salesBonusAgent(start_date=None, end_date=None):
     # Consulta para Supp
     sales_query_supp = Supp.objects.select_related('agent').filter(is_active=True) \
@@ -1733,16 +1735,16 @@ def salesBonusAgent(start_date=None, end_date=None):
 
         if agent_full_name not in sales_data:
             sales_data[agent_full_name] = {
-                'status_color_1_obama': 0,
+                'status_color_1_2_obama': 0,
                 'status_color_3_obama': 0,
-                'status_color_1_supp': 0,
+                'status_color_1_2_supp': 0,
                 'status_color_3_supp': 0,
                 'total_sales': 0
             }
 
-        # Sumar las ventas solo por status_color_1 y status_color_3 en Supp
-        if status_color == 1:
-            sales_data[agent_full_name]['status_color_1_supp'] += total_sales
+        # Sumar las ventas de status_color 1 y 2 en Supp
+        if status_color in [1, 2]:
+            sales_data[agent_full_name]['status_color_1_2_supp'] += total_sales
         elif status_color == 3:
             sales_data[agent_full_name]['status_color_3_supp'] += total_sales
 
@@ -1757,34 +1759,30 @@ def salesBonusAgent(start_date=None, end_date=None):
 
         if agent_full_name not in sales_data:
             sales_data[agent_full_name] = {
-                'status_color_1_obama': 0,
+                'status_color_1_2_obama': 0,
                 'status_color_3_obama': 0,
-                'status_color_1_supp': 0,
+                'status_color_1_2_supp': 0,
                 'status_color_3_supp': 0,
                 'total_sales': 0
             }
 
-        # Sumar las ventas solo por status_color_1 y status_color_3 en ObamaCare
-        if status_color == 1:
-            sales_data[agent_full_name]['status_color_1_obama'] += total_sales
+        # Sumar las ventas de status_color 1 y 2 en ObamaCare
+        if status_color in [1, 2]:
+            sales_data[agent_full_name]['status_color_1_2_obama'] += total_sales
         elif status_color == 3:
             sales_data[agent_full_name]['status_color_3_obama'] += total_sales
 
-    # Sumar los totales generales solo para status_color_1 y status_color_3
-    total_status_color_1_obama = sum([data['status_color_1_obama'] for data in sales_data.values()])
+    # Sumar los totales generales solo para status_color_1_2 y status_color_3
+    total_status_color_1_2_obama = sum([data['status_color_1_2_obama'] for data in sales_data.values()])
     total_status_color_3_obama = sum([data['status_color_3_obama'] for data in sales_data.values()])
-    total_status_color_1_supp = sum([data['status_color_1_supp'] for data in sales_data.values()])
+    total_status_color_1_2_supp = sum([data['status_color_1_2_supp'] for data in sales_data.values()])
     total_status_color_3_supp = sum([data['status_color_3_supp'] for data in sales_data.values()])
     
-    # Total general de las sumas de status_color_1 y status_color_3
-    total_sales = total_status_color_1_obama + total_status_color_3_obama + total_status_color_1_supp + total_status_color_3_supp
+    # Total general de las sumas de status_color_1_2 y status_color_3
+    total_sales = total_status_color_1_2_obama + total_status_color_3_obama + total_status_color_1_2_supp + total_status_color_3_supp
 
-    # Imprimir para verificar los datos
-    #print("Sales Data for Bonus:")
-    #for agent, data in sales_data.items():
-    #    print(f"Agent: {agent}, Data: {data}")
+    return sales_data, total_status_color_1_2_obama, total_status_color_3_obama, total_status_color_1_2_supp, total_status_color_3_supp, total_sales
 
-    return sales_data, total_status_color_1_obama, total_status_color_3_obama, total_status_color_1_supp, total_status_color_3_supp, total_sales
 
 def saleClientStatusObama(start_date=None, end_date=None):
 

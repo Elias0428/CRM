@@ -147,7 +147,7 @@
 <div class="card radius-10">
 	<div class="card-body">
 		<div>
-			<h5 class="card-title">Clients by status Supplementary</h5>
+			<h5 class="card-title">Clients by status Supplemental</h5>
 		</div>
 		<hr/>
 		<div  class="row row-cols-1 row-cols-md-1 row-cols-lg-5 row-cols-xl-4">
@@ -167,7 +167,7 @@
 		<!--end row-->
 	</div>
 </div>
-<h4>Supplementary</h4>
+<h4>Supplemental</h4>
 <div class="row row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2">
 
 	<div class="col">
@@ -263,9 +263,9 @@
 							{% for agent, data in sales_data.items %}
 								<tr>
 									<td>{{ agent }}</td>
-									<td>{{ data.status_color_1_obama }}</td>
+									<td>{{ data.status_color_1_2_obama }}</td>
 									<td>{{ data.status_color_3_obama }}</td>
-									<td>{{ data.status_color_1_supp }}</td>
+									<td>{{ data.status_color_1_2_supp }}</td>
 									<td>{{ data.status_color_3_supp }}</td>
 									<td>{{ data.total}}</td>
 								</tr>
@@ -286,6 +286,7 @@
 	</div>
 
 </div>
+<!--modal-->
 <div class="col-12 col-lg-12">
 
 	<div class="modal fade" id="registered" tabindex="-1" aria-hidden="true">

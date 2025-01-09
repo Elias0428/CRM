@@ -1,7 +1,7 @@
 {% extends "dashboard/index.html" %}
 {% load static %}
 {% block head %}
-    <title>Client Supplementary</title>
+    <title>Client Supplemental</title>
 	<!--plugins-->
 	<link href="{% static "assets/plugins/simplebar/css/simplebar.css" %}" rel="stylesheet" />
 	<link href="{% static "assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" %}" rel="stylesheet" />
@@ -25,7 +25,7 @@
 	<link rel="stylesheet" href="{% static "assets/css/header-colors.css" %}" />
 {% endblock %}
 {% block page_content %}
-<h6 class="mb-0 text-uppercase">Client supplementary</h6>
+<h6 class="mb-0 text-uppercase">Client supplemental</h6>
 <hr/>
 <div class="row">
     <div class="col-xl-10 mx-auto">
@@ -311,9 +311,9 @@
 									{% endfor %}						
 							</select>
 						</div>
-						<div class="col-12 col-lg-5">
+						<div class="col-12 col-lg-3">
 							<label for="policyNumber" class="form-label">Policy Number</label>
-							<input type="number" name="policyNumber" id="policyNumber" value="{{supps.policyNumber}}">
+							<input type="text" class="form-control" name="policyNumber" id="policyNumber" value="{{supps.policyNumber}}">
 						</div>
 						<div class="col-12 col-lg-4">
 							<label for="typePaymeSupp" class="form-label">Type Paymet</label>
@@ -386,8 +386,7 @@
 										</div>
 										<div class="mb-3">
 											<label for="textoIngresado" class="form-label">Typification:</label>
-											<select class="form-select"  name="observaciones[]"  id="textoIngresados" multiple>
-												<option disabled selected></option>
+											<select class="form-select"  name="observaciones[]"  id="textoIngresados" multiple required>
 												<option value="1095-A">1095-A</option>
 												<option value="AUDITED">Audited</option>
 												<option value="ACTIVE">Active</option>
@@ -428,7 +427,7 @@
 												<option value="PREMIUM PAYMENT">Premium Payment</option>
 												<option value="PCP">PCP</option>
 												<option value="REQUEST DOCUMENTS">Request Documents</option>
-												<option value="SUPPLEMENTARY">Supplementary</option>
+												<option value="SUPPLEMENTARY">Supplemental</option>
 												<option value="TRANSFER">Transfer</option>
 												<option value="UHC ID READY">UHC ID Ready</option>
 												<option value="CALL BACK">Call Back</option>
@@ -438,7 +437,7 @@
 										</div>
 										<div class="mb-3">
 											<label for="textoIngresado" class="form-label">Typification the Call:</label>
-											<select class="form-select"  name="typeCall" >
+											<select class="form-select"  name="typeCall" required >
 												<option></option>
 												<option value="INBOUND" >Inbound </option>
 												<option value="OUTBOUND" >Outbound </option>

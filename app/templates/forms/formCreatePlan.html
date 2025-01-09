@@ -62,8 +62,8 @@
 					<div class="step-trigger" role="tab" id="stepper1trigger2" aria-controls="test-l-2">
 						<div class="bs-stepper-circle">2</div>
 						<div class="">
-							<h5 class="mb-0 steper-title">SUPPLEMENTARY</h5>
-							<p class="mb-0 steper-sub-title">Enter your Supplementary data</p>
+							<h5 class="mb-0 steper-title">SUPPLEMENTAL</h5>
+							<p class="mb-0 steper-sub-title">Enter your Supplemental data</p>
 						</div>
 					</div>
 					</div>
@@ -191,14 +191,14 @@
 					{% if client.type_sales == 'SUPLEMENTARIO'  or client.type_sales == 'ACA/SUPLEMENTARIO' %}
 					<!-- Stepper Supp -->
 						<div id="test-l-2" role="tabpanel" class="bs-stepper-pane" aria-labelledby="stepper1trigger2">
-							<h5 class="mb-1">Your Supplementary Information</h5>
-							<p class="mb-4">Enter data related to your Supplementary plan information.</p>
+							<h5 class="mb-1">Your Supplemental Information</h5>
+							<p class="mb-4">Enter data related to your Supplementa plan information.</p>
 							<div id="repeater1">
 								<!-- Repeater Heading -->
 								<div class="card mb-3">
 									<div class="card-body">
 										<div class="d-flex align-items-center justify-content-between">
-											<h5 class="mb-0">SUPPLEMENTARY</h5>
+											<h5 class="mb-0">SUPPLEMENTAL</h5>
 											<button type="button" class="btn btn-primary repeater-add-btn-1 px-4">Add</button>
 										</div>
 									</div>
@@ -308,7 +308,7 @@
 															</div>
 															<div class="col-12 col-lg-12">
 																<label for="observationSuple" class="form-label">Observation</label>
-																<textarea class="form-control" id="observationSuple" name="observationSuple" rows="3" type="text" placeholder="Supplementary plan remark" style="resize: none">{{supp_plan.observation}}</textarea>
+																<textarea class="form-control" id="observationSuple" name="observationSuple" rows="3" type="text" placeholder="Supplemental plan remark" style="resize: none">{{supp_plan.observation}}</textarea>
 															</div>
 															<div class="col-12 d-flex justify-content-end mt-3">
 																<button type="button" class="btn btn-danger remove-btn" onclick="removeSupp(this)">Remove</button>
@@ -420,7 +420,7 @@
 															</div>
 															<div class="col-12 col-lg-12">
 																<label for="observationSuple" class="form-label">Observation</label>
-																<textarea class="form-control" id="observationSuple" name="observationSuple" rows="3" type="text"  value="{{supp_plan.observation}}"  placeholder="Supplementary plan remark" style="resize: none"></textarea>
+																<textarea class="form-control" id="observationSuple" name="observationSuple" rows="3" type="text"  value="{{supp_plan.observation}}"  placeholder="Supplemental plan remark" style="resize: none"></textarea>
 															</div>
 															<div class="col-12 d-flex justify-content-end mt-3">
 																<button type="button" class="btn btn-danger remove-btn">Remove</button>

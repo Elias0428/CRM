@@ -204,8 +204,8 @@
 							<select class="form-select" name="type_sales" id="type_sales">
 								<option value="no_valid" disabled {% if client.type_sales == None %}selected{% endif %}>Please Select</option>
 								<option value="ACA" {% if client.type_sales == "ACA" %}selected{% endif %}>ACA</option>
-								<option value="SUPLEMENTARIO" {% if client.type_sales == "SUPLEMENTARIO" %}selected{% endif %}>SUPPLEMENTARY</option>
-								<option value="ACA/SUPLEMENTARIO" {% if client.type_sales == "ACA/SUPLEMENTARIO" %}selected{% endif %}>ACA/SUPPLEMENTARY</option>
+								<option value="SUPLEMENTARIO" {% if client.type_sales == "SUPLEMENTARIO" %}selected{% endif %}>SUPPLEMENTAL</option>
+								<option value="ACA/SUPLEMENTARIO" {% if client.type_sales == "ACA/SUPLEMENTARIO" %}selected{% endif %}>ACA/SUPPLEMENTAL</option>
 							</select>
 						</div>
 						<h5 class="text-danger text-center">{{error_message}}</h5>
