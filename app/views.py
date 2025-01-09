@@ -25,7 +25,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AnonymousUser
-from django.db.models import Count, Q, Sum, Value, TextField, F
+from django.db.models import Count, Q, Sum, Value, TextField, F,  Subquery, OuterRef
 from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.encoding import force_bytes, force_str
@@ -1343,12 +1343,25 @@ def tableStatusObama(request):
     if request.user.role in roleAuditar:
 
         # Realizamos la consulta y agrupamos por el campo 'profiling'
-        result = ObamaCare.objects.filter(created_at__gte=start_of_month, created_at__lt=end_of_month).values('profiling', 'agent__first_name', 'agent__last_name').annotate(count=Count('profiling')).order_by('profiling')
+        result = ObamaCare.objects.filter(
+                created_at__gte=start_of_month,
+                created_at__lt=end_of_month
+            ).annotate(
+                first_name=Subquery(
+                    User.objects.filter(username=OuterRef('profiling'))
+                    .values('first_name')[:1]
+                ),
+                last_name=Subquery(
+                    User.objects.filter(username=OuterRef('profiling'))
+                    .values('last_name')[:1]
+                ),
+                count=Count('profiling')
+            ).values('profiling', 'first_name', 'last_name', 'count').order_by('profiling')     
     
     elif request.user.role in ['A','SUPP']:
         
         # Realizamos la consulta y agrupamos por el campo 'profiling'
-        result = ObamaCare.objects.filter(created_at__gte=start_of_month, created_at__lt=end_of_month).values('profiling', 'agent__first_name', 'agent__last_name').filter(agent=request.user.id).annotate(count=Count('profiling')).order_by('profiling')
+        result = ObamaCare.objects.filter(created_at__gte=start_of_month, created_at__lt=end_of_month).values('profiling').filter(agent=request.user.id).annotate(count=Count('profiling')).order_by('profiling')
     
 
     return result
