@@ -90,14 +90,7 @@
 	<script src="{% static "assets/plugins/datatable/js/jquery.dataTables.min.js" %}"></script>
 	<script src="{% static "assets/plugins/datatable/js/dataTables.bootstrap5.min.js" %}"></script>
 	<script>
-		$(document).ready(function() {
-			var table = $('#tableClient').DataTable( {
-				lengthChange: false,
-			} );
-		 
-			table.buttons().container()
-				.appendTo( '#tableClient_wrapper .col-md-6:eq(0)' );
-		} );
+		$(document).ready(function() {$('#tableClient').DataTable();} );
 	</script>
 	<!--app JS-->
 	<script src="{% static "assets/js/app.js" %}"></script>

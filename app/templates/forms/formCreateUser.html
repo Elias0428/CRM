@@ -121,16 +121,7 @@
 
 	<!--app JS-->
 	<script src="{% static "assets/js/app.js" %}"></script>
-	<script>
-		$(document).ready(function() {
-			var table = $('#tableUser').DataTable( {
-				lengthChange: false,
-			} );
-		 
-			table.buttons().container()
-				.appendTo( '#tableUser_wrapper .col-md-6:eq(0)' );
-		} );
-	</script>
+	<script> $(document).ready(function() {$('#tableUser').DataTable();} );	</script>
 	
 	{% if type == 'error' %}
 	<script>

@@ -165,14 +165,8 @@
 	<script src="{% static "assets/plugins/datatable/js/dataTables.bootstrap5.min.js" %}"></script>
 
 	<script>	
-		$(document).ready(function() {
-			var table = $('#tableQuality').DataTable( {lengthChange: false,	buttons: [ 'excel',  'print']	} );		 
-			table.buttons().container()	.appendTo( '#tableQuality .col-md-6:eq(0)' );
-		} );
-		$(document).ready(function() {
-			var table = $('#tableCall').DataTable( {lengthChange: false,	buttons: [ 'excel',  'print']	} );		 
-			table.buttons().container()	.appendTo( '#tableCall .col-md-6:eq(0)' );
-		} );		
+		$(document).ready(function() {$('#tableQuality').DataTable();} );
+		$(document).ready(function() {$('#tableCall').DataTable();} );	
 	</script>
 
 	<!--app JS-->
