@@ -260,7 +260,7 @@
 						</div>
 						<div class="col-12 col-lg-3">
 							<label for="premiumSupp" class="form-label">Premium</label>
-							<input type="number" class="form-control"  id="premiumSupp" value="{{supps.premium}}"  name="premiumSupp" >
+							<input type="number" class="form-control" step="0.01"  id="premiumSupp" value="{{supps.premium}}"  name="premiumSupp" >
 						</div>
 						<div class="col-12 col-lg-4">
 							<label for="preventiveSupp" class="form-label">Preventive</label>
@@ -268,7 +268,7 @@
 								<option selected disable></option>
 								<option value="60" {% if supps.preventive == '60' %}selected{% endif %}>60% </option>
 								<option value="100" {% if supps.preventive == '100' %}selected{% endif %}>100%</option>
-								<option value="Sin Espera" {% if supps.preventive == 'Sin Espera' %}selected{% endif %}>Sin Espera</option>
+								<option value="SIN ESPERA" {% if supps.preventive == 'SIN ESPERA' %}selected{% endif %}>Sin Espera</option>
 							</select>
 						</div>
 						<div class="col-12 col-lg-5">
