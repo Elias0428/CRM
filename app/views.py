@@ -1358,7 +1358,7 @@ def tableStatusObama(request):
                     created_at__gte=start_of_month,
                     created_at__lt=end_of_month,
                     profiling=item['profiling']
-                ).values_list('user__username', flat=True).distinct()
+                ).values_list('agent__username', flat=True).distinct()
                 
                 item['usernames'] = list(users)
     
