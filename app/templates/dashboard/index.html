@@ -438,11 +438,17 @@
 										</thead>
 										<tbody>
 											{% for result in tableStatusObama %}
-											
-											<tr>
-												<td>{{result.first_name}} {{result.last_name}}</td>
-												<td>{{result.count}}</td>
-											</tr>
+												<tr>
+													<td>{{ result.profiling }}</td>
+													<td>
+														{% if result.profiling == "NO" %}
+															En Proceso
+														{% else %}
+															{{ item.first_name }} {{ item.last_name }}
+														{% endif %}
+													</td>
+													<td>{{ item.count }}</td>
+												</tr>
 											{% endfor %}
 										</tbody>
 									</table>
