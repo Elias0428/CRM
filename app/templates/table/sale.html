@@ -260,16 +260,18 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr>
-								{% for agent, data in sales_data.items %}
+							
+							{% for agent, data in sales_data.items %}
+								<tr>
 									<td>{{ agent }}</td>
 									<td>{{ data.status_color_1_2_obama }}</td>
 									<td>{{ data.status_color_3_obama }}</td>
 									<td>{{ data.status_color_1_2_supp }}</td>
 									<td>{{ data.status_color_3_supp }}</td>
 									<td>{{ data.total}}</td>
-								{% endfor %}
-							
+								</tr>
+							{% endfor %}
+							<tr>
 								<td><strong>Total</strong></td>
 								<td><strong>{{ total_status_color_1_obama }}</strong></td>
 								<td><strong>{{ total_status_color_3_obama }}</strong></td>
