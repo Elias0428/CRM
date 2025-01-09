@@ -259,8 +259,7 @@
 								<th>Total</th>
 							</tr>
 						</thead>
-						<tbody>
-							
+						<tbody>							
 							{% for agent, data in sales_data.items %}
 								<tr>
 									<td>{{ agent }}</td>
@@ -270,7 +269,9 @@
 									<td>{{ data.status_color_3_supp }}</td>
 									<td>{{ data.total}}</td>
 								</tr>
-							{% endfor %}
+							{% endfor %}							
+						</tbody>
+						<tfoot>
 							<tr>
 								<td><strong>Total</strong></td>
 								<td><strong>{{ total_status_color_1_obama }}</strong></td>
@@ -279,7 +280,7 @@
 								<td><strong>{{ total_status_color_3_supp }}</strong></td>
 								<td><strong>{{ total_sales }}</strong></td>
 							</tr>
-						</tbody>
+						</tfoot>
 					</table>
 				</div>
 			</div>
