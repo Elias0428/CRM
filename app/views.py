@@ -121,7 +121,8 @@ def formCreateClient(request):
             client.is_active = 1
             client.save()
 
-            contact = ContactClient.objects.create(client=client,agent=request.user)
+            if client.type_sales in ['ACA', 'ACA/SUPLEMENTARIO']:
+                contact = ContactClient.objects.create(client=client,agent=request.user)
             
             # Responder con éxito y la URL de redirección
             return redirect('formCreatePlan', client.id)
@@ -531,7 +532,7 @@ def editClientObama(request, obamacare_id):
             # Campos de ObamaCare
             obamacare_fields = [
                 'taxes', 'planName', 'carrierObama', 'profiling', 'subsidy', 'ffm', 'required_bearing',
-                'doc_income', 'doc_migration', 'statusObama', 'work', 'npm', 'date_effective_coverage',
+                'doc_income', 'doc_migration', 'statusObama', 'work', 'date_effective_coverage',
                 'date_effective_coverage_end', 'observationObama', 'agent_usa_obamacare','usernameCarrier',
                 'passwordCarrier'
             ]
@@ -613,7 +614,6 @@ def editClientObama(request, obamacare_id):
                 doc_migration=cleaned_obamacare_data['doc_migration'],
                 status=cleaned_obamacare_data['statusObama'],
                 work=cleaned_obamacare_data['work'],
-                npm=cleaned_obamacare_data['npm'],
                 date_effective_coverage=date_effective_coverage_new,
                 date_effective_coverage_end=date_effective_coverage_end_new,
                 observation=cleaned_obamacare_data['observationObama'],
