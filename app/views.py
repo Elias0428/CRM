@@ -1265,19 +1265,23 @@ def chartSaleIndex(request):
                 agent_sale_aca__status_color=3,
                 agent_sale_aca__created_at__gte=start_of_month,
                 agent_sale_aca__created_at__lt=end_of_month,
+                agent_sale_aca__is_active=True  
             ), distinct=True),
             obamacare_count_total=Count('agent_sale_aca', filter=Q(
                 agent_sale_aca__created_at__gte=start_of_month,
-                agent_sale_aca__created_at__lt=end_of_month
+                agent_sale_aca__created_at__lt=end_of_month,
+                agent_sale_aca__is_active=True  
             ), distinct=True),
             supp_count=Coalesce(Count('agent_sale_supp', filter=Q(
                 agent_sale_supp__status_color=3,
                 agent_sale_supp__created_at__gte=start_of_month,
-                agent_sale_supp__created_at__lt=end_of_month
+                agent_sale_supp__created_at__lt=end_of_month,
+                agent_sale_supp__is_active=True
             ), distinct=True), 0),
             supp_count_total=Coalesce(Count('agent_sale_supp', filter=Q(
                 agent_sale_supp__created_at__gte=start_of_month,
-                agent_sale_supp__created_at__lt=end_of_month
+                agent_sale_supp__created_at__lt=end_of_month,
+                agent_sale_supp__is_active=True
             ), distinct=True), 0)
         ).filter(role__in=['A', 'C']).values('first_name', 'obamacare_count', 'obamacare_count_total', 'supp_count', 'supp_count_total')
 
@@ -1343,12 +1347,12 @@ def tableStatusObama(request):
     if request.user.role in roleAuditar:
 
         # Realizamos la consulta y agrupamos por el campo 'profiling'
-        result = ObamaCare.objects.filter(created_at__gte=start_of_month, created_at__lt=end_of_month).values('profiling').annotate(count=Count('profiling')).order_by('profiling')
+        result = ObamaCare.objects.filter(created_at__gte=start_of_month, created_at__lt=end_of_month,is_active = True).values('profiling').annotate(count=Count('profiling')).order_by('profiling')
     
     elif request.user.role in ['A','SUPP']:
         
         # Realizamos la consulta y agrupamos por el campo 'profiling'
-        result = ObamaCare.objects.filter(created_at__gte=start_of_month, created_at__lt=end_of_month).values('profiling').filter(agent=request.user.id).annotate(count=Count('profiling')).order_by('profiling')
+        result = ObamaCare.objects.filter(created_at__gte=start_of_month, created_at__lt=end_of_month, is_active = True).values('profiling').filter(agent=request.user.id).annotate(count=Count('profiling')).order_by('profiling')
     
 
     return result
@@ -1370,12 +1374,12 @@ def tableStatusSupp(request):
     # Construcción de la consulta basada en el rol del usuario
     if request.user.role in roleAuditar:
         # Realizamos la consulta y agrupamos por el campo 'profiling'
-        result = Supp.objects.filter(created_at__gte=start_of_month, created_at__lt=end_of_month,).values('status').annotate(count=Count('status')).order_by('status')
+        result = Supp.objects.filter(created_at__gte=start_of_month, created_at__lt=end_of_month,is_active = True).values('status').annotate(count=Count('status')).order_by('status')
 
     elif request.user.role in ['A','SUPP']:
 
         # Realizamos la consulta y agrupamos por el campo 'profiling'
-        result = Supp.objects.filter(created_at__gte=start_of_month, created_at__lt=end_of_month,).values('status').filter(agent=request.user.id).annotate(count=Count('status')).order_by('status')
+        result = Supp.objects.filter(created_at__gte=start_of_month, created_at__lt=end_of_month, is_active = True).values('status').filter(agent=request.user.id).annotate(count=Count('status')).order_by('status')
 
 
     return result
@@ -1684,7 +1688,6 @@ def saleSuppAgentUsa(start_date=None, end_date=None):
 
     return agents_sales
 
-
 def salesBonusAgent(start_date=None, end_date=None):
     # Consulta para Supp
     sales_query_supp = Supp.objects.select_related('agent').filter(is_active=True) \
@@ -1782,7 +1785,6 @@ def salesBonusAgent(start_date=None, end_date=None):
     total_sales = total_status_color_1_2_obama + total_status_color_3_obama + total_status_color_1_2_supp + total_status_color_3_supp
 
     return sales_data, total_status_color_1_2_obama, total_status_color_3_obama, total_status_color_1_2_supp, total_status_color_3_supp, total_sales
-
 
 def saleClientStatusObama(start_date=None, end_date=None):
 
@@ -1895,7 +1897,7 @@ def saleClientStatusSupp(start_date=None, end_date=None):
 def liveViewWeekly(request):
     
     userRole = [ 'A' , 'C']
-    users = User.objects.filter(role__in = userRole)
+    users = User.objects.filter(role__in = userRole, is_active = True)
     context = {
         'users':users,
         'weeklySales': getSalesForWekkly()
@@ -1925,7 +1927,7 @@ def getSalesForWekkly():
 
     # Contamos cuántos registros de ObamaCare tiene cada usuario por día
     userRole = [ 'A' , 'C']
-    obama_counts = ObamaCare.objects.values('agent', 'created_at').filter(agent__role__in=userRole).annotate(obama_count=Count('id'))
+    obama_counts = ObamaCare.objects.values('agent', 'created_at').filter(agent__role__in=userRole, is_active = True).annotate(obama_count=Count('id'))
     for obama in obama_counts:
         # Obtener el día de la semana (0=lunes, 1=martes, ..., 6=domingo)
         dia_semana = obama['created_at'].weekday()
@@ -1934,7 +1936,7 @@ def getSalesForWekkly():
             user_counts[obama['agent']][dia]['obama'] += obama['obama_count']
 
     # Contamos cuántos registros de Supp tiene cada usuario por día
-    supp_counts = Supp.objects.values('agent', 'created_at').filter(agent__role__in=userRole).annotate(supp_count=Count('id'))
+    supp_counts = Supp.objects.values('agent', 'created_at').filter(agent__role__in=userRole, is_active = True).annotate(supp_count=Count('id'))
     for supp in supp_counts:
         # Obtener el día de la semana (0=lunes, 1=martes, ..., 6=domingo)
         dia_semana = supp['created_at'].weekday()
@@ -2909,7 +2911,7 @@ def averageCustomer(request):
 
 @login_required(login_url='/login')
 def customerTypification(request) :
-    agents = ObservationCustomer.objects.values('agent__username', 'agent__first_name', 'agent__last_name').distinct()
+    agents = ObservationCustomer.objects.values('agent__username', 'agent__first_name', 'agent__last_name').distinct().filter(is_active = True)
     agent_data = []
 
     for agent in agents:
@@ -2920,7 +2922,7 @@ def customerTypification(request) :
             agent__username=username
         ).annotate(
             individual_types=F('typification')
-        ).values('individual_types')
+        ).values('individual_types').filter(is_active = True)
         
         type_count = {}
         total = 0
