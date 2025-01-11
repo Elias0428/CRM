@@ -36,36 +36,36 @@
                     
 					<div class="col-12 col-lg-4">
 						<label for="first_name" class="form-label">First Name</label>
-						<input type="text" class="form-control" name="first_name" id="first_name" placeholder="First Name" value="{{supps.client.first_name}}">
+						<input type="text" class="form-control" name="first_name" id="first_name" placeholder="First Name" value="{{supps.client.first_name}}" required>
 						<input hidden class="form-control" name="id_client" id="id_client" value="{{supps.client.id}}">
 					</div>
 					<div class="col-12 col-lg-4">
 						<label for="last_name" class="form-label">Last Name</label>
-						<input type="text" class="form-control" name="last_name" id="last_name" placeholder="Last Name" value="{{supps.client.last_name}}">
+						<input type="text" class="form-control" name="last_name" id="last_name" placeholder="Last Name" value="{{supps.client.last_name}}" required>
 					</div>
 					<div class="col-12 col-lg-4">
 						<label for="phone_number" class="form-label">Phone Number</label>
-						<input type="number" class="form-control" name ="phone_number" id="phone_number" placeholder="Phone Number" value="{{supps.client.phone_number}}">
+						<input type="number" class="form-control" name ="phone_number" id="phone_number" placeholder="Phone Number" value="{{supps.client.phone_number}}" required>
 					</div>
 					<div class="col-12 col-lg-5">
 						<label for="email" class="form-label">E-mail Address</label>
-						<input type="email" class="form-control" name="email" id="email" placeholder="Enter Email Address" value="{{supps.client.email}}">
+						<input type="email" class="form-control" name="email" id="email" placeholder="Enter Email Address" value="{{supps.client.email}}" required>
 					</div>
 					<div class="col-12 col-lg-5">
 						<label for="address" class="form-label">Address</label>
-						<input type="text" class="form-control" name="address" id="address" placeholder="Address" value="{{supps.client.address}}">
+						<input type="text" class="form-control" name="address" id="address" placeholder="Address" value="{{supps.client.address}}" required>
 					</div>
 					<div class="col-12 col-lg-2">
 						<label for="zipcode" class="form-label">zipCode</label>
-						<input type="number" class="form-control" name ="zipcode" id="zipcode" placeholder="ZIP-CODE" value="{{supps.client.zipcode}}">
+						<input type="number" class="form-control" name ="zipcode" id="zipcode" placeholder="ZIP-CODE" value="{{supps.client.zipcode}}" required>
 					</div>
 					<div class="col-12 col-lg-4">
 						<label for="city" class="form-label">City</label>
-						<input type="text" class="form-control" name ="city" id="city" value="{{supps.client.city}}">
+						<input type="text" class="form-control" name ="city" id="city" value="{{supps.client.city}}" required>
 					</div>
 					<div class="col-12 col-lg-2">
 						<label for="state" class="form-label font-weight-bold">State</label>
-						<select id="inputState" class="form-select" id="state" name="state" >
+						<select id="inputState" class="form-select" id="state" name="state" required >
 							<option value="" disabled selected>Please Select</option>
 							<option value="AL" {% if supps.client.state == "AL" %}selected{% endif %} > AL </option>
 							<option value="AR" {% if supps.client.state == "AR" %}selected{% endif %} > AR </option>
@@ -77,6 +77,7 @@
 							<option value="IL" {% if supps.client.state == "IL" %}selected{% endif %} > IL </option>
 							<option value="IA" {% if supps.client.state == "IA" %}selected{% endif %} > IA </option>
 							<option value="KS" {% if supps.client.state == "KS" %}selected{% endif %} > KS </option>
+							<option value="KY" {% if supps.client.state == "KY" %}selected{% endif %} > KY </option>
 							<option Value="MI" {% if supps.client.state == "MI" %}selected{% endif %} > MI </option>                            
 							<option value="MS" {% if supps.client.state == "MS" %}selected{% endif %} > MS </option>
 							<option Value="MO" {% if supps.client.state == "MO" %}selected{% endif %} > MO </option>
@@ -98,12 +99,12 @@
 						</select>
 					</div>
 					<div class="col-12 col-lg-4">
-						<label for="county" class="form-label">Country</label>
-						<input type="text" class="form-control" name ="county" id="county"  value="{{supps.client.county}}">
+						<label for="county" class="form-label">County</label>
+						<input type="text" class="form-control" name ="county" id="county"  value="{{supps.client.county}}" required>
 					</div>
 					<div class="col-12 col-lg-2">
 						<label for="sex" class="form-label">Sex</label>
-						<select class="form-select"  name="sex" id="sex" aria-label="Default select example">
+						<select class="form-select"  name="sex" id="sex" aria-label="Default select example" required>
 							<option value="" disabled selected>Please Select</option>
 							<option value="M" {% if supps.client.sex == "M" %}selected{% endif %} >MALE</option>
 							<option value="F" {% if supps.client.sex == "F" %}selected{% endif %} >FEMALE</option>
@@ -111,11 +112,11 @@
 					</div>
 					<div class="col-12 col-lg-2">
 						<label for="old" class="form-label">Age</label>
-						<input type="number" nim="1" class="form-control" name ="old" id="old" placeholder="Old" value="{{supps.client.old}}">
+						<input type="number" nim="1" class="form-control" name ="old" id="old" placeholder="Old" value="{{supps.client.old}}" required>
 					</div>
 					<div class="col-12 col-lg-3">
 						<label for="date_birth" class="form-label">Date Birth</label>
-						<input type="text" class="form-control" name="date_birth" id="date_birth" value="{{ supps.client.date_birth|date:'m/d/Y' }}" >
+						<input type="text" class="form-control" name="date_birth" id="date_birth" value="{{ supps.client.date_birth|date:'m/d/Y' }}" required >
 					</div>
 					<div class="col-12 col-lg-7">
 						<label for="migration_status" class="form-label">Migration Status</label>
@@ -138,7 +139,7 @@
 					</div>
 					<div class="col-12 col-lg-5">
 						<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
-						<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa"  >
+						<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa" required >
 							<option {% if supps.client.agent_usa == 'GINA PAOLA LAPEIRA - NPN 19944280' %}selected{% endif %} value="GINA PAOLA LAPEIRA - NPN 19944280">GINA PAOLA LAPEIRA - NPN 19944280</option>
 							<option {% if supps.client.agent_usa == 'LUIS EDUARDO LAPEIRA - NPN 20556081' %}selected{% endif %} value="LUIS EDUARDO LAPEIRA - NPN 20556081">LUIS EDUARDO LAPEIRA - NPN 20556081</option>
 							<option {% if supps.client.agent_usa == 'DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958' %}selected{% endif %} value="DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958">DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958</option>
@@ -224,7 +225,7 @@
                     <H4>Plan</H4>
 						<div class="col-12 col-lg-6">
 							<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
-							<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa">
+							<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa" required>
 								<option value="" disabled selected>Please Select</option>
 								<option {% if supps.agent_usa == 'GINA PAOLA LAPEIRA - NPN 19944280' %}selected{% endif %} value="GINA PAOLA LAPEIRA - NPN 19944280">GINA PAOLA LAPEIRA - NPN 19944280</option>
 								<option {% if supps.agent_usa == 'LUIS EDUARDO LAPEIRA - NPN 20556081' %}selected{% endif %} value="LUIS EDUARDO LAPEIRA - NPN 20556081">LUIS EDUARDO LAPEIRA - NPN 20556081</option>
@@ -244,7 +245,7 @@
 						</div>
 						<div class="col-12 col-lg-4">
 							<label for="carrierSuple" class="form-label">Carrier</label>
-							<select class="form-select" id="carrierSuple"  aria-label="Default select example" name="carrierSuple">
+							<select class="form-select" id="carrierSuple"  aria-label="Default select example" name="carrierSuple" required>
 								<option value="" disabled selected>Please Select</option>
 								<option value="AFLAC" {% if supps.company == 'AFLAC' %}selected{% endif %}> AFLAC</option>                             
 								<option value="AETNA" {% if supps.company == 'AETNA' %}selected{% endif %}> AETNA </option>
@@ -265,10 +266,10 @@
 						</div>
 						<div class="col-12 col-lg-4">
 							<label for="preventiveSupp" class="form-label">Preventive</label>
-							<select class="form-select" id="preventiveSupp"  name="preventiveSupp" aria-label="Default select example">
-								<option selected disable></option>
-								<option value="60" {% if supps.preventive == '60' %}selected{% endif %}>60% </option>
+							<select class="form-select" id="preventiveSupp"  name="preventiveSupp" aria-label="Default select example" required>
+								<option selected disable></option>								
 								<option value="N/A" {% if supps.preventive == 'N/A' %}selected{% endif %}>N/A </option>
+								<option value="60" {% if supps.preventive == '60' %}selected{% endif %}>60% </option>
 								<option value="100" {% if supps.preventive == '100' %}selected{% endif %}>100%</option>
 								<option value="SIN ESPERA" {% if supps.preventive == 'SIN ESPERA' %}selected{% endif %}>Sin Espera</option>
 							</select>
@@ -279,7 +280,7 @@
 						</div>					
 						<div class="col-12 col-lg-2">
 							<label for="coverageSupp" class="form-label">Coverage</label>
-							<select class="form-select" id="coverageSupp"  name="coverageSupp" aria-label="Default select example">
+							<select class="form-select" id="coverageSupp"  name="coverageSupp" aria-label="Default select example" required>
 								<option value="" disabled selected>Please Select</option>
 								<option value="0" {% if supps.coverage == 0 %}selected{% endif %} >0</option>
 								<option value="500" {% if supps.coverage == 500 %}selected{% endif %} >500</option>
