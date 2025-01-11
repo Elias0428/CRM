@@ -242,7 +242,7 @@
 						</div>
 						<div class="col-12 col-lg-2">
 							<label for="taxes" class="form-label">Taxes</label>
-							<input type="number" class="form-control" id="taxes" name="taxes" value="{{ obamacare.taxes }}" >
+							<input type="number" class="form-control" id="taxes" name="taxes" value="{{ obamacare.taxes }}" required >
 						</div>
 						<div class="col-12 col-lg-4">
 							<label for="carrierObama" class="form-label">Carrier</label>
@@ -272,7 +272,7 @@
 						</div>
 						<div class="col-12 col-lg-2">
 							<label for="work" class="form-label font-weight-bold">Work</label>
-							<select class="form-select" id="work" aria-label="Default select example"  name="work"   >
+							<select class="form-select" id="work" aria-label="Default select example"  name="work" required  >
 								<option value="" disabled selected>Please Select</option>
 								<option value="W2" {% if obamacare.work == "W2" %}selected{% endif %} >W2</option>
 								<option value="1099"{% if obamacare.work == "1099"%}selected{% endif %} >1099</option> 
@@ -317,7 +317,7 @@
 						
 						<div class="col-12 col-lg-8">
 							<label for="planName" class="form-label">Plan Name</label>
-							<input type="text" class="form-control" id="planName" name="planName" value="{{ obamacare.plan_name }}"  >
+							<input type="text" class="form-control" id="planName" name="planName" value="{{ obamacare.plan_name }}" required  >
 						</div>
 						<div class="col-12 col-lg-4">
 							<label for="profiling" class="form-label">Enrolled by</label>
