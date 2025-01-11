@@ -268,6 +268,7 @@
 							<select class="form-select" id="preventiveSupp"  name="preventiveSupp" aria-label="Default select example">
 								<option selected disable></option>
 								<option value="60" {% if supps.preventive == '60' %}selected{% endif %}>60% </option>
+								<option value="N/A" {% if supps.preventive == 'N/A' %}selected{% endif %}>N/A </option>
 								<option value="100" {% if supps.preventive == '100' %}selected{% endif %}>100%</option>
 								<option value="SIN ESPERA" {% if supps.preventive == 'SIN ESPERA' %}selected{% endif %}>Sin Espera</option>
 							</select>
