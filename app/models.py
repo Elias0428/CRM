@@ -148,7 +148,6 @@ class Supp(models.Model):
     payment_type = models.CharField(max_length=50,null=True)
     observation = models.TextField(null=True)
     is_active = models.BooleanField(default=True)
-    create_at = models.DateTimeField(auto_now_add=True)
     dependents = models.ManyToManyField(Dependent, related_name='SuppDependents')
 
     class Meta:
