@@ -108,7 +108,6 @@ class ObamaCare(models.Model):
     username_carrier = models.CharField(max_length=200,null=True)
     password_carrier = models.CharField(max_length=200,null=True)
     observation = models.TextField(null=True)
-    create_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
     class Meta:
