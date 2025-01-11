@@ -121,6 +121,7 @@
 						<label for="migration_status" class="form-label">Migration Status</label>
 						<select class="form-select" id="migration_status"  name="migration_status" required  >
 							<option value="" disabled selected>Please Select</option>
+							<option value="N/A" {% if   supps.client.migration_status == "N/A" %}selected{% endif %} >N/A</option>
 							<option value="EMPLOYMENT AUTHORIZATION" {% if   supps.client.migration_status == "EMPLOYMENT AUTHORIZATION" %}selected{% endif %} >Employment Authorization</option>
 							<option value="NOTICE OF ACTION" {% if   supps.client.migration_status == "NOTICE OF ACTION" %}selected{% endif %} >Notice of Action (i-797)</option>
 							<option value="REFUGEE" {% if  supps.client.migration_status  == "REFUGEE" %}selected{% endif %} >Refugee</option>
