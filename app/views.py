@@ -1013,7 +1013,7 @@ def toggleUser(request, user_id):
     # Redirigir de nuevo a la página actual con un parámetro de éxito
     return redirect('formCreateUser')
 
-def saveCustomerObservation(request):
+def saveCustomerObservationACA(request):
     if request.method == "POST":
         content = request.POST.get('textoIngresado')
         plan_id = request.POST.get('plan_id')
@@ -1026,10 +1026,8 @@ def saveCustomerObservation(request):
         # Convertir las observaciones a una cadena (por ejemplo, separada por comas o saltos de línea)
         typification_text = ", ".join(observations)  # Puedes usar "\n".join(observations) si prefieres saltos de línea
 
-        if type_plan == 'ACA':
-            plan = ObamaCare.objects.get(id=plan_id)
-        elif type_plan == 'SUPP':
-            plan = Supp.objects.get(id=plan_id) 
+    
+        plan = ObamaCare.objects.get(id=plan_id)
 
         if content.strip():  # Validar que el texto no esté vacío
             ObservationCustomer.objects.create(
@@ -1045,13 +1043,45 @@ def saveCustomerObservation(request):
         else:
             messages.error(request, "El contenido de la observación no puede estar vacío.")
 
-        if type_plan == 'ACA':
-            return redirect('editClientObama', plan.id)
-        elif type_plan == 'SUPP':
-            return redirect('editClientSupp', plan.id)        
+        return redirect('editClientObama', plan.id)       
         
     else:
         return HttpResponse("Método no permitido.", status=405)
+
+def saveCustomerObservationSupp(request):
+    if request.method == "POST":
+        content = request.POST.get('textoIngresado')
+        plan_id = request.POST.get('plan_id')
+        type_plan = request.POST.get('type_plan')
+        typeCall = request.POST.get('typeCall')        
+
+        # Obtenemos las observaciones seleccionadas
+        observations = request.POST.getlist('observaciones[]')  # Lista de valores seleccionados
+        
+        # Convertir las observaciones a una cadena (por ejemplo, separada por comas o saltos de línea)
+        typification_text = ", ".join(observations)  # Puedes usar "\n".join(observations) si prefieres saltos de línea
+
+        plan = Supp.objects.get(id=plan_id) 
+
+        if content.strip():  # Validar que el texto no esté vacío
+            ObservationCustomer.objects.create(
+                client=plan.client,
+                agent=request.user,
+                id_plan=plan.id,
+                type_police=type_plan,
+                typeCall=typeCall,
+                typification=typification_text, # Guardamos las observaciones en el campo 'typification'
+                content=content
+            )
+            messages.success(request, "Observación guardada exitosamente.")
+        else:
+            messages.error(request, "El contenido de la observación no puede estar vacío.")
+
+        return redirect('editClientSupp', plan.id)        
+        
+    else:
+        return HttpResponse("Método no permitido.", status=405)
+
 
 @login_required(login_url='/login') 
 def typification(request):
@@ -2435,23 +2465,30 @@ def consent(request, obamacare_id):
     dependents = Dependent.objects.filter(client=obamacare.client)
     supps = Supp.objects.filter(client_id=obamacare.client.id)
     consent = Consents.objects.select_related('obamacare').filter(obamacare = obamacare_id ).last()
+    contact = ContactClient.objects.filter(client = obamacare.client.id).first()
 
 
     if request.method == 'POST':
         documents = request.FILES.getlist('documents')  # Lista de archivos subidos
+
+        objectClient = save_data_from_request(Client, request.POST, ['agent'],obamacare.client)
+        objectObamacare = save_data_from_request(ObamaCare, request.POST, ['signature'], obamacare)
         
         for document in documents:
             photo = DocumentsClient(
                 file=document,
                 client=obamacare.client)  # Crear una nueva instancia de Foto
             photo.save()  # Guardar el archivo en la base de datos
-        return generateConsentPdf(request, obamacare, dependents, supps)
+        return generateConsentPdf(request, objectObamacare, dependents, supps)
+
+    
 
     context = {
         'valid_migration_statuses': ['PERMANENT_RESIDENT', 'US_CITIZEN', 'EMPLOYMENT_AUTHORIZATION'],
         'obamacare':obamacare,
         'dependents':dependents,
         'consent':consent,
+        'contact':contact,
         'company':getCompanyPerAgent(obamacare.agent_usa),
         'temporalyURL': temporalyURL,
     }

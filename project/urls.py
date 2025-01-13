@@ -42,7 +42,8 @@ urlpatterns = [
     path('toggleObamaStatus/<obamacare_id>/', views.toggleObamaStatus, name='toggleObamaStatus'),
     path('toggleSuppStatus/<supp_id>/', views.toggleSuppStatus, name='toggleSuppStatus'),
 
-    path('save-customer-observation/', views.saveCustomerObservation, name='saveCustomerObservation'),
+    path('save-customer-observation-aca/', views.saveCustomerObservationACA, name='saveCustomerObservationACA'),
+    path('save-customer-observation-supp/', views.saveCustomerObservationSupp, name='saveCustomerObservationSupp'),
 
     path('typification/', views.typification, name='typification'),
     path('get-observation-detail/<observation_id>/', views.get_observation_detail, name='get_observation_detail'),
