@@ -41,9 +41,16 @@
                     <tr>
                         <td>{{client.first_name}} {{client.last_name}}</td>
                         <td>+ {{client.phone_number}}</td>
-                        {% if client.type_sales == "ACA" %} <td>OBAMACARE</td>{% endif %}
-                        {% if client.type_sales == "SUPLEMENTARIO" %} <td>SUPPLEMENTAL</td> {% endif %}
-                        {% if client.type_sales == "ACA/SUPLEMENTARIO" %} <td>OBAMACARE / SUPPLEMENTAL</td> {% endif %}
+                        {% if client.type_sales == "ACA" %} 
+                            <td>OBAMACARE</td>
+                        {% elif client.type_sales == "SUPLEMENTARIO" %} 
+                            <td>SUPPLEMENTAL</td> 
+                        {% elif client.type_sales == "ACA/SUPLEMENTARIO" %} 
+                            <td>OBAMACARE / SUPPLEMENTAL</td> 
+                        {%else%}
+                            <td></td>
+                        {% endif %}
+
                         <td>
                             <button type="button" class="btn btn-outline-secondary" data-bs-toggle="dropdown" aria-expanded="false">Select action</button>
                             <ul class="dropdown-menu">

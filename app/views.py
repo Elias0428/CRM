@@ -371,15 +371,15 @@ def clientObamacare(request):
     roleAuditar = ['S', 'C',  'AU']
     
     if request.user.role in roleAuditar:
-        obamaCare = ObamaCare.objects.select_related('agent','client').filter(is_active = True)
+        obamaCare = ObamaCare.objects.select_related('agent','client').filter(is_active = True).order_by('-created_at')
     elif request.user.role == 'Admin':
-        obamaCare = ObamaCare.objects.select_related('agent', 'client')
+        obamaCare = ObamaCare.objects.select_related('agent', 'client').order_by('-created_at')
     elif request.user.role in ['A', 'SUPP']:
-        obamaCare = ObamaCare.objects.select_related('agent','client').filter(agent = request.user.id, is_active = True ) 
+        obamaCare = ObamaCare.objects.select_related('agent','client').filter(agent = request.user.id, is_active = True ).order_by('-created_at')
 
     for item in obamaCare:
-        client_name = item.client.agent_usa if item.client.agent_usa else "Sin Name"        
-        item.client.short_name = client_name.split()[0] + " ..." if " " in client_name else client_name
+        client_name = item.agent_usa if item.agent_usa else "Sin Name"        
+        item.short_name = client_name.split()[0] + " ..." if " " in client_name else client_name
 
 
     
@@ -391,15 +391,15 @@ def clientSupp(request):
     roleAuditar = ['S', 'SUPP',  'AU']
     
     if request.user.role in roleAuditar:
-        supp = Supp.objects.select_related('agent','client').filter(is_active = True )
+        supp = Supp.objects.select_related('agent','client').filter(is_active = True ).order_by('-created_at')
     elif request.user.role == 'Admin':
-        supp = Supp.objects.select_related('agent','client')
+        supp = Supp.objects.select_related('agent','client').order_by('-created_at')
     elif request.user.role in ['A', 'C']:
-        supp = Supp.objects.select_related('agent','client').filter(agent = request.user.id, is_active = True)
+        supp = Supp.objects.select_related('agent','client').filter(agent = request.user.id, is_active = True).order_by('-created_at')
 
     for item in supp:
-        client_name = item.client.agent_usa if item.client.agent_usa else "Sin Name"    
-        item.client.short_name = client_name.split()[0] + " ..." if " " in client_name else client_name
+        client_name = item.agent_usa if item.agent_usa else "Sin Name"    
+        item.short_name = client_name.split()[0] + " ..." if " " in client_name else client_name
 
     return render(request, 'table/clientSupp.html', {'supps':supp})
 
@@ -534,7 +534,7 @@ def editClientObama(request, obamacare_id):
                 'taxes', 'planName', 'carrierObama', 'profiling', 'subsidy', 'ffm', 'required_bearing',
                 'doc_income', 'doc_migration', 'statusObama', 'work', 'date_effective_coverage',
                 'date_effective_coverage_end', 'observationObama', 'agent_usa_obamacare','usernameCarrier',
-                'passwordCarrier'
+                'passwordCarrier','policyNumber'
             ]
             
             # Limpiar los campos de ObamaCare convirtiendo los vacíos en None
@@ -604,6 +604,7 @@ def editClientObama(request, obamacare_id):
                 plan_name=cleaned_obamacare_data['planName'],
                 carrier=cleaned_obamacare_data['carrierObama'],
                 profiling=profiling,
+                policyNumber=cleaned_obamacare_data['policyNumber'],
                 profiling_date=profiling_date,  # Se actualiza solo si profiling no es None - DannyZz
                 subsidy=cleaned_obamacare_data['subsidy'],
                 ffm=int(cleaned_obamacare_data['ffm']) if cleaned_obamacare_data['ffm'] else None,

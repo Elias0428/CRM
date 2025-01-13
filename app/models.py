@@ -64,7 +64,6 @@ class ContactClient(models.Model):
     class Meta:
         db_table = 'ContactClient'
 
-
 class Call(models.Model):
     id_client = models.ForeignKey(Client, on_delete=models.CASCADE)
     id_agent = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -100,7 +99,8 @@ class ObamaCare(models.Model):
     doc_income = models.BooleanField(default=False,null=True)
     doc_migration = models.BooleanField(default=False,null=True)
     status = models.CharField(max_length=50,null=True)
-    status_color = models.IntegerField(null = True)
+    status_color = models.IntegerField(null = True)    
+    policyNumber = models.CharField(max_length=200, null=True)
     work = models.CharField(max_length=50)
     img = models.FileField(null=True)
     date_effective_coverage = models.DateField(null=True)
@@ -139,7 +139,7 @@ class Supp(models.Model):
     premium = models.DecimalField(max_digits=10, decimal_places=2,)
     preventive = models.CharField(max_length=100)
     coverage = models.IntegerField()
-    policyNumber = models.CharField(max_length=100, null=True)
+    policyNumber = models.CharField(max_length=200, null=True)
     deducible = models.IntegerField()
     status = models.CharField(max_length=50,null=True)
     status_color = models.IntegerField(null = True)
