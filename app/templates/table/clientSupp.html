@@ -67,7 +67,7 @@
 							<div class="d-flex order-actions">
 								<a href="{% url 'editClientSupp' supp.client_id  supp.id %}" target="_blank" class=""><i class='bx bxs-edit'></i></a>
 								{% if request.user.is_superuser %}
-								<a href="{% url 'toggleObamaStatus' supp.id %}" class="ms-3"><i class='bx bxs-trash'></i></a>
+								<a href="{% url 'toggleSuppStatus' supp.id %}" class="ms-3"><i class='bx bxs-trash'></i></a>
 								{% endif %}
 							</div>
 						</td> 
