@@ -659,7 +659,7 @@ def editClientObama(request, obamacare_id):
     return render(request, 'edit/editClientObama.html', context)
 
 @login_required(login_url='/login')
-def editClientSupp(request, client_id,supp_id):
+def editClientSupp(request, supp_id):
 
     supp = Supp.objects.select_related('client','agent').filter(id=supp_id).first()
     obsSupp = ObservationAgent.objects.filter(id_supp=supp_id)
