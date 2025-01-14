@@ -383,7 +383,7 @@ def clientObamacare(request):
 
 
     
-    return render(request, 'table/clientObamacare.html', {'obamaCare':obamaCare})
+    return render(request, 'table/clientObamacare.html', {'obamacares':obamaCare})
 
 @login_required(login_url='/login')
 def clientSupp(request):
