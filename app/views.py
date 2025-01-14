@@ -2089,7 +2089,7 @@ def createQuality(request):
 
         consultQuality = ControlQuality.objects.filter(date__range=(start_date, end_date), agent = agent)
         agentReport = ControlQuality.objects.select_related('agent').filter(agent = agent).first
-        date = datetime.datetime.now
+        date = datetime.datetime.now()
 
         callAll = ControlCall.objects.filter(date__range=(start_date, end_date), agent = agent)
         # Sumar los valores de daily, answered y mins
