@@ -2079,7 +2079,8 @@ def tableControl(request):
 @login_required(login_url='/login')   
 def createQuality(request):
 
-    agents = User.objects.filter(is_active = True, role = 'A')
+    userRole = [ 'A' , 'C']
+    agents = User.objects.filter(is_active = True, role__in=userRole )
 
     if request.method == 'POST':
 
