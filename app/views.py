@@ -89,13 +89,7 @@ def motivationalPhrase(request):
 @login_required(login_url='/login') 
 def select_client(request):
 
-    # Roles con acceso ampliado
-    roleAuditar = ['S', 'Admin']
-
-    if request.user.role in roleAuditar:
-        clients = Client.objects.all()
-    else:
-        clients = Client.objects.filter(agent = request.user.id).exclude(type_sales = '')
+    clients = Client.objects.all()
     
     return render(request, 'agents/select_client.html', {'clients':clients})
 
@@ -576,39 +570,44 @@ def editClientObama(request, obamacare_id):
 
 
             # Recibir el valor seleccionado del formulario
-            selected_profiling = request.POST.get('profiling')
+            selected_profiling = request.POST.get('statusObama')
 
             sw = True
             color = obamacare.status_color
 
             # Recorrer los usuarios
-            for user in users:
+            for list_drows in list_drow:
                 # Comparar el valor seleccionado con el username de cada usuario
-                if selected_profiling == user.username:
+                if selected_profiling == 'ACTIVE':
                     color = 3
                     sw = False
                     break  # Si solo te interesa el primer match, puedes salir del bucle
             
-            for list_drow in list_drow:
-                if selected_profiling == list_drow.profiling_obama:
+            for list_drows in list_drow:
+                if selected_profiling == list_drows.profiling_obama:
                     color = 2
                     sw = False
                     break
             
-            if selected_profiling == 'VENTA CAIDA' or selected_profiling == 'CLIENTE CANCELO':
-                color = 4                    
+            if selected_profiling == 'CANCELED' or selected_profiling == 'SALE FALL' or selected_profiling == 'OTHER AGENT':
+                color = 4     
 
-            if selected_profiling is not None:  # Solo actualizamos profiling_date si profiling no es None - DannyZz
+            if cleaned_obamacare_data['profiling'] is not None:
                 profiling_date = timezone.now().date()
                 profiling = cleaned_obamacare_data['profiling']
             else:
-                profiling_date = obamacare.profiling_date  # Mantener el valor anterior si profiling es None - DannyZz
+                profiling_date = obamacare.profiling_date
                 profiling = obamacare.profiling
+
+
+            if selected_profiling is not None:  # Solo actualizamos profiling_date si profiling no es None                 
+                statusObama = cleaned_obamacare_data['statusObama']
+            else:
+                statusObama = obamacare.status  # Mantener el valor anterior si profiling es None                 
                 sw = False
 
             if sw :
-                color = 1  
-            
+                color = 1              
 
 
             # Actualizar ObamaCare
@@ -627,7 +626,7 @@ def editClientObama(request, obamacare_id):
                 doc_income=cleaned_obamacare_data['doc_income'],
                 status_color = color,
                 doc_migration=cleaned_obamacare_data['doc_migration'],
-                status=cleaned_obamacare_data['statusObama'],
+                status=statusObama,
                 work=cleaned_obamacare_data['work'],
                 date_effective_coverage=date_effective_coverage_new,
                 date_effective_coverage_end=date_effective_coverage_end_new,

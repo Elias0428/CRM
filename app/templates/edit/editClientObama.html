@@ -325,7 +325,7 @@
 						</div>
 						<div class="col-12 col-lg-4">
 							<label for="profiling" class="form-label">Enrolled by</label>
-							<select class="form-select" id="profiling"  name="profiling" {% for user in users %}{% if obamacare.profiling == user.username %}disabled{% endif %}{% endfor %}> 
+							<select required class="form-select" id="profiling"  name="profiling" {% for user in users %}{% if obamacare.profiling == user.first_name|stringformat:"s"|add:" "|add:user.last_name %}disabled{% endif %}{% endfor %}> 
 								<option value="" disabled selected>Please Select</option>
 								<option value="NO" {% if obamacare.profiling == "NO" %}selected{% endif %}>NO</option>                           
 								{% for user in users %}
@@ -335,7 +335,7 @@
 						</div>
 						<div class="col-12 col-lg-2">
 							<label for="statusObama" class="form-label">Status</label>
-							<select class="form-select" id="statusObama"  name="statusObama" >
+							<select required class="form-select" id="statusObama"  name="statusObama" >
 								<option value="" disabled selected>Please Select</option>								
 								{% for  list_drow in list_drow %}
 									<option value="{{list_drow.profiling_obama}}" {% if obamacare.profiling == list_drow.profiling_obama %}selected{% endif %} >{{list_drow.profiling_obama}}</option>                      
