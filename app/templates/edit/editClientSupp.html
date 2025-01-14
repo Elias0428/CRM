@@ -282,6 +282,7 @@
 							<label for="coverageSupp" class="form-label">Coverage</label>
 							<select class="form-select" id="coverageSupp"  name="coverageSupp" aria-label="Default select example" required>
 								<option value="" disabled selected>Please Select</option>
+								<option value="N/A" {% if supps.coverage == 'N/A' %}selected{% endif %}>N/A </option>
 								<option value="0" {% if supps.coverage == 0 %}selected{% endif %} >0</option>
 								<option value="500" {% if supps.coverage == 500 %}selected{% endif %} >500</option>
 								<option value="750" {% if supps.coverage == 750 %}selected{% endif %} >750</option>
@@ -304,6 +305,7 @@
 								<option value="100" {% if supps.deducible == 100 %}selected{% endif %} >100</option>
 									<option value="50" {% if supps.deducible == 50 %}selected{% endif %} >50</option>
 									<option value="0" {% if supps.deducible == 0 %}selected{% endif %} >0</option>
+									<option value="N/A" {% if supps.deducible == 'N/A' %}selected{% endif %}>N/A </option>
 							</select>
 						</div>
 						<div class="col-12 col-lg-5">
