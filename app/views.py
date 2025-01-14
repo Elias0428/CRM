@@ -942,8 +942,8 @@ def formCreateUser(request):
     roles = User.ROLES_CHOICES  # Obtén las opciones dinámicamente desde el modelo
 
     if request.method == 'POST':
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
+        first_name = request.POST.get('first_name').upper()
+        last_name = request.POST.get('last_name').upper()
         username = request.POST.get('username')
         password = request.POST.get('password')
         role = request.POST.get('role')
