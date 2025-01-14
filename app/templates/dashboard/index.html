@@ -134,7 +134,7 @@
 					</ul>
 				</li>
 				{% endif %}
-				{% if request.user.role == 'Admin' or request.user.role == 'AU'  %}
+				{% if request.user.role == 'Admin' or request.user.role == 'AU' or request.user.role == 'S' %}
 				<li class="menu-label">Reports Quality</li>
 				<li>
 					<a class="has-arrow" href="javascript:;">
