@@ -329,7 +329,8 @@
 								<option value="" disabled selected>Please Select</option>
 								<option value="NO" {% if obamacare.profiling == "NO" %}selected{% endif %}>NO</option>                           
 								{% for user in users %}
-									<option value="{{ user.first_name }} {{ user.last_name }}" {% if obamacare.profiling == user.first_name|stringformat:"s" ~ " " ~ user.last_name %}selected{% endif %}>{{ user.first_name }} {{ user.last_name }}</option>                  
+									<option value="{{ user.first_name }} {{ user.last_name }}" {% if obamacare.profiling == user.first_name|stringformat:"s"|add:" "|add:user.last_name %}selected{% endif %}>{{ user.first_name }} {{ user.last_name }}</option>
+                 
 								{% endfor %}
 								{% for  list_drow in list_drow %}
 									<option value="{{list_drow.profiling_obama}}" {% if obamacare.profiling == list_drow.profiling_obama %}selected{% endif %} >{{list_drow.profiling_obama}}</option>                      
