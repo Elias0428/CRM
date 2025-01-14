@@ -468,7 +468,7 @@ def clean_fields_to_null(request, field_names):
         cleaned_data[field] = clean_field_to_null(value)
     return cleaned_data
 
-def editClient(request,agent_id):
+def editClient(request,client_id):
 
     # Campos de Client
     client_fields = [
@@ -483,8 +483,15 @@ def editClient(request,agent_id):
     # Limpiar los campos de Client convirtiendo los vacíos en None
     cleaned_client_data = clean_fields_to_null(request, client_fields)
 
+    # Convierte a mayúsculas los campos necesarios
+    fields_to_uppercase = ['first_name', 'last_name', 'address', 'city', 'county']
+    for field in fields_to_uppercase:
+        if field in cleaned_client_data and cleaned_client_data[field]:
+            cleaned_client_data[field] = cleaned_client_data[field].upper()
+
+
     # Actualizar Client
-    client = Client.objects.filter(id=agent_id).update(
+    client = Client.objects.filter(id=client_id).update(
         agent_usa=cleaned_client_data['agent_usa'],
         first_name=cleaned_client_data['first_name'],
         last_name=cleaned_client_data['last_name'],
@@ -539,6 +546,12 @@ def editClientObama(request, obamacare_id):
             
             # Limpiar los campos de ObamaCare convirtiendo los vacíos en None
             cleaned_obamacare_data = clean_fields_to_null(request, obamacare_fields)
+
+            # Convierte a mayúsculas los campos necesarios
+            fields_to_uppercase = ['planName']
+            for field in fields_to_uppercase:
+                if field in cleaned_obamacare_data and cleaned_obamacare_data[field]:
+                    cleaned_obamacare_data[field] = cleaned_obamacare_data[field].upper()
 
             #formateo de fecha para guardalar como se debe en BD ya que la obtengo USA
             date_bearing = request.POST.get('date_bearing')  # Formato MM/DD/YYYY
@@ -595,6 +608,7 @@ def editClientObama(request, obamacare_id):
 
             if sw :
                 color = 1  
+            
 
 
             # Actualizar ObamaCare
@@ -679,7 +693,7 @@ def editClientSupp(request, supp_id):
 
         if action == 'save_supp':
 
-            editClient(request, client_id)
+            editClient(request, supp.client.id)
             dependents= editDepentsSupp(request, supp_id)
 
             #formateo de fecha para guardalar como se debe en BD ya que la obtengo USA
