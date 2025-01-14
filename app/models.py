@@ -92,7 +92,7 @@ class ObamaCare(models.Model):
     carrier = models.CharField(max_length=200)
     profiling = models.CharField(max_length=200,default='NO')
     profiling_date = models.DateField(null=True)
-    subsidy = models.BigIntegerField()
+    subsidy = models.DecimalField(max_digits=10, decimal_places=2,)
     ffm = models.BigIntegerField(null=True)
     required_bearing = models.BooleanField(default=False,null=True)
     date_bearing = models.DateField(null=True)
