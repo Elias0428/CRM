@@ -575,7 +575,6 @@ def editClientObama(request, obamacare_id):
             selected_profiling = request.POST.get('statusObama')
 
             sw = True
-            color = obamacare.status_color
 
             # Recorrer los usuarios
             for list_drows in list_drow:
@@ -587,9 +586,11 @@ def editClientObama(request, obamacare_id):
             
             for list_drows in list_drow:
                 if selected_profiling == list_drows.profiling_obama:
-                    color = 2
-                    sw = False
-                    break
+                    if selected_profiling != 'ACTIVE':
+                        color = 2
+                        sw = False
+                        break
+            
             
             if selected_profiling == 'CANCELED' or selected_profiling == 'SALE FALL' or selected_profiling == 'OTHER AGENT':
                 color = 4     
@@ -609,7 +610,8 @@ def editClientObama(request, obamacare_id):
                 sw = False
 
             if sw :
-                color = 1              
+                color = 1   
+
 
 
             # Actualizar ObamaCare
@@ -804,7 +806,13 @@ def editDepentsObama(request, obamacare_id):
 
             # Resetear la fecha guardarla como se debe porque la traigo en formato USA
             date_birth = request.POST.get(f'dateBirthDependent_{dependent.id}')
-            dateNew = datetime.strptime(date_birth, '%m/%d/%Y').date()
+
+            # Conversión solo si los valores no son nulos o vacíos
+            if date_birth not in [None, '']:
+                date_birth_new = datetime.strptime(date_birth, '%m/%d/%Y').date()
+            else:
+                date_birth_new = None
+            
 
             # Obtener los datos enviados por cada dependiente
             dependent_id = request.POST.get(f'dependentId_{dependent.id}')
@@ -822,7 +830,7 @@ def editDepentsObama(request, obamacare_id):
                     dependent.name = name
                     dependent.apply = apply
                     dependent.kinship = kinship
-                    dependent.date_birth = dateNew
+                    dependent.date_birth = date_birth_new
                     dependent.migration_status = migration_status
                     dependent.sex = sex
 

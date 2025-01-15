@@ -169,11 +169,11 @@
 						<div class="col-12 col-lg-6">
 							<label class="form-label">Name of Dependent #{{ forloop.counter }}</label>
 							<input type="hidden" name="dependentId_{{ dependent.id }}" value="{{ dependent.id }}">
-							<input type="text" class="form-control" name="nameDependent_{{ dependent.id }}" value="{{ dependent.name }}" >
+							<input type="text" class="form-control" name="nameDependent_{{ dependent.id }}" value="{{ dependent.name }}" required >
 						</div>
 						<div class="col-12 col-lg-2">
 							<label class="form-label">Apply</label>
-							<select class="form-select" name="applyDependent_{{ dependent.id }}">
+							<select class="form-select" name="applyDependent_{{ dependent.id }}" required>
 								<option value="" disabled selected>Please Select</option>
 								<option value="YES" {% if dependent.apply == "YES" %}selected{% endif %}>YES</option>
 								<option value="NO" {% if dependent.apply == "NO" %}selected{% endif %}>NO</option>
@@ -181,7 +181,7 @@
 						</div>
 						<div class="col-12 col-lg-4">
 							<label class="form-label">Sex</label>
-							<select class="form-select" name="sexDependent_{{ dependent.id }}">
+							<select class="form-select" name="sexDependent_{{ dependent.id }}" required>
 								<option value="" disabled selected>Please Select</option>
 								<option value="M" {% if dependent.sex == "M" %}selected{% endif %}>MALE</option>
 								<option value="F" {% if dependent.sex == "F" %}selected{% endif %}>FEMALE</option>
@@ -205,7 +205,7 @@
 						</div>
 						<div class="col-12 col-lg-6">
 							<label class="form-label">Migration Status</label>
-							<select class="form-select" name="migrationStatusDependent_{{ dependent.id }}">		
+							<select class="form-select" name="migrationStatusDependent_{{ dependent.id }}" required >		
 								<option value="" disabled selected>Please Select</option>
 								<option value="EMPLOYMENT AUTHORIZATION" {% if dependent.migration_status == "EMPLOYMENT AUTHORIZATION" %}selected{% endif %} >Employment Authorization</option>
 								<option value="NOTICE OF ACTION" {% if dependent.migration_status == "NOTICE OF ACTION" %}selected{% endif %} >Notice of Action (i-797)</option>
@@ -340,9 +340,9 @@
 						<div class="col-12 col-lg-2">
 							<label for="statusObama" class="form-label">Status</label>
 							<select required class="form-select" id="statusObama"  name="statusObama" >
-								<option value="" disabled selected>Please Select</option>								
+								<option value="" disabled selected>Please Select</option>					
 								{% for  list_drow in list_drow %}
-									<option value="{{list_drow.profiling_obama}}" {% if obamacare.profiling == list_drow.profiling_obama %}selected{% endif %} >{{list_drow.profiling_obama}}</option>                      
+									<option value="{{list_drow.profiling_obama}}" {% if obamacare.status == list_drow.profiling_obama %}selected{% endif %} >{{list_drow.profiling_obama}}</option>                      
 								{% endfor %}
 							</select>
 						</div>

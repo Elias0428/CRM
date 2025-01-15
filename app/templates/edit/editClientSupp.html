@@ -168,11 +168,11 @@
 							<div class="col-12 col-lg-6">
 								<label class="form-label">Name of Dependent #{{ forloop.counter }}</label>
 								<input type="hidden" name="dependentId_{{ dependent.id }}" value="{{ dependent.id }}">
-								<input type="text" class="form-control" name="nameDependent_{{ dependent.id }}" value="{{ dependent.name }}" >
+								<input type="text" class="form-control" name="nameDependent_{{ dependent.id }}" value="{{ dependent.name }}" required >
 							</div>
 							<div class="col-12 col-lg-2">
 								<label class="form-label">Apply</label>
-								<select class="form-select" name="applyDependent_{{ dependent.id }}">
+								<select class="form-select" name="applyDependent_{{ dependent.id }}" required >
 									<option value="" disabled selected>Please Select</option>
 									<option value="SI" {% if dependent.apply == "SI" %}selected{% endif %}>SI</option>
 									<option value="NO" {% if dependent.apply == "NO" %}selected{% endif %}>NO</option>
@@ -180,7 +180,7 @@
 							</div>
 							<div class="col-12 col-lg-4">
 								<label class="form-label">Sex</label>
-								<select class="form-select" name="sexDependent_{{ dependent.id }}">
+								<select class="form-select" name="sexDependent_{{ dependent.id }}" required >
 									<option value="" disabled selected>Please Select</option>
 									<option value="M" {% if dependent.sex == "M" %}selected{% endif %}>MALE</option>
 									<option value="F" {% if dependent.sex == "F" %}selected{% endif %}>FEMALE</option>
@@ -204,7 +204,7 @@
 							</div>
 							<div class="col-12 col-lg-6">
 								<label class="form-label">Migration Status</label>
-								<select class="form-select" name="migrationStatusDependent_{{ dependent.id }}">
+								<select class="form-select" name="migrationStatusDependent_{{ dependent.id }}" required>
 									<option value="" disabled selected>Please Select</option>
 									<option value="EMPLOYMENT AUTHORIZATION" {% if   dependent.migration_status == "EMPLOYMENT AUTHORIZATION" %}selected{% endif %} >Employment Authorization</option>
 									<option value="NOTICE OF ACTION" {% if   dependent.migration_status == "NOTICE OF ACTION" %}selected{% endif %} >Notice of Action (i-797)</option>
