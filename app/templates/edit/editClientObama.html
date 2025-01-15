@@ -315,11 +315,15 @@
 								<option value = False {% if obamacare.doc_migration == False %}selected{% endif %} >NO</option>
 							</select>
 						</div>						
-						<div class="col-12 col-lg-6">
+						<div class="col-12 col-lg-4">
 							<label for="planName" class="form-label">Plan Name</label>
 							<input type="text" class="form-control" id="planName" name="planName" value="{{ obamacare.plan_name }}" required  >
 						</div>
-						<div class="col-12 col-lg-4">
+						<div class="col-12 col-lg-3">
+							<label for="premium" class="form-label">Premium</label>
+							<input type="text" class="form-control" id="premium" name="premium" value="{{ obamacare.premium }}" step="0.00" required >
+						</div>
+						<div class="col-12 col-lg-3">
 							<label for="policyNumber" class="form-label">Police Number</label>
 							<input type="text" class="form-control" id="policyNumber" name="policyNumber" value="{{ obamacare.policyNumber }}" >
 						</div>

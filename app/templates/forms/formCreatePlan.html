@@ -173,6 +173,10 @@
 										<option value= "0" {% if aca_plan_data.doc_migration == 0 %}selected{% endif %}>No</option>
 									</select>
 								</div>
+								<div class="col-12 col-lg-4">
+									<label for="premium" class="form-label">Premium</label>
+									<input type="number" class="form-control" id="premium" step="0.00" value="{{aca_plan_data.premium}}"  name="premium" required >
+								</div>
 								<div class="col-12 col-lg-12">
 									<label for="observationObama" class="form-label">Observation</label>
 									<textarea class="form-control" id="observationObama" name="observationObama" rows="3" placeholder="Obamacare plan observation" style="resize: none">{{aca_plan_data.observation}}</textarea>

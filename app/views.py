@@ -190,7 +190,8 @@ def fetchAca(request, client_id):
             carrier=request.POST.get('carrierObama'),
             doc_income=request.POST.get('doc_income'),
             doc_migration=request.POST.get('doc_migration'),
-            observation=request.POST.get('observationObama')
+            observation=request.POST.get('observationObama'),
+            premium=request.POST.get('premium')
         )
         aca_plan = ObamaCare.objects.get(id=aca_plan_id)
         created = False
@@ -209,6 +210,7 @@ def fetchAca(request, client_id):
                 'observation': request.POST.get('observationObama'),
                 'doc_migration': request.POST.get('doc_migration'),
                 'doc_income': request.POST.get('doc_income'),
+                'premium': request.POST.get('premium'),
                 'status_color': 1,
                 'profiling':'NO'
             }
@@ -535,7 +537,7 @@ def editClientObama(request, obamacare_id):
                 'taxes', 'planName', 'carrierObama', 'profiling', 'subsidy', 'ffm', 'required_bearing',
                 'doc_income', 'doc_migration', 'statusObama', 'work', 'date_effective_coverage',
                 'date_effective_coverage_end', 'observationObama', 'agent_usa_obamacare','usernameCarrier',
-                'passwordCarrier','policyNumber'
+                'passwordCarrier','policyNumber','premium'
             ]
             
             # Limpiar los campos de ObamaCare convirtiendo los vacíos en None
@@ -628,6 +630,7 @@ def editClientObama(request, obamacare_id):
                 doc_migration=cleaned_obamacare_data['doc_migration'],
                 status=statusObama,
                 work=cleaned_obamacare_data['work'],
+                premium=cleaned_obamacare_data['premium'],
                 date_effective_coverage=date_effective_coverage_new,
                 date_effective_coverage_end=date_effective_coverage_end_new,
                 observation=cleaned_obamacare_data['observationObama'],
@@ -2488,6 +2491,11 @@ def consent(request, obamacare_id):
         objectClient = save_data_from_request(Client, request.POST, ['agent'],obamacare.client)
         objectObamacare = save_data_from_request(ObamaCare, request.POST, ['signature'], obamacare)
         
+        # Usamos la nueva función para guardar los checkboxes en ContactClient
+        objectContact = save_contact_client_checkboxes(request.POST, contact)
+
+        
+        
         for document in documents:
             photo = DocumentsClient(
                 file=document,
@@ -2542,6 +2550,20 @@ def generateConsentPdf(request, obamacare, dependents, supps):
     current_date = datetime.now().strftime("%A, %B %d, %Y %I:%M")
     date_more_3_months = (datetime.now() + timedelta(days=90)).strftime("%A, %B %d, %Y %I:%M")
 
+    contact = ContactClient.objects.filter(client = obamacare.client).first()
+
+    # Obtener los campos con valor True
+    true_fields = []
+
+    if contact.sms: true_fields.append('sms')
+    if contact.phone: true_fields.append('phone')
+    if contact.email: true_fields.append('email')
+    if contact.whatsapp: true_fields.append('whatsapp')
+
+    # Variable con los nombres de los campos
+    var = ", ".join(true_fields)
+    
+
     consent = Consents.objects.create(
         obamacare=obamacare,
     )
@@ -2563,7 +2585,8 @@ def generateConsentPdf(request, obamacare, dependents, supps):
         'social_security':request.POST.get('socialSecurity'),
         'current_date':current_date,
         'date_more_3_months':date_more_3_months,
-        'ip':getIPClient(request)
+        'ip':getIPClient(request),
+        'var':var
     }
 
     # Renderiza la plantilla HTML a un string
@@ -2661,6 +2684,30 @@ def save_data_from_request(model_class, post_data, exempted_fields, instance=Non
 
     except Exception as e:
         return False
+
+def save_contact_client_checkboxes(post_data, contact_instance):
+    """
+    Guarda o actualiza los campos de tipo checkbox en ContactClient (phone, email, sms, whatsapp).
+    
+    Args:
+        post_data (QueryDict): Datos enviados en el request.POST.
+        contact_instance (ContactClient): Instancia de ContactClient a actualizar.
+
+    Returns:
+        ContactClient: Instancia de ContactClient actualizada.
+    """
+    checkbox_fields = ['phone', 'email', 'sms', 'whatsapp']
+    
+    # Asegúrate de que solo los campos seleccionados se marquen como True
+    for field in checkbox_fields:
+        # Si el checkbox está marcado (enviará 'on'), lo asignamos como True
+        if post_data.get(field) == 'on':
+            setattr(contact_instance, field, True)
+        else:
+            setattr(contact_instance, field, False)
+    
+    contact_instance.save()  # Guardar la instancia actualizada
+    return contact_instance
 
 def getCompanyPerAgent(agent):
     agent_upper = agent.upper()

@@ -90,6 +90,7 @@ class ObamaCare(models.Model):
     taxes = models.IntegerField()
     plan_name = models.CharField(max_length=200)
     carrier = models.CharField(max_length=200)
+    premium = models.DecimalField(max_digits=10, decimal_places=2)
     profiling = models.CharField(max_length=200,default='NO')
     profiling_date = models.DateField(null=True)
     subsidy = models.DecimalField(max_digits=10, decimal_places=2,)

@@ -37,6 +37,7 @@ function saveAcaPlan() {
     formData.append('doc_income', document.getElementById('doc_income').value)
     formData.append('doc_migration', document.getElementById('doc_migration').value)
     formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value)
+    formData.append('premium', document.querySelector('premium').value) 
 
     var acaPlanId = document.getElementById('acaPlanId').value;
     var acaPlan = document.getElementById('acaPlan').value;
@@ -89,7 +90,7 @@ function saveSupplementaryPlan() {
       const coverageSupp = plan.querySelector('[name="coverageSupp"]').value;
       const deducibleSupp = plan.querySelector('[name="deducibleSupp"]').value;
       const observationSuple = plan.querySelector('[name="observationSuple"]').value;
-      const suppIdField = plan.querySelector('[name="suppId"]');
+      const suppIdField = plan.querySelector('[name="suppId"]'); 
 
       
       let suppId = suppIdField ? suppIdField.value : '';

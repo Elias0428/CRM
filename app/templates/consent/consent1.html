@@ -179,21 +179,21 @@
                         <div class="row">
                             <div class="col-6">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox"  id="phone" value="Telefono" name="contactMethod" {% if contact.phone %}checked{% endif %} />
+                                    <input class="form-check-input contactMethod" type="checkbox"  id="Telefono"  name="phone" {% if contact.phone %}checked{% endif %} />
                                     <label class="form-check-label" for="">{% trans "Telefono" %}</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox"  id="phone" value="Sms" name="contactMethod" {% if contact.sms %}checked{% endif %} />
+                                    <input class="form-check-input contactMethod" type="checkbox"  id="Sms"  name="sms" {% if contact.sms %}checked{% endif %} />
                                     <label class="form-check-label" for="">{% trans "Mensajes de Texto" %}</label>
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="Email" id="email" name="contactMethod" {% if contact.email %}checked{% endif %} />
+                                    <input class="form-check-input contactMethod" type="checkbox" id="Email"  name="email" {% if contact.email %}checked{% endif %} />
                                     <label class="form-check-label" for="">Email</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="whatsapp" value="Whatsapp" name="contactMethod" {% if contact.whatsapp %}checked{% endif %} />
+                                    <input class="form-check-input contactMethod" type="checkbox" id="Whatsapp" name="whatsapp" {% if contact.whatsapp %}checked{% endif %} />
                                     <label class="form-check-label" for="">Whatsapp</label>
                                 </div>
                             </div>
@@ -441,8 +441,8 @@
 
     <script>
         function updateAuthorizationText() {
-            const selectedMethods = Array.from(document.querySelectorAll('input[name="contactMethod"]:checked'))
-                .map(checkbox => checkbox.value);
+            const selectedMethods = Array.from(document.querySelectorAll('input[class="form-check-input contactMethod"]:checked'))
+                .map(checkbox => checkbox.id);
 
             const authorizationText = document.getElementById('authorizationText');
             authorizationText.textContent = selectedMethods.length > 0 
