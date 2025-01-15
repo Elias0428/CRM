@@ -67,12 +67,33 @@
 						{% endif  %}
                         <td>
 							<div class="d-flex order-actions">
-								<a href="{% url 'editClientObama' obamacare.id  %}" class=""><i class='bx bxs-edit'></i></a>
-								<a href="{% url 'viewConsent' obamacare.id %}" target="_blank" class="ms-3"><i class='bx bx-clipboard'></i></a>
+								<!-- Botón principal del dropdown -->
+								<button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+									Consents
+								</button>
+								<!-- Lista del dropdown -->
+								<ul class="dropdown-menu">
+									<li>
+										<form action="{% url 'viewConsent' obamacare.id %}" method="get" target="_blank">
+                                            <input type="hidden" name="lenguaje" value="en">
+											<button type="submit" class="dropdown-item">English</button>
+										</form>
+									</li>
+									<li>
+										<form action="{% url 'viewConsent' obamacare.id %}" method="get" target="_blank">                                         <input type="hidden" name="lenguaje" value="en">
+                                            <input type="hidden" name="lenguaje" value="es">
+											<button type="submit" class="dropdown-item">Spanish</button>
+										</form>
+									</li>
+								</ul>
+								<a href="{% url 'editClientObama' obamacare.id  %}" class="ms-3"><i class='bx bxs-edit'></i></a>					
 								{% if request.user.is_superuser %}
-								<a href="{% url 'toggleObamaStatus' obamacare.id %}" class="ms-3"><i class='bx bxs-trash'></i></a>
+								<a href="{% url 'toggleObamaStatus' obamacare.id %}" class="ms-3">
+									<i class="bx bxs-trash"></i>
+								</a>
 								{% endif %}
 							</div>
+							
 						</td> 
                     </tr>
                     {% endfor %}
