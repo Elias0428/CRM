@@ -26,14 +26,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AnonymousUser
 from django.db.models import Count, Q, Sum, Value, TextField, F
-from django.db.models.functions import Coalesce
+from django.db.models.functions import Coalesce, Substr
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 
 # Third-party libraries
 from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
+from channels.layers import get_channel_layer  
 from weasyprint import HTML
 
 # Application-specific imports
@@ -367,16 +367,14 @@ def clientObamacare(request):
     roleAuditar = ['S', 'C',  'AU']
     
     if request.user.role in roleAuditar:
-        obamaCare = ObamaCare.objects.select_related('agent','client').filter(is_active = True).order_by('-created_at')
+        obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
+            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True).order_by('-created_at')
     elif request.user.role == 'Admin':
-        obamaCare = ObamaCare.objects.select_related('agent', 'client').order_by('-created_at')
+        obamaCare = ObamaCare.objects.select_related('agent', 'client').annotate(
+            truncated_agent_usa=Substr('agent_usa', 1, 8)).order_by('-created_at')
     elif request.user.role in ['A', 'SUPP']:
-        obamaCare = ObamaCare.objects.select_related('agent','client').filter(agent = request.user.id, is_active = True ).order_by('-created_at')
-
-    for item in obamaCare:
-        client_name = item.agent_usa if item.agent_usa else "Sin Name"        
-        item.short_name = client_name.split()[0] + " ..." if " " in client_name else client_name
-
+        obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
+            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(agent = request.user.id, is_active = True ).order_by('-created_at')
 
     
     return render(request, 'table/clientObamacare.html', {'obamacares':obamaCare})
@@ -387,9 +385,9 @@ def clientSupp(request):
     roleAuditar = ['S', 'SUPP',  'AU']
     
     if request.user.role in roleAuditar:
-        supp = Supp.objects.select_related('agent','client').filter(is_active = True ).order_by('-created_at')
+        supp = Supp.objects.select_related('agent','client').filter(is_active = True ).order_by('-status_color')
     elif request.user.role == 'Admin':
-        supp = Supp.objects.select_related('agent','client').order_by('-created_at')
+        supp = Supp.objects.select_related('agent','client').order_by('-status_color')
     elif request.user.role in ['A', 'C']:
         supp = Supp.objects.select_related('agent','client').filter(agent = request.user.id, is_active = True).order_by('-created_at')
 
@@ -893,6 +891,7 @@ def formCreateAlert(request):
         if formClient.is_valid():
             alert = formClient.save(commit=False)
             alert.agent = request.user
+            alert.is_active = True
             alert.save()
             return redirect('formCreateAlert')  # Cambia a tu página de éxito
 
@@ -1338,7 +1337,7 @@ def chartSaleIndex(request):
                 agent_sale_supp__created_at__lt=end_of_month,
                 agent_sale_supp__is_active=True
             ), distinct=True), 0)
-        ).filter(role__in=['A', 'C']).values('first_name', 'obamacare_count', 'obamacare_count_total', 'supp_count', 'supp_count_total')
+        ).filter(is_active = True).values('first_name', 'obamacare_count', 'obamacare_count_total', 'supp_count', 'supp_count_total')
 
     elif request.user.role not in roleAuditar:
         # Para usuarios con rol 'A': consultar datos solo para el usuario actual
@@ -1844,16 +1843,20 @@ def salesBonusAgent(start_date=None, end_date=None):
 def saleClientStatusObama(start_date=None, end_date=None):
 
     # Consulta para Registered
-    sales_query_registered = ObamaCare.objects.select_related('agent','client').filter(status_color = 1, is_active = True)
+    sales_query_registered = ObamaCare.objects.select_related('agent','client').annotate(
+        truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(status_color = 1, is_active = True)
     
     # Consulta para Proccessing
-    sales_query_proccessing = ObamaCare.objects.select_related('agent','client').filter(status_color = 2, is_active = True ) 
+    sales_query_proccessing = ObamaCare.objects.select_related('agent','client').annotate(
+        truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(status_color = 2, is_active = True ) 
 
     # Consulta para Profiling
-    sales_query_profiling = ObamaCare.objects.select_related('agent','client').filter(status_color = 3, is_active = True ) 
+    sales_query_profiling = ObamaCare.objects.select_related('agent','client').annotate(
+        truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(status_color = 3, is_active = True ) 
     
     # Consulta para Canceled
-    sales_query_canceled = ObamaCare.objects.select_related('agent','client').filter(status_color = 4, is_active = True )
+    sales_query_canceled = ObamaCare.objects.select_related('agent','client').annotate(
+        truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(status_color = 4, is_active = True )
 
     # Si no se proporcionan fechas, filtrar por el mes actual
     if not start_date and not end_date:
@@ -1895,16 +1898,21 @@ def saleClientStatusObama(start_date=None, end_date=None):
 def saleClientStatusSupp(start_date=None, end_date=None):
 
     # Consulta para Registered
-    registered_supp = Supp.objects.select_related('agent','client').filter(status_color = 1, is_active = True)
+    registered_supp = Supp.objects.select_related('agent','client').annotate(
+        truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(status_color = 1, is_active = True)
+    
     
     # Consulta para Proccessing
-    proccessing_supp = Supp.objects.select_related('agent','client').filter(status_color = 2, is_active = True ) 
+    proccessing_supp = Supp.objects.select_related('agent','client').annotate(
+        truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(status_color = 2, is_active = True ) 
 
     # Consulta para Active
-    active_supp = Supp.objects.select_related('agent','client').filter(status_color = 3, is_active = True ) 
+    active_supp = Supp.objects.select_related('agent','client').annotate(
+        truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(status_color = 3, is_active = True ) 
     
     # Consulta para Canceled
-    canceled_supp = Supp.objects.select_related('agent','client').filter(status_color = 4, is_active = True )
+    canceled_supp = Supp.objects.select_related('agent','client').annotate(
+        truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(status_color = 4, is_active = True )
 
     # Si no se proporcionan fechas, filtrar por el mes actual
     if not start_date and not end_date:
