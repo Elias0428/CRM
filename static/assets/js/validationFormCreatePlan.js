@@ -37,7 +37,7 @@ function saveAcaPlan() {
     formData.append('doc_income', document.getElementById('doc_income').value)
     formData.append('doc_migration', document.getElementById('doc_migration').value)
     formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value)
-    formData.append('premium', document.querySelector('premium').value) 
+    formData.append('premium', document.getElementById('premium').value) 
 
     var acaPlanId = document.getElementById('acaPlanId').value;
     var acaPlan = document.getElementById('acaPlan').value;

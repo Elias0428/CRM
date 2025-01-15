@@ -233,7 +233,6 @@ class ExcelFileMetadata(models.Model):
     class Meta:
         db_table = 'ExcelFileMetadata'
 
-
 class BdExcel(models.Model):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255,null=True)
@@ -249,7 +248,6 @@ class BdExcel(models.Model):
     class Meta:
         db_table = 'bd_excel'
 
-
 class ControlQuality(models.Model):
     agent_create = models.ForeignKey(User,on_delete=models.CASCADE, related_name='created_controls' )
     agent = models.ForeignKey(User,on_delete=models.CASCADE, related_name='assigned_controls')
@@ -263,7 +261,6 @@ class ControlQuality(models.Model):
 
     class Meta:
         db_table = 'ControlQuality'
-
 
 class ControlCall(models.Model):
     agent_create = models.ForeignKey(User,on_delete=models.CASCADE, related_name='created_controls_call' )
