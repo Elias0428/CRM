@@ -592,7 +592,7 @@ def editClientObama(request, obamacare_id):
                         break
             
             
-            if selected_profiling == 'CANCELED' or selected_profiling == 'SALE FALL' or selected_profiling == 'OTHER AGENT':
+            if selected_profiling == 'CANCELED' or selected_profiling == 'SALE FALL' or selected_profiling == 'OTHER PARTY':
                 color = 4     
 
             if cleaned_obamacare_data['profiling'] is not None:
