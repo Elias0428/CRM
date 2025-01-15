@@ -388,6 +388,11 @@ def clientSupp(request):
         supp = Supp.objects.select_related('agent','client').filter(is_active = True).exclude(status_color = 1).annotate(
             truncated_agent_usa=Substr('agent_usa', 1, 8)).order_by('-created_at')
         suppPay = Supp.objects.select_related('agent','client').filter(is_active = True, status_color = 1 )
+
+        for item in suppPay:
+            client_name = item.agent_usa if item.agent_usa else "Sin Name"    
+            item.short_name = client_name.split()[0] + " ..." if " " in client_name else client_name
+
     elif request.user.role == 'Admin':
         supp = Supp.objects.select_related('agent','client').annotate(
             truncated_agent_usa=Substr('agent_usa', 1, 8)).order_by('-created_at')
@@ -396,10 +401,6 @@ def clientSupp(request):
         supp = Supp.objects.select_related('agent','client').annotate(
             truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(agent = request.user.id, is_active = True).order_by('-created_at')
         suppPay = False
-
-    for item in suppPay:
-        client_name = item.agent_usa if item.agent_usa else "Sin Name"    
-        item.short_name = client_name.split()[0] + " ..." if " " in client_name else client_name
 
     return render(request, 'table/clientSupp.html', {'supps':supp,'suppPay':suppPay})
 
