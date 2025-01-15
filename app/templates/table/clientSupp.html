@@ -23,6 +23,47 @@
 {% endblock %}
 {% block page_content %}
 <h6 class="mb-0 text-uppercase">Client supplemental</h6>
+{% if suppPay %}
+<hr/>
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="tableClient2" class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Agent USA</th>
+                        <th>Agent COL</th>
+                        <th>Name</th>
+                        <th>Phone Numbers</th>
+						<th>Date</th>
+						<th>Type Police</th>
+                        <th>Status</th>
+                        <th>Options</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for supp in suppPay %}
+                    <tr>
+                        <td>{{supp.short_name}}</td>
+                        <td>{{supp.agent.first_name}} {{supp.agent.last_name}}</td>
+                        <td>{{supp.client.first_name}} {{supp.client.last_name}}</td>
+                        <td>+ {{supp.client.phone_number}}</td>
+						<td>{{supp.created_at|date:"m-d-Y"}}</td>
+						<td>{{supp.policy_type}}</td>
+						<td><span class="badge rounded-pill bg-danger">{{supp.status}}</span></td>
+                        <td>
+							<div class="d-flex order-actions">
+								<a href="{% url 'editClientSupp' supp.id %}" target="_blank" class=""><i class='bx bxs-edit'></i></a>
+							</div>
+						</td> 
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
 <hr/>
 <div class="card">
     <div class="card-body">
@@ -46,7 +87,7 @@
                 <tbody>
                     {% for supp in supps %}
                     <tr>
-                        <td>{{supp.short_name}}</td>
+                        <td>{{supp.truncated_agent_usa}}</td>
                         <td>{{supp.agent.first_name}} {{supp.agent.last_name}}</td>
                         <td>{{supp.client.first_name}} {{supp.client.last_name}}</td>
                         <td>+ {{supp.client.phone_number}}</td>
@@ -91,6 +132,7 @@
 	<script src="{% static "assets/plugins/datatable/js/dataTables.bootstrap5.min.js" %}"></script>
 	<script>
 		$(document).ready(function() {$('#tableClient').DataTable();} );
+		$(document).ready(function() {$('#tableClient2').DataTable();} );
 	</script>
 	<!--app JS-->
 	<script src="{% static "assets/js/app.js" %}"></script>

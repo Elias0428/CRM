@@ -385,17 +385,23 @@ def clientSupp(request):
     roleAuditar = ['S', 'SUPP',  'AU']
     
     if request.user.role in roleAuditar:
-        supp = Supp.objects.select_related('agent','client').filter(is_active = True ).order_by('-status_color')
+        supp = Supp.objects.select_related('agent','client').filter(is_active = True).exclude(status_color = 1).annotate(
+            truncated_agent_usa=Substr('agent_usa', 1, 8)).order_by('-created_at')
+        suppPay = Supp.objects.select_related('agent','client').filter(is_active = True, status_color = 1 )
     elif request.user.role == 'Admin':
-        supp = Supp.objects.select_related('agent','client').order_by('-status_color')
+        supp = Supp.objects.select_related('agent','client').annotate(
+            truncated_agent_usa=Substr('agent_usa', 1, 8)).order_by('-created_at')
+        suppPay = False
     elif request.user.role in ['A', 'C']:
-        supp = Supp.objects.select_related('agent','client').filter(agent = request.user.id, is_active = True).order_by('-created_at')
+        supp = Supp.objects.select_related('agent','client').annotate(
+            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(agent = request.user.id, is_active = True).order_by('-created_at')
+        suppPay = False
 
-    for item in supp:
+    for item in suppPay:
         client_name = item.agent_usa if item.agent_usa else "Sin Name"    
         item.short_name = client_name.split()[0] + " ..." if " " in client_name else client_name
 
-    return render(request, 'table/clientSupp.html', {'supps':supp})
+    return render(request, 'table/clientSupp.html', {'supps':supp,'suppPay':suppPay})
 
 def toggleObamaStatus(request, obamacare_id):
     # Obtener el cliente por su ID
@@ -903,11 +909,14 @@ def tableAlert(request):
     roleAuditar = ['S', 'C',  'AU']
     
     if request.user.role in roleAuditar:
-        alert = ClientAlert.objects.select_related('agent').filter(is_active = True)
+        alert = ClientAlert.objects.select_related('agent').annotate(
+            truncated_contect=Substr('content', 1, 20)).filter(is_active = True)
     elif request.user.role == 'Admin':
-        alert = ClientAlert.objects.select_related('agent')
+        alert = ClientAlert.objects.select_related('agent').annotate(
+            truncated_contect=Substr('content', 1, 20))
     elif request.user.role == 'A':
-        alert = ClientAlert.objects.select_related('agent').filter(agent = request.user.id, is_active = True)
+        alert = ClientAlert.objects.select_related('agent').annotate(
+            truncated_contect=Substr('content', 1, 20)).filter(agent = request.user.id, is_active = True)
     
     return render(request, 'table/alert.html', {'alertC':alert})
 
@@ -985,6 +994,7 @@ def formCreateUser(request):
             
     return render(request, 'forms/formCreateUser.html',{'users':users,'roles': roles})
 
+@login_required(login_url='/login') 
 def editUser(request, user_id):
     # Obtener el usuario a editar o devolver un 404 si no existe
     user = get_object_or_404(User, id=user_id)
@@ -1025,6 +1035,7 @@ def editUser(request, user_id):
     context = {'users': user}
     return render(request, 'edit/editUser.html', context)
 
+@login_required(login_url='/login') 
 def toggleUser(request, user_id):
     # Obtener el cliente por su ID
     user = get_object_or_404(User, id=user_id)
@@ -1036,6 +1047,7 @@ def toggleUser(request, user_id):
     # Redirigir de nuevo a la página actual con un parámetro de éxito
     return redirect('formCreateUser')
 
+@login_required(login_url='/login') 
 def saveCustomerObservationACA(request):
     if request.method == "POST":
         content = request.POST.get('textoIngresado')
@@ -1071,6 +1083,7 @@ def saveCustomerObservationACA(request):
     else:
         return HttpResponse("Método no permitido.", status=405)
 
+@login_required(login_url='/login') 
 def saveCustomerObservationSupp(request):
     if request.method == "POST":
         content = request.POST.get('textoIngresado')
@@ -1337,7 +1350,7 @@ def chartSaleIndex(request):
                 agent_sale_supp__created_at__lt=end_of_month,
                 agent_sale_supp__is_active=True
             ), distinct=True), 0)
-        ).filter(is_active = True).values('first_name', 'obamacare_count', 'obamacare_count_total', 'supp_count', 'supp_count_total')
+        ).filter(is_active = True).exclude(username = 'mariluz').values('first_name', 'obamacare_count', 'obamacare_count_total', 'supp_count', 'supp_count_total')
 
     elif request.user.role not in roleAuditar:
         # Para usuarios con rol 'A': consultar datos solo para el usuario actual
@@ -2810,10 +2823,10 @@ def averageSales(request):
 
                 # Contar registros por semana y mostrar los días asignados
                 for record in obamacare_records:
-                    week_number = get_week_of_month(record.create_at.date())
+                    week_number = get_week_of_month(record.created_at.date())
                     if 0 <= week_number < 5:  # Validar que la semana esté en el rango
                         counts_obamacare[week_number] += 1
-                        week_days[weeks[week_number]].append(record.create_at.date())
+                        week_days[weeks[week_number]].append(record.created_at.date())
 
                 for record in supp_records:
                     week_number = get_week_of_month(record.created_at.date())
