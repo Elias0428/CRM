@@ -18,6 +18,8 @@ from django.core.signing import Signer, BadSignature
 from django.http import HttpResponse, JsonResponse
 from django.template.loader import render_to_string
 from django.utils import timezone
+from django.utils.translation import activate
+
 
 # Django core libraries
 from django.contrib import messages
@@ -30,6 +32,8 @@ from django.db.models.functions import Coalesce, Substr
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.urls import reverse
+from urllib.parse import urlencode
 
 # Third-party libraries
 from asgiref.sync import async_to_sync
@@ -125,7 +129,6 @@ def formCreateClient(request):
     else:
         return render(request, 'forms/formCreateClient.html')
             
-
 @login_required(login_url='/login') 
 def formEditClient(request, client_id):
     
@@ -1118,7 +1121,6 @@ def saveCustomerObservationSupp(request):
         
     else:
         return HttpResponse("Método no permitido.", status=405)
-
 
 @login_required(login_url='/login') 
 def typification(request):
@@ -2524,8 +2526,6 @@ def consent(request, obamacare_id):
         # Usamos la nueva función para guardar los checkboxes en ContactClient
         objectContact = save_contact_client_checkboxes(request.POST, contact)
 
-        
-        
         for document in documents:
             photo = DocumentsClient(
                 file=document,
@@ -2544,6 +2544,9 @@ def consent(request, obamacare_id):
         'company':getCompanyPerAgent(obamacare.agent_usa),
         'temporalyURL': temporalyURL,
     }
+    if request.method == 'GET':
+        print(request.GET.get('lenguaje'))
+        activate(request.GET.get('lenguaje'))
     return render(request, 'consent/consent1.html', context)
 
 def incomeLetter(request, obamacare_id):
@@ -3070,10 +3073,6 @@ def customerTypification(request) :
     
     
     return render(request, 'table/customerTypification.html', {'agent_data': agent_data})
-
-
-from urllib.parse import urlencode
-from django.urls import reverse
 
 def redirect_with_token(request, view_name, *args, **kwargs):
     token = request.GET.get('token')

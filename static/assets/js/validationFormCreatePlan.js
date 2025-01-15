@@ -277,9 +277,11 @@ function saveDependents() {
           });
 
           // Botón 2: Redirigir a los detalles
-          document.getElementById('buttonConsent').addEventListener('click', () => {    
-            window.open(`/viewConsent/${id_aca_plan}/`, '_blank');
-
+          document.getElementById('buttonConsentEng').addEventListener('click', () => {    
+            window.open(`/viewConsent/${id_aca_plan}/?lenguaje=en`, '_blank');
+          });
+          document.getElementById('buttonConsentSpa').addEventListener('click', () => {    
+            window.open(`/viewConsent/${id_aca_plan}/?lenguaje=es`, '_blank');
           });
 
 
