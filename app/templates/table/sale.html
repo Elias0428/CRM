@@ -316,7 +316,7 @@
 										<td>{{ registereds.agent.first_name }} {{registereds.agent.last_name }}</td>
 										<td>{{ registereds.agent_usa }}</td>
 										<td>{{ registereds.client.first_name }} {{registereds.client.last_name }}</td>									
-										<td>{{ registereds.created_at }}</td>
+										<td>{{ registereds.created_at|date:'m-d-Y' }}</td>
 										<td>{{ registereds.observation }}</td>
 									</tr>
 								{% endfor %}
@@ -360,7 +360,7 @@
 										<td style="vertical-align: middle;">{{ proccessings.agent_usa }}</td>
 										<td style="vertical-align: middle;">{{ proccessings.client.first_name }} {{proccessings.client.last_name }}</td>									
 										<td style="vertical-align: middle;">{{ proccessings.profiling }}</td>
-										<td style="vertical-align: middle;">{{ proccessings.created_at }}</td>
+										<td style="vertical-align: middle;">{{ proccessings.created_at|date:'m-d-Y' }}</td>
 										<td style="vertical-align: middle;">{{ proccessings.observation }}</td>
 									</tr>
 								{% endfor %}
@@ -404,7 +404,7 @@
 										<td>{{ profiling.agent_usa }}</td>
 										<td>{{ profiling.client.first_name }} {{profiling.client.last_name }}</td>									
 										<td>{{ profiling.profiling}}</td>
-										<td>{{ profiling.created_at }}</td>
+										<td>{{ profiling.created_at|date:'m-d-Y' }}</td>
 										<td>{{ profiling.observation }}</td>
 									</tr>
 								{% endfor %}
@@ -447,7 +447,7 @@
 										<td>{{ canceleds.agent.first_name }} {{canceleds.agent.last_name }}</td>
 										<td>{{ canceleds.agent_usa }}</td>
 										<td>{{ canceleds.client.first_name }} {{canceleds.client.last_name }}</td>									
-										<td>{{ canceleds.created_at }}</td>
+										<td>{{ canceleds.created_at|date:'m-d-Y' }}</td>
 										<td>{{ canceleds.observation }}</td>
 									</tr>
 								{% endfor %}
@@ -491,9 +491,9 @@
 										<td>{{ registeredSupps.agent.first_name }} {{registeredSupps.agent.last_name }}</td>
 										<td>{{ registeredSupps.agent_usa }}</td>
 										<td>{{ registeredSupps.client.first_name }} {{registeredSupps.client.last_name }}</td>									
-										<td>{{ registeredSupps.created_at }}</td>
-										<td>{{ registeredSupps.created_at }}</td>
-										<td>{{ registeredSupps.created_at }}</td>
+										<td>{{ registeredSupps.created_at|date:'m-d-Y' }}</td>
+										<td>{{ registeredSupps.policy_type }}</td>
+										<td>{{ registeredSupps.company }}</td>
 										<td>{{ registeredSupps.observation }}</td>
 									</tr>
 								{% endfor %}
@@ -527,6 +527,8 @@
 									<th style="vertical-align: middle;">Name</th>
 									<th style="vertical-align: middle;">Status</th>
 									<th style="vertical-align: middle;">create At</th>
+									<th style="vertical-align: middle;">Type of Policy</th>
+									<th style="vertical-align: middle;">Company</th>
 									<th style="vertical-align: middle;">observation</th>
 								</tr>
 							</thead>
@@ -537,7 +539,9 @@
 										<td style="vertical-align: middle;">{{ proccessingSupps.agent_usa }}</td>
 										<td style="vertical-align: middle;">{{ proccessingSupps.client.first_name }} {{proccessingSupps.client.last_name }}</td>									
 										<td style="vertical-align: middle;">{{ proccessingSupps.status }}</td>
-										<td style="vertical-align: middle;">{{ proccessingSupps.created_at }}</td>
+										<td style="vertical-align: middle;">{{ proccessingSupps.created_at|date:'m-d-Y' }}</td>
+										<td>{{ registeredSupps.policy_type }}</td>
+										<td>{{ registeredSupps.company }}</td>
 										<td style="vertical-align: middle;">{{ proccessingSupps.observation }}</td>
 									</tr>
 								{% endfor %}
@@ -570,6 +574,8 @@
 									<th style="vertical-align: middle;">Agent USA</th>
 									<th style="vertical-align: middle;">Name</th>
 									<th style="vertical-align: middle;">create At</th>
+									<th style="vertical-align: middle;">Type of Policy</th>
+									<th style="vertical-align: middle;">Company</th>
 									<th style="vertical-align: middle;">observation</th>
 								</tr>
 							</thead>
@@ -579,7 +585,9 @@
 										<td>{{ activeSupps.agent.first_name }} {{activeSupps.agent.last_name }}</td>
 										<td>{{ activeSupps.agent_usa }}</td>
 										<td>{{ activeSupps.client.first_name }} {{activeSupps.client.last_name }}</td>									
-										<td>{{ activeSupps.created_at }}</td>
+										<td>{{ activeSupps.created_at|date:'m-d-Y' }}</td>
+										<td>{{ registeredSupps.policy_type }}</td>
+										<td>{{ registeredSupps.company }}</td>
 										<td>{{ activeSupps.observation }}</td>
 									</tr>
 								{% endfor %}
@@ -613,6 +621,8 @@
 									<th style="vertical-align: middle;">Agent USA</th>
 									<th style="vertical-align: middle;">Name</th>
 									<th style="vertical-align: middle;">create At</th>
+									<th style="vertical-align: middle;">Type of Policy</th>
+									<th style="vertical-align: middle;">Company</th>
 									<th style="vertical-align: middle;">observation</th>
 								</tr>
 							</thead>
@@ -622,7 +632,9 @@
 										<td>{{ canceledSupps.agent.first_name }} {{canceledSupps.agent.last_name }}</td>
 										<td>{{ canceledSupps.agent_usa }}</td>
 										<td>{{ canceledSupps.client.first_name }} {{canceledSupps.client.last_name }}</td>									
-										<td>{{ canceledSupps.created_at }}</td>
+										<td>{{ canceledSupps.created_at|date:'m-d-Y' }}</td>
+										<td>{{ registeredSupps.policy_type }}</td>
+										<td>{{ registeredSupps.company }}</td>
 										<td>{{ canceledSupps.observation }}</td>
 									</tr>
 								{% endfor %}
