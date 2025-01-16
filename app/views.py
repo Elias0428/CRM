@@ -165,6 +165,8 @@ def formCreatePlan(request, client_id):
     aca_plan = ObamaCare.objects.filter(client=client).first()
     supplementary_plan = Supp.objects.filter(client=client)
     dependents = Dependent.objects.filter(client=client)
+    for supp in supplementary_plan:
+        supp.premium = f"{float(supp.premium):.2f}" #Esto  es para que se le ponga el premium.
 
     return render(request, 'forms/formCreatePlan.html', {
         'client': client,
