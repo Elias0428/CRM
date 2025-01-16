@@ -89,19 +89,21 @@ def motivationalPhrase(request):
 @login_required(login_url='/login') 
 def select_client(request):
 
-    clients = Client.objects.all()
+    if request.user.role == 'Admin': clients = Client.objects.all()
+    else: clients = Client.objects.filter(is_active = True)
     
     return render(request, 'agents/select_client.html', {'clients':clients})
 
 def update_type_sales(request, client_id):
     if request.method == 'POST':
         type_sales = request.POST.get('type_sales')
+        route = request.POST.get('route')
         if type_sales:
             client = get_object_or_404(Client, id=client_id)
             client.type_sales = type_sales
             client.save()
             # Redirige a la URL previa con el ID del cliente
-            return redirect('formCreatePlan', client_id=client_id)
+            return redirect('formAddObama', client_id=client_id)
 
 # Vista para crear cliente
 @login_required(login_url='/login') 
@@ -179,10 +181,6 @@ def fetchAca(request, client_id):
     if aca_plan_id:
         # Si el ID existe, actualiza el registro
         ObamaCare.objects.filter(id=aca_plan_id).update(
-            client=client,
-            agent=request.user,
-            status_color = 1,
-            profiling = 'NO',
             taxes=request.POST.get('taxes'),
             agent_usa=request.POST.get('agent_usa'),
             plan_name=request.POST.get('planName'),
@@ -198,7 +196,7 @@ def fetchAca(request, client_id):
         created = False
     else:
         # Si no hay ID, crea un nuevo registro
-        aca_plan, created = ObamaCare.objects.update_or_create(
+        aca_plan, created = ObamaCare.objects.create(
             client=client,
             agent=request.user,
             defaults={
@@ -248,10 +246,6 @@ def fetchSupp(request, client_id):
 
             if supp_id:  # Si se proporciona un id, actualizar el registro existente
                 Supp.objects.filter(id=supp_id).update(
-                    client=client,
-                    status='REGISTERED',
-                    status_color = 1,
-                    agent=request.user,
                     effective_date=sup_data.get('effectiveDateSupp'),
                     agent_usa=sup_data.get('agent_usa'),
                     company=sup_data.get('carrierSuple'),
@@ -362,14 +356,76 @@ def fetchDependent(request, client_id):
         'dependents_ids': updated_dependents_ids
     })
 
+def formAddObama(request,client_id):
+
+    client = Client.objects.get(id=client_id)
+
+    if request.method == 'POST':
+        formObama = ObamaForm(request.POST)
+        print(formObama.errors)
+        if formObama.is_valid():
+            obama = formObama.save(commit=False)
+            obama.agent = request.user
+            obama.client = client
+            obama.status_color = 1
+            obama.is_active = True
+            obama.save()
+            return redirect('select_client')  # Cambia a tu página de éxito
+
+            
+        
+    return render(request, 'forms/formAddObama.html')
+
+
 @login_required(login_url='/login')
 def clientObamacare(request):
     
     roleAuditar = ['S', 'C',  'AU']
+
+    borja = 'BORJA G CANTON HERRERA - NPN 20673324'
+    daniel = 'DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958'
+    luis = 'LUIS EDUARDO LAPEIRA - NPN 20556081'
+    gina = 'GINA PAOLA LAPEIRA - NPN 19944280'
+    evelyn = 'EVELYN BEATRIZ HERRERA - NPN 20671818'
+    danieska = 'DANIESKA LOPEZ SEQUEIRA - NPN 20134539'
+    rodrigo = 'RODRIGO G CANTON - NPN 20670005'
     
     if request.user.role in roleAuditar:
-        obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
-            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True).order_by('-created_at')
+
+        if request.user.username == 'Customer01':
+            obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
+                truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True,
+                agent_usa_in = [borja, gina]).order_by('-created_at')   
+                 
+        elif  request.user.username == 'Customer02':
+            obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
+                truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True,
+                agent_usa_in = [rodrigo]).order_by('-created_at')   
+        
+        elif  request.user.username == 'Customer03':
+            obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
+                truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True,
+                agent_usa_in = [luis]).order_by('-created_at') 
+            
+        elif  request.user.username == 'Customer04':
+            obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
+                truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True,
+                agent_usa_in = [daniel]).order_by('-created_at') 
+            
+        elif  request.user.username == 'Customer05':
+            obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
+                truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True,
+                agent_usa_in = [evelyn]).order_by('-created_at') 
+            
+        elif  request.user.username == 'Customer06':
+            obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
+                truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True,
+                agent_usa_in = [danieska]).order_by('-created_at') 
+        
+        else:
+            obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
+                truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True).order_by('-created_at')
+
     elif request.user.role == 'Admin':
         obamaCare = ObamaCare.objects.select_related('agent', 'client').annotate(
             truncated_agent_usa=Substr('agent_usa', 1, 8)).order_by('-created_at')
@@ -2544,6 +2600,7 @@ def consent(request, obamacare_id):
         'contact':contact,
         'company':getCompanyPerAgent(obamacare.agent_usa),
         'temporalyURL': temporalyURL,
+        'supps': supps
     }
     if request.method == 'GET':
         language = request.GET.get('lenguaje', 'es')  # Idioma predeterminado si no se pasa

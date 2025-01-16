@@ -201,6 +201,27 @@
                     </div>
                 </div>
             </div>
+
+            {% if supps %}
+                <div class="row mb-3">
+                    <div class="col">
+                        <div class="bg-primary p-3 rounded">
+                            <label class="form-label">{% blocktrans %}Acepto a ser contactado por mi broker y/o el mercado de salud vía:{% endblocktrans %}</label>
+                            <div class="row">
+                                {% for supp in supps %}
+                                    <div class="col-12 col-lg-4">
+                                        <div class="form-check">
+                                            <input hidden class="form-check-input" type="checkbox" id="{{supp.policy_type}}"  name="{{supp.policy_type}}" checked />
+                                            <label class="form-check-label" for="">📌 {{supp.policy_type}}</label>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            
             <div class="row mb-3">
                 <div class="col-md-6">
                     <div class="bg-warning p-3 rounded">

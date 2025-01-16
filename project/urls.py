@@ -89,7 +89,9 @@ urlpatterns = [
     path('viewIncomeLetter/<obamacare_id>/', views.incomeLetter, name='incomeLetter'),
 
     path('averageCustomer', views.averageCustomer, name='averageCustomer'),
-    path('customerTypification', views.customerTypification, name='customerTypification')
+    path('customerTypification', views.customerTypification, name='customerTypification'),
+
+    path('formAddObama/<client_id>', views.formAddObama, name='formAddObama'),
     
 
     ##path('exportUsers/', views.exportUsers, name='exportUsers'),

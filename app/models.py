@@ -103,7 +103,6 @@ class ObamaCare(models.Model):
     status_color = models.IntegerField(null = True)    
     policyNumber = models.CharField(max_length=200, null=True)
     work = models.CharField(max_length=50)
-    img = models.FileField(null=True)
     date_effective_coverage = models.DateField(null=True)
     date_effective_coverage_end = models.DateField(null=True)
     username_carrier = models.CharField(max_length=200,null=True)
@@ -131,7 +130,6 @@ class Dependent(models.Model):
 class Supp(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     agent = models.ForeignKey(User, on_delete=models.CASCADE, related_name='agent_sale_supp')
-    dependent = models.ForeignKey(Dependent, on_delete=models.CASCADE, null=True)
     agent_usa = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)  
     effective_date = models.DateField()

@@ -19,6 +19,8 @@ class ClientForm(forms.ModelForm):
 
         # Si es una cadena, lo convertimos al formato adecuado
         try:
+            print(date_input)
+            print(datetime.strptime(date_input, '%m/%d/%Y').date())
             return datetime.strptime(date_input, '%m/%d/%Y').date()
         except ValueError:
             raise forms.ValidationError('Formato de fecha inválido. Use MM/DD/YYYY.')
@@ -27,13 +29,13 @@ class ObamaForm(forms.ModelForm):
     class Meta:
         model = ObamaCare
         fields = '__all__'
-        exclude = ['client','profiling','profiling_date','ffm','required_bearing','date_bearing','status','npm','date_effective_coverage','date_effective_coverage_end','img']
+        exclude = ['client','agent','is_active','profiling','profiling_date','ffm','required_bearing','date_bearing','status','npm','date_effective_coverage','date_effective_coverage_end','password_carrier','username_carrier','policyNumber','status_color','observation']
 
 class SuppForm(forms.ModelForm):
     class Meta:
         model = Supp
         fields = '__all__'
-        exclude = ['client','status','date_effective_coverage','date_effective_coverage_end','payment_type']
+        exclude = ['client','agent','is_active','status','date_effective_coverage','date_effective_coverage_end','payment_type','status_color']
 
 class DepentForm(forms.ModelForm):
     class Meta:

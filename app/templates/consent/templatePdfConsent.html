@@ -229,6 +229,16 @@
                 <li>Nombre Agencia en Registro: <span class="bold">{{company}}</span></li>
                 <li>Teléfono Agencia: <span class="bold">1.855.963.6900</span></li>
             </ul>
+        
+            <p><strong>Necesita alguna cobertura adicional?:</strong> {% if supps %}SI. {%else%}NO.{% endif %}</p>
+            {% if supps %}
+                <p><strong>Necesita alguna cobertura adicional?:</strong>
+                    {% for supp in supps %}
+                        {{supp.policy_type}},
+                    {% endfor %}
+                .</p>
+            {% endif %}
+            
         </div>
 
         <div class="section">
@@ -250,6 +260,8 @@
                 <li>Foto selfie con ID</li>
             </ul>
         </div>
+
+       
 
         <div class="section">
             <h2>Validez de la Autorización</h2>
