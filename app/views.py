@@ -18,7 +18,7 @@ from django.core.signing import Signer, BadSignature
 from django.http import HttpResponse, JsonResponse
 from django.template.loader import render_to_string
 from django.utils import timezone
-from django.utils.formats import number_format
+from django.utils.text import Truncator  # Importar herramienta para truncar textos
 from django.utils.translation import activate
 
 
@@ -46,11 +46,6 @@ from app.forms import *
 from app.models import *
 
 from datetime import datetime, timedelta
-
-from django.utils.text import Truncator  # Importar herramienta para truncar textos
-
-
-
 
 
 # Create your views here.
@@ -2551,8 +2546,8 @@ def consent(request, obamacare_id):
         'temporalyURL': temporalyURL,
     }
     if request.method == 'GET':
-        print(request.GET.get('lenguaje'))
-        activate(request.GET.get('lenguaje'))
+        language = request.GET.get('lenguaje', 'es')  # Idioma predeterminado si no se pasa
+        activate(language)
     return render(request, 'consent/consent1.html', context)
 
 def incomeLetter(request, obamacare_id):

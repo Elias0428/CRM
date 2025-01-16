@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-08 11:05-0500\n"
+"POT-Creation-Date: 2025-01-16 16:07-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -142,11 +142,23 @@ msgstr "I, "
 msgid ", autorizo a "
 msgstr " authorize "
 
-#: .\app\templates\consent\consent1.html:367
+#: .\app\templates\consent\consent1.html:366
+msgid ""
+" para servir como mi agente y broker de seguros de salud, es decir mi Agente "
+"de Registro, para mi y las personas en mi núcleo familiar, cuando aplica, "
+"para el propósito de enrolamiento en un Plan Médico Calificado ofrecido en "
+"el Mercado de Salud Federal."
+msgstr "" 
+" to serve as my health insurance agent and broker, that is, my Enrollment " 
+"Agent, for myself and the members of my household, when applicable, " 
+"for the purpose of enrolling in a Qualified Health Plan offered through " 
+"the Federal Health Marketplace."
+
+#: .\app\templates\consent\consent1.html:368
 msgid "Al firmar esta forma, autorizo a "
 msgstr "By signing this form, I authorize "
 
-#: .\app\templates\consent\consent1.html:367
+#: .\app\templates\consent\consent1.html:368
 msgid ""
 ", y su staff, a trabajar para mi y las personas en mi núcleo familiar, "
 "cuando aplica, en las siguientes funciones de apoyo de seguro y cualquier "
@@ -160,12 +172,12 @@ msgstr ""
 "health necessary administrative tasks to maintain my application and "
 "coverage in good standing, as follows: "
 
-#: .\app\templates\consent\consent1.html:369
+#: .\app\templates\consent\consent1.html:370
 msgid ""
 "Realizar búsquedas de aplicaciones nuevas o actuales en el mercado de salud."
 msgstr "Search for new or existing applications in the health marketplace."
 
-#: .\app\templates\consent\consent1.html:370
+#: .\app\templates\consent\consent1.html:371
 msgid ""
 "Completar una aplicación para búsqueda de eligibilidad y enrolamiento en el "
 "Mercado de Salud Federal, o en programas de gobierno tales como Medicaid y "
@@ -180,7 +192,7 @@ msgstr ""
 "marketplace programs that help you apply for tax credit or enrollment in "
 "insurance products in state-level plans."
 
-#: .\app\templates\consent\consent1.html:371
+#: .\app\templates\consent\consent1.html:372
 msgid ""
 "Proveer mantenimiento de mi cuenta en el Mercado de Salud Federal, "
 "asistencia en enrolamiento, información sobre los beneficios de los planes, "
@@ -191,7 +203,7 @@ msgstr ""
 "enrollment assistance, plan benefit information, new products, new product "
 "benefits, and advice on payment of transactions if needed."
 
-#: .\app\templates\consent\consent1.html:372
+#: .\app\templates\consent\consent1.html:373
 msgid ""
 "Apoyar si es necesario en responder inquietudes del Mercado de Salud Federal "
 "en lo referente a mi aplicación."
@@ -199,7 +211,7 @@ msgstr ""
 "Support as necessary in responding to concerns from the Federal Health "
 "Marketplace regarding my application."
 
-#: .\app\templates\consent\consent1.html:373
+#: .\app\templates\consent\consent1.html:374
 msgid ""
 "Contactarme vía telefónica o por cualquier medio electrónico o escrito para "
 "ayudarme y asistirme en cualquier acción necesaria para mantener mi póliza "
@@ -208,7 +220,7 @@ msgstr ""
 "Contact me via telephone, electronic, or written means to sist and support "
 "me in any necessary actions to maintain my policy in good standing."
 
-#: .\app\templates\consent\consent1.html:375
+#: .\app\templates\consent\consent1.html:376
 msgid ""
 "Entiendo que mi Agente de Registro no utilizará o compartirá mi información "
 "de identificación personal (PII) para ningún propósito excepto los aquí "
@@ -218,7 +230,7 @@ msgstr ""
 "identifiable information (PII) for any purpose except as listed in this "
 "authorization."
 
-#: .\app\templates\consent\consent1.html:376
+#: .\app\templates\consent\consent1.html:377
 msgid ""
 "Entiendo que esta autorización será válida hasta que sea revocada por mi en "
 "cualquier momento. Para revocar esta autorización, debo hacerlo por escrito "
@@ -229,7 +241,7 @@ msgstr ""
 "by me at any time.To revoke this authorization, I must do so in writingand "
 "send it to the appropriate person via email at:client@lapeira.com."
 
-#: .\app\templates\consent\consent1.html:377
+#: .\app\templates\consent\consent1.html:378
 msgid ""
 "Entiendo que la información que yo le suministre a mi Agente de Registro se "
 "va a utilizar ÚNICAMENTE para asistirme en verificar mi elegibilidad y mi "
@@ -246,43 +258,39 @@ msgstr ""
 "what is required for my enrollment or eligibility verification in the "
 "Federal Health Marketplace (Marketplace)."
 
-#: .\app\templates\consent\consent1.html:378
+#: .\app\templates\consent\consent1.html:379
 msgid "Nombre del Agente en Registro: "
 msgstr "Enrollment Agent Name: "
 
-#: .\app\templates\consent\consent1.html:379
+#: .\app\templates\consent\consent1.html:380
 msgid "Nombre de la Agencia en Registro: "
 msgstr "Enrollment Agency Name: "
 
-#: .\app\templates\consent\consent1.html:380
+#: .\app\templates\consent\consent1.html:381
 msgid "Teléfono de la Agencia: "
 msgstr "Agency Phone: "
 
-#: .\app\templates\consent\consent1.html:388
+#: .\app\templates\consent\consent1.html:389
 msgid "Firma Aplicante o Representante Autorizado"
 msgstr "Applicant or Authorized Representative Signature"
 
-#: .\app\templates\consent\consent1.html:388
+#: .\app\templates\consent\consent1.html:389
 msgid "Firmado"
 msgstr "Signed"
 
-#: .\app\templates\consent\consent1.html:394
+#: .\app\templates\consent\consent1.html:395
 msgid "Limpiar firma"
 msgstr "Clear Signature"
 
-#: .\app\templates\consent\consent1.html:400
+#: .\app\templates\consent\consent1.html:401
 msgid "Guardar"
 msgstr "Save"
 
-#: .\app\templates\consent\consent1.html:481
-msgid "Por favor, firma antes de enviar el formulario."
-msgstr "Please sign before submitting the form."
-
-#: .\app\templates\consent\consent1.html:695
+#: .\app\templates\consent\consent1.html:427
 msgid "Copiado!"
 msgstr "Copied!"
 
-#: .\app\templates\consent\consent1.html:704
+#: .\app\templates\consent\consent1.html:436
 msgid "No se pudo copiar el link. Por favor, inténtalo de nuevo."
 msgstr "Could not copy the link. Please try again."
 
@@ -1510,29 +1518,8 @@ msgstr ""
 msgid "Connect, get help, or contribute"
 msgstr ""
 
-#, python-format
-#~ msgid ""
-#~ "\n"
-#~ "                Yo, <span id=\"textName\" class=\"roboto-"
-#~ "black\">%(obamacare.client.first_name)s %(obamacare.client.last_name)s</"
-#~ "span>, autorizo a <span id=\"textAgent\" class=\"roboto-"
-#~ "black\">%(obamacare.agent_usa)s</span> de <span class=\"roboto-black\" "
-#~ "id=\"textCarrier\">%(company)s</span> para servir como mi agente y broker "
-#~ "de seguros de salud, es decir mi Agente de Registro, para mi y las "
-#~ "personas en mi núcleo familiar, cuando aplica, para el propósito de "
-#~ "enrolamiento en un Plan Médico Calificado ofrecido en el Mercado de Salud "
-#~ "Federal.\n"
-#~ "                "
-#~ msgstr ""
-#~ "\n"
-#~ "I, <span id=\"textName\" class=\"roboto-"
-#~ "black\">%(obamacare.client.first_name)s %(obamacare.client.last_name)s</"
-#~ "span>, authorize <span id=\"textAgent\" class=\"roboto-"
-#~ "black\">%(obamacare.agent_usa)s</span> from <span class=\"roboto-black\" "
-#~ "id=\"textCarrier\">%(company)s</span> to serve as my health insurance "
-#~ "agent and broker, i.e., my Registration Agent, for myself and my family "
-#~ "members, when applicable, for the purpose of enrolling in a Qualified "
-#~ "Health Plan offered through the Federal Health Marketplace.\n"
+#~ msgid "Por favor, firma antes de enviar el formulario."
+#~ msgstr "Please sign before submitting the form."
 
 #, python-format
 #~ msgid ""
