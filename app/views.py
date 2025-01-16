@@ -395,32 +395,32 @@ def clientObamacare(request):
         if request.user.username == 'Customer01':
             obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
                 truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True,
-                agent_usa_in = [borja, gina]).order_by('-created_at')   
+                agent_usa__in = [borja, gina]).order_by('-created_at')   
                  
         elif  request.user.username == 'Customer02':
             obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
                 truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True,
-                agent_usa_in = [rodrigo]).order_by('-created_at')   
+                agent_usa__in = [rodrigo]).order_by('-created_at')   
         
         elif  request.user.username == 'Customer03':
             obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
                 truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True,
-                agent_usa_in = [luis]).order_by('-created_at') 
+                agent_usa__in = [luis]).order_by('-created_at') 
             
         elif  request.user.username == 'Customer04':
             obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
                 truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True,
-                agent_usa_in = [daniel]).order_by('-created_at') 
+                agent_usa__in = [daniel]).order_by('-created_at') 
             
         elif  request.user.username == 'Customer05':
             obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
                 truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True,
-                agent_usa_in = [evelyn]).order_by('-created_at') 
+                agent_usa__in = [evelyn]).order_by('-created_at') 
             
         elif  request.user.username == 'Customer06':
             obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
                 truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True,
-                agent_usa_in = [danieska]).order_by('-created_at') 
+                agent_usa__in = [danieska]).order_by('-created_at') 
         
         else:
             obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
