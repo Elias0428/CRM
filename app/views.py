@@ -18,6 +18,7 @@ from django.core.signing import Signer, BadSignature
 from django.http import HttpResponse, JsonResponse
 from django.template.loader import render_to_string
 from django.utils import timezone
+from django.utils.formats import number_format
 from django.utils.translation import activate
 
 
@@ -794,6 +795,9 @@ def editClientSupp(request, supp_id):
                 )
             
                 return redirect('clientSupp')
+            
+    supp.premium = f"{float(supp.premium):.2f}"
+
 
     context = {
         'supps': supp,
