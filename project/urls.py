@@ -92,6 +92,8 @@ urlpatterns = [
     path('customerTypification', views.customerTypification, name='customerTypification'),
 
     path('formAddObama/<client_id>', views.formAddObama, name='formAddObama'),
+    path('formAddSupp/<client_id>', views.formAddSupp, name='formAddSupp'),
+    path('formAddDepend/<client_id>', views.formAddDepend, name='formAddDepend'),
     
 
     ##path('exportUsers/', views.exportUsers, name='exportUsers'),

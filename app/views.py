@@ -103,7 +103,10 @@ def update_type_sales(request, client_id):
             client.type_sales = type_sales
             client.save()
             # Redirige a la URL previa con el ID del cliente
-            return redirect('formAddObama', client_id=client_id)
+            if route == 'ACA': return redirect('formAddObama', client_id=client_id)
+            elif route == 'SUPP': return redirect('formAddSupp', client_id=client_id)
+            elif route == 'prueba': return redirect('formAddDepend', client_id=client_id)
+            else: return redirect('select_client')
 
 # Vista para crear cliente
 @login_required(login_url='/login') 
@@ -367,7 +370,6 @@ def formAddObama(request,client_id):
 
     if request.method == 'POST':
         formObama = ObamaForm(request.POST)
-        print(formObama.errors)
         if formObama.is_valid():
             obama = formObama.save(commit=False)
             obama.agent = request.user
@@ -375,11 +377,68 @@ def formAddObama(request,client_id):
             obama.status_color = 1
             obama.is_active = True
             obama.save()
-            return redirect('select_client')  # Cambia a tu página de éxito
-
-            
+            return redirect('select_client')  # Cambia a tu página de éxito            
         
     return render(request, 'forms/formAddObama.html')
+
+def formAddSupp(request,client_id):
+
+    client = Client.objects.get(id=client_id)    
+
+    if request.method == 'POST':
+
+        observation = request.POST.get('observation')
+        effective_dates = request.POST.get('effective_date')
+        fecha_obj = datetime.strptime(effective_dates, '%m/%d/%Y')
+        fecha_formateada = fecha_obj.strftime('%Y-%m-%d')
+
+        formSupp = SuppForm(request.POST)
+        if formSupp.is_valid():
+            supp = formSupp.save(commit=False)
+            supp.agent = request.user
+            supp.client = client
+            supp.status_color = 1
+            supp.is_active = True
+            supp.effective_date = fecha_formateada
+            supp.observation = observation
+            supp.status = 'REGISTERED'
+            supp.save()
+            return redirect('select_client')  # Cambia a tu página de éxito           
+        
+    return render(request, 'forms/formAddSupp.html')
+
+def formAddDepend(request,client_id):
+
+    client = Client.objects.get(id=client_id)
+    obama = ObamaCare.objects.filter(client_id=client.id).first()
+    supp = Supp.objects.filter(client_id=client.id)
+    if supp : type_police_array = [s.policy_type for s in supp]
+
+    if request.method == 'POST':
+        date_birth = request.POST.get('date_birth')
+        fecha_obj = datetime.strptime(date_birth, '%m/%d/%Y')
+        fecha_formateada = fecha_obj.strftime('%Y-%m-%d')
+        type_police = request.POST.get('type_police')
+        formDepend = DepentForm(request.POST)
+        if formDepend.is_valid():
+            depend = formDepend.save(commit=False)
+            depend.client = client
+            depend.date_birth = fecha_formateada
+            if type_police == 'ACA': depend.obamacare = obama            
+            depend.save()
+
+            
+
+
+            return redirect('select_client')  # Cambia a tu página de éxito
+        
+    
+    context = {
+        'obamas':obama,
+        'supps':supp
+    }            
+        
+    return render(request, 'forms/formAddDepend.html',context)
 
 
 @login_required(login_url='/login')

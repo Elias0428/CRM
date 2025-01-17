@@ -19,13 +19,13 @@ class SuppForm(forms.ModelForm):
     class Meta:
         model = Supp
         fields = '__all__'
-        exclude = ['client','agent','is_active','status','date_effective_coverage','date_effective_coverage_end','payment_type','status_color']
+        exclude = ['client','agent','is_active','status','date_effective_coverage','date_effective_coverage_end','payment_type','status_color','policyNumber','observation','effective_date','dependents']
 
 class DepentForm(forms.ModelForm):
     class Meta:
         model = Dependent
         fields = '__all__'
-        exclude = ['client']
+        exclude = ['client','obamacare','date_birth']
 
 class ClientAlertForm(forms.ModelForm):
     class Meta:

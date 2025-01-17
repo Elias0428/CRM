@@ -42,180 +42,114 @@
 		<p class="mb-4">Information about the client</p>
 		<hr/>
 		<div id="editor">
-			<form id="formCreateClient" method="POST">
-			{% csrf_token %}
-				<div id="test-l-1" role="tabpanel" class="bs-stepper-pane" aria-labelledby="stepper1trigger1">
-					<div class="row g-3">						
-						<div class="col-12 col-lg-6">
-							<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
-							<select class="form-select" id="agent_usa" name="agent_usa">
-								<option value="no_valid" disabled {% if client.agent_usa == None %}selected{% endif %}>Please Select</option>
-								<option {% if client.agent_usa == 'GINA PAOLA LAPEIRA - NPN 19944280' %}selected{% endif %} value="GINA PAOLA LAPEIRA - NPN 19944280">GINA PAOLA LAPEIRA - NPN 19944280</option>
-								<option {% if client.agent_usa == 'LUIS EDUARDO LAPEIRA - NPN 20556081' %}selected{% endif %} value="LUIS EDUARDO LAPEIRA - NPN 20556081">LUIS EDUARDO LAPEIRA - NPN 20556081</option>
-								<option {% if client.agent_usa == 'DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958' %}selected{% endif %} value="DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958">DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958</option>
-								<option {% if client.agent_usa == 'ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295' %}selected{% endif %} value="ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295">ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295</option>
-								<option {% if client.agent_usa == 'DANIESKA LOPEZ SEQUEIRA - NPN 20134539' %}selected{% endif %} value="DANIESKA LOPEZ SEQUEIRA - NPN 20134539">DANIESKA LOPEZ SEQUEIRA - NPN 20134539</option>
-								<option {% if client.agent_usa == 'VLADIMIR DE LA HOZ FONTALVO - NPN 19915005' %}selected{% endif %} value="VLADIMIR DE LA HOZ FONTALVO - NPN 19915005">VLADIMIR DE LA HOZ FONTALVO - NPN 19915005</option>
-								<option {% if client.agent_usa == 'FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603' %}selected{% endif %} value="FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603">FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603</option>
-								<option {% if client.agent_usa == 'BORJA G CANTON HERRERA - NPN 20673324' %}selected{% endif %} value="BORJA G CANTON HERRERA - NPN 20673324">BORJA G CANTON HERRERA - NPN 20673324</option>
-								<option {% if client.agent_usa == 'RODRIGO G CANTON - NPN 20670005' %}selected{% endif %} value="RODRIGO G CANTON - NPN 20670005">RODRIGO G CANTON - NPN 20670005</option>
-								<option {% if client.agent_usa == 'EVELYN BEATRIZ HERRERA - NPN 20671818' %}selected{% endif %} value="EVELYN BEATRIZ HERRERA - NPN 20671818">EVELYN BEATRIZ HERRERA - NPN 20671818</option>								
+			<form  method="POST">
+				{% csrf_token %}
+				<div class="row g-3">	
+					<div class="col-12 col-lg-6">
+						<label for="agent_usa" class="form-label font-weight-bold">Agente USA</label>
+						<select class="form-select" id="agent_usa" aria-label="Default select example" name="agent_usa">
+							<option disabled selected value=""></option>
+							<option value="GINA PAOLA LAPEIRA - NPN 19944280">GINA PAOLA LAPEIRA - NPN 19944280</option>
+							<option value="LUIS EDUARDO LAPEIRA - NPN 20556081">LUIS EDUARDO LAPEIRA - NPN 20556081</option>
+							<option value="DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958">DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958</option>
+							<option value="ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295">ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295</option>
+							<option value="DANIESKA LOPEZ SEQUEIRA - NPN 20134539">DANIESKA LOPEZ SEQUEIRA - NPN 20134539</option>
+							<option value="VLADIMIR DE LA HOZ FONTALVO - NPN 19915005">VLADIMIR DE LA HOZ FONTALVO - NPN 19915005</option>
+							<option value="FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603">FRANK JOSE LOPEZ SEQUEIRA - NPN 21226603</option>
+							<option value="BORJA G CANTON HERRERA - NPN 20673324">BORJA G CANTON HERRERA - NPN 20673324</option>
+							<option value="RODRIGO G CANTON - NPN 20670005">RODRIGO G CANTON - NPN 20670005</option>
+							<option value="EVELYN BEATRIZ HERRERA - NPN 20671818">EVELYN BEATRIZ HERRERA - NPN 20671818</option>
+						</select>
+					</div>
+					<div class="col-12 col-lg-6">
+						<label for="effective_date" class="form-label">Effective Date</label>
+						<input type="text" class="form-control" id="effective_date" name="effective_date" >	
+					</div>
+					<div class="col-12 col-lg-6">
+						<label for="company" class="form-label">Carrier</label>
+						<select class="form-select" id="company" aria-label="Default select example" name="company">
+							<option disabled selected value=""></option>
+							<option value="AFLAC"> AFLAC</option>                             
+							<option value="AETNA"> AETNA </option>
+							<option value="ALLSTATE HEALTH SOLUTIONS"> ALLSTATE HEALTH SOLUTIONS </option>  
+							<option value="COMBINED"> COMBINED </option>
+							<option value="CIGNA"> CIGNA </option>    
+							<option value="MANHATTAN LIFE"> MANHATTAN LIFE </option>
+							<option value="METLIFE"> METLIFE </option>
+							<option value="OSCAR"> OSCAR</option> 
+							<option value="PIVOT">PIVOT</option>  
+							<option value="SUREBRIDGE"> SUREBRIDGE </option>    
+							<option value="UNITED"> UNITED </option>    
+						</select>
+					</div>
+					<div class="col-12 col-lg-6">
+						<label for="premium" class="form-label">Premium</label>
+						<input type="number" class="form-control" id="premium" step="0.01" name="premium" >
+					</div>
+					<div class="col-12 col-lg-6">
+						<label for="policy_type" class="form-label">Policy Type</label>
+						<select class="form-select" id="policy_type" name="policy_type" aria-label="Default select example">
+							<option disabled selected value=""></option>
+							<option value="ACCIDENT">ACCIDENT</option>
+							<option value="HOSPITALIZATION">HOSPITALIZATION</option>
+							<option value="DENTAL">DENTAL</option>
+							<option value="CRITICAL ILLNESSES">CRITICAL ILLNESSES</option>
+							<option value="VISUAL">VISUAL</option>
+							<option value="DENTAL AND VISUAL">DENTAL AND VISUAL</option>
+							<option value="DISCOUNT PLAN">DISCOUNT PLAN</option>
+							<option value="SHORT TERM MEDICAL">SHORT TERM MEDICAL</option>
+							<option value="CANCER">CANCER</option>
 							</select>
-						</div>
-			
-						<!-- First Name -->
-						<div class="col-12 col-lg-6">
-							<label for="first_name" class="form-label">First Name</label>
-							<input type="text" class="form-control" name="first_name" id="first_name" value="{{ client.first_name }}" placeholder="First Name" required>
-						</div>
-			
-						<!-- Last Name -->
-						<div class="col-12 col-lg-6">
-							<label for="last_name" class="form-label">Last Name</label>
-							<input type="text" class="form-control" name="last_name" id="last_name" value="{{ client.last_name }}" placeholder="Last Name" required>
-						</div>
-			
-						<!-- Phone Number -->
-						<div class="col-12 col-lg-6">
-							<label for="phone_number" class="form-label">Phone Number</label>
-							<input type="number" class="form-control" name="phone_number" id="phone_number" value="{{ client.phone_number }}" placeholder="Phone Number" required>
-						</div>
-			
-						<!-- E-mail Address -->
-						<div class="col-12 col-lg-6">
-							<label for="email" class="form-label">E-mail Address</label>
-							<input type="email" class="form-control" name="email" id="email" value="{{ client.email }}" placeholder="Enter Email Address" required>
-						</div>
-			
-						<!-- Address -->
-						<div class="col-12 col-lg-6">
-							<label for="address" class="form-label">Address</label>
-							<input type="text" class="form-control" name="address" id="address" value="{{ client.address }}" placeholder="Address" required>
-						</div>
-			
-						<!-- ZIP Code -->
-						<div class="col-12 col-lg-6">
-							<label for="zipcode" class="form-label">ZIP Code</label>
-							<input type="number" class="form-control" name="zipcode" id="zipcode" value="{{ client.zipcode }}" placeholder="ZIP Code" required>
-						</div>
-			
-						<!-- City -->
-						<div class="col-12 col-lg-6">
-							<label for="city" class="form-label">City</label>
-							<input type="text" class="form-control" name="city" id="city" value="{{ client.city }}" required>
-						</div>
-			
-						<!-- State -->
-						<div class="col-12 col-lg-6">
-							<label for="state" class="form-label font-weight-bold">State</label>
-							<select class="form-select" id="inputState" name="state">
-								<option value="no_valid" disabled >Please Select</option>
-								<option value="AL" {% if client.state == "AL" %}selected{% endif %} > AL </option>
-								<option value="AR" {% if client.state == "AR" %}selected{% endif %} > AR </option>
-								<option value="AZ" {% if client.state == "AZ" %}selected{% endif %} > AZ </option>
-								<option value="CA" {% if client.state == "AZ" %}selected{% endif %} > CA </option>
-								<option value="DE" {% if client.state == "DE" %}selected{% endif %} > DE </option>
-								<option value="FL" {% if client.state == "FL" %}selected{% endif %} > FL </option>
-								<option value="GA" {% if client.state == "GA" %}selected{% endif %} > GA </option>
-								<option value="IL" {% if client.state == "IL" %}selected{% endif %} > IL </option>
-								<option value="IA" {% if client.state == "IA" %}selected{% endif %} > IA </option>
-								<option value="KS" {% if client.state == "KS" %}selected{% endif %} > KS </option>
-								<option Value="MI" {% if client.state == "MI" %}selected{% endif %} > MI </option>                            
-								<option value="MS" {% if client.state == "MS" %}selected{% endif %} > MS </option>
-								<option Value="MO" {% if client.state == "MO" %}selected{% endif %} > MO </option>
-								<option value="NJ" {% if client.state == "NJ" %}selected{% endif %} > NJ </option>
-								<option value="NC" {% if client.state == "NC" %}selected{% endif %} > NC </option>
-								<option value="ND" {% if client.state == "ND" %}selected{% endif %} > ND </option>
-								<option value="NE" {% if client.state == "NE" %}selected{% endif %} > NE </option>
-								<option value="OH" {% if client.state == "OH" %}selected{% endif %} > OH </option>
-								<option value="OK" {% if client.state == "OK" %}selected{% endif %} > OK </option>
-								<option value="SC" {% if client.state == "SC" %}selected{% endif %} > SC </option>
-								<option value="TN" {% if client.state == "TN" %}selected{% endif %} > TN </option>
-								<option value="TX" {% if client.state == "TX" %}selected{% endif %} > TX </option>
-								<option value="UT" {% if client.state == "UT" %}selected{% endif %} > UT </option>
-								<option value="VA" {% if client.state == "VA" %}selected{% endif %} > VA </option>
-								<option value="WI" {% if client.state == "WI" %}selected{% endif %} > WI </option>
-								<option value="LA" {% if client.state == "LA" %}selected{% endif %} > LA </option>
-								<option value="IN" {% if client.state == "IN" %}selected{% endif %} > IN </option>
-								<option value="OR" {% if client.state == "OR" %}selected{% endif %} > OR </option>
-							</select>
-						</div>
-			
-						<!-- County -->
-						<div class="col-12 col-lg-6">
-							<label for="county" class="form-label">County</label>
-							<input type="text" class="form-control" name="county" id="county" value="{{ client.county }}" placeholder="County" required>
-						</div>
-			
-						<!-- Sex -->
-						<div class="col-12 col-lg-6">
-							<label for="sex" class="form-label">Sex</label>
-							<select class="form-select" name="sex" id="sex">
-								<option value="no_valid" disabled {% if client.sex == None %}selected{% endif %}>Please Select</option>
-								<option value="M" {% if client.sex == "M" %}selected{% endif %}>MALE</option>
-								<option value="F" {% if client.sex == "F" %}selected{% endif %}>FEMALE</option>
-							</select>
-						</div>
-			
-						<!-- Old -->
-						<div class="col-12 col-lg-6">
-							<label for="old" class="form-label">Age</label>
-							<input type="number" min="1" class="form-control" name="old" id="old" value="{{ client.old }}" placeholder="Old" required>
-						</div>
-			
-						<!-- Date of Birth -->
-						<div class="col-12 col-lg-6">
-							<label for="date_birth" class="form-label">Date of Birth</label>
-							<input type="text" class="form-control" name="date_birth" id="date_birth" value="{{ client.date_birth }}" required>
-						</div>
-			
-						<!-- Migration Status -->
-						<div class="col-12 col-lg-6">
-							<label for="migration_status" class="form-label">Migration Status</label>
-							<select class="form-select" id="migration_status" name="migration_status">
-								<option value="no_valid" disabled {% if client.migration_status == None %}selected{% endif %}>Please Select</option>
-								<option value="EMPLOYMENT_AUTHORIZATION" {% if client.migration_status == "EMPLOYMENT_AUTHORIZATION" %}selected{% endif %}>Employment Authorization</option>
-								<option value="NOTICE OF ACTION" {% if client.migration_status == "NOTICE OF ACTION" %}selected{% endif %} >Notice of Action (i-797)</option>
-								<option value="REFUGEE" {% if client.migration_status == "REFUGEE" %}selected{% endif %} >Refugee</option>
-								<option value="ASYLUM" {% if client.migration_status == "ASYLUM" %}selected{% endif %} >Asylum</option>
-								<option value="TPS" {% if client.migration_status == "TPS" %}selected{% endif %} >Temporary Protection Status (TPS)</option>
-								<option value="DOMESTIC VIOLENCE" {% if client.migration_status == "DOMESTIC VIOLENCE" %}selected{% endif %} >Domestic Violence</option>
-								<option value="PERMANENT RESIDENT" {% if client.migration_status == "PERMANENT RESIDENT" %}selected{% endif %} >Permanent Resident (Green Card)</option>
-								<option value="CONDITIONAL RESIDENT" {% if client.migration_status == "CONDITIONAL RESIDENT" %}selected{% endif %} >Conditional Resident</option>
-								<option value="PAROLE" {% if client.migration_status == "PAROLE" %}selected{% endif %} >Parole</option>
-								<option value="US CITIZEN" {% if client.migration_status == "US CITIZEN" %}selected{% endif %} >US Citizen (Driver's License)</option>
-								<option value="STUDENT VISA" {% if client.migration_status == "STUDENT VISA" %}selected{% endif %} >Student Visa (I-20)</option>
-								<option value="CURRENTLY IN PROCESS" {% if client.migration_status == "CURRENTLY IN PROCESS" %}selected{% endif %} >Currently In Process (this means the client received an i-797)</option>
-							</select>
-						</div>	
-						<div class="col-12 col-lg-6">
-							<label for="applyObama" class="form-label">Apply Titutlar</label>
-							<select class="form-select" id="applyObama"  name="apply"  >
-								<option disabled selected value="">Please Select</option>
-								<option value = "True" {% if client.apply  %}selected{% endif %} >YES</option>
-								<option value = "False" {% if not client.apply  %}selected{% endif %}>NO</option>
-							</select>	
-						</div>
-										
-			
-						<!-- Type of Sale -->
-						<div class="col-12 col-lg-6">
-							<label for="type_sales" class="form-label">Type of Sale</label>
-							<select class="form-select" name="type_sales" id="type_sales">
-								<option value="no_valid" disabled {% if client.type_sales == None %}selected{% endif %}>Please Select</option>
-								<option value="ACA" {% if client.type_sales == "ACA" %}selected{% endif %}>ACA</option>
-								<option value="SUPLEMENTARIO" {% if client.type_sales == "SUPLEMENTARIO" %}selected{% endif %}>SUPPLEMENTAL</option>
-								<option value="ACA/SUPLEMENTARIO" {% if client.type_sales == "ACA/SUPLEMENTARIO" %}selected{% endif %}>ACA/SUPPLEMENTAL</option>
-							</select>
-						</div>
-						<h5 class="text-danger text-center">{{error_message}}</h5>
-						<div class="col-12 col-lg-12">
-							<button type="submit" class="btn btn-primary px-4" id="sendClient">Next<i class='bx bx-right-arrow-alt ms-2'></i></button>
-						</div>
-						
-					</div><!---end row-->
-				
-				</div>
+					</div>
+					<div class="col-12 col-lg-6">
+						<label for="preventive" class="form-label">Preventive</label>
+						<select class="form-select" id="preventive" name="preventive" aria-label="Default select example">
+							<option disabled selected value=""></option>
+							<option value="N/A">N/A </option>
+							<option value="60">60% </option>
+							<option value="100">100%</option>
+							<option value="Sin Espera">Sin Espera</option>
+						</select>
+					</div>
+					<div class="col-12 col-lg-6">
+						<label for="coverage" class="form-label">Coverage</label>
+						<select class="form-select" id="coverage" name="coverage" aria-label="Default select example">
+							<option disabled selected value=""></option>
+							<option value="N/A">N/A </option>
+							<option value="0">0</option>
+							<option value="500">500</option>
+							<option value="750">750</option>
+							<option value="1000">1000</option>
+							<option value="1500">1500</option>
+							<option value="2000">2000</option>
+							<option value="2500">2500</option>
+							<option value="3000">3000</option>
+							<option value="3500">3500</option>
+							<option value="4000">4000</option>
+							<option value="4500">4500</option>
+							<option value="5000">5000</option>
+							<option value="10000">10000</option>
+						</select>
+					</div>
+					<div class="col-12 col-lg-6">
+						<label for="deducible" class="form-label">Deducible</label>
+						<select class="form-select" id="deducible" name="deducible" aria-label="Default select example">
+							<option disabled selected value=""></option>
+							<option value="N/A">N/A </option>
+							<option value="100">100</option>
+								<option value="50">50</option>
+								<option value="0">0</option>
+						</select>
+					</div>
+					<div class="col-12 col-lg-12">
+						<label for="observation" class="form-label">Observation</label>
+						<textarea class="form-control" id="observation" name="observation" rows="3" type="text"   placeholder="Supplemental plan remark" style="resize: none"></textarea>
+					</div>
+
+					<div class="col-12 col-lg-12">
+						<button type="submit" class="btn btn-primary px-4" >Submit</button>
+					</div>
+				</div>					
 			</form>
 		</div>
 	</div>
@@ -234,7 +168,6 @@
 	
 	<!--app JS-->
 	<script src="{% static "assets/js/app.js" %}"></script>
-	<script src="{% static "assets/js/validationFormCreateClient.js" %}"></script>
 
 	<!-- Agregar la librería de Flatpickr -->
 	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -242,7 +175,7 @@
 	<script>
 		// Usar Flatpickr para formatear el campo de fecha
 		document.addEventListener('DOMContentLoaded', function () {
-			flatpickr("#date_birth", {
+			flatpickr("#effective_date", {
 				dateFormat: "m/d/Y", // Formato MM/DD/YYYY
 			});
 		});
