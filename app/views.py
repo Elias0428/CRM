@@ -196,7 +196,7 @@ def fetchAca(request, client_id):
         created = False
     else:
         # Si no hay ID, crea un nuevo registro
-        aca_plan, created = ObamaCare.objects.create(
+        aca_plan, created = ObamaCare.objects.update_or_create(
             client=client,
             agent=request.user,
             defaults={
