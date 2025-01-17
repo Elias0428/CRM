@@ -570,7 +570,12 @@ def editClient(request,client_id):
     
     #formateo de fecha para guardalar como se debe en BD ya que la obtengo USA
     fecha_str = request.POST.get('date_birth')  # Formato MM/DD/YYYY
-    dateNew = datetime.strptime(fecha_str, '%m/%d/%Y').date()
+    # Conversión solo si los valores no son nulos o vacíos
+    if fecha_str not in [None, '']:
+        dateNew = datetime.strptime(fecha_str, '%m/%d/%Y').date()
+    else:
+        dateNew = None
+    
 
     # Limpiar los campos de Client convirtiendo los vacíos en None
     cleaned_client_data = clean_fields_to_null(request, client_fields)
