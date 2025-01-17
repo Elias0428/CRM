@@ -109,12 +109,17 @@ def update_type_sales(request, client_id):
 @login_required(login_url='/login') 
 def formCreateClient(request):
     if request.method == 'POST':
+
+        date_births = request.POST.get('date_birth')
+        fecha_obj = datetime.strptime(date_births, '%m/%d/%Y')
+        fecha_formateada = fecha_obj.strftime('%Y-%m-%d')
+
         form = ClientForm(request.POST)
         if form.is_valid():
-            # Guardar el cliente
             client = form.save(commit=False)
             client.agent = request.user
             client.is_active = 1
+            client.date_birth = fecha_formateada
             client.save()
 
             if client.type_sales in ['ACA', 'ACA/SUPLEMENTARIO']:

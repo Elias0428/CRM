@@ -2,28 +2,12 @@ import datetime
 from django import forms
 from app.models import *
 
-
 class ClientForm(forms.ModelForm):
     class Meta:
         model = Client
         fields = '__all__'
-        exclude = ['agent']
+        exclude = ['agent','date_birth']
 
-    #cambiamos formato de la fecha para guardarla como se debe en la BD ya que la obtenes en formato USA
-    def clean_date_birth(self):
-        date_input = self.cleaned_data['date_birth']
-        
-        # Si el input ya es un objeto de fecha, lo devolvemos tal cual
-        if isinstance(date_input, datetime.date):
-            return date_input
-
-        # Si es una cadena, lo convertimos al formato adecuado
-        try:
-            print(date_input)
-            print(datetime.strptime(date_input, '%m/%d/%Y').date())
-            return datetime.strptime(date_input, '%m/%d/%Y').date()
-        except ValueError:
-            raise forms.ValidationError('Formato de fecha inválido. Use MM/DD/YYYY.')
 
 class ObamaForm(forms.ModelForm):
     class Meta:
