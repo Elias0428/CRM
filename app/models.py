@@ -113,7 +113,7 @@ class ObamaCare(models.Model):
     class Meta:
         db_table = 'obamacare'
 
-class Dependent(models.Model):
+class Dependent(models.Model):  
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     obamacare = models.ForeignKey(ObamaCare, on_delete=models.CASCADE, null=True)  # Relación de muchos a uno
     name = models.CharField(max_length=200)
