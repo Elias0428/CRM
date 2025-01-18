@@ -763,6 +763,9 @@ def editClientObama(request, obamacare_id):
             
             return redirect('clientObamacare')      
         
+    obamacare.subsidy = f"{float(obamacare.subsidy):.2f}"
+    obamacare.premium = f"{float(obamacare.premium):.2f}"
+    
     context = {
         'obamacare': obamacare,
         'users': users,
@@ -2079,7 +2082,6 @@ def liveViewWeekly(request):
     }
     return render(request, 'dashboard/liveView.html', context)
 
-def getSalesForWekkly():
     # Inicializamos un diccionario por defecto para contar las instancias
     user_counts = defaultdict(lambda: {
         'lunes': {'obama': 0, 'supp': 0},
