@@ -91,4 +91,7 @@
 
 	<script src="{% static 'assets/js/chart/viewTv.js'%}"></script>
 
+    <script>
+        startRedirectTimer("{% url 'weeklyLiveView' %}");
+    </script>
 {% endblock %}
