@@ -25,7 +25,8 @@ urlpatterns = [
 
     path('admin/', admin.site.urls),
 
-    path('liveView/',views.liveViewWeekly,name='liveView'),
+    path('weeklyLiveView/',views.weeklyLiveView,name='weeklyLiveView'),
+    path('monthLiveView/',views.monthLiveView,name='monthLiveView'),
 
     path('formCreateClient/', views.formCreateClient, name='formCreateClient'),
     path('formEditClient/<client_id>/', views.formEditClient, name='formEditClient'),

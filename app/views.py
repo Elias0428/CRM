@@ -2071,29 +2071,31 @@ def saleClientStatusSupp(start_date=None, end_date=None):
     
     return registered_supp,proccessing_supp,active_supp,canceled_supp,countRegisteredSupp,countProccsingSupp,countActiveSupp,countCanceledSupp
 
-@login_required(login_url='/login')   
-def liveViewWeekly(request):
-    
-    userRole = [ 'A' , 'C']
-    users = User.objects.filter(role__in = userRole, is_active = True)
+@login_required(login_url='/login')
+def weeklyLiveView(request):
     context = {
-        'users':users,
-        'weeklySales': getSalesForWekkly()
+        'weeklySales': getSalesForWeekly(),
     }
-    return render(request, 'dashboard/liveView.html', context)
+    return render(request, 'dashboard/weeklyLiveView.html', context)
+
+def getSalesForWeekly():
+    # Obtener la fecha de hoy y calcular el inicio de la semana (asumiendo que empieza el lunes)
+    today = timezone.now()
+    startOfWeek = today - timedelta(days=today.weekday())
+    endOfWeek = startOfWeek + timedelta(days=6)
 
     # Inicializamos un diccionario por defecto para contar las instancias
-    user_counts = defaultdict(lambda: {
-        'lunes': {'obama': 0, 'supp': 0},
-        'martes': {'obama': 0, 'supp': 0},
-        'miercoles': {'obama': 0, 'supp': 0},
-        'jueves': {'obama': 0, 'supp': 0},
-        'viernes': {'obama': 0, 'supp': 0},
-        'sabado': {'obama': 0, 'supp': 0}
+    userCounts = defaultdict(lambda: {
+        'lunes': {'obama': 0, 'obamaActive': 0 , 'supp': 0, 'suppActive':0},
+        'martes': {'obama': 0, 'obamaActive': 0 , 'supp': 0, 'suppActive':0},
+        'miercoles': {'obama': 0, 'obamaActive': 0 , 'supp': 0, 'suppActive':0},
+        'jueves': {'obama': 0, 'obamaActive': 0 , 'supp': 0, 'suppActive':0},
+        'viernes': {'obama': 0, 'obamaActive': 0 , 'supp': 0, 'suppActive':0},
+        'sabado': {'obama': 0, 'obamaActive': 0 , 'supp': 0, 'suppActive':0},
     })
 
     # Mapeo de números a días de la semana
-    dias_de_la_semana = {
+    daysOfWeek = {
         0: 'lunes',
         1: 'martes',
         2: 'miercoles',
@@ -2103,43 +2105,182 @@ def liveViewWeekly(request):
     }
 
     # Contamos cuántos registros de ObamaCare tiene cada usuario por día
-    userRole = [ 'A' , 'C']
-    obama_counts = ObamaCare.objects.values('agent', 'created_at').filter(agent__role__in=userRole, is_active = True).annotate(obama_count=Count('id'))
-    for obama in obama_counts:
+    userRole = ['A', 'C', 'S']
+
+    # Filtrar por la semana actual
+    obamaCounts = ObamaCare.objects.values('agent', 'created_at') \
+        .filter(
+            agent__role__in=userRole,
+            is_active=True,
+            created_at__range=[startOfWeek, endOfWeek]
+        ) \
+        .annotate(obamaCount=Count('id'))
+        
+    obamaActiveCounts = ObamaCare.objects.values('agent', 'created_at')\
+        .filter(
+            agent__role__in=userRole, 
+            is_active=True, 
+            created_at__range=[startOfWeek, endOfWeek],
+            status='ACTIVE'
+        )\
+        .annotate(obamaProfilingCount=Count('id'))
+
+    for obama in obamaCounts:
         # Obtener el día de la semana (0=lunes, 1=martes, ..., 6=domingo)
-        dia_semana = obama['created_at'].weekday()
-        if dia_semana < 6:  # Excluimos el domingo
-            dia = dias_de_la_semana[dia_semana]
-            user_counts[obama['agent']][dia]['obama'] += obama['obama_count']
+        dayOfWeek = obama['created_at'].weekday()
+        if dayOfWeek < 6:  # Excluimos el domingo
+            day = daysOfWeek[dayOfWeek]
+            userCounts[obama['agent']][day]['obama'] += obama['obamaCount']
+
+    for obamaActive in obamaActiveCounts:
+        # Obtener el día de la semana (0=lunes, 1=martes, ..., 6=domingo)
+        dayOfWeek = obamaActive['created_at'].weekday()
+        if dayOfWeek < 6:  # Excluimos el domingo
+            day = daysOfWeek[dayOfWeek]
+            userCounts[obamaActive['agent']][day]['obamaActive'] += obamaActive['obamaProfilingCount']
 
     # Contamos cuántos registros de Supp tiene cada usuario por día
-    supp_counts = Supp.objects.values('agent', 'created_at').filter(agent__role__in=userRole, is_active = True).annotate(supp_count=Count('id'))
-    for supp in supp_counts:
-        # Obtener el día de la semana (0=lunes, 1=martes, ..., 6=domingo)
-        dia_semana = supp['created_at'].weekday()
-        if dia_semana < 6:  # Excluimos el domingo
-            dia = dias_de_la_semana[dia_semana]
-            user_counts[supp['agent']][dia]['supp'] += supp['supp_count']
+    suppCounts = Supp.objects.values('agent', 'created_at') \
+        .filter(
+            agent__role__in=userRole,
+            is_active=True,
+            created_at__range=[startOfWeek, endOfWeek]
+        ) \
+        .annotate(suppCount=Count('id'))
 
-    # Aseguramos que todos los usuarios estén en el diccionario, incluso si no tienen registros    
-    for user in User.objects.filter(role__in = userRole):
-        if user.id not in user_counts:
-            user_counts[user.id] = {
-                'lunes': {'obama': 0, 'supp': 0},
-                'martes': {'obama': 0, 'supp': 0},
-                'miercoles': {'obama': 0, 'supp': 0},
-                'jueves': {'obama': 0, 'supp': 0},
-                'viernes': {'obama': 0, 'supp': 0},
-                'sabado': {'obama': 0, 'supp': 0}
+    suppActiveCounts = Supp.objects.values('agent', 'created_at') \
+        .filter(
+            agent__role__in=userRole,
+            is_active=True,
+            created_at__range=[startOfWeek, endOfWeek],
+            status='ACTIVE'
+        ) \
+        .annotate(suppActiveCount=Count('id'))
+
+    for supp in suppCounts:
+        # Obtener el día de la semana (0=lunes, 1=martes, ..., 6=domingo)
+        dayOfWeek = supp['created_at'].weekday()
+        if dayOfWeek < 6:  # Excluimos el domingo
+            day = daysOfWeek[dayOfWeek]
+            userCounts[supp['agent']][day]['supp'] += supp['suppCount']
+
+    for suppActive in suppActiveCounts:
+        # Obtener el día de la semana (0=lunes, 1=martes, ..., 6=domingo)
+        dayOfWeek = suppActive['created_at'].weekday()
+        if dayOfWeek < 6:  # Excluimos el domingo
+            day = daysOfWeek[dayOfWeek]
+            userCounts[suppActive['agent']][day]['suppActive'] += suppActive['suppActiveCount']
+
+    excludedUsernames = ['Calidad01', 'mariluz', 'MariaCaTi'] #Excluimos a gente que no debe aparecer en la vista
+
+    # Aseguramos que todos los usuarios estén en el diccionario, incluso si no tienen registros
+    for user in User.objects.filter(role__in=userRole, is_active=True).exclude(username__in=excludedUsernames):
+        if user.id not in userCounts:
+            userCounts[user.id] = {
+                'lunes': {'obama': 0, 'obamaActive': 0 , 'supp': 0, 'suppActive':0},
+                'martes': {'obama': 0, 'obamaActive': 0 , 'supp': 0, 'suppActive':0},
+                'miercoles': {'obama': 0, 'obamaActive': 0 , 'supp': 0, 'suppActive':0},
+                'jueves': {'obama': 0, 'obamaActive': 0 , 'supp': 0, 'suppActive':0},
+                'viernes': {'obama': 0, 'obamaActive': 0 , 'supp': 0, 'suppActive':0},
+                'sabado': {'obama': 0, 'obamaActive': 0 , 'supp': 0, 'suppActive':0}
             }
 
     # Convertimos los identificadores de usuario a nombres (si necesitas los nombres de los usuarios)
-    user_names = {user.id: user.username for user in User.objects.all()}
+    userNames = {user.id: f'{user.first_name} {user.last_name}' for user in User.objects.all()}
 
     # Crear un diccionario con los nombres de los usuarios y los conteos por día
-    final_counts = {user_names[user_id]: counts for user_id, counts in user_counts.items()}
+    finalCounts = {userNames[userId]: counts for userId, counts in userCounts.items()}
 
-    return final_counts
+    return finalCounts
+
+def monthLiveView(request):
+    context = {
+        'monthSales': getSalesForMonth(),
+        'toggle': True
+    }
+    return render(request, 'dashboard/monthLiveView.html', context)
+
+from django.utils.timezone import make_aware
+
+def getSalesForMonth():
+    # Obtener las fechas de inicio y fin del mes actual
+    today = datetime.today()
+    startDate = today.replace(day=1)  # Primer día del mes actual
+    _, lastDay = calendar.monthrange(today.year, today.month)
+    endDate = today.replace(day=lastDay)  # Último día del mes actual
+
+    excludedUsernames = ['Calidad01', 'mariluz', 'MariaCaTi']  # Excluimos a gente que no debe aparecer en la vista
+    userRoles = ['A', 'C', 'S']
+    
+    # Convertir startDate y endDate en fechas "offset-aware"
+    startDate = make_aware(startDate)
+    endDate = make_aware(endDate)
+    
+    # Número total de semanas en el mes actual
+    numWeeks = (lastDay + 6) // 7  # Aproximación para incluir semanas parciales
+    
+    # Inicializar diccionario de ventas con todos los usuarios
+    users = User.objects.filter(role__in=userRoles, is_active=True).exclude(username__in=excludedUsernames)  # Lista completa de usuarios
+    salesSummary = {
+        user.username: {
+            f"Week{i + 1}": {"obama": 0, "activeObama": 0, "supp": 0, "activeSupp": 0}
+            for i in range(numWeeks)
+        } for user in users
+    }
+    
+    # Filtrar todas las ventas realizadas en el mes actual
+    obamaSales = ObamaCare.objects.filter(created_at__range=[startDate, endDate])
+    suppSales = Supp.objects.filter(created_at__range=[startDate, endDate])
+    
+    # Iterar sobre las ventas de Obamacare y organizarlas por semanas
+    for sale in obamaSales:
+        agentName = sale.agent.username  # Nombre del agente
+        saleWeek = (sale.created_at - startDate).days // 7 + 1
+        if 1 <= saleWeek <= numWeeks:
+            try:
+                salesSummary[agentName][f"Week{saleWeek}"]["obama"] += 1
+            except KeyError:
+                pass  # Ignorar ventas de agentes que no están en el filtro de usuarios
+    
+    # Iterar sobre las ventas de Supp y organizarlas por semanas
+    for sale in suppSales:
+        agentName = sale.agent.username  # Nombre del agente
+        saleWeek = (sale.created_at - startDate).days // 7 + 1
+        if 1 <= saleWeek <= numWeeks:
+            try:
+                salesSummary[agentName][f"Week{saleWeek}"]["supp"] += 1
+            except KeyError:
+                pass
+
+    # Agregar el conteo de pólizas activas por agente para Obamacare y Supp
+    activeObamaPolicies = ObamaCare.objects.filter(status='Active')
+    activeSuppPolicies = Supp.objects.filter(status='Active')
+    
+    for policy in activeObamaPolicies:
+        agentName = policy.agent.username
+        policyWeek = (policy.created_at - startDate).days // 7 + 1
+        if 1 <= policyWeek <= numWeeks:
+            try:
+                salesSummary[agentName][f"Week{policyWeek}"]["activeObama"] += 1
+            except KeyError:
+                pass
+
+    for policy in activeSuppPolicies:
+        agentName = policy.agent.username
+        policyWeek = (policy.created_at - startDate).days // 7 + 1
+        if 1 <= policyWeek <= numWeeks:
+            try:
+                salesSummary[agentName][f"Week{policyWeek}"]["activeSupp"] += 1
+            except KeyError:
+                pass
+
+    # Convertir el diccionario para usar "first_name last_name" como clave
+    finalSummary = {}
+    for user in users:
+        fullName = f"{user.first_name} {user.last_name}".strip()
+        finalSummary[fullName] = salesSummary[user.username]
+    
+    return finalSummary
 
 #Websocket
 def notify_websocket(user_id):

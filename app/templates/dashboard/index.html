@@ -69,8 +69,11 @@
 						<li> <a href="{% url "index" %}"><i class='bx bx-radio-circle'></i>Home</a>
 						</li>
 						{% if request.user.role == 'Admin' or request.user.role == 'S' or request.user.role == 'TV' %}
-						<li> <a href="{% url "liveView" %}"><i class='bx bx-radio-circle'></i>View TV</a>
-						</li>
+						{% if toggle %}
+						<li> <a href="{% url "monthLiveView" %}"><i class='bx bx-radio-circle'></i>View TV</a></li>
+						{% else %}
+						<li> <a href="{% url "weeklyLiveView" %}"><i class='bx bx-radio-circle'></i>View TV</a></li>
+						{% endif %}
 						{% endif %}
 					</ul>
 				</li>
