@@ -105,7 +105,7 @@ def update_type_sales(request, client_id):
             # Redirige a la URL previa con el ID del cliente
             if route == 'ACA': return redirect('formAddObama', client_id=client_id)
             elif route == 'SUPP': return redirect('formAddSupp', client_id=client_id)
-            elif route == 'prueba': return redirect('formAddDepend', client_id=client_id)
+            elif route == 'DEPENDSSS': return redirect('formAddDepend', client_id=client_id)
             else: return redirect('select_client')
 
 # Vista para crear cliente
@@ -409,37 +409,61 @@ def formAddSupp(request,client_id):
 
 def formAddDepend(request,client_id):
 
-    client = Client.objects.get(id=client_id)
-    obama = ObamaCare.objects.filter(client_id=client.id).first()
-    supp = Supp.objects.filter(client_id=client.id)
-    if supp : type_police_array = [s.policy_type for s in supp]
-
-    if request.method == 'POST':
-        date_birth = request.POST.get('date_birth')
-        fecha_obj = datetime.strptime(date_birth, '%m/%d/%Y')
-        fecha_formateada = fecha_obj.strftime('%Y-%m-%d')
-        type_police = request.POST.get('type_police')
-        formDepend = DepentForm(request.POST)
-        if formDepend.is_valid():
-            depend = formDepend.save(commit=False)
-            depend.client = client
-            depend.date_birth = fecha_formateada
-            if type_police == 'ACA': depend.obamacare = obama            
-            depend.save()
-
-            
-
-
-            return redirect('select_client')  # Cambia a tu página de éxito
-        
+    lista = []
     
+    dependents = Dependent.objects.filter(client_id=client_id)  
+    for dependent in dependents:
+        dependent.type_police = dependent.type_police.split(",")
+        for i in dependent.type_police:
+            lista.append(i)
+
     context = {
-        'obamas':obama,
-        'supps':supp
+        'dependents':dependents,
+        'lista':lista,
+        'client_id':client_id
     }            
         
     return render(request, 'forms/formAddDepend.html',context)
 
+def addDepend(request):
+
+    nameDependent = request.POST.get('nameDependent')
+    applyDependent = request.POST.get('applyDependent')
+    dateBirthDependent = request.POST.get('dateBirthDependent')
+    migrationStatusDependent = request.POST.get('migrationStatusDependent')
+    sexDependent = request.POST.get('sexDependent')        
+    kinship = request.POST.get('kinship')  
+    client_id = request.POST.get('client_id') 
+
+    # Conversión solo si los valores no son nulos o vacíos
+    if dateBirthDependent not in [None, '']:
+        dateNew = datetime.strptime(dateBirthDependent, '%m/%d/%Y').date()
+    else:
+        dateNew = None
+
+    # Obtenemos las observaciones seleccionadas
+    observations = request.POST.getlist('typePoliceDependents[]')  # Lista de valores seleccionados
+    
+    # Convertir las observaciones a una cadena (por ejemplo, separada por comas o saltos de línea)
+    typification_text = ", ".join(observations)  # Puedes usar "\n".join(observations) si prefieres saltos de línea
+
+    obama = ObamaCare.objects.get(client_id=client_id)
+    client = Client.objects.get(id=client_id)
+
+    if nameDependent.strip():  # Validar que el texto no esté vacío
+        Dependent.objects.create(
+            client=client,
+            name=nameDependent,
+            apply=applyDependent,
+            date_birth=dateNew,
+            migration_status=migrationStatusDependent,
+            type_police=typification_text, # Guardamos las observaciones en el campo 'typification'
+            sex=sexDependent,
+            obamacare = obama,
+            kinship=kinship
+        )
+
+    return redirect('select_client')    
 
 @login_required(login_url='/login')
 def clientObamacare(request):
@@ -462,7 +486,6 @@ def clientObamacare(request):
     elif request.user.role == 'Admin':
         obamaCare = ObamaCare.objects.select_related('agent', 'client').annotate(
             truncated_agent_usa=Substr('agent_usa', 1, 8)).order_by('-created_at')
-        
     elif request.user.role in ['A', 'SUPP']:
         obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
             truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(agent = request.user.id, is_active = True ).order_by('-created_at')
@@ -2307,13 +2330,15 @@ def formCreateControl(request):
 
     if request.method == 'POST':
 
+        observation = request.POST.get('observation')
+
         if request.POST.get('Action') == 'Quality':
             form = ControlQualityForm(request.POST)
             if form.is_valid():
-
                 quality = form.save(commit=False)
                 quality.agent_create = request.user 
                 quality.is_active = True
+                quality.observation = observation
                 quality.save()
                 
                 # Responder con éxito y la URL de redirección
