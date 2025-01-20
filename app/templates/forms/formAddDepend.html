@@ -48,22 +48,22 @@
 		<p class="mb-4">Information about the client</p>
 		<hr/>
 		<div id="editor">
+
+			<div class="card mb-3">
+				<div class="card-body">
+					<div class="d-flex align-items-center justify-content-between">
+						<h5 class="mb-0">Dependents</h5>
+						<!-- Botón para abrir el modal -->
+						<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDependentModal">
+							Add
+						</button>
+					</div>
+				</div>
+			</div>
 			<form  method="POST">
 			{% csrf_token %}
-				<div class="row g-3">	
-					
-					<div class="card mb-3">
-						<div class="card-body">
-							<div class="d-flex align-items-center justify-content-between">
-								<h5 class="mb-0">Dependents</h5>
-								<!-- Botón para abrir el modal -->
-								<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDependentModal">
-									Add
-								</button>
-							</div>
-						</div>
-					</div>
-				
+				<div class="row g-3">			
+									
 					<!-- Contenedor de dependientes existentes -->
 					<div id="dependent-container">
 						{% for dependent in dependents %}
@@ -76,34 +76,37 @@
 												<label class="form-label">Name of Dependent</label>
 												<input type="text" class="form-control" name="nameDependent" value="{{ dependent.name }}" disabled>
 											</div>
-											<div class="col-12 col-lg-6">
+											<div class="col-12 col-lg-1">
 												<label class="form-label">Apply</label>
 												<input type="text" class="form-control" name="applyDependent" value="{{ dependent.apply }}" disabled>
 											</div>
-											<div class="col-12 col-lg-6">
-												<label class="form-label">Date Birth (MM-DD-AAAA)</label>
+											<div class="col-12 col-lg-2">
+												<label class="form-label">Date Birth</label>
 												<input type="text" class="form-control " name="dateBirthDependent" id="dateBirthDependent" value="{{ dependent.date_birth|date:'m-d-Y' }}" disabled >
 											</div>
-											<div class="col-12 col-lg-6">
-												<label class="form-label">Migration Status</label>
-												<input type="text" class="form-control" name="migrationStatusDependent" value="{{ dependent.migration_status }}" disabled>
-											</div>
-											<div class="col-12 col-lg-6">
+											<div class="col-12 col-lg-3">
 												<label class="form-label">Sex</label>
 												<input type="text" class="form-control" name="sexDependent" value="{{ dependent.sex }}" disabled>
 											</div>
 											<div class="col-12 col-lg-6">
+												<label class="form-label">Migration Status</label>
+												<input type="text" class="form-control" name="migrationStatusDependent" value="{{ dependent.migration_status }}" disabled>
+											</div>											
+											<div class="col-12 col-lg-2">
 												<label for="kinship" class="form-label">Relationship</label>
 												<input type="text" class="form-control" name="kinship" value="{{ dependent.kinship }}" disabled>
 											</div>
+											<div class="col-12 col-lg-4">
+												<label for="kinship" class="form-label">Type Dependents</label>
+												<input type="text" class="form-control" name="kinship" value="{{ dependent.type_police|join:"," }}" disabled>
+											</div>
 											<div class="col-12 col-lg-6">
-												<label class="form-label">Type Dependents</label>
-												<select class="form-select typePoliceSelects" name="typePoliceDependents[]" id="typePoliceDependents" multiple>
-													{% for dependent in dependent.type_police %}
-														<option value="{{ dependent }}" {% if dependent %}selected{% endif %} >{{ dependent }}</option>
-													{% endfor %}	
+												<label class="form-label">Type Police Add</label>
+												<select class="form-select typePoliceSelects" name="typePoliceDependents[{{ forloop.counter0 }}][]" id="typePoliceDependents" multiple>
 													{% for lista in lista %}
-														<option value="{{ lista }}" {% if lista == dependent.type_police %}selected{% endif %}>{{ lista }}</option>
+														{% if dependent.type_police|join:"," not in lista %}
+															<option value="{{ lista }}" {% if lista == dependent.type_police %}selected{% endif %}>{{ lista }}</option>
+														{% endif %}
 													{% endfor %}																										
 												</select>
 											</div>
@@ -117,7 +120,7 @@
 
 					<div class="col-12 mt-4">
 						<div class="d-flex align-items-center gap-3">
-							<button class="btn btn-primary px-4" id="buttonSendDepend">Send</button>
+							<button class="btn btn-primary px-4" type="submit" id="buttonSendDepend">Send</button>
 						</div>
 					</div>						
 				</div>		
@@ -138,23 +141,23 @@
 									<div class="col-12 col-lg-6">
 										<label class="form-label">Name of Dependent</label>
 										<input type="hidden" name="client_id" value="{{ client_id }}">
-										<input type="text" class="form-control" name="nameDependent" >
+										<input type="text" class="form-control" name="nameDependent" required>
 									</div>
 									<div class="col-12 col-lg-6">
 										<label class="form-label">Apply</label>
-										<select class="form-select" name="applyDependent">
+										<select class="form-select" name="applyDependent" required>
 											<option disabled selected ></option>
 											<option value="YES">YES</option>
 											<option value="NO">NO</option>
 										</select>
 									</div>
 									<div class="col-12 col-lg-6">
-										<label class="form-label">Date Birth (MM-DD-AAAA)</label>
-										<input type="text" class="form-control" name="dateBirthDependent" id="dateBirthDependent"  >
+										<label class="form-label">Date Birth</label>
+										<input type="text" class="form-control" name="dateBirthDependent" id="dateBirthDependent" required >
 									</div>
 									<div class="col-12 col-lg-6">
 										<label class="form-label">Migration Status</label>
-										<select class="form-select" name="migrationStatusDependent">															
+										<select class="form-select" name="migrationStatusDependent" required>															
 											<option  disabled selected>Please Select</option>
 											<option value="EMPLOYMENT_AUTHORIZATION">Employment Authorization</option>
 											<option value="NOTICE OF ACTION">Notice of Action (i-797)</option>
@@ -172,7 +175,7 @@
 									</div>
 									<div class="col-12 col-lg-6">
 										<label class="form-label">Sex</label>
-										<select class="form-select" name="sexDependent">
+										<select class="form-select" name="sexDependent" required>
 											<option disabled selected ></option>
 											<option value="M">MALE</option>
 											<option value="F">FEMALE</option>
@@ -180,7 +183,7 @@
 									</div>
 									<div class="col-12 col-lg-6">
 										<label for="kinship" class="form-label">Relationship</label>
-										<select class="form-select" id="kinship" name="kinship" aria-label="Default select example">
+										<select class="form-select" id="kinship" name="kinship" aria-label="Default select example" required>
 											<option disabled selected ></option>
 											<option value="DAD">DAD</option>
 											<option value="MOM">MOM</option>
@@ -193,7 +196,7 @@
 									</div>
 									<div class="col-12 col-lg-6">
 										<label class="form-label ">Type Dependents</label>
-										<select  class="form-select" name="typePoliceDependents[]"  id="typePoliceDependents" multiple>
+										<select  class="form-select" name="typePoliceDependents[]"  id="typePoliceDependents" multiple required>
 											{% for lista in lista %}
 												<option value="{{ lista }}" >{{ lista }}</option>
 											{% endfor %}
@@ -235,10 +238,6 @@
 	<!-- Agregar la librería de Flatpickr -->
 	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-	<script>
-		var client_id = '{{ client.id }}'
-		let type_sales = '{{ client.type_sales }}'
-	</script>
 
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {

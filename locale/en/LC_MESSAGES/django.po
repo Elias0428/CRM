@@ -20,18 +20,17 @@ msgstr ""
 
 #: .\app\templates\consent\consent1.html:142
 msgid "AGENTE EN REGISTRO"
-msgstr "AGENT IN RECORD"
+msgstr "PERSONAL INFORMATION"
 
 #: .\app\templates\consent\consent1.html:143
 msgid ""
 "AUTORIZACION DE ENTREGA INFORMACIÓN PARA ENROLAMIENTO EN EL MERCADO DE SALUD"
 msgstr ""
-"AUTHORIZATION FOR INFORMATION RELEASE FOR ENROLLMENT IN THE HEALTH "
-"MARKETPLACE"
+"PLEASE VERIFY THAT YOUR INFORMATION IS ACCURATE AND CORRECT"
 
 #: .\app\templates\consent\consent1.html:148
 msgid "Nombre del Aplicante"
-msgstr "Applicant's Name"
+msgstr "Applicant Name"
 
 #: .\app\templates\consent\consent1.html:163
 msgid "Teléfono"
@@ -39,8 +38,7 @@ msgstr "Phone"
 
 #: .\app\templates\consent\consent1.html:178
 msgid "Acepto a ser contactado por mi broker y/o el mercado de salud vía:"
-msgstr ""
-"I agree to be contacted by my broker and/or the health marketplace via:"
+msgstr "I accept to be contacted by my broker or the marketplace via:"
 
 #: .\app\templates\consent\consent1.html:183
 msgid "Telefono"
@@ -48,7 +46,7 @@ msgstr "Phone"
 
 #: .\app\templates\consent\consent1.html:187
 msgid "Mensajes de Texto"
-msgstr "Text Messages"
+msgstr "Text Message"
 
 #: .\app\templates\consent\consent1.html:207
 msgid "Aplica"
@@ -79,7 +77,7 @@ msgstr "Address"
 
 #: .\app\templates\consent\consent1.html:241
 msgid "Apto"
-msgstr "Apartment"
+msgstr "Apt/Ste"
 
 #: .\app\templates\consent\consent1.html:245
 msgid "Ciudad"
@@ -95,7 +93,7 @@ msgstr "Date of Birth"
 
 #: .\app\templates\consent\consent1.html:265
 msgid "Ingreso Anual Estimado "
-msgstr "Estimated Annual Income"
+msgstr "Estimated Income"
 
 #: .\app\templates\consent\consent1.html:269
 msgid "Tipo de Ingreso "
@@ -111,7 +109,7 @@ msgstr "Immigration Status"
 
 #: .\app\templates\consent\consent1.html:318
 msgid "Agente Autorizado de Registro"
-msgstr "Authorized Registration Agent"
+msgstr "Authorized Agent of Record"
 
 #: .\app\templates\consent\consent1.html:332
 msgid "TELÉFONO"
@@ -123,7 +121,7 @@ msgstr "Insurance Agency"
 
 #: .\app\templates\consent\consent1.html:345
 msgid "Cargar documento de inmigración, SSN, ID, foto selfie con ID en mano"
-msgstr "Upload immigration document, SSN, ID, selfie with ID in hand"
+msgstr "File Upload (front and back) SSN, ID, Selfie with ID"
 
 #: .\app\templates\consent\consent1.html:351
 msgid "Subir Archivo o Foto (Frente y Atrás)"
@@ -136,11 +134,11 @@ msgstr "My Rights as a Patient"
 
 #: .\app\templates\consent\consent1.html:366
 msgid "Yo, "
-msgstr "I, "
+msgstr "By signing this form, I, "
 
 #: .\app\templates\consent\consent1.html:366
 msgid ", autorizo a "
-msgstr " authorize "
+msgstr " give consent to "
 
 #: .\app\templates\consent\consent1.html:366
 msgid ""
@@ -149,14 +147,14 @@ msgid ""
 "para el propósito de enrolamiento en un Plan Médico Calificado ofrecido en "
 "el Mercado de Salud Federal."
 msgstr "" 
-" to serve as my health insurance agent and broker, that is, my Enrollment " 
-"Agent, for myself and the members of my household, when applicable, " 
-"for the purpose of enrolling in a Qualified Health Plan offered through " 
-"the Federal Health Marketplace."
+" to serve as the health insurance " 
+"agent or broker, as my Agent of Record, " 
+"for myself and my entire household " 
+"if applicable, for purposes of enrollment in a Qualified Health Plan offered on the Federally Facilitated Marketplace."
 
 #: .\app\templates\consent\consent1.html:368
 msgid "Al firmar esta forma, autorizo a "
-msgstr "By signing this form, I authorize "
+msgstr "By signing this form, I give my permission to "
 
 #: .\app\templates\consent\consent1.html:368
 msgid ""
@@ -166,16 +164,16 @@ msgid ""
 "en buen estado, como sigue:"
 msgstr ""
 "\n"
-"and his staff to work on my behalf and on behalf of the members of my "
-"household, when applicable, in the following insurance support functions and "
-"any other for me and my family members, when applicable, in the following "
-"health necessary administrative tasks to maintain my application and "
-"coverage in good standing, as follows: "
+"and/or their staff to provide the following services on behalf of myself, and my entire household if applicable to keep my application and health coverage in good standing: "
+""
+""
+""
+" "
 
 #: .\app\templates\consent\consent1.html:370
 msgid ""
 "Realizar búsquedas de aplicaciones nuevas o actuales en el mercado de salud."
-msgstr "Search for new or existing applications in the health marketplace."
+msgstr "Search for a new or existing Marketplace application."
 
 #: .\app\templates\consent\consent1.html:371
 msgid ""
@@ -186,11 +184,11 @@ msgid ""
 "crédito fiscales o enrolamiento de productos de seguros en planes a nivel "
 "estatal."
 msgstr ""
-"Complete an application for eligibility search and enrollment in the Federal "
-"Health Marketplace, or government programs such as Medicaid and CHIP, at "
-"Health Marketplace Direct Enrollment sites, or enrollment in health "
-"marketplace programs that help you apply for tax credit or enrollment in "
-"insurance products in state-level plans."
+"Completing an application for eligibility and enrollment in a marketplace Qualified "
+"Health Plan or government insurance affordability programs, such as Medicaid "
+"and CHIP, Marketplace Direct Enrollment Classic/Enhanced Direct Enrollment "
+"websites, or advance tax credits to help pay for Marketplace Premiums or "
+"enrollment in off-exchange insurance products as applicable."
 
 #: .\app\templates\consent\consent1.html:372
 msgid ""
@@ -199,17 +197,17 @@ msgid ""
 "nuevos productos, beneficios de nuevos productos, y asesoría en los pagos de "
 "transacciones si es necesario."
 msgstr ""
-"Provide maintenance of my account in the Federal Health Marketplace, "
-"enrollment assistance, plan benefit information, new products, new product "
-"benefits, and advice on payment of transactions if needed."
+"Providing ongoing account maintenance, enrollment assistance, information on "
+"plan benefits, new products, the benefits of new products, and payment "
+"transactions as necessary"
 
 #: .\app\templates\consent\consent1.html:373
 msgid ""
 "Apoyar si es necesario en responder inquietudes del Mercado de Salud Federal "
 "en lo referente a mi aplicación."
 msgstr ""
-"Support as necessary in responding to concerns from the Federal Health "
-"Marketplace regarding my application."
+"Responding to inquiries from the Marketplace regarding my Marketplace "
+"application. "
 
 #: .\app\templates\consent\consent1.html:374
 msgid ""
@@ -217,8 +215,8 @@ msgid ""
 "ayudarme y asistirme en cualquier acción necesaria para mantener mi póliza "
 "en buen estado."
 msgstr ""
-"Contact me via telephone, electronic, or written means to sist and support "
-"me in any necessary actions to maintain my policy in good standing."
+"Contact me by phone or by any written means to assist me or remind me of any "
+"action necessary to keep my policy in good standing."
 
 #: .\app\templates\consent\consent1.html:376
 msgid ""
@@ -226,9 +224,9 @@ msgid ""
 "de identificación personal (PII) para ningún propósito excepto los aquí "
 "listados en esta autorización."
 msgstr ""
-"I understand that my Registration Agent will not use or share my personally "
-"identifiable information (PII) for any purpose except as listed in this "
-"authorization."
+"I understand that my Agent of Record will not use or share my personally identifiable "
+"information (PII) for any purposes other than those listed above.  "
+""
 
 #: .\app\templates\consent\consent1.html:377
 msgid ""
@@ -237,9 +235,9 @@ msgid ""
 "y enviarlo a la persona correspondiente a través del correo electrónico: "
 "client@lapeira.com."
 msgstr ""
-"I understand that this authorization will remain valid until it is revoked "
-"by me at any time.To revoke this authorization, I must do so in writingand "
-"send it to the appropriate person via email at:client@lapeira.com."
+"Additionally, my Agent "
+"of Record will ensure that my PII is kept private and safe when collecting, storing, and "
+"using my PII for the stated purposes above."
 
 #: .\app\templates\consent\consent1.html:378
 msgid ""
@@ -251,20 +249,20 @@ msgid ""
 "el mercado de salud federal (Marketplace)"
 msgstr ""
 "\n"
-"I understand that the information I provide to my Enrollment Agent will be "
-"used ONLY to assist me in verifying my eligibility and my application or "
-"enrollment in the Federal Health Marketplace (Marketplace). Additionally, I "
-"understand that I am not required to share any additional information except "
-"what is required for my enrollment or eligibility verification in the "
-"Federal Health Marketplace (Marketplace)."
+"I understand that the information I provide to my Agent of Record will be used or "
+"disclosed ONLY to provide information or assist me with or facilitate enrollment through "
+"a Federally-Facilitated Exchange, including to searching for a current application using "
+"an approved Classic Direct Enrollment (DE) or Enhanced Direct Enrollment (EDE) "
+"website (Marketplace). "
+" "
 
 #: .\app\templates\consent\consent1.html:379
 msgid "Nombre del Agente en Registro: "
-msgstr "Enrollment Agent Name: "
+msgstr "Name of Agent of Record ][AOR]: "
 
 #: .\app\templates\consent\consent1.html:380
 msgid "Nombre de la Agencia en Registro: "
-msgstr "Enrollment Agency Name: "
+msgstr "Name of Agency of Record: "
 
 #: .\app\templates\consent\consent1.html:381
 msgid "Teléfono de la Agencia: "
@@ -272,7 +270,7 @@ msgstr "Agency Phone: "
 
 #: .\app\templates\consent\consent1.html:389
 msgid "Firma Aplicante o Representante Autorizado"
-msgstr "Applicant or Authorized Representative Signature"
+msgstr "Applicant or Authorized Representative's Signature"
 
 #: .\app\templates\consent\consent1.html:389
 msgid "Firmado"

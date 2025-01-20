@@ -105,7 +105,7 @@ def update_type_sales(request, client_id):
             # Redirige a la URL previa con el ID del cliente
             if route == 'ACA': return redirect('formAddObama', client_id=client_id)
             elif route == 'SUPP': return redirect('formAddSupp', client_id=client_id)
-            elif route == 'DEPENDSSS': return redirect('formAddDepend', client_id=client_id)
+            elif route == 'DEPENDSA': return redirect('formAddDepend', client_id=client_id)
             else: return redirect('select_client')
 
 # Vista para crear cliente
@@ -364,6 +364,7 @@ def fetchDependent(request, client_id):
         'dependents_ids': updated_dependents_ids
     })
 
+@login_required(login_url='/login')
 def formAddObama(request,client_id):
 
     client = Client.objects.get(id=client_id)
@@ -381,6 +382,7 @@ def formAddObama(request,client_id):
         
     return render(request, 'forms/formAddObama.html')
 
+@login_required(login_url='/login')
 def formAddSupp(request,client_id):
 
     client = Client.objects.get(id=client_id)    
@@ -407,24 +409,57 @@ def formAddSupp(request,client_id):
         
     return render(request, 'forms/formAddSupp.html')
 
-def formAddDepend(request,client_id):
-
+@login_required(login_url='/login')
+def formAddDepend(request, client_id):
     lista = []
-    
-    dependents = Dependent.objects.filter(client_id=client_id)  
+    dependents = Dependent.objects.filter(client_id=client_id)
+
     for dependent in dependents:
         dependent.type_police = dependent.type_police.split(",")
         for i in dependent.type_police:
             lista.append(i)
 
-    context = {
-        'dependents':dependents,
-        'lista':lista,
-        'client_id':client_id
-    }            
-        
-    return render(request, 'forms/formAddDepend.html',context)
+    if request.method == 'POST':
+       
+        # Recuperar todos los dependientes enviados
+        dependent_ids = request.POST.getlist('dependentId')
 
+        # Iterar sobre cada dependiente para procesar sus datos
+        for index, dependent_id in enumerate(dependent_ids):
+            try:
+                observations = request.POST.getlist(f'typePoliceDependents[{index}][]')
+                if observations:
+                    # Buscar el dependiente correspondiente
+                    dependent = Dependent.objects.get(id=dependent_id)
+                    
+                    # Obtener los valores actuales de type_police
+                    current_type_police = dependent.type_police.split(",") if dependent.type_police else []
+
+                    # Concatenar y guardar
+                    updated_type_police = list(set(current_type_police + observations))
+                    dependent.type_police = ",".join(updated_type_police)
+                    dependent.save()
+
+                    # Asociar a las pólizas correspondientes
+                    for observation in observations:
+                        supp_instance = Supp.objects.filter(policy_type=observation, client_id=client_id).first()
+                        if supp_instance:
+                            supp_instance.dependents.add(dependent)
+
+            except Exception as e:
+                print(f"Error processing dependent {dependent_id}: {e}")
+
+        return redirect('select_client')
+
+    context = {
+        'dependents': dependents,
+        'lista': lista,
+        'client_id': client_id
+    }
+
+    return render(request, 'forms/formAddDepend.html', context)
+
+@login_required(login_url='/login')
 def addDepend(request):
 
     nameDependent = request.POST.get('nameDependent')
@@ -441,7 +476,7 @@ def addDepend(request):
     else:
         dateNew = None
 
-    # Obtenemos las observaciones seleccionadas
+    # Obtenemos las polizas seleccionadas
     observations = request.POST.getlist('typePoliceDependents[]')  # Lista de valores seleccionados
     
     # Convertir las observaciones a una cadena (por ejemplo, separada por comas o saltos de línea)
@@ -451,7 +486,7 @@ def addDepend(request):
     client = Client.objects.get(id=client_id)
 
     if nameDependent.strip():  # Validar que el texto no esté vacío
-        Dependent.objects.create(
+        dependent = Dependent.objects.create(
             client=client,
             name=nameDependent,
             apply=applyDependent,
@@ -462,6 +497,13 @@ def addDepend(request):
             obamacare = obama,
             kinship=kinship
         )
+    
+    # Asociar el Dependent solo a las pólizas seleccionadas en observations
+        for observation in observations:
+            # Buscar la póliza correspondiente al nombre o tipo
+            supp_instance = Supp.objects.filter(policy_type=observation, client=client).first()
+            if supp_instance:
+                supp_instance.dependents.add(dependent)
 
     return redirect('select_client')    
 
@@ -484,8 +526,10 @@ def clientObamacare(request):
             truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True).order_by('-created_at')
 
     elif request.user.role == 'Admin':
+
         obamaCare = ObamaCare.objects.select_related('agent', 'client').annotate(
             truncated_agent_usa=Substr('agent_usa', 1, 8)).order_by('-created_at')
+        
     elif request.user.role in ['A', 'SUPP']:
         obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
             truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(agent = request.user.id, is_active = True ).order_by('-created_at')
