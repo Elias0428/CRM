@@ -2331,6 +2331,8 @@ def formCreateControl(request):
     if request.method == 'POST':
 
         observation = request.POST.get('observation')
+        category = request.POST.get('category')
+        amount = request.POST.get('amount')
 
         if request.POST.get('Action') == 'Quality':
             form = ControlQualityForm(request.POST)
@@ -2339,6 +2341,8 @@ def formCreateControl(request):
                 quality.agent_create = request.user 
                 quality.is_active = True
                 quality.observation = observation
+                quality.category = category
+                quality.amount = amount
                 quality.save()
                 
                 # Responder con éxito y la URL de redirección

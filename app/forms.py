@@ -63,7 +63,7 @@ class ControlQualityForm(forms.ModelForm):
     class Meta:
         model = ControlQuality
         fields = '__all__'
-        exclude = ['agent_create','observation']
+        exclude = ['agent_create','observation','amount','category']
 
     #cambiamos formato de la fecha para guardarla como se debe en la BD ya que la obtenes en formato USA
     def clean_date(self):
