@@ -2332,7 +2332,8 @@ def formCreateControl(request):
 
         observation = request.POST.get('observation')
         category = request.POST.get('category')
-        amount = request.POST.get('amount', None)
+        amount = request.POST.get('amount', 0)
+        if amount == '': amount = None
 
         if request.POST.get('Action') == 'Quality':
             form = ControlQualityForm(request.POST)
