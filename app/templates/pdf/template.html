@@ -123,24 +123,26 @@
         
     {% endfor %}      
 
-    <table class="footer-table">
-        <thead>
-            <tr>
-                <th>categoria</th>
-                <th>Amount</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% if consultQuality %}
-                {% for item in consultQuality %}
+    {% if consultQuality %}
+        <table class="footer-table">
+            <thead>
                 <tr>
-                    <td>{{item.category}}</td>
-                    <td>{{item.amount}}</td>
+                    <th>categoria</th>
+                    <th>Amount</th>
                 </tr>
+            </thead>
+            <tbody>
+                
+                {% for item in consultQuality %}
+                    <tr>
+                        <td>{{item.category}}</td>
+                        <td>{{item.amount}}</td>
+                    </tr>
                 {% endfor %}
-            {% endif %}
-        </tbody>
-    </table>
+                
+            </tbody>
+        </table>
+    {% endif %}
 
     <table class="footer-table">
         <thead>
