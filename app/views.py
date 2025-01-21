@@ -381,7 +381,6 @@ def formAddObama(request,client_id):
             obama.is_active = True
             obama.save()
 
-            notify_websocket(request.user.id)
             return redirect('select_client')  # Cambia a tu página de éxito            
         
     return render(request, 'forms/formAddObama.html')
@@ -409,7 +408,6 @@ def formAddSupp(request,client_id):
             supp.observation = observation
             supp.status = 'REGISTERED'
             supp.save()
-            notify_websocket(request.user.id)
             return redirect('select_client')  # Cambia a tu página de éxito           
         
     return render(request, 'forms/formAddSupp.html')
@@ -2153,11 +2151,7 @@ def saleClientStatusSupp(start_date=None, end_date=None):
     
     return registered_supp,proccessing_supp,active_supp,canceled_supp,countRegisteredSupp,countProccsingSupp,countActiveSupp,countCanceledSupp
 
-from django.http import JsonResponse
-from django.utils.timezone import now
-from datetime import datetime
-from django.utils import timezone
-from .models import ObamaCare, Supp
+
 
 def SaleModal(request, agent_id):
     start_date = request.GET.get('start_date')  # Obtiene start_date desde la URL
