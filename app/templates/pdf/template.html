@@ -115,9 +115,6 @@
 
                 <p>{{ item.observation }}.</p>
 
-        {% else %}
-
-                <p>No hay información en Observation para este registro.</p>
 
             </div>
 
@@ -134,12 +131,14 @@
             </tr>
         </thead>
         <tbody>
-            {% for item in consultQuality %}
-            <tr>
-                <td>{{item.category}}</td>
-                <td>{{item.amount}}</td>
-            </tr>
-            {% endfor %}
+            {% if consultQuality %}
+                {% for item in consultQuality %}
+                <tr>
+                    <td>{{item.category}}</td>
+                    <td>{{item.amount}}</td>
+                </tr>
+                {% endfor %}
+            {% endif %}
         </tbody>
     </table>
 
