@@ -222,6 +222,7 @@ def fetchAca(request, client_id):
                 'profiling':'NO'
             }
         )
+    notify_websocket(request.user.id)
     return JsonResponse({'success': True, 'aca_plan_id': aca_plan.id})
 
 @login_required(login_url='/login') 
@@ -282,6 +283,7 @@ def fetchSupp(request, client_id):
                     status_color = 1
                 )
                 updated_supp_ids.append(new_supp.id)  # Agregar el ID creado a la lista
+    notify_websocket(request.user.id)
     return JsonResponse({'success': True,  'supp_ids': updated_supp_ids})
 
 @login_required(login_url='/login')      
@@ -378,6 +380,8 @@ def formAddObama(request,client_id):
             obama.status_color = 1
             obama.is_active = True
             obama.save()
+
+            notify_websocket(request.user.id)
             return redirect('select_client')  # Cambia a tu página de éxito            
         
     return render(request, 'forms/formAddObama.html')
@@ -405,6 +409,7 @@ def formAddSupp(request,client_id):
             supp.observation = observation
             supp.status = 'REGISTERED'
             supp.save()
+            notify_websocket(request.user.id)
             return redirect('select_client')  # Cambia a tu página de éxito           
         
     return render(request, 'forms/formAddSupp.html')
@@ -1641,6 +1646,8 @@ def sale(request):
     registered, proccessing, profiling, canceled, countRegistered,countProccsing,countProfiling,countCanceled = saleClientStatusObama(start_date, end_date)
     registeredSupp, proccessingSupp, activeSupp, canceledSupp,countRegisteredSupp,countProccsingSupp,countActiveSupp,countCanceledSupp = saleClientStatusSupp(start_date, end_date)
 
+
+
     # Calcular los totales por agente antes de pasar los datos a la plantilla
     for agent, data in sales_data.items():
         data['total'] = data['status_color_1_2_obama'] + data['status_color_3_obama'] + data['status_color_1_2_supp'] + data['status_color_3_supp']
@@ -1927,12 +1934,12 @@ def saleSuppAgentUsa(start_date=None, end_date=None):
 def salesBonusAgent(start_date=None, end_date=None):
     # Consulta para Supp
     sales_query_supp = Supp.objects.select_related('agent').filter(is_active=True) \
-        .values('agent__username', 'agent__first_name', 'agent__last_name', 'status_color') \
+        .values('agent__id', 'agent__username', 'agent__first_name', 'agent__last_name', 'status_color') \
         .annotate(total_sales=Count('id'))
 
     # Consulta para ObamaCare
     sales_query_obamacare = ObamaCare.objects.select_related('agent') \
-        .values('agent__username', 'agent__first_name', 'agent__last_name', 'status_color') \
+        .values('agent__id', 'agent__username', 'agent__first_name', 'agent__last_name', 'status_color') \
         .annotate(total_sales=Count('id'))
 
     # Si no se proporcionan fechas, filtrar por el mes actual
@@ -1965,15 +1972,19 @@ def salesBonusAgent(start_date=None, end_date=None):
 
     # Procesar los resultados de Supp
     for entry in sales_query_supp:
+        agent_id = entry['agent__id']
+        username = entry['agent__username']
         first_name = entry['agent__first_name']
         last_name = entry['agent__last_name']
-        username = entry['agent__username']
         agent_full_name = f"{first_name} {last_name} ({username})"
         status_color = entry['status_color']
         total_sales = entry['total_sales']
 
-        if agent_full_name not in sales_data:
-            sales_data[agent_full_name] = {
+        if agent_id not in sales_data:
+            sales_data[agent_id] = {
+                'id': agent_id,
+                'username': username,
+                'full_name': agent_full_name,
                 'status_color_1_2_obama': 0,
                 'status_color_3_obama': 0,
                 'status_color_1_2_supp': 0,
@@ -1983,21 +1994,25 @@ def salesBonusAgent(start_date=None, end_date=None):
 
         # Sumar las ventas de status_color 1 y 2 en Supp
         if status_color in [1, 2]:
-            sales_data[agent_full_name]['status_color_1_2_supp'] += total_sales
+            sales_data[agent_id]['status_color_1_2_supp'] += total_sales
         elif status_color == 3:
-            sales_data[agent_full_name]['status_color_3_supp'] += total_sales
+            sales_data[agent_id]['status_color_3_supp'] += total_sales
 
     # Procesar los resultados de ObamaCare
     for entry in sales_query_obamacare:
+        agent_id = entry['agent__id']
+        username = entry['agent__username']
         first_name = entry['agent__first_name']
         last_name = entry['agent__last_name']
-        username = entry['agent__username']
         agent_full_name = f"{first_name} {last_name} ({username})"
         status_color = entry['status_color']
         total_sales = entry['total_sales']
 
-        if agent_full_name not in sales_data:
-            sales_data[agent_full_name] = {
+        if agent_id not in sales_data:
+            sales_data[agent_id] = {
+                'id': agent_id,
+                'username': username,
+                'full_name': agent_full_name,
                 'status_color_1_2_obama': 0,
                 'status_color_3_obama': 0,
                 'status_color_1_2_supp': 0,
@@ -2007,17 +2022,17 @@ def salesBonusAgent(start_date=None, end_date=None):
 
         # Sumar las ventas de status_color 1 y 2 en ObamaCare
         if status_color in [1, 2]:
-            sales_data[agent_full_name]['status_color_1_2_obama'] += total_sales
+            sales_data[agent_id]['status_color_1_2_obama'] += total_sales
         elif status_color == 3:
-            sales_data[agent_full_name]['status_color_3_obama'] += total_sales
+            sales_data[agent_id]['status_color_3_obama'] += total_sales
 
-    # Sumar los totales generales solo para status_color_1_2 y status_color_3
+    # Calcular los totales generales
     total_status_color_1_2_obama = sum([data['status_color_1_2_obama'] for data in sales_data.values()])
     total_status_color_3_obama = sum([data['status_color_3_obama'] for data in sales_data.values()])
     total_status_color_1_2_supp = sum([data['status_color_1_2_supp'] for data in sales_data.values()])
     total_status_color_3_supp = sum([data['status_color_3_supp'] for data in sales_data.values()])
-    
-    # Total general de las sumas de status_color_1_2 y status_color_3
+
+    # Total general
     total_sales = total_status_color_1_2_obama + total_status_color_3_obama + total_status_color_1_2_supp + total_status_color_3_supp
 
     return sales_data, total_status_color_1_2_obama, total_status_color_3_obama, total_status_color_1_2_supp, total_status_color_3_supp, total_sales
@@ -2137,6 +2152,66 @@ def saleClientStatusSupp(start_date=None, end_date=None):
 
     
     return registered_supp,proccessing_supp,active_supp,canceled_supp,countRegisteredSupp,countProccsingSupp,countActiveSupp,countCanceledSupp
+
+from django.http import JsonResponse
+from django.utils.timezone import now
+from datetime import datetime
+from django.utils import timezone
+from .models import ObamaCare, Supp
+
+def SaleModal(request, agent_id):
+    start_date = request.GET.get('start_date')  # Obtiene start_date desde la URL
+    end_date = request.GET.get('end_date')      # Obtiene end_date desde la URL
+
+    if not start_date and not end_date:
+        today = timezone.now()
+        start_date = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+        if today.month == 12:
+            end_date = today.replace(day=31, hour=23, minute=59, second=59, microsecond=999999)
+        else:
+            end_date = (start_date.replace(month=start_date.month + 1) - timezone.timedelta(seconds=1))
+
+    else:
+        start_date = timezone.make_aware(
+            datetime.strptime(start_date, '%Y-%m-%d').replace(hour=0, minute=0, second=0, microsecond=0)
+        )
+        end_date = timezone.make_aware(
+            datetime.strptime(end_date, '%Y-%m-%d').replace(hour=23, minute=59, second=59, microsecond=999999)
+        )
+
+    saleModalObama = ObamaCare.objects.select_related('agent', 'client').filter(
+        agent_id=agent_id, created_at__range=[start_date, end_date]
+    )
+    saleModalSupp = Supp.objects.select_related('agent', 'client').filter(
+        agent_id=agent_id, created_at__range=[start_date, end_date]
+    )
+
+
+    # Preparar los datos en formato JSON
+    data = {
+        'obama_sales': [
+            {
+                'client_name': f'{sale.client.first_name} {sale.client.last_name}', 
+                'created_at': sale.created_at.strftime('%Y-%m-%d'),
+                'details': sale.profiling,  # Asegúrate de tener este campo en tu modelo
+                'carrier':sale.carrier
+            }
+            for sale in saleModalObama
+        ],
+        'supp_sales': [
+            {
+                'client_name':  f'{sale.client.first_name} {sale.client.last_name}',
+                'created_at': sale.created_at.strftime('%Y-%m-%d'),
+                'details': sale.status,  # Asegúrate de tener este campo en tu modelo
+                'carrier':  f'{sale.company} - {sale.policy_type}'
+            }
+            for sale in saleModalSupp
+        ],
+    }
+
+    return JsonResponse({'success': True, 'data': data})
+
 
 @login_required(login_url='/login')
 def weeklyLiveView(request):
@@ -3336,7 +3411,7 @@ def downloadBdExcelByCategory(filterBd, content_label):
 def averageCustomer(request):
     data = list(ObservationCustomer.objects.filter(
         typification__icontains="EFFECTIVE MANAGEMENT"
-    ).values('agent__username').annotate(total_llamadas=Count('id')).order_by('-total_llamadas'))
+    ).values('agent__first_name', 'agent__last_name').annotate(total_llamadas=Count('id')).order_by('-total_llamadas'))
 
     # Si se proporcionan fechas, filtrar por el rango de fechas
     if request.method == 'POST':

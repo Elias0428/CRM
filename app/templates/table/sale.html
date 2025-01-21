@@ -259,18 +259,18 @@
 								<th>Total</th>
 							</tr>
 						</thead>
-						<tbody>							
-							{% for agent, data in sales_data.items %}
-								<tr>
-									<td>{{ agent }}</td>
-									<td>{{ data.status_color_1_2_obama }}</td>
-									<td>{{ data.status_color_3_obama }}</td>
-									<td>{{ data.status_color_1_2_supp }}</td>
-									<td>{{ data.status_color_3_supp }}</td>
-									<td>{{ data.total}}</td>
-								</tr>
-							{% endfor %}							
-						</tbody>
+						<tbody>
+							{% for agent_id, data in sales_data.items %}
+							<tr>
+							  <td class="ver-detalles" data-id="{{ data.id }}" style="cursor: pointer;">{{ data.full_name }}</td>
+							  <td>{{ data.status_color_1_2_obama }}</td>
+							  <td>{{ data.status_color_3_obama }}</td>
+							  <td>{{ data.status_color_1_2_supp }}</td>
+							  <td>{{ data.status_color_3_supp }}</td>
+							  <td>{{ data.total_sales }}</td>
+							</tr>
+							{% endfor %}
+						  </tbody>
 						<tfoot>
 							<tr>
 								<td><strong>Total</strong></td>
@@ -651,6 +651,48 @@
 		</div>
 	</div>
 
+	<!-- Primer Modal -->
+	<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+			<h5 class="modal-title" id="infoModalLabel">Customer details:</h5>
+			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+			<div class="d-flex justify-content-center">
+				<button id="openObamaCare" class="btn btn-primary me-2">View client ObamaCare</button>
+				<button id="openSupp" class="btn btn-secondary">View client Supp</button>
+			</div>
+			</div>
+			<div class="modal-footer">
+			<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+			</div>
+		</div>
+		</div>
+	</div>
+	
+	<!-- Segundo Modal de bonus -->
+	<div class="modal fade" id="tableModal" tabindex="-1" aria-labelledby="tableModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+			<h5 class="modal-title" id="tableModalLabel"></h5>
+			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+			<div id="tableContainer" class="table-responsive">
+				<!-- Aquí se generará dinámicamente la tabla -->
+			</div>
+			</div>
+			<div class="modal-footer">
+			<button id="backToInfoModal" class="btn btn-secondary">Atrás</button>
+			<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+			</div>
+		</div>
+		</div>
+	</div>	
+
 </div>
 
 {% endblock %}
@@ -678,7 +720,11 @@
 		$(document).ready(function() {$('#tableStatus5').DataTable();} );
 		$(document).ready(function() {$('#tableStatus6').DataTable();} );
 		$(document).ready(function() {$('#tableStatus7').DataTable();} );
+		$(document).ready(function() {$('#tableClient').DataTable();} );
 	</script>
 	<!--app JS-->
 	<script src="{% static "assets/js/app.js" %}"></script>
+	<script src="{% static "assets/js/modalSale.js" %}"></script>
+	
+
 {% endblock %}

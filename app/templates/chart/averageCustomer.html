@@ -47,7 +47,7 @@
 <div class="card">
     <div class="card-body">
         <div class="table-responsive">
-			<div id="pulsarns200"></div>
+			<div id="average"></div>
         </div>
     </div>
 </div>
@@ -90,12 +90,18 @@
                xaxis: {
                    categories: agentes,
                    title: {
-                       text: 'Agent',
+                       text: 'Agents',
+                       labels: {
+                        color: 'balck' // Color de las etiquetas
+                    }
                    },
                },
                yaxis: {
                    title: {
                        text: 'Amount effective calls',
+                       ticks: {
+                        color: 'balck' // Color de las etiquetas del eje X
+                    }
                    },
                },
                title: {
@@ -106,7 +112,7 @@
            };
 
   
-        var chart = new ApexCharts(document.querySelector("#pulsarns200"), options);
+        var chart = new ApexCharts(document.querySelector("#average"), options);
         chart.render();
 
 	</script>

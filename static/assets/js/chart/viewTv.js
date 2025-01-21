@@ -4,8 +4,8 @@ userSocket.onmessage = function(e) {
     const data = JSON.parse(e.data);
     if (data.status === 'success') {
         Swal.fire({
-            title: "<p class='text-dark'>Congratulations Jhonfer Mercado</p>",
-            text: "Danny has sold a SUPP plan",
+            title: "<p class='text-dark'>Congratulations </p>",
+            text: "For your new plan sold",
             icon: "success",
             confirmButtonText: "YeaH!",
         }).then((result) => {

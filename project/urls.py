@@ -95,9 +95,9 @@ urlpatterns = [
     path('formAddObama/<client_id>', views.formAddObama, name='formAddObama'),
     path('formAddSupp/<client_id>', views.formAddSupp, name='formAddSupp'),
     path('formAddDepend/<client_id>', views.formAddDepend, name='formAddDepend'),
-     path('addDepend/', views.addDepend, name='addDepend'),
+    path('addDepend/', views.addDepend, name='addDepend'),
     
-    
+    path('detalle-agente/<agent_id>/', views.SaleModal, name='detalle_agente'),    
 
     ##path('exportUsers/', views.exportUsers, name='exportUsers'),
     ##path('testImportDb/', views.testExportDB, name='testExportDB'),
