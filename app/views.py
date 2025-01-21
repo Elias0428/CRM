@@ -105,7 +105,7 @@ def update_type_sales(request, client_id):
             # Redirige a la URL previa con el ID del cliente
             if route == 'ACA': return redirect('formAddObama', client_id=client_id)
             elif route == 'SUPP': return redirect('formAddSupp', client_id=client_id)
-            elif route == 'DEPENDSA': return redirect('formAddDepend', client_id=client_id)
+            elif route == 'DEPEND': return redirect('formAddDepend', client_id=client_id)
             else: return redirect('select_client')
 
 # Vista para crear cliente
