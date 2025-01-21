@@ -134,10 +134,12 @@
             <tbody>
                 
                 {% for item in consultQuality %}
-                    <tr>
-                        <td>{{item.category}}</td>
-                        <td>{{item.amount}}</td>
-                    </tr>
+                    {% if item.category != None %}
+                        <tr>
+                            <td>{{item.category}}</td>
+                            <td>{{item.amount}}</td>
+                        </tr>
+                    {% endif %}
                 {% endfor %}
                 
             </tbody>
