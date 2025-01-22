@@ -103,9 +103,9 @@
 											<div class="col-12 col-lg-6">
 												<label class="form-label">Type Police Add</label>
 												<select class="form-select typePoliceSelects" name="typePoliceDependents[{{ forloop.counter0 }}][]" id="typePoliceDependents" multiple>
-													{% for lista in lista %}
-														{% if dependent.type_police|join:"," not in lista %}
-															<option value="{{ lista }}" {% if lista == dependent.type_police %}selected{% endif %}>{{ lista }}</option>
+													{% for lista2 in lista2 %}
+														{% if dependent.type_police|join:"," not in lista2 %}
+															<option value="{{ lista2 }}" >{{ lista2 }}</option>
 														{% endif %}
 													{% endfor %}																										
 												</select>

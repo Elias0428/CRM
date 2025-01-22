@@ -415,7 +415,19 @@ def formAddSupp(request,client_id):
 @login_required(login_url='/login')
 def formAddDepend(request, client_id):
     lista = []
+    lista2 = []
     dependents = Dependent.objects.filter(client_id=client_id)
+
+    supp = Supp.objects.filter(client_id=client_id)
+    obama = ObamaCare.objects.filter(client_id=client_id).first()
+
+    if obama:
+        lista2.append('ACA')
+
+    for supp in supp:
+        supp.policy_type = supp.policy_type.split(",")
+        for i in supp.policy_type:
+            lista2.append(i)
 
     for dependent in dependents:
         dependent.type_police = dependent.type_police.split(",")
@@ -457,6 +469,7 @@ def formAddDepend(request, client_id):
     context = {
         'dependents': dependents,
         'lista': lista,
+        'lista2': lista2,
         'client_id': client_id
     }
 
@@ -2151,8 +2164,6 @@ def saleClientStatusSupp(start_date=None, end_date=None):
     
     return registered_supp,proccessing_supp,active_supp,canceled_supp,countRegisteredSupp,countProccsingSupp,countActiveSupp,countCanceledSupp
 
-
-
 def SaleModal(request, agent_id):
     start_date = request.GET.get('start_date')  # Obtiene start_date desde la URL
     end_date = request.GET.get('end_date')      # Obtiene end_date desde la URL
@@ -2205,7 +2216,6 @@ def SaleModal(request, agent_id):
     }
 
     return JsonResponse({'success': True, 'data': data})
-
 
 @login_required(login_url='/login')
 def weeklyLiveView(request):
