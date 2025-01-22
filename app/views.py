@@ -222,7 +222,6 @@ def fetchAca(request, client_id):
                 'profiling':'NO'
             }
         )
-    notify_websocket(request.user.id)
     return JsonResponse({'success': True, 'aca_plan_id': aca_plan.id})
 
 @login_required(login_url='/login') 
@@ -283,7 +282,6 @@ def fetchSupp(request, client_id):
                     status_color = 1
                 )
                 updated_supp_ids.append(new_supp.id)  # Agregar el ID creado a la lista
-    notify_websocket(request.user.id)
     return JsonResponse({'success': True,  'supp_ids': updated_supp_ids})
 
 @login_required(login_url='/login')      
@@ -2165,8 +2163,10 @@ def saleClientStatusSupp(start_date=None, end_date=None):
     return registered_supp,proccessing_supp,active_supp,canceled_supp,countRegisteredSupp,countProccsingSupp,countActiveSupp,countCanceledSupp
 
 def SaleModal(request, agent_id):
-    start_date = request.GET.get('start_date')  # Obtiene start_date desde la URL
-    end_date = request.GET.get('end_date')      # Obtiene end_date desde la URL
+
+    start_date = request.POST.get('start_date')  # Obtiene start_date desde la URL
+    end_date = request.POST.get('end_date')      # Obtiene end_date desde la URL
+    print(start_date)
 
     if not start_date and not end_date:
         today = timezone.now()
@@ -2186,10 +2186,10 @@ def SaleModal(request, agent_id):
         )
 
     saleModalObama = ObamaCare.objects.select_related('agent', 'client').filter(
-        agent_id=agent_id, created_at__range=[start_date, end_date]
+        agent_id=agent_id, created_at__range=[start_date, end_date], is_active = True
     )
     saleModalSupp = Supp.objects.select_related('agent', 'client').filter(
-        agent_id=agent_id, created_at__range=[start_date, end_date]
+        agent_id=agent_id, created_at__range=[start_date, end_date], is_active = True
     )
 
 

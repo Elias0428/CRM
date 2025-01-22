@@ -8,7 +8,14 @@ document.addEventListener("DOMContentLoaded", function () {
       elemento.addEventListener("click", function () {
         const agenteId = this.getAttribute("data-id");
   
-        fetch(`/detalle-agente/${agenteId}/`)
+        fetch(`/detalle-agente/${agenteId}/`,{
+          method: 'POST',
+               headers: {
+                   'Content-Type': 'application/x-www-form-urlencoded',
+                   'X-CSRFToken': getCsrfToken()
+               },
+               body: `start_date=${startDate}&end_date=${endDate}`
+        })
           .then((response) => response.json())
           .then((data) => {
             if (data.success) {
