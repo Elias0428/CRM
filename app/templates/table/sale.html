@@ -43,6 +43,7 @@
                 <button type="submit" class="btn btn-primary">Filter</button>
                 <a href="{% url 'sale' %}" class="btn btn-secondary">Reset</a>
             </div>
+			<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
 			{% csrf_token %}
         </form>
     </div>

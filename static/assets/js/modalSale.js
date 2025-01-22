@@ -3,18 +3,25 @@ document.addEventListener("DOMContentLoaded", function () {
     const tableModal = new bootstrap.Modal(document.getElementById("tableModal"));
     const tableContainer = document.getElementById("tableContainer");
     const tableModalLabel = document.getElementById("tableModalLabel");
+
+    // Función para obtener el token CSRF
+    function getCsrfToken() {
+      return document.querySelector('[name=csrfmiddlewaretoken]').value;
+    }
   
     document.querySelectorAll(".ver-detalles").forEach((elemento) => {
       elemento.addEventListener("click", function () {
         const agenteId = this.getAttribute("data-id");
+        const startDate = document.getElementById('start_date').value;
+        const endDate = document.getElementById('end_date').value;
   
         fetch(`/detalle-agente/${agenteId}/`,{
           method: 'POST',
-               headers: {
-                   'Content-Type': 'application/x-www-form-urlencoded',
-                   'X-CSRFToken': getCsrfToken()
-               },
-               body: `start_date=${startDate}&end_date=${endDate}`
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'X-CSRFToken': getCsrfToken()
+            },
+            body: `start_date=${startDate}&end_date=${endDate}`
         })
           .then((response) => response.json())
           .then((data) => {
