@@ -45,6 +45,7 @@ class Client(models.Model):
     old = models.IntegerField()    
     date_birth = models.DateField()
     migration_status = models.CharField(max_length=100)
+    social_security = models.CharField(max_length=9,null=True)
     type_sales = models.CharField(max_length=100)    
     is_active = models.BooleanField(default=True)  
     apply = models.BooleanField()

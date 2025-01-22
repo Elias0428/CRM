@@ -380,8 +380,6 @@
 
             <!-- Rights Section -->
             <div class="rights-section">
-                <h5 class="mb-3 roboto-black">{% trans "Mis Derechos como Paciente" %}</h5>
-
                 <div class="rights-section">
                     <h5 class="mb-3 roboto-black">{% trans "Mis Derechos como Paciente" %}</h5>
                     <p class="roboto-light">{% trans "Yo, " %}<span id="textName" class="roboto-black">{{obamacare.client.first_name}} {{obamacare.client.last_name}}</span>{% trans ", autorizo a " %}<span id="textAgent" class="roboto-black">{{obamacare.agent_usa}}</span> de <span class="roboto-black" id="textCarrier">{{company}}</span>{% blocktrans %} para servir como mi agente y broker de seguros de salud, es decir mi Agente de Registro, para mi y las personas en mi núcleo familiar, cuando aplica, para el propósito de enrolamiento en un Plan Médico Calificado ofrecido en el Mercado de Salud Federal.{% endblocktrans %}</p>
@@ -394,9 +392,18 @@
                         <li>{% blocktrans %}Apoyar si es necesario en responder inquietudes del Mercado de Salud Federal en lo referente a mi aplicación.{% endblocktrans %}</li>
                         <li>{% blocktrans %}Contactarme vía telefónica o por cualquier medio electrónico o escrito para ayudarme y asistirme en cualquier acción necesaria para mantener mi póliza en buen estado.{% endblocktrans %}</li>
                     </ol>
-                    <p class="roboto-light">{% blocktrans %}Entiendo que mi Agente de Registro no utilizará o compartirá mi información de identificación personal (PII) para ningún propósito excepto los aquí listados en esta autorización.{% endblocktrans %}</p>
-                    <p class="roboto-light">{% blocktrans %}Entiendo que esta autorización será válida hasta que sea revocada por mi en cualquier momento. Para revocar esta autorización, debo hacerlo por escrito y enviarlo a la persona correspondiente a través del correo electrónico: client@lapeira.com.{% endblocktrans %}</p>
-                    <p class="roboto-light">{% blocktrans %}Entiendo que la información que yo le suministre a mi Agente de Registro se va a utilizar ÚNICAMENTE para asistirme en verificar mi elegibilidad y mi aplicacion o enrolamiento en el mercado de salud federal (Marketplace). Así mismo, entiendo que no tengo que compatir otra informacion adicional excepto la que es requerida para mi enrolamiento o verificacion de eligibilidad en el mercado de salud federal (Marketplace){% endblocktrans %}</p>
+                    <p class="roboto-light">{% blocktrans %}Entiendo que mi Agente de Registro no utilizará o compartirá mi información de identificación personal (PII) para ningún propósito excepto los aquí listados en esta autorización. Entiendo que esta autorización será válida hasta que sea revocada por mi en cualquier momento. Para revocar esta autorización, debo hacerlo por escrito y enviarlo a la persona correspondiente a través del correo electrónico: client@lapeira.com.{% endblocktrans %}</p>
+                    <p class="roboto-light">{% blocktrans %}Entiendo que la información que yo le suministre a mi Agente de Registro se va a utilizar ÚNICAMENTE para asistirme en verificar mi elegibilidad y mi aplicacion o enrolamiento en el mercado de salud federal (Marketplace). Esta aprobación incluye la búsqueda de una aplicacion activa utilizando la páginas web aprobadas para el enrolamiento clásico directo (DE) o el Enhanced Direct Enrollment (EDE). Así mismo, entiendo que no tengo que compatir otra informacion adicional excepto la que es requerida para mi enrolamiento o verificacion de eligibilidad en el mercado de salud federal (Marketplace){% endblocktrans %}</p>
+                    <span class="roboto-black">Reconocimiento de Información Correcta y No Falsificación</span><br>
+                    <p class="roboto-light">{% blocktrans %}Al firmar este formulario, afirmo y reconozco que he sido completamente informado y se me ha brindado una explicación clara sobre lo siguiente:{% endblocktrans %}</p>
+                    <ol class="roboto-light">
+                        <li>{% blocktrans %}Los beneficios específicos incluidos en el plan de salud, incluyendo cualquier cobertura de seguro o beneficios asociados.{% endblocktrans %}</li>
+                        <li>{% blocktrans %}Si el plan de salud en el que me estoy inscribiendo es considerado un plan de salud mayor o integral, o si es equivalente a dicha cobertura de seguro.{% endblocktrans %}</li>
+                        <li>{% blocktrans %}Los costos verdaderos y precisos asociados con el plan de salud, incluyendo primas, deducibles y otras obligaciones financieras.{% endblocktrans %}</li>
+                    </ol>
+                    <p class="roboto-light">{% blocktrans %}Además, confirmo que no se me ha ofrecido ni prometido ningún tipo de ofertas gratuitas, recompensas en efectivo, reembolsos u otros incentivos relacionados con la inscripción en el plan de salud. Reconozco que no se me ha hecho ninguna afirmación o promesa sobre este tipo de incentivos durante el proceso de inscripción.{% endblocktrans %}</p>
+                    <span class="roboto-black">Certificación de Revisión y Reconocimiento de la Información</span><br>
+                    <p class="roboto-light">{% trans "Yo, " %}<span id="textName" class="roboto-black">{{obamacare.client.first_name}} {{obamacare.client.last_name}}</span>{% trans ", he revisado y confirmado que la información para mi aplicación en el mercado de salud es CORRECTA Y VERIDICA y estará disponible como es requerido por el Centro de Servicios de Medicare & Medicaid (CMS) para efectos de elegibilidad y enrolamiento." %}</p> 
                     <p class="roboto-light">{% trans "Nombre del Agente en Registro: " %}<span class="roboto-black" id="textAgent2">{{obamacare.agent_usa}}</span><br>
                         {% trans "Nombre de la Agencia en Registro: " %}<span class="roboto-black" id="textCarrier3">{{company}}</span><br>
                         {% trans "Teléfono de la Agencia: " %}<span class="roboto-black">+1 (855) 963 6900</span>

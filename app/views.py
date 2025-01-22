@@ -117,12 +117,18 @@ def formCreateClient(request):
         fecha_obj = datetime.strptime(date_births, '%m/%d/%Y')
         fecha_formateada = fecha_obj.strftime('%Y-%m-%d')
 
+        social = request.POST.get('social_security')
+
+        if social: formatSocial = social.replace('-','')
+        else: formatSocial = None
+
         form = ClientForm(request.POST)
         if form.is_valid():
             client = form.save(commit=False)
             client.agent = request.user
             client.is_active = 1
             client.date_birth = fecha_formateada
+            client.social_security = formatSocial
             client.save()
 
             if client.type_sales in ['ACA', 'ACA/SUPLEMENTARIO']:
@@ -219,7 +225,8 @@ def fetchAca(request, client_id):
                 'doc_income': request.POST.get('doc_income'),
                 'premium': request.POST.get('premium'),
                 'status_color': 1,
-                'profiling':'NO'
+                'profiling':'NO',
+                'status':'IN PROGRESS'
             }
         )
     return JsonResponse({'success': True, 'aca_plan_id': aca_plan.id})
@@ -694,6 +701,29 @@ def editClientObama(request, obamacare_id):
     obamacare = ObamaCare.objects.select_related('agent', 'client').filter(id=obamacare_id).first()
     dependents = Dependent.objects.select_related('obamacare').filter(obamacare=obamacare)
 
+    if obamacare and obamacare.client:
+        social_number = obamacare.client.social_security  # Campo real del modelo
+        # Asegurarse de que social_number no sea None antes de formatear
+        if social_number:
+            formatted_social = f"xxx-xx-{social_number[-4:]}"  # Obtener el formato deseado
+        else:
+            formatted_social = "N/A"  # Valor predeterminado si no hay número disponible
+    else:
+        formatted_social = "N/A"
+        social_number = None
+
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        action = request.POST.get('action')
+        if action == 'validate_key':
+            provided_key = request.POST.get('key')
+            correct_key = 'Sseguros22@'  # Cambia por tu lógica segura
+
+            if provided_key == correct_key and social_number:
+                return JsonResponse({'status': 'success', 'social': social_number})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Clave incorrecta o no hay número disponible'})
+    
+
     obsObama = ObservationAgent.objects.filter(id_obamaCare=obamacare_id)
   
     users = User.objects.filter(role='C')
@@ -849,6 +879,7 @@ def editClientObama(request, obamacare_id):
     
     context = {
         'obamacare': obamacare,
+        'formatted_social':formatted_social,
         'users': users,
         'obsObamaText': '\n'.join([obs.content for obs in obsObama]),
         'obsCustomer': obsCus,
@@ -874,9 +905,30 @@ def editClientSupp(request, supp_id):
 
     # Obtener todos los dependientes asociados a este Supp
     dependents = supp_instance.dependents.all()
-
-
+    
     action = request.POST.get('action')
+
+    if supp and supp.client:
+        social_number = supp.client.social_security  # Campo real del modelo
+        # Asegurarse de que social_number no sea None antes de formatear
+        if social_number:
+            formatted_social = f"xxx-xx-{social_number[-4:]}"  # Obtener el formato deseado
+        else:
+            formatted_social = "N/A"  # Valor predeterminado si no hay número disponible
+    else:
+        formatted_social = "N/A"
+        social_number = None
+
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        action = request.POST.get('action')
+        if action == 'validate_key':
+            provided_key = request.POST.get('key')
+            correct_key = 'Sseguros22@'  # Cambia por tu lógica segura
+
+            if provided_key == correct_key and social_number:
+                return JsonResponse({'status': 'success', 'social': social_number})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Clave incorrecta o no hay número disponible'})
 
     if request.method == 'POST':
 
@@ -977,6 +1029,7 @@ def editClientSupp(request, supp_id):
 
     context = {
         'supps': supp,
+        'formatted_social':formatted_social,
         'dependents': dependents,
         'obsSuppText': '\n'.join([obs.content for obs in obsSupp]),
         'obsCustomer': obsCus,

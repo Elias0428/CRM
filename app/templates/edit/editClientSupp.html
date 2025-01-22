@@ -23,6 +23,9 @@
 	<link rel="stylesheet" href="{% static "assets/css/dark-theme.css" %}" />
 	<link rel="stylesheet" href="{% static "assets/css/semi-dark.css" %}" />
 	<link rel="stylesheet" href="{% static "assets/css/header-colors.css" %}" />
+
+	<!-- Choise Style CSS -->
+	<link rel="stylesheet" href="{% static "assets/css/choiseFromEdit.css" %}" />
 {% endblock %}
 {% block page_content %}
 <h6 class="mb-0 text-uppercase">Client supplemental</h6>
@@ -159,6 +162,15 @@
 							<option value = True {% if supps.client.apply == True %}selected{% endif %} >SI</option>
 							<option value = False {% if supps.client.apply == False %}selected{% endif %} >NO</option>
 						</select>
+					</div>
+					<div class="col-12 col-lg-4">
+						<label for="date_effective_coverage_end" class="form-label">Social Security</label>
+						<input type="text" class="form-control" name="social_security" id="social_security" value="{{formatted_social}}" disabled >
+					</div>  
+					<div class="col-12 col-lg-1">
+						<br>							
+						<button id="show-full-social" type="button" class="btn btn-secondary mt-2 "><i class="lni lni-eye"></i></button>
+						<button hidden type="button" id="block-social" class="btn btn-secondary mt-2">Bloquear Número</button>
 					</div>
                     <hr>
 					{% if dependents %}
@@ -362,129 +374,139 @@
                     {% csrf_token %}	
                 </form>
 				<hr>
-				{% if request.user.role != 'A' %}
-				<h5>Type Entry:</h5>
-				<div class="col-12 col-lg-12">
-					<!-- Botones para abrir los modales -->
-					<button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#modalIngresarTexto">
-						Enter Observation
-					</button>
-					<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalVerTexto">
-						See Observations
-					</button>
-			
-					<!-- Modal para ingresar texto -->
-					<div class="modal fade" id="modalIngresarTexto" tabindex="-1" aria-labelledby="modalIngresarTextoLabel" aria-hidden="true">
-						<div class="modal-dialog">
-							<div class="modal-content">
-								<div class="modal-header">
-									<h5 class="modal-title" id="modalIngresarTextoLabel">Enter Observation</h5>
-									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-								</div>
-								<div class="modal-body">
-									<form id="formIngresarTexto" action="{% url 'saveCustomerObservationSupp' %}" method="POST">
-										{% csrf_token %}
-										<input type="hidden" name="plan_id" value="{{ supps.id }}">
-										<input type="hidden" name="type_plan" value="SUPP">
-										<div class="mb-3">
-											<label for="textoIngresado" class="form-label">Text:</label>
-											<textarea class="form-control" id="textoIngresado" name="textoIngresado" rows="4" required></textarea>
-										</div>
-										<div class="mb-3">
-											<label for="textoIngresado" class="form-label">Typification:</label>
-											<select class="form-select"  name="observaciones[]"  id="textoIngresados" multiple required>
-												<option value="1095-A">1095-A</option>
-												<option value="AUDITED">Audited</option>
-												<option value="ACTIVE">Active</option>
-												<option value="CANCEL">Cancel</option>
-												<option value="PLAN CHANGE">Plan Change</option>
-												<option value="AGENT CHANGE">Agent Change</option>
-												<option value="T/C CHANGE">T/C Change</option>
-												<option value="CARRIER">Carrier</option>
-												<option value="APPOINTMENTS">Appointments</option>
-												<option value="SATISFIED CUSTOMER">Satisfied Customer</option>
-												<option value="CORRECTION">Correction</option>
-												<option value="PAYMENT ERROR CORRECTION">Payment Error Correction</option>
-												<option value="PORTAL CREATION">Portal/Member ID/Brochure Creation</option>
-												<option value="DEMOGRAPHIC DATA">Demographic Data</option>
-												<option value="DOCUMENTS IN SHERPA">Documents in Sherpa</option>
-												<option value="DOCUMENTS RECEIVED">Documents Received</option>
-												<option value="ID SHIPMENT">ID Shipment</option>
-												<option value="DENTIST SHIPMENT">Dentist Shipment</option>
-												<option value="OPTOMETRIST SHIPMENT">Optometrist Shipment</option>
-												<option value="PLAN EXPLANATION">Plan Explanation</option>
-												<option value="OUT OF SERVICE">Out of Service</option>
-												<option value="HEALTHSAFE ID">HEALTHSAFE ID</option>
-												<option value="ID MEMBER">ID Member</option>
-												<option value="ID SUPERVISOR">ID Supervisor</option>
-												<option value="CARRIER SUP CALL">Carrier Supervisor Call</option>
-												<option value="EFFECTIVE MANAGEMENT">Effective Management</option>
-												<option value="WELCOME MESSAGE">Welcome Message</option>
-												<option value="INFORMATIVE MESSAGE">Informative Message</option>
-												<option value="NO ANSWER">No Answer</option>
-												<option value="OTHER PARTY">Other Party</option>
-												<option value="DENTAL PAYMENT UHC">Dental Payment via UHC</option>
-												<option value="VISION PAYMENT UHC">Vision Payment via UHC</option>
-												<option value="CARRIER ACA PORTAL">Carrier ACA Portal</option>
-												<option value="CARD RECEIPT">Card Receipt</option>
-												<option value="RECOVERED">Recovered</option>
-												<option value="REFERRALS">Referrals</option>
-												<option value="ROLLED OVER">Rolled Over</option>
-												<option value="PREMIUM PAYMENT">Premium Payment</option>
-												<option value="PCP">PCP</option>
-												<option value="REQUEST DOCUMENTS">Request Documents</option>
-												<option value="SUPPLEMENTARY">Supplemental</option>
-												<option value="TRANSFER">Transfer</option>
-												<option value="UHC ID READY">UHC ID Ready</option>
-												<option value="CALL BACK">Call Back</option>
-												<option value="INFORMATIVE CALLS ACA SUP">Informative Calls ACA/Supplementaries</option>
-												<option value="HANGS UP">Hangs Up</option>
-											</select>
-										</div>
-										<div class="mb-3">
-											<label for="textoIngresado" class="form-label">Typification the Call:</label>
-											<select class="form-select"  name="typeCall" required >
-												<option></option>
-												<option value="INBOUND" >Inbound </option>
-												<option value="OUTBOUND" >Outbound </option>
-												<option value="WHATSAPP" >WhatsApp</option>
-												<option value="TXT MESSAGE" >Txt Message</option>
-												<option value="SHERPA" >Sherpa</option>
-											</select>
-										</div>
-										<button type="submit" class="btn btn-primary">Guardar</button>
-									</form>
-									
-								</div>
-							</div>
-						</div>
-					</div>
-			
-					<!-- Modal para ver las observaciones -->
-					<div class="modal fade" id="modalVerTexto" tabindex="-1" aria-labelledby="modalVerTextoLabel" aria-hidden="true">
-						<div class="modal-dialog">
-							<div class="modal-content">
-								<div class="modal-header">
-									<h5 class="modal-title" id="modalVerTextoLabel">Saved Remarks</h5>
-									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-								</div>
-								<div class="modal-body">
-									{% if obsCustomer %}
-										<ul class="list-group">
-											{% for observation in obsCustomer %}
-												<li class="list-group-item">
-													<strong>{{ observation.agent }}:</strong> {{ observation.content }} <strong>Date:</strong> {{ observation.created_at }}
-												</li>
-											{% endfor %}
-										</ul>
-									{% else %}
-										<p>No hay observaciones guardadas.</p>
-									{% endif %}
-								</div>
-							</div>
-						</div>
+				
+				<div id="password-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+					<div style=" padding: 20px; max-width: 400px; margin: 100px auto; border-radius: 8px; text-align: center;">
+						<h3>Ingresa la clave</h3>
+						<input type="password" id="password-input" class="form-control" placeholder="Clave" style="margin: 10px 0; width: 100%;">
+						<button id="submit-password" class="btn btn-primary">Enviar</button>
+						<button id="cancel-password" class="btn btn-secondary">Cancelar</button>
 					</div>
 				</div>
+
+				{% if request.user.role != 'A' %}
+					<h5>Type Entry:</h5>
+					<div class="col-12 col-lg-12">
+						<!-- Botones para abrir los modales -->
+						<button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#modalIngresarTexto">
+							Enter Observation
+						</button>
+						<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalVerTexto">
+							See Observations
+						</button>
+				
+						<!-- Modal para ingresar texto -->
+						<div class="modal fade" id="modalIngresarTexto" tabindex="-1" aria-labelledby="modalIngresarTextoLabel" aria-hidden="true">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="modalIngresarTextoLabel">Enter Observation</h5>
+										<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+									</div>
+									<div class="modal-body">
+										<form id="formIngresarTexto" action="{% url 'saveCustomerObservationSupp' %}" method="POST">
+											{% csrf_token %}
+											<input type="hidden" name="plan_id" value="{{ supps.id }}">
+											<input type="hidden" name="type_plan" value="SUPP">
+											<div class="mb-3">
+												<label for="textoIngresado" class="form-label">Text:</label>
+												<textarea class="form-control" id="textoIngresado" name="textoIngresado" rows="4" required></textarea>
+											</div>
+											<div class="mb-3">
+												<label for="textoIngresado" class="form-label">Typification:</label>
+												<select class="form-select"  name="observaciones[]"  id="textoIngresados" multiple required>
+													<option value="1095-A">1095-A</option>
+													<option value="AUDITED">Audited</option>
+													<option value="ACTIVE">Active</option>
+													<option value="CANCEL">Cancel</option>
+													<option value="PLAN CHANGE">Plan Change</option>
+													<option value="AGENT CHANGE">Agent Change</option>
+													<option value="T/C CHANGE">T/C Change</option>
+													<option value="CARRIER">Carrier</option>
+													<option value="APPOINTMENTS">Appointments</option>
+													<option value="SATISFIED CUSTOMER">Satisfied Customer</option>
+													<option value="CORRECTION">Correction</option>
+													<option value="PAYMENT ERROR CORRECTION">Payment Error Correction</option>
+													<option value="PORTAL CREATION">Portal/Member ID/Brochure Creation</option>
+													<option value="DEMOGRAPHIC DATA">Demographic Data</option>
+													<option value="DOCUMENTS IN SHERPA">Documents in Sherpa</option>
+													<option value="DOCUMENTS RECEIVED">Documents Received</option>
+													<option value="ID SHIPMENT">ID Shipment</option>
+													<option value="DENTIST SHIPMENT">Dentist Shipment</option>
+													<option value="OPTOMETRIST SHIPMENT">Optometrist Shipment</option>
+													<option value="PLAN EXPLANATION">Plan Explanation</option>
+													<option value="OUT OF SERVICE">Out of Service</option>
+													<option value="HEALTHSAFE ID">HEALTHSAFE ID</option>
+													<option value="ID MEMBER">ID Member</option>
+													<option value="ID SUPERVISOR">ID Supervisor</option>
+													<option value="CARRIER SUP CALL">Carrier Supervisor Call</option>
+													<option value="EFFECTIVE MANAGEMENT">Effective Management</option>
+													<option value="WELCOME MESSAGE">Welcome Message</option>
+													<option value="INFORMATIVE MESSAGE">Informative Message</option>
+													<option value="NO ANSWER">No Answer</option>
+													<option value="OTHER PARTY">Other Party</option>
+													<option value="DENTAL PAYMENT UHC">Dental Payment via UHC</option>
+													<option value="VISION PAYMENT UHC">Vision Payment via UHC</option>
+													<option value="CARRIER ACA PORTAL">Carrier ACA Portal</option>
+													<option value="CARD RECEIPT">Card Receipt</option>
+													<option value="RECOVERED">Recovered</option>
+													<option value="REFERRALS">Referrals</option>
+													<option value="ROLLED OVER">Rolled Over</option>
+													<option value="PREMIUM PAYMENT">Premium Payment</option>
+													<option value="PCP">PCP</option>
+													<option value="REQUEST DOCUMENTS">Request Documents</option>
+													<option value="SUPPLEMENTARY">Supplemental</option>
+													<option value="TRANSFER">Transfer</option>
+													<option value="UHC ID READY">UHC ID Ready</option>
+													<option value="CALL BACK">Call Back</option>
+													<option value="INFORMATIVE CALLS ACA SUP">Informative Calls ACA/Supplementaries</option>
+													<option value="HANGS UP">Hangs Up</option>
+												</select>
+											</div>
+											<div class="mb-3">
+												<label for="textoIngresado" class="form-label">Typification the Call:</label>
+												<select class="form-select"  name="typeCall" required >
+													<option></option>
+													<option value="INBOUND" >Inbound </option>
+													<option value="OUTBOUND" >Outbound </option>
+													<option value="WHATSAPP" >WhatsApp</option>
+													<option value="TXT MESSAGE" >Txt Message</option>
+													<option value="SHERPA" >Sherpa</option>
+												</select>
+											</div>
+											<button type="submit" class="btn btn-primary">Guardar</button>
+										</form>
+										
+									</div>
+								</div>
+							</div>
+						</div>
+				
+						<!-- Modal para ver las observaciones -->
+						<div class="modal fade" id="modalVerTexto" tabindex="-1" aria-labelledby="modalVerTextoLabel" aria-hidden="true">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="modalVerTextoLabel">Saved Remarks</h5>
+										<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+									</div>
+									<div class="modal-body">
+										{% if obsCustomer %}
+											<ul class="list-group">
+												{% for observation in obsCustomer %}
+													<li class="list-group-item">
+														<strong>{{ observation.agent }}:</strong> {{ observation.content }} <strong>Date:</strong> {{ observation.created_at }}
+													</li>
+												{% endfor %}
+											</ul>
+										{% else %}
+											<p>No hay observaciones guardadas.</p>
+										{% endif %}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 				{% endif %} 
             </div>
         </div>
@@ -501,6 +523,7 @@
 	<script src="{% static "assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js" %}"></script>
 	<script src="{% static "assets/plugins/datatable/js/jquery.dataTables.min.js" %}"></script>
 	<script src="{% static "assets/plugins/datatable/js/dataTables.bootstrap5.min.js" %}"></script>
+	
 
 	<!-- Agregar Flatpickr -->
 	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -511,42 +534,43 @@
 
 	<!--app JS-->
 	<script src="{% static "assets/js/app.js" %}"></script>
+	<script src="{% static "assets/js/blockSocial.js" %}"></script>
 	{% if request.user.role == 'A' %}
-	<script>
-		document.addEventListener('DOMContentLoaded', function () {
-			var form = document.querySelector('form');
-			var formElements = form.querySelectorAll('input:not([type="hidden"]), select, textarea');
-	
-			// Deshabilitar todos los campos del formulario excepto los de tipo 'hidden'
-			formElements.forEach(function (element) {
-				if (element.id !== 'id_client') {  // Asegúrate de no deshabilitar 'id_client'
-					element.disabled = true;
+		<script>
+			document.addEventListener('DOMContentLoaded', function () {
+				var form = document.querySelector('form');
+				var formElements = form.querySelectorAll('input:not([type="hidden"]), select, textarea');
+		
+				// Deshabilitar todos los campos del formulario excepto los de tipo 'hidden'
+				formElements.forEach(function (element) {
+					if (element.id !== 'id_client') {  // Asegúrate de no deshabilitar 'id_client'
+						element.disabled = true;
+					}
+				});
+		
+				// Manejar el div y el input de 'obs_agent'
+				var divObsAgent = document.getElementById('obs_agent');
+				var inputObsAgent = document.querySelector('input#obs_agent');
+		
+				// Condición para habilitar y mostrar el campo (modificar según sea necesario)
+				var conditionMet = /* tu lógica aquí */ true; // Cambia esta lógica según lo que necesites
+		
+				if (conditionMet) {
+					if (divObsAgent) divObsAgent.style.display = 'block'; // Mostrar el div
+					if (inputObsAgent) inputObsAgent.disabled = false;    // Habilitar el input
+				} else {
+					if (divObsAgent) divObsAgent.style.display = 'none'; // Ocultar el div
+				}
+		
+				// Opcional: Ocultar botón submit
+				var submitButton = form.querySelector('button[id="enviar"]');
+				var submitButton2 = form.querySelector('button[id="enviar2"]');
+				if (submitButton && submitButton2) {
+					submitButton.style.display = 'none';     // Oculta el primer botón submit
+					submitButton2.style.display = 'inline';  // Muestra el segundo botón submit
 				}
 			});
-	
-			// Manejar el div y el input de 'obs_agent'
-			var divObsAgent = document.getElementById('obs_agent');
-			var inputObsAgent = document.querySelector('input#obs_agent');
-	
-			// Condición para habilitar y mostrar el campo (modificar según sea necesario)
-			var conditionMet = /* tu lógica aquí */ true; // Cambia esta lógica según lo que necesites
-	
-			if (conditionMet) {
-				if (divObsAgent) divObsAgent.style.display = 'block'; // Mostrar el div
-				if (inputObsAgent) inputObsAgent.disabled = false;    // Habilitar el input
-			} else {
-				if (divObsAgent) divObsAgent.style.display = 'none'; // Ocultar el div
-			}
-	
-			// Opcional: Ocultar botón submit
-			var submitButton = form.querySelector('button[id="enviar"]');
-			var submitButton2 = form.querySelector('button[id="enviar2"]');
-			if (submitButton && submitButton2) {
-				submitButton.style.display = 'none';     // Oculta el primer botón submit
-				submitButton2.style.display = 'inline';  // Muestra el segundo botón submit
-			}
-		});
-	</script>	
+		</script>	
 	{% endif %} 
 
 	<script>
@@ -566,93 +590,5 @@
 			flatpickr("#date_effective_coverage_end", {dateFormat: "m/d/Y",  }); 
 		});
 	</script>
-
-	<!-- Personalización CSS para fondo oscuro -->
-	<style>
-		/* Estilo general del select */
-		.choices__inner {
-			background-color: #222; /* Fondo oscuro */
-			color: #ddd; /* Texto en gris claro */
-			font-family: 'Arial', sans-serif; /* Fuente moderna */
-			border: 1px solid #444; /* Borde sutil */
-			border-radius: 8px; /* Bordes redondeados */
-			padding: 8px 12px; /* Espaciado interno */
-			transition: all 0.3s ease; /* Transición suave */
-		}
-	
-		/* Estilo para el borde cuando el select está enfocado */
-		.choices__inner--focused {
-			border-color: #3b82f6; /* Borde azul cuando está enfocado */
-			box-shadow: 0 0 10px rgba(59, 130, 246, 0.3); /* Sombra sutil azul */
-		}
-	
-		/* Estilo para las opciones dentro del dropdown */
-		.choices__list--dropdown {
-			background-color: #333; /* Fondo oscuro para el dropdown */
-			color: #ddd; /* Texto claro */
-			max-height: 250px; /* Altura máxima */
-			overflow-y: auto; /* Desplazamiento si las opciones son muchas */
-			border-radius: 8px; /* Bordes redondeados */
-			box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Sombra suave */
-			border: none; /* Sin borde */
-		}
-	
-		/* Estilo para las opciones dentro del dropdown cuando están enfocadas */
-		.choices__item--highlighted {
-			background-color: #3b82f6; /* Fondo azul cuando se resalta */
-			color: white; /* Texto blanco */
-			cursor: pointer; /* Puntero */
-		}
-	
-		/* Estilo para las opciones seleccionables dentro del dropdown */
-		.choices__item--selectable {
-			background-color: #444; /* Fondo oscuro */
-			color: #ddd; /* Texto claro */
-			padding: 8px 12px; /* Espaciado */
-			transition: background-color 0.2s ease; /* Transición de color suave */
-		}
-	
-		/* Estilo para las opciones seleccionadas en el campo */
-		.choices__item {
-			background-color: #3b82f6; /* Fondo azul */
-			color: rgb(59, 59, 59); /* Texto blanco */
-			padding: 6px 10px; /* Espaciado de las opciones seleccionadas */
-			margin: 4px; /* Separación entre opciones */
-			border-radius: 20px; /* Bordes redondeados */
-			font-weight: bold; /* Texto en negrita */
-			font-size: 14px; /* Tamaño de texto */
-		}
-	
-		/* Estilo para el botón de eliminar de las opciones seleccionadas */
-		.choices__button {
-			color: #fff; /* Eliminar en blanco */
-			font-size: 16px;
-			background-color: transparent;
-			border: none;
-			margin-left: 8px;
-			cursor: pointer;
-		}
-	
-		.choices__button:hover {
-			color: #f00; /* Cambiar color a rojo al pasar el mouse */
-		}
-	
-		/* Fondo del área de texto al estar vacío */
-		.choices__placeholder {
-			color: #888; /* Color gris claro */
-		}
-	
-		/* Ajustes para el input de búsqueda */
-		.choices__input {
-			background-color: #333; /* Fondo oscuro */
-			color: #fff; /* Texto blanco */
-			border: 1px solid #444; /* Borde oscuro */
-			padding: 8px 12px; /* Espaciado interno */
-			border-radius: 6px; /* Bordes redondeados */
-		}
-	</style>
-	
-	
-
 
 {% endblock %}
