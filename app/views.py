@@ -3027,7 +3027,7 @@ def generateConsentPdf(request, obamacare, dependents, supps):
     token = request.GET.get('token')
 
     current_date = datetime.now().strftime("%A, %B %d, %Y %I:%M")
-    date_more_3_months = (datetime.now() + timedelta(days=90)).strftime("%A, %B %d, %Y %I:%M")
+    date_more_3_months = (datetime.now() + timedelta(days=360)).strftime("%A, %B %d, %Y %I:%M")
 
     contact = ContactClient.objects.filter(client = obamacare.client).first()
 
