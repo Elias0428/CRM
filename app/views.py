@@ -2059,6 +2059,9 @@ def salesBonusAgent(start_date=None, end_date=None):
             sales_data[agent_id]['status_color_1_2_supp'] += total_sales
         elif status_color == 3:
             sales_data[agent_id]['status_color_3_supp'] += total_sales
+        
+        # Actualizar total_sales
+        sales_data[agent_id]['total_sales'] += total_sales
 
     # Procesar los resultados de ObamaCare
     for entry in sales_query_obamacare:
@@ -2088,9 +2091,13 @@ def salesBonusAgent(start_date=None, end_date=None):
         elif status_color == 3:
             sales_data[agent_id]['status_color_3_obama'] += total_sales
 
+        # Actualizar total_sales
+        sales_data[agent_id]['total_sales'] += total_sales
+
     # Calcular los totales generales
     total_status_color_1_2_obama = sum([data['status_color_1_2_obama'] for data in sales_data.values()])
     total_status_color_3_obama = sum([data['status_color_3_obama'] for data in sales_data.values()])
+
     total_status_color_1_2_supp = sum([data['status_color_1_2_supp'] for data in sales_data.values()])
     total_status_color_3_supp = sum([data['status_color_3_supp'] for data in sales_data.values()])
 
