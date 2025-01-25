@@ -52,12 +52,14 @@
                         <td>{{obamacare.client.first_name}} {{obamacare.client.last_name}}</td>
                         <td>+ {{obamacare.client.phone_number}}</td>
 						<td>{{obamacare.created_at|date:"m-d-Y"}}</td>
-						<td>{% if obamacare.status_color == 1 or obamacare.status_color == None %}
+						<td>{% if obamacare.status_color == 1 or obamacare.status_color == None  %}
 								<span class="badge rounded-pill bg-danger">Not profiled</span>
 							{% elif obamacare.status_color == 2 %}
 								<span class="badge rounded-pill bg-warning text-dark">Process</span>
 							{% elif obamacare.status_color == 3 %}
 								<span class="badge rounded-pill bg-success">Profiling</span>
+							{% elif obamacare.status_color == 4 %}
+								<span class="badge rounded-pill bg-danger">{{obamacare.status}}</span>
 							{% endif  %}
 						</td>
 						{% if request.user.role == 'Admin' %}

@@ -804,7 +804,10 @@ def editClientObama(request, obamacare_id):
                         break
             
             
-            if selected_profiling == 'CANCELED' or selected_profiling == 'SALE FALL' or selected_profiling == 'OTHER PARTY':
+            statusRed = ['CANCELED','SALE FALL','PRICING ISSUE','OTHER AGENT','CUSTOMER CANCELED','OTHER PARTY']
+
+            if selected_profiling in statusRed:
+                sw = False
                 color = 4     
 
             if cleaned_obamacare_data['profiling'] is not None:
