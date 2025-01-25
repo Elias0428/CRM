@@ -985,6 +985,12 @@ def editClientSupp(request, supp_id):
                     if selected_status == 'ACTIVE':
                         color = 3 
                         break  
+            
+            statusRed = ['BANK DRAFT CANCELLED - CUSTOMER REQUEST','TERM - INSURED REQUEST','TERM - LAPSE NON PAYMENT'
+                         ,'AUTOMATIC TERMINATION','TERM - INSURED REQUEST (PAYMENT ERROR)','WITHDRAWN (PAYMENT ERROR)']
+
+            if selected_status in statusRed:
+                color = 4   
 
 
             # Actualizar Supp

@@ -99,6 +99,8 @@
 								<span class="badge rounded-pill bg-warning text-dark">{{supp.status}}</span>
 							{% elif supp.status_color == 3 %}
 								<span class="badge rounded-pill bg-success">{{supp.status}}</span>
+							{% elif supp.status_color == 4 %}
+								<span class="badge rounded-pill bg-danger">{{supp.status}}</span>
 							{% endif  %}
 						</td>
 						{% if request.user.is_superuser %}
