@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-28 17:17-0500\n"
+"POT-Creation-Date: 2025-01-28 17:25-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,6 +42,7 @@ msgid ""
 msgstr ""
 "I accept to be contacted by my broker, my carrier, or the marketplace via:"
 
+#: .\app\templates\consent\consent1.html:182
 #: .\app\templates\consent\consent1.html:183
 msgid "Telefono"
 msgstr "Phone"
