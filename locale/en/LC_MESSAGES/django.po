@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-28 17:25-0500\n"
+"POT-Creation-Date: 2025-01-28 17:29-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -36,6 +36,7 @@ msgid "Teléfono"
 msgstr "Phone"
 
 #: .\app\templates\consent\consent1.html:178
+#: .\app\templates\consent\consent1.html:477
 msgid ""
 "Acepto a ser contactado por mi broker, mi carrier, y/o el mercado de salud "
 "vía:"
@@ -353,10 +354,6 @@ msgstr "Copied!"
 #: .\app\templates\consent\consent1.html:464
 msgid "No se pudo copiar el link. Por favor, inténtalo de nuevo."
 msgstr "Could not copy the link. Please try again."
-
-#: .\app\templates\consent\consent1.html:477
-msgid "Autorizo ser contactado por:"
-msgstr ""
 
 #: .\venv\Lib\site-packages\django\contrib\messages\apps.py:16
 msgid "Messages"
@@ -1581,6 +1578,10 @@ msgstr ""
 #: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:236
 msgid "Connect, get help, or contribute"
 msgstr ""
+
+#~ msgid "Autorizo ser contactado por:"
+#~ msgstr ""
+#~ "I accept to be contacted by my broker, my carrier or the marketplace via:"
 
 #~ msgid "Acepto a ser contactado por mi broker y/o el mercado de salud vía:"
 #~ msgstr ""
