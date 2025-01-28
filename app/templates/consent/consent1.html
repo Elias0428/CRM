@@ -175,7 +175,7 @@
             <div class="row mb-3">
                 <div class="col">
                     <div class="bg-morado p-3 rounded">
-                        <label class="form-label">{% blocktrans %}Acepto a ser contactado por mi broker y/o el mercado de salud vía:{% endblocktrans %}</label>
+                        <label class="form-label">{% blocktrans %}Acepto a ser contactado por mi broker, mi carrier, y/o el mercado de salud vía:{% endblocktrans %}</label>
                         <div class="row">
                             <div class="col-6">
                                 <div class="form-check">
@@ -474,7 +474,7 @@
 
             const authorizationText = document.getElementById('authorizationText');
             authorizationText.textContent = selectedMethods.length > 0 
-                ? `Autorizo ser contactado por: ${selectedMethods.join(', ')}.` 
+                ? `{% trans "Autorizo ser contactado por:" %} ${selectedMethods.join(', ')}.` 
                 : '';
         }
 
