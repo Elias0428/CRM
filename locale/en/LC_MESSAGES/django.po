@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-28 17:08-0500\n"
+"POT-Creation-Date: 2025-01-28 17:17-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -51,9 +51,8 @@ msgid "Mensajes de Texto"
 msgstr "Text Message"
 
 #: .\app\templates\consent\consent1.html:209
-msgid "Acepto a ser contactado por mi broker y/o el mercado de salud vía:"
-msgstr ""
-"I accept to be contacted by my broker, my carrie or the marketplace via:"
+msgid "Cobertura adicional:"
+msgstr "Additional coverage"
 
 #: .\app\templates\consent\consent1.html:228
 msgid "Aplica"
@@ -1581,6 +1580,10 @@ msgstr ""
 #: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:236
 msgid "Connect, get help, or contribute"
 msgstr ""
+
+#~ msgid "Acepto a ser contactado por mi broker y/o el mercado de salud vía:"
+#~ msgstr ""
+#~ "I accept to be contacted by my broker, my carrier or the marketplace via:"
 
 #~ msgid ""
 #~ "Entiendo que mi Agente de Registro no utilizará o compartirá mi "
