@@ -2433,8 +2433,10 @@ def getSalesForWeekly():
     return finalCounts
 
 def monthLiveView(request):
+    monthSales, weekRanges = getSalesForMonth()
     context = {
-        'monthSales': getSalesForMonth(),
+        'monthSales': monthSales,
+        'weekRanges': weekRanges,
         'toggle': True
     }
     return render(request, 'dashboard/monthLiveView.html', context)
@@ -2457,6 +2459,20 @@ def getSalesForMonth():
     
     # Número total de semanas en el mes actual
     numWeeks = (lastDay + 6) // 7  # Aproximación para incluir semanas parciales
+
+    # Calcular los rangos de las semanas
+    weekRanges = []
+    for i in range(numWeeks):
+        weekStart = startDate + timedelta(weeks=i)
+        weekEnd = weekStart + timedelta(days=6)
+        
+        # Asegurarse de que la fecha final no sea después del último día del mes
+        if weekEnd > endDate:
+            weekEnd = endDate
+        
+        # Formatear las fechas en "dd/mm"
+        weekRange = f"{weekStart.strftime('%d/%m')} - {weekEnd.strftime('%d/%m')}"
+        weekRanges.append(weekRange)
     
     # Inicializar diccionario de ventas con todos los usuarios
     users = User.objects.filter(role__in=userRoles, is_active=True).exclude(username__in=excludedUsernames)  # Lista completa de usuarios
@@ -2519,7 +2535,7 @@ def getSalesForMonth():
         fullName = f"{user.first_name} {user.last_name}".strip()
         finalSummary[fullName] = salesSummary[user.username]
     
-    return finalSummary
+    return finalSummary, weekRanges
 
 #Websocket
 def notify_websocket(user_id):
