@@ -280,6 +280,7 @@
 								<option value="PROVIDENCE" {% if obamacare.carrier == "PROVIDENCE" %}selected{% endif %} >PROVIDENCE</option>
 								<option value="AERIHEALTH CARITAS" {% if obamacare.carrier == "AERIHEALTH CARITAS" %}selected{% endif %} >AERIHEALTH CARITAS</option>
 								<option value="HEALTH FRIST" {% if obamacare.carrier == "HEALTH FRIST" %}selected{% endif %} >HEALTH FRIST</option>
+								<option value="WELLPOINT" {% if obamacare.carrier == "WELLPOINT" %}selected{% endif %} >WELLPOINT</option>
 							</select>
 						</div>
 						<div class="col-12 col-lg-2">
@@ -350,7 +351,7 @@
 						</div>
 						<div class="col-12 col-lg-3">
 							<label for="statusObama" class="form-label">Status</label>
-							<select required class="form-select" id="statusObama"  name="statusObama" >
+							<select required class="form-select" id="statusObama"  name="statusObama" required >
 								<option value="" disabled selected>Please Select</option>					
 								{% for  list_drow in list_drow %}
 									<option value="{{list_drow.profiling_obama}}" {% if obamacare.status == list_drow.profiling_obama %}selected{% endif %} >{{list_drow.profiling_obama}}</option>                      
@@ -462,9 +463,9 @@
 													<option value="DEMOGRAPHIC DATA">Demographic Data</option>
 													<option value="DOCUMENTS IN SHERPA">Documents in Sherpa</option>
 													<option value="DOCUMENTS RECEIVED">Documents Received</option>
-													<option value="ID SHIPMENT">ID Shipment</option>
-													<option value="DENTIST SHIPMENT">Dentist Shipment</option>
-													<option value="OPTOMETRIST SHIPMENT">Optometrist Shipment</option>
+													<option value="ID CARD SEND">ID Card Send</option>
+													<option value="DENTIST LISTING">Dentist listing</option>
+													<option value="OPTOMETER LISTING">Optometer Listing</option>
 													<option value="PLAN EXPLANATION">Plan Explanation</option>
 													<option value="OUT OF SERVICE">Out of Service</option>
 													<option value="HEALTHSAFE ID">HEALTHSAFE ID</option>
@@ -481,7 +482,7 @@
 													<option value="CARRIER ACA PORTAL">Carrier ACA Portal</option>
 													<option value="CARD RECEIPT">Card Receipt</option>
 													<option value="RECOVERED">Recovered</option>
-													<option value="REFERRALS">Referrals</option>
+													<option value="REFERAL">Referal</option>
 													<option value="ROLLED OVER">Rolled Over</option>
 													<option value="PREMIUM PAYMENT">Premium Payment</option>
 													<option value="PCP">PCP</option>

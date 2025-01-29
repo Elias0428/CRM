@@ -8,6 +8,12 @@ document.getElementById('formCreateClient').addEventListener('submit', function(
     let isValid = true;
     const phoneNumber = document.getElementById('phone_number')
 
+    date_birth = document.getElementById('date_birth')
+
+    if (date_birth.value == ''){
+        isValid = false
+        date_birth.focus()
+    }
 
     // Función para validar los Select
     for (let i = 0; i < idsSelectWithValidation.length; i++) {
@@ -23,8 +29,6 @@ document.getElementById('formCreateClient').addEventListener('submit', function(
     }
 
     phoneNumberFormat = validatePhoneNumber(phoneNumber.value)
-    console.log(phoneNumberFormat)
-    console.log(!isValid)
 
     if (!isValid){
         return;

@@ -229,7 +229,20 @@ def fetchAca(request, client_id):
                 'status':'IN PROGRESS'
             }
         )
+
+        # Enviar alerta por WebSocket
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            'product_alerts',
+            {
+                'type': 'send_alert',
+                'message': f'New product Obamacare',
+            }
+        )
+
     return JsonResponse({'success': True, 'aca_plan_id': aca_plan.id})
+
+
 
 @login_required(login_url='/login') 
 def fetchSupp(request, client_id):
@@ -289,6 +302,17 @@ def fetchSupp(request, client_id):
                     status_color = 1
                 )
                 updated_supp_ids.append(new_supp.id)  # Agregar el ID creado a la lista
+
+                # Enviar alerta por WebSocket
+                channel_layer = get_channel_layer()
+                async_to_sync(channel_layer.group_send)(
+                    'product_alerts',
+                    {
+                        'type': 'send_alert',
+                        'message': f'New product Supplemental',
+                    }
+                )
+
     return JsonResponse({'success': True,  'supp_ids': updated_supp_ids})
 
 @login_required(login_url='/login')      
@@ -2009,7 +2033,7 @@ def salesBonusAgent(start_date=None, end_date=None):
         .annotate(total_sales=Count('id'))
 
     # Consulta para ObamaCare
-    sales_query_obamacare = ObamaCare.objects.select_related('agent') \
+    sales_query_obamacare = ObamaCare.objects.select_related('agent').filter(is_active = True) \
         .values('agent__id', 'agent__username', 'agent__first_name', 'agent__last_name', 'status_color') \
         .annotate(total_sales=Count('id'))
 

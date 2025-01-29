@@ -1,9 +1,11 @@
+{% load i18n %}
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carta Explicativa de los Ingresos Anuales</title>
+    <title> Carta Explicativa de los Ingresos Anuales</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -71,57 +73,66 @@
     </style>
 </head>
 <body>
+    
     <div class="container my-5">
-        <h1 class="text-center mb-4">Carta explicativa de los ingresos anuales</h1>
+        <h1 class="text-center mb-4">{% trans "Carta explicativa de los ingresos anuales" %}</h1>
         <form id="signatureForm" method="POST">
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label for="nombre" class="form-label">Nombre Completo:</label>
-                    <input readonly type="text" class="form-control" id="nombre" name="nombre" placeholder="NOMBRE" value="{{obamacare.client.first_name}}">
+                    <label for="nombre" class="form-label">{% trans "Nombre Completo:" %}</label>
+                    <input readonly type="text" class="form-control" id="nombre" name="nombre" placeholder="{% trans 'NOMBRE' %}" value="{{obamacare.client.first_name}}">
                 </div>
                 <div class="col-md-6">
-                    <label for="apellido" class="form-label">Apellido:</label>
-                    <input readonly type="text" class="form-control" id="apellido" name="apellido" placeholder="APELLIDO" value="{{obamacare.client.last_name}}">
+                    <label for="apellido" class="form-label">{% trans "Apellido:" %}</label>
+                    <input readonly type="text" class="form-control" id="apellido" name="apellido" placeholder="{% trans 'APELLIDO' %}" value="{{obamacare.client.last_name}}">
                 </div>
             </div>
             <div class="mb-3">
-                <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento del Aplicante Principal:</label>
+                <label for="fechaNacimiento" class="form-label">{% trans "Fecha de Nacimiento del Aplicante Principal:" %}</label>
                 <input readonly type="date" class="form-control" id="fechaNacimiento" name="fechaNacimiento" value="{{obamacare.client.date_birth|date:'Y-m-d'}}">
             </div>
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label for="ingresos" class="form-label">Mi hogar espera recibir:</label>
+                    <label for="ingresos" class="form-label">{% trans "Mi hogar espera recibir:" %}</label>
                     <input readonly type="number" class="form-control" id="ingresos" name="ingresos" value="{{obamacare.taxes}}">
                 </div>
                 <div class="col-md-6">
-                    <label for="anio" class="form-label">Durante el año:</label>
+                    <label for="anio" class="form-label">{% trans "Durante el año:" %}</label>
                     <input readonly type="number" class="form-control" id="anio" name="anio" value=2025>
                 </div>
             </div>
 
-            <h5 class="mt-4">Cómo enviar por correo:</h5>
+            <h5 class="mt-4">{% trans "Cómo enviar por correo:" %}</h5>
             <ul>
-                <li>Incluya la página de código de barras impresa que vino con su carta. Si no tiene un código de barras, incluya su nombre completo impreso y la identificación de la solicitud en cada página de su formulario. Su ID de solicitud está cerca de su dirección postal en la parte superior de su carta.</li>
-                <li>Envíe el formulario a:</li>
+                <li>{% blocktrans %}Incluya la página de código de barras impresa que vino con su carta. Si no tiene un código de barras, incluya su nombre completo impreso y la identificación de la solicitud en cada página de su formulario. Su ID de solicitud está cerca de su dirección postal en la parte superior de su carta.{% endblocktrans %}</li>
+                <li>{% trans "Envíe el formulario a:" %}</li>
                 <ul>
-                    <li>Mercado de Seguros Médicos</li>
-                    <li>Attn: Coverage Processing</li>
-                    <li>465 Industrial Blvd.</li>
-                    <li>London, KY 40750</li>
+                    <li>{% trans "Mercado de Seguros Médicos" %}</li>
+                    <li>{% trans "Attn: Coverage Processing" %}</li>
+                    <li>{% trans "465 Industrial Blvd." %}</li>
+                    <li>{% trans "London, KY 40750" %}</li>
                 </ul>
             </ul>
 
-            <p class="fw-bold mt-4">Nota:</p>
-            <p>El ingreso anual que informe debe coincidir con el ingreso que informó en su solicitud del Mercado u otra solicitud de seguro médico. Si no es así, actualice su solicitud del Mercado.</p>
-            <p>Visite <a href="https://CuidadoDeSalud.gov/es/income-and-household-information/how-to-report/">CuidadoDeSalud.gov/es/income-and-household-information/how-to-report/</a> o <a href="https://CuidadoDeSalud.gov/es/income-calculator">CuidadoDeSalud.gov/es/income-calculator</a> si necesita ayuda para estimar su ingreso anual esperado.</p>
+            <p class="fw-bold mt-4">{% trans "Nota:" %}</p>
+            <p>{% blocktrans %}El ingreso anual que informe debe coincidir con el ingreso que informó en su solicitud del Mercado u otra solicitud de seguro médico. Si no es así, actualice su solicitud del Mercado.{% endblocktrans %}</p>
+            <p>{% trans "Visite:" %} <a href="https://CuidadoDeSalud.gov/es/income-and-household-information/how-to-report/"> {% trans "CuidadoDeSalud.gov/es/income-and-household-information/how-to-report/" %} </a> {% trans "o" %} <a href="https://CuidadoDeSalud.gov/es/income-calculator"> {% trans "CuidadoDeSalud.gov/es/income-calculator" %} </a> {% trans "si necesita ayuda para estimar su ingreso anual esperado." %} </p>
 
-            <p class="fw-bold">Recuerde:</p>
-            <p>Es importante ingresar una estimación de ingresos precisa en su solicitud del Mercado. Si los ingresos que ingresó en su solicitud son menores que los ingresos que declara en sus impuestos al final del año, es posible que tenga que devolver parte o la totalidad de su crédito tributario de prima cuando presente su declaración de impuestos. Si su ingreso estimado cambia durante el año, actualice su solicitud del Mercado con esta información de inmediato.</p>
+            <p class="fw-bold">{% trans "Recuerde:" %}</p>
+            <p>{% blocktrans %}Es importante ingresar una estimación de ingresos precisa en su solicitud del Mercado. Si los ingresos que ingresó en su solicitud son menores que los ingresos que declara en sus impuestos al final del año, es posible que tenga que devolver parte o la totalidad de su crédito tributario de prima cuando presente su declaración de impuestos. Si su ingreso estimado cambia durante el año, actualice su solicitud del Mercado con esta información de inmediato.{% endblocktrans %}</p>
 
             <!-- Signature Section -->
             <div class="bg-orange p-3 rounded mb-3 row m-1">
                 <div class="col-12">
-                    <label class="form-label">Firma Aplicante o Representante Autorizado <span class="text-danger">*</span> <span class="text-danger">*</span> {% if signed %}<strong style="color: chartreuse; text-shadow: 1px 1px 2px black, 0 0 25px green, 0 0 5px darkgreen;"> Firmado </strong> {% endif %}</label>
+                    <label class="form-label">
+                        {% blocktrans %}Firma Aplicante o Representante Autorizado{% endblocktrans %}
+                        <span class="text-danger">*</span>
+                        {% if signed %}
+                            <strong style="color: chartreuse; text-shadow: 1px 1px 2px black, 0 0 25px green, 0 0 5px darkgreen;">
+                                {% trans "Firmado" %}
+                            </strong>
+                        {% endif %}
+                    </label>
                 </div>
                 <div class="col-12 container-fluid">
                     <canvas width="330px" id="drawingCanvas" class="signature-pad"></canvas>

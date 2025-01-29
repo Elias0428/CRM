@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-28 17:29-0500\n"
+"POT-Creation-Date: 2025-01-29 10:16-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -332,10 +332,12 @@ msgid "Teléfono de la Agencia: "
 msgstr "Agency Phone: "
 
 #: .\app\templates\consent\consent1.html:417
+#: .\app\templates\consent\incomeLetter.html:128
 msgid "Firma Aplicante o Representante Autorizado"
 msgstr "Applicant or Authorized Representative's Signature"
 
 #: .\app\templates\consent\consent1.html:417
+#: .\app\templates\consent\incomeLetter.html:132
 msgid "Firmado"
 msgstr "Signed"
 
@@ -354,6 +356,239 @@ msgstr "Copied!"
 #: .\app\templates\consent\consent1.html:464
 msgid "No se pudo copiar el link. Por favor, inténtalo de nuevo."
 msgstr "Could not copy the link. Please try again."
+
+#: .\app\templates\consent\incomeLetter.html:78
+msgid "Carta explicativa de los ingresos anuales"
+msgstr "Letter explaining annual income"
+
+#: .\app\templates\consent\incomeLetter.html:82
+msgid "Nombre Completo:"
+msgstr "Name"
+
+#: .\app\templates\consent\incomeLetter.html:83
+msgid "NOMBRE"
+msgstr "NAME"
+
+#: .\app\templates\consent\incomeLetter.html:86
+msgid "Apellido:"
+msgstr "Last Name"
+
+#: .\app\templates\consent\incomeLetter.html:87
+msgid "APELLIDO"
+msgstr "LAST NAME"
+
+#: .\app\templates\consent\incomeLetter.html:91
+#, fuzzy
+#| msgid "Fecha de Nacimiento "
+msgid "Fecha de Nacimiento del Aplicante Principal:"
+msgstr "Date of Birth"
+
+#: .\app\templates\consent\incomeLetter.html:96
+msgid "Mi hogar espera recibir:"
+msgstr "My home is waiting to receive:"
+
+#: .\app\templates\consent\incomeLetter.html:100
+msgid "Durante el año:"
+msgstr "During the year:"
+
+#: .\app\templates\consent\incomeLetter.html:105
+#: .\app\templates\consent\templatePdfIncomeLetter.html:144
+msgid "Cómo enviar por correo:"
+msgstr "How to send by mail: "
+
+#: .\app\templates\consent\incomeLetter.html:107
+msgid ""
+"Incluya la página de código de barras impresa que vino con su carta. Si no "
+"tiene un código de barras, incluya su nombre completo impreso y la "
+"identificación de la solicitud en cada página de su formulario. Su ID de "
+"solicitud está cerca de su dirección postal en la parte superior de su carta."
+msgstr ""
+"Include the printed barcode page that came with your letter. If you do not "
+"have a bar code, include your printed full name and application ID on each "
+"page of your form. Your application ID is near your mailing address at the "
+"top of your letter."
+
+#: .\app\templates\consent\incomeLetter.html:108
+#: .\app\templates\consent\templatePdfIncomeLetter.html:151
+msgid "Envíe el formulario a:"
+msgstr "Send the form to:"
+
+#: .\app\templates\consent\incomeLetter.html:110
+#: .\app\templates\consent\templatePdfIncomeLetter.html:153
+#, fuzzy
+#| msgid "Agencia de Seguros"
+msgid "Mercado de Seguros Médicos"
+msgstr "Insurance Agency"
+
+#: .\app\templates\consent\incomeLetter.html:111
+msgid "Attn: Coverage Processing"
+msgstr "Attn: Coverage Processing"
+
+#: .\app\templates\consent\incomeLetter.html:112
+msgid "465 Industrial Blvd."
+msgstr "465 Industrial Blvd."
+
+#: .\app\templates\consent\incomeLetter.html:113
+msgid "London, KY 40750"
+msgstr "London, KY 40750"
+
+#: .\app\templates\consent\incomeLetter.html:117
+msgid "Nota:"
+msgstr "Note"
+
+#: .\app\templates\consent\incomeLetter.html:118
+msgid ""
+"El ingreso anual que informe debe coincidir con el ingreso que informó en su "
+"solicitud del Mercado u otra solicitud de seguro médico. Si no es así, "
+"actualice su solicitud del Mercado."
+msgstr ""
+"The annual income you report must match the income you reported on your "
+"Marketplace application or other health insurance application. If it does "
+"not, update your Marketplace application."
+
+#: .\app\templates\consent\incomeLetter.html:119
+msgid "Visite:"
+msgstr "Visit:"
+
+#: .\app\templates\consent\incomeLetter.html:119
+msgid "CuidadoDeSalud.gov/es/income-and-household-information/how-to-report/"
+msgstr "CuidadoDeSalud.gov/es/income-and-household-information/how-to-report/"
+
+#: .\app\templates\consent\incomeLetter.html:119
+#: .\app\templates\consent\templatePdfIncomeLetter.html:170
+msgid "o"
+msgstr "or"
+
+#: .\app\templates\consent\incomeLetter.html:119
+#: .\app\templates\consent\templatePdfIncomeLetter.html:170
+msgid "CuidadoDeSalud.gov/es/income-calculator"
+msgstr "CuidadoDeSalud.gov/es/income-calculator"
+
+#: .\app\templates\consent\incomeLetter.html:119
+#: .\app\templates\consent\templatePdfIncomeLetter.html:171
+msgid "si necesita ayuda para estimar su ingreso anual esperado."
+msgstr "if you need help estimating your expected annual income."
+
+#: .\app\templates\consent\incomeLetter.html:121
+msgid "Recuerde:"
+msgstr "Remember:"
+
+#: .\app\templates\consent\incomeLetter.html:122
+msgid ""
+"Es importante ingresar una estimación de ingresos precisa en su solicitud "
+"del Mercado. Si los ingresos que ingresó en su solicitud son menores que los "
+"ingresos que declara en sus impuestos al final del año, es posible que tenga "
+"que devolver parte o la totalidad de su crédito tributario de prima cuando "
+"presente su declaración de impuestos. Si su ingreso estimado cambia durante "
+"el año, actualice su solicitud del Mercado con esta información de inmediato."
+msgstr ""
+"It is important to enter an accurate income estimate in your Marketplace "
+"application. If the income you entered in your application is lower than the "
+"income you report on your taxes at the end of the year, you may have to "
+"repay some or all of your premium tax credit when you file your tax return. "
+"If your estimated income changes during the year, update your Marketplace "
+"application with this information immediately."
+
+#: .\app\templates\consent\templatePdfIncomeLetter.html:6
+#: .\app\templates\consent\templatePdfIncomeLetter.html:114
+msgid "Carta Explicativa de los Ingresos Anuales"
+msgstr "Annual Income Statement "
+
+#: .\app\templates\consent\templatePdfIncomeLetter.html:121
+#, fuzzy
+#| msgid "Fecha de Nacimiento "
+msgid "Fecha de Hoy"
+msgstr "Date today"
+
+#: .\app\templates\consent\templatePdfIncomeLetter.html:125
+#, fuzzy
+#| msgid "Nombre Completo:"
+msgid "Nombre Completo"
+msgstr "Full Name"
+
+#: .\app\templates\consent\templatePdfIncomeLetter.html:129
+#, fuzzy
+#| msgid "Fecha de Nacimiento "
+msgid "Fecha de Nacimiento"
+msgstr "Date of Birth"
+
+#: .\app\templates\consent\templatePdfIncomeLetter.html:133
+#, fuzzy
+#| msgid "Ingreso Anual Estimado "
+msgid "Ingreso Estimado"
+msgstr "Estimated Income"
+
+#: .\app\templates\consent\templatePdfIncomeLetter.html:137
+msgid "Año"
+msgstr "Year"
+
+#: .\app\templates\consent\templatePdfIncomeLetter.html:146
+msgid ""
+"\n"
+"                Incluya la página de código de barras impresa que vino con "
+"su carta. Si no tiene un código de barras,\n"
+"                incluya su nombre completo impreso y la identificación de la "
+"solicitud en cada página de su formulario.\n"
+"                "
+msgstr ""
+"Include the printed barcode page that came with your letter. If you do not "
+"have a bar code, include your printed full name and application ID on each "
+"page of your form. Your application ID is near your mailing address at the "
+"top of your letter."
+
+#: .\app\templates\consent\templatePdfIncomeLetter.html:161
+#, fuzzy
+#| msgid "Nota:"
+msgid "Nota"
+msgstr "Note"
+
+#: .\app\templates\consent\templatePdfIncomeLetter.html:163
+#, fuzzy
+#| msgid ""
+#| "El ingreso anual que informe debe coincidir con el ingreso que informó en "
+#| "su solicitud del Mercado u otra solicitud de seguro médico. Si no es así, "
+#| "actualice su solicitud del Mercado."
+msgid ""
+"\n"
+"                El ingreso anual que informe debe coincidir con el ingreso "
+"que informó en su solicitud del Mercado u otra\n"
+"                solicitud de seguro médico. Si no es así, actualice su "
+"solicitud del Mercado.\n"
+"                "
+msgstr ""
+"The annual income you report must match the income you reported on your "
+"Marketplace application or other health insurance application. If it does "
+"not, update your Marketplace application."
+
+#: .\app\templates\consent\templatePdfIncomeLetter.html:169
+#, fuzzy
+#| msgid "Visite:"
+msgid "Visite"
+msgstr "Visit:"
+
+#: .\app\templates\consent\templatePdfIncomeLetter.html:169
+#, fuzzy
+#| msgid "CuidadoDeSalud.gov/es/income-calculator"
+msgid "CuidadoDeSalud.gov"
+msgstr "CuidadoDeSalud.gov/es/income-calculator"
+
+#: .\app\templates\consent\templatePdfIncomeLetter.html:176
+#, fuzzy
+#| msgid "Firmado"
+msgid "Firma"
+msgstr "Signed"
+
+#: .\app\templates\consent\templatePdfIncomeLetter.html:178
+#, fuzzy
+#| msgid "Firmado"
+msgid "Firma:"
+msgstr "Signed"
+
+#: .\app\templates\consent\templatePdfIncomeLetter.html:184
+#, fuzzy
+#| msgid "Agencia de Seguros"
+msgid "Mercado de Seguros Médicos. Todos los derechos reservados."
+msgstr "Health Insurance Marketplace. All rights reserved."
 
 #: .\venv\Lib\site-packages\django\contrib\messages\apps.py:16
 msgid "Messages"
