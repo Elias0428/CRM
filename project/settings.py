@@ -31,6 +31,7 @@ DEBUG = True
 
 CSRF_TRUSTED_ORIGINS = ['https://blue.lapeira.com', 'https://www.blue.lapeira.com']
 ALLOWED_HOSTS = ['blue.lapeira.com', 'www.blue.lapeira.com']
+TELNYX_API_KEY = os.getenv('TELNYX_API_KEY')
 
 #Configuration to use own user model
 AUTH_USER_MODEL = 'app.user'  
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
     'app',
     'channels',
     'storages',
+    'django_celery_beat',
 ]
 
 #Configuration to use own user model
@@ -108,8 +110,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASS'),
+        'USER': 'root',
+        'PASSWORD': '',
         'HOST': os.getenv('DB_HOST'),
         'PORT': os.getenv('DB_PORT'),
         'OPTIONS': {'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"},
@@ -171,6 +173,14 @@ else:
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
+
+# Configuración de Celery
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Usamos Redis como broker
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+
+# Celery Result Backend
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
