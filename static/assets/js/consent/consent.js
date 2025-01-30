@@ -194,7 +194,6 @@
         const inputName = document.getElementById('inputName');
         const inputLastName = document.getElementById('inputLastName');
         const selectAgent = document.getElementById('selectAgent');
-        const selectCarrier = document.getElementById('selectCarrier');
         const insuranceAgency = document.getElementById('insuranceAgency');
 
         // Crear un array dinámicamente de los inputs
@@ -220,12 +219,7 @@
             updateCarrierByAgent(selectedText);
         });
 
-        // Agregar evento al cambio del selectCarrier
-        selectCarrier.addEventListener('change', function () {
-            // Obtener el texto del option seleccionado en lugar del value
-            const carrierText = selectCarrier.options[selectCarrier.selectedIndex].text;
-            changeCarrierSpans(carrierText);
-        });
+
 
         // Función para actualizar el contenido de un span
         function changeSpan(id, text) {

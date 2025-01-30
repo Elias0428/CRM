@@ -3021,6 +3021,8 @@ def consent(request, obamacare_id):
     if request.method == 'POST':
         documents = request.FILES.getlist('documents')  # Lista de archivos subidos
 
+        language = request.GET.get('lenguaje', 'es')  # Idioma predeterminado si no se pasa
+
         objectClient = save_data_from_request(Client, request.POST, ['agent'],obamacare.client)
         objectObamacare = save_data_from_request(ObamaCare, request.POST, ['signature'], obamacare)
         
@@ -3032,9 +3034,7 @@ def consent(request, obamacare_id):
                 file=document,
                 client=obamacare.client)  # Crear una nueva instancia de Foto
             photo.save()  # Guardar el archivo en la base de datos
-        return generateConsentPdf(request, objectObamacare, dependents, supps)
-
-    
+        return generateConsentPdf(request, objectObamacare, dependents, supps, language)
 
     context = {
         'valid_migration_statuses': ['PERMANENT_RESIDENT', 'US_CITIZEN', 'EMPLOYMENT_AUTHORIZATION'],
@@ -3065,7 +3065,11 @@ def incomeLetter(request, obamacare_id):
         return HttpResponse('Acceso denegado. Por favor, inicie sesión o use un enlace válido.')
     obamacare = ObamaCare.objects.select_related('client').get(id=obamacare_id)
     signed = IncomeLetter.objects.filter(obamacare = obamacare_id).first()
+
+    language = request.GET.get('lenguaje', 'es')  # Idioma predeterminado si no se pasa
+    activate(language)
     
+  
     context = {
         'obamacare': obamacare,
         'signed' : signed,
@@ -3073,13 +3077,15 @@ def incomeLetter(request, obamacare_id):
     if request.method == 'POST':
         objectClient = save_data_from_request(Client, request.POST, ['agent'],obamacare.client)
         objectObamacare = save_data_from_request(ObamaCare, request.POST, ['signature'], obamacare)
-        generateIncomeLetterPDF(request, objectObamacare)
+        generateIncomeLetterPDF(request, objectObamacare, language)
         deactivateTemporaryToken(request)
         return render(request, 'consent/endView.html')
+    
+        
 
     return render(request, 'consent/incomeLetter.html', context)
 
-def generateConsentPdf(request, obamacare, dependents, supps):
+def generateConsentPdf(request, obamacare, dependents, supps, language):
     token = request.GET.get('token')
 
     current_date = datetime.now().strftime("%A, %B %d, %Y %I:%M")
@@ -3123,7 +3129,8 @@ def generateConsentPdf(request, obamacare, dependents, supps):
         'ip':getIPClient(request),
         'var':var
     }
-
+    print(language)
+    activate(language)
     # Renderiza la plantilla HTML a un string
     html_content = render_to_string('consent/templatePdfConsent.html', context)
 
@@ -3140,12 +3147,12 @@ def generateConsentPdf(request, obamacare, dependents, supps):
     consent.pdf.save(pdf_name, ContentFile(pdf_io.read()), save=True)
 
     base_url = reverse('incomeLetter', args=[obamacare.id])
-    query_params = urlencode({'token': token})
+    query_params = urlencode({'token': token,'lenguaje': language})
     url = f'{base_url}?{query_params}'
 
     return redirect(url)
 
-def generateIncomeLetterPDF(request, obamacare):
+def generateIncomeLetterPDF(request, obamacare, language):
     current_date = datetime.now().strftime("%A, %B %d, %Y %I:%M")
 
     incomeLetter = IncomeLetter.objects.create(
@@ -3164,6 +3171,8 @@ def generateIncomeLetterPDF(request, obamacare):
         'ip':getIPClient(request),
         'incomeLetter':incomeLetter
     }
+
+    activate(language)
 
     # Renderiza la plantilla HTML a un string
     html_content = render_to_string('consent/templatePdfIncomeLetter.html', context)
