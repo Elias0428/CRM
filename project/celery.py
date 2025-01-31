@@ -18,6 +18,6 @@ from celery.schedules import crontab
 app.conf.beat_schedule = {
     'run-my-daily-task': {
         'task': 'app.tasks.my_daily_task',
-        'schedule': crontab(minute=55, hour=16),  # Ejecutar a las 5:00 AM todos los días
+        'schedule': crontab(minute=30, hour=14),  # Ejecutar a las 5:00 AM todos los días
     },
 }
