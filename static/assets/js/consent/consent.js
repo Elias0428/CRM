@@ -87,7 +87,7 @@
 
    
         function validateSelects() {
-        const idsSelectWithValidation = ['apply', 'work', 'migration_status', 'socialSecurity', 'selectAgent']
+        const idsSelectWithValidation = ['apply', 'work', 'migration_status', 'selectAgent']
         console.log(idsSelectWithValidation)
         let isValid = true;
         const phoneNumber = document.getElementById('phone_number')

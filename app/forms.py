@@ -6,7 +6,7 @@ class ClientForm(forms.ModelForm):
     class Meta:
         model = Client
         fields = '__all__'
-        exclude = ['agent','date_birth','social_security']
+        exclude = ['agent','date_birth','social_security','old']
 
 
 class ObamaForm(forms.ModelForm):

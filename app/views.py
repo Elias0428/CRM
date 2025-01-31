@@ -114,8 +114,13 @@ def formCreateClient(request):
     if request.method == 'POST':
 
         date_births = request.POST.get('date_birth')
-        fecha_obj = datetime.strptime(date_births, '%m/%d/%Y')
+        fecha_obj = datetime.strptime(date_births, '%m/%d/%Y').date()
         fecha_formateada = fecha_obj.strftime('%Y-%m-%d')
+
+        # Obtener la fecha actual
+        hoy = datetime.today().date()
+        # Calcular la edad
+        edad = hoy.year - fecha_obj.year - ((hoy.month, hoy.day) < (fecha_obj.month, fecha_obj.day))
 
         social = request.POST.get('social_security')
 
@@ -127,6 +132,7 @@ def formCreateClient(request):
             client = form.save(commit=False)
             client.agent = request.user
             client.is_active = 1
+            client.old = edad
             client.date_birth = fecha_formateada
             client.social_security = formatSocial
             client.save()
@@ -144,13 +150,32 @@ def formCreateClient(request):
 @login_required(login_url='/login') 
 def formEditClient(request, client_id):
     
-    client = get_object_or_404(Client, id=client_id)
+    client = get_object_or_404(Client, id=client_id)        
 
     if request.method == 'POST':
+
+        date_births = request.POST.get('date_birth')
+        fecha_obj = datetime.strptime(date_births, '%m/%d/%Y').date()
+        fecha_formateada = fecha_obj.strftime('%Y-%m-%d')
+
+        # Obtener la fecha actual
+        hoy = datetime.today().date()
+        # Calcular la edad
+        edad = hoy.year - fecha_obj.year - ((hoy.month, hoy.day) < (fecha_obj.month, fecha_obj.day))
+
+        social = request.POST.get('social_security')
+
+        if social: formatSocial = social.replace('-','')
+        else: formatSocial = None
         form = ClientForm(request.POST, instance=client)
+        print(form.errors)
         if form.is_valid():
             client = form.save(commit=False)
             client.is_active = 1
+            client.date_birth = fecha_formateada
+            client.social_security = formatSocial
+            client.old = edad
+            
             client.save()
             return redirect('formCreatePlan', client.id) 
         
@@ -241,8 +266,6 @@ def fetchAca(request, client_id):
         )
 
     return JsonResponse({'success': True, 'aca_plan_id': aca_plan.id})
-
-
 
 @login_required(login_url='/login') 
 def fetchSupp(request, client_id):

@@ -96,55 +96,25 @@
 						<!-- ZIP Code -->
 						<div class="col-12 col-lg-6">
 							<label for="zipcode" class="form-label">ZIP Code</label>
-							<input type="number" class="form-control" name="zipcode" id="zipcode" value="{{ client.zipcode }}" placeholder="ZIP Code" required>
+							<input type="number" class="form-control" name="zipcode" id="zipcode" value="{{ client.zipcode }}" required>
 						</div>
 			
 						<!-- City -->
 						<div class="col-12 col-lg-6">
 							<label for="city" class="form-label">City</label>
-							<input type="text" class="form-control" name="city" id="city" value="{{ client.city }}" required>
+							<input readonly  type="text" class="form-control" name="city" id="city" value="{{ client.city }}" required>
 						</div>
 			
 						<!-- State -->
 						<div class="col-12 col-lg-6">
 							<label for="state" class="form-label font-weight-bold">State</label>
-							<select class="form-select" id="inputState" name="state">
-								<option value="no_valid" disabled >Please Select</option>
-								<option value="AL" {% if client.state == "AL" %}selected{% endif %} > AL </option>
-								<option value="AR" {% if client.state == "AR" %}selected{% endif %} > AR </option>
-								<option value="AZ" {% if client.state == "AZ" %}selected{% endif %} > AZ </option>
-								<option value="CA" {% if client.state == "AZ" %}selected{% endif %} > CA </option>
-								<option value="DE" {% if client.state == "DE" %}selected{% endif %} > DE </option>
-								<option value="FL" {% if client.state == "FL" %}selected{% endif %} > FL </option>
-								<option value="GA" {% if client.state == "GA" %}selected{% endif %} > GA </option>
-								<option value="IL" {% if client.state == "IL" %}selected{% endif %} > IL </option>
-								<option value="IA" {% if client.state == "IA" %}selected{% endif %} > IA </option>
-								<option value="KS" {% if client.state == "KS" %}selected{% endif %} > KS </option>
-								<option Value="MI" {% if client.state == "MI" %}selected{% endif %} > MI </option>                            
-								<option value="MS" {% if client.state == "MS" %}selected{% endif %} > MS </option>
-								<option Value="MO" {% if client.state == "MO" %}selected{% endif %} > MO </option>
-								<option value="NJ" {% if client.state == "NJ" %}selected{% endif %} > NJ </option>
-								<option value="NC" {% if client.state == "NC" %}selected{% endif %} > NC </option>
-								<option value="ND" {% if client.state == "ND" %}selected{% endif %} > ND </option>
-								<option value="NE" {% if client.state == "NE" %}selected{% endif %} > NE </option>
-								<option value="OH" {% if client.state == "OH" %}selected{% endif %} > OH </option>
-								<option value="OK" {% if client.state == "OK" %}selected{% endif %} > OK </option>
-								<option value="SC" {% if client.state == "SC" %}selected{% endif %} > SC </option>
-								<option value="TN" {% if client.state == "TN" %}selected{% endif %} > TN </option>
-								<option value="TX" {% if client.state == "TX" %}selected{% endif %} > TX </option>
-								<option value="UT" {% if client.state == "UT" %}selected{% endif %} > UT </option>
-								<option value="VA" {% if client.state == "VA" %}selected{% endif %} > VA </option>
-								<option value="WI" {% if client.state == "WI" %}selected{% endif %} > WI </option>
-								<option value="LA" {% if client.state == "LA" %}selected{% endif %} > LA </option>
-								<option value="IN" {% if client.state == "IN" %}selected{% endif %} > IN </option>
-								<option value="OR" {% if client.state == "OR" %}selected{% endif %} > OR </option>
-							</select>
+							<input readonly type="text" class="form-control" name="state" id="state" value="{{ client.state }}"  required>
 						</div>
 			
 						<!-- County -->
 						<div class="col-12 col-lg-6">
 							<label for="county" class="form-label">County</label>
-							<input type="text" class="form-control" name="county" id="county" value="{{ client.county }}" placeholder="County" required>
+							<input readonly type="text" class="form-control" name="county" id="county" value="{{ client.county }}"  required>
 						</div>
 			
 						<!-- Sex -->
@@ -155,18 +125,13 @@
 								<option value="M" {% if client.sex == "M" %}selected{% endif %}>MALE</option>
 								<option value="F" {% if client.sex == "F" %}selected{% endif %}>FEMALE</option>
 							</select>
-						</div>
-			
-						<!-- Old -->
-						<div class="col-12 col-lg-6">
-							<label for="old" class="form-label">Age</label>
-							<input type="number" min="1" class="form-control" name="old" id="old" value="{{ client.old }}" placeholder="Old" required>
-						</div>
+						</div>			
+						
 			
 						<!-- Date of Birth -->
 						<div class="col-12 col-lg-6">
 							<label for="date_birth" class="form-label">Date of Birth</label>
-							<input type="text" class="form-control" name="date_birth" id="date_birth" value="{{ client.date_birth }}" required>
+							<input type="text" class="form-control" name="date_birth" id="date_birth" value="{{ client.date_birth|date:'m/d/Y' }}" required>
 						</div>
 			
 						<!-- Migration Status -->
@@ -208,6 +173,11 @@
 								<option value="ACA/SUPLEMENTARIO" {% if client.type_sales == "ACA/SUPLEMENTARIO" %}selected{% endif %}>ACA/SUPPLEMENTAL</option>
 							</select>
 						</div>
+						<!-- Old -->
+						<div class="col-12 col-lg-6">
+							<label for="old" class="form-label">Social Security</label>
+							<input type="text" maxlength="11" class="form-control" name ="social_security" id="social_security"  >
+						</div>
 						<h5 class="text-danger text-center">{{error_message}}</h5>
 						<div class="col-12 col-lg-12">
 							<button type="submit" class="btn btn-primary px-4" id="sendClient">Next<i class='bx bx-right-arrow-alt ms-2'></i></button>
@@ -247,5 +217,43 @@
 			});
 		});
 	</script>
+
+	<script>
+		function formatSSN(value) {
+            // Eliminar caracteres no numéricos
+            let input = value.replace(/\D/g, '');
+            let formattedInput = '';
+
+            if (input.length > 3) {
+                formattedInput += input.substring(0, 3) + '-';
+            } else {
+                formattedInput = input;
+            }
+            if (input.length > 5) {
+                formattedInput += input.substring(3, 5) + '-';
+                formattedInput += input.substring(5, 9);
+            } else if (input.length > 3) {
+                formattedInput += input.substring(3, 5);
+            }
+
+            return formattedInput;
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let ssnInput = document.getElementById('social_security');
+
+            // Simulación de traer un SSN desde la BD (puedes reemplazar esto con una variable de servidor)
+            let ssnFromDB = "{{client.social_security}}";  // Ejemplo sin formato desde la BD
+
+            // Formatear antes de mostrar
+            ssnInput.value = formatSSN(ssnFromDB);
+
+            // Aplicar el formato mientras el usuario escribe
+            ssnInput.addEventListener('input', function (event) {
+                event.target.value = formatSSN(event.target.value);
+            });
+        });
+
+    </script>
 
 {% endblock %}

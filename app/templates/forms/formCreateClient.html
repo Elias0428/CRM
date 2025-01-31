@@ -84,45 +84,15 @@
 						</div>
 						<div class="col-12 col-lg-4">
 							<label for="zipcode" class="form-label">ZIP Code</label>
-							<input type="number" class="form-control" name ="zipcode" id="zipcode" placeholder="ZIP Code" Required>
+							<input maxlength="5" oninput="this.value = this.value.replace(/[^0-9]/g, '')" type="text" class="form-control" name ="zipcode" id="zipcode" placeholder="ZIP Code" Required>
 						</div>
 						<div class="col-12 col-lg-4">
 							<label for="city" class="form-label">City</label>
-							<input type="text" class="form-control" name ="city" id="city" Required>
+							<input readonly type="text" class="form-control" name ="city" id="city" Required>
 						</div>
 						<div class="col-12 col-lg-2">
 							<label for="state" class="form-label font-weight-bold">State</label>
-							<select id="inputState" class="form-select" id="state" name="state" >
-								<option value="no_valid" disabled selected>Please Select</option>
-								<option value="AL"> AL </option>
-								<option value="AR"> AR </option>
-								<option value="AZ"> AZ </option>
-								<option value="CA"> CA </option>
-								<option value="DE"> DE </option>
-								<option value="FL"> FL </option>
-								<option value="GA"> GA </option>
-								<option value="IL"> IL </option>
-								<option value="IA"> IA </option>
-								<option value="KS"> KS </option>
-								<option Value="MI"> MI </option>
-								<option Value="MO"> MO </option>
-								<option value="NJ"> NJ </option>
-								<option value="NC"> NC </option>
-								<option value="ND"> ND </option>
-								<option value="NE"> NE </option>
-								<option value="OH"> OH </option>
-								<option value="OK"> OK </option>
-								<option value="SC"> SC </option>
-								<option value="TN"> TN </option>
-								<option value="TX"> TX </option>
-								<option value="UT"> UT </option>
-								<option value="VA"> VA </option>
-								<option value="WI"> WI </option>
-								<option value="LA"> LA </option>
-								<option value="MS"> MS </option>
-								<option value="IN"> IN </option>
-								<option value="OR"> OR </option>
-							</select>
+							<input readonly type="text" class="form-control" name="state" id="state" required>
 						</div>
 						<div class="col-12 col-lg-2">
 							<label for="sex" class="form-label">Sex</label>
@@ -134,13 +104,9 @@
 						</div>
 						<div class="col-12 col-lg-4">
 							<label for="county" class="form-label">County</label>
-							<input type="text" class="form-control" name ="county" id="county" placeholder="County" Required>
-						</div>						
-						<div class="col-12 col-lg-1">
-							<label for="old" class="form-label">Age</label>
-							<input type="number" nim="1" class="form-control" name ="old" id="old" placeholder="Age" Required>
-						</div>
-						<div class="col-12 col-lg-2">
+							<input readonly type="text" class="form-control" name ="county" id="county"  Required>
+						</div>		
+						<div class="col-12 col-lg-3">
 							<label for="date_birth" class="form-label">Date Birth</label>
 							<input type="text" class="form-control" name="date_birth" id="date_birth" required>
 						</div>
@@ -180,7 +146,7 @@
 							</select>
 						</div>
 						<div class="col-12 col-lg-5">
-							<label for="old" class="form-label">Social Security</label>
+							<label for="social_security" class="form-label">Social Security</label>
 							<input type="text" maxlength="11" oninput="formatInput(this)" pattern="\d{3}-\d{2}-\d{4}" class="form-control" name ="social_security" id="social_security" >
 						</div>
 						<h5 class="text-danger text-center">{{error_message}}</h5>
@@ -239,5 +205,6 @@
             input.value = value;
         }
     </script>
+
 
 {% endblock %}
