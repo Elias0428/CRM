@@ -2580,7 +2580,7 @@ def notify_websocket(user_id):
 @login_required(login_url='/login')   
 def formCreateControl(request):
 
-    userRole = [ 'A' , 'C']
+    userRole = [ 'A' , 'C', 'SUPP']
     users = User.objects.filter(role__in = userRole)
 
     if request.method == 'POST':
@@ -3152,7 +3152,7 @@ def generateConsentPdf(request, obamacare, dependents, supps, language):
         'ip':getIPClient(request),
         'var':var
     }
-    print(language)
+
     activate(language)
     # Renderiza la plantilla HTML a un string
     html_content = render_to_string('consent/templatePdfConsent.html', context)
