@@ -570,7 +570,7 @@
     <script>
         function copyCurrentURL() {
             // Obtener la URL actual
-            const URL = '{{temporalyURL}}';
+            const URL = '{{temporalyURL|safe}}';
             
             // Copiar al portapapeles
             navigator.clipboard.writeText(URL).then(() => {

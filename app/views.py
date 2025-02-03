@@ -3022,6 +3022,11 @@ def generar_reporte(request):
 def consent(request, obamacare_id):
     obamacare = ObamaCare.objects.select_related('client').get(id=obamacare_id)
     temporalyURL = None
+
+    if request.method == 'GET':
+        language = request.GET.get('lenguaje', 'es')  # Idioma predeterminado si no se pasa
+        print(language)
+        activate(language)
     # Validar si el usuario no está logueado y verificar el token
     if isinstance(request.user, AnonymousUser):
         result = validateTemporaryToken(request)
@@ -3029,7 +3034,7 @@ def consent(request, obamacare_id):
         if not is_valid_token:
             return HttpResponse(note)
     elif request.user.is_authenticated:
-        temporalyURL = f"{request.build_absolute_uri('/viewConsent/')}{obamacare_id}?token={generateTemporaryToken(obamacare)}"
+        temporalyURL = f"{request.build_absolute_uri('/viewConsent/')}{obamacare_id}?token={generateTemporaryToken(obamacare)}&lenguaje={language}"
         print('Usuario autenticado')
     else:
         # Si el usuario no está logueado y no hay token válido
@@ -3069,9 +3074,6 @@ def consent(request, obamacare_id):
         'temporalyURL': temporalyURL,
         'supps': supps
     }
-    if request.method == 'GET':
-        language = request.GET.get('lenguaje', 'es')  # Idioma predeterminado si no se pasa
-        activate(language)
     return render(request, 'consent/consent1.html', context)
 
 def incomeLetter(request, obamacare_id):
@@ -3300,22 +3302,6 @@ def getIPClient(request):
 @login_required(login_url='/login')
 def averageSales(request):
     agents = User.objects.filter(is_active=True, role__in=['A', 'C'])
-    nameChart = 'Select filter data'
-    weeks = ["Semana 1", "Semana 2", "Semana 3", "Semana 4", "Semana 5"]
-    counts_obamacare = [0, 0, 0, 0, 0]
-    counts_supp = [0, 0, 0, 0, 0]
-    counts_total = [0, 0, 0, 0, 0]
-
-    if request.method == "POST":
-        start_date = request.POST.get("month")  # Obtén el mes enviado
-        agentReport = request.POST.get('agent')
-        if start_date:
-            try:
-                # Convertir el mes seleccionado en un rango de fechas
-                year = datetime.now().year
-                month = int(start_date)
-                first_day = datetime(year, month, 1)
-                if month == 12:
                     last_day = datetime(year + 1, 1, 1) - timedelta(days=1)
                 else:
                     last_day = datetime(year, month + 1, 1) - timedelta(days=1)
@@ -3377,7 +3363,6 @@ def averageSales(request):
                     counts_obamacare[i] + counts_supp[i] for i in range(len(weeks))
                 ]
 
-            except ValueError as e:
                 print("Error al procesar la fecha:", e)
 
     # Renderizar la respuesta
