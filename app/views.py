@@ -3302,68 +3302,12 @@ def getIPClient(request):
 @login_required(login_url='/login')
 def averageSales(request):
     agents = User.objects.filter(is_active=True, role__in=['A', 'C'])
-                    last_day = datetime(year + 1, 1, 1) - timedelta(days=1)
-                else:
-                    last_day = datetime(year, month + 1, 1) - timedelta(days=1)
 
-                # Filtro de ObamaCare
-                obamacare_records = ObamaCare.objects.filter(
-                    created_at__range=(first_day, last_day),
-                    status_color=3, 
-                    agent = agentReport,
-                    is_active = True
-                )
+    # Obtener los datos de conteo por agente
+    plans_by_agent = ObamaCare.objects.values('agent__username').annotate(total_plans=Count('id')).order_by('-total_plans')
 
-                # Filtro de Supp
-                supp_records = Supp.objects.filter(
-                    created_at__range=(first_day, last_day),
-                    status_color=3,
-                    agent = agentReport,
-                    is_active = True
-                )
-
-                nameAgentChart = User.objects.filter(id = agentReport).first()
-                nameChart = nameAgentChart.first_name, nameAgentChart.last_name
-
-                # Función para calcular la semana correcta dentro del mes
-                def get_week_of_month(date):
-                    # Primer día del mes
-                    first_day_of_month = date.replace(day=1)
-                    
-                    # Calculamos la diferencia en días entre la fecha y el primer día del mes
-                    days_since_first_day = (date - first_day_of_month).days
-
-                    # Calcular la semana del mes: Dividimos los días por 7
-                    week_of_month = days_since_first_day // 7
-
-                    # Asegurarse de no exceder 5 semanas (en algunos meses puede haber 5 semanas)
-                    if week_of_month >= 4:
-                        week_of_month = 4
-
-                    return week_of_month
-
-                # Mostrar los días asignados a cada semana para verificación
-                week_days = {week: [] for week in weeks}  # Diccionario para almacenar los días asignados a cada semana
-
-                # Contar registros por semana y mostrar los días asignados
-                for record in obamacare_records:
-                    week_number = get_week_of_month(record.created_at.date())
-                    if 0 <= week_number < 5:  # Validar que la semana esté en el rango
-                        counts_obamacare[week_number] += 1
-                        week_days[weeks[week_number]].append(record.created_at.date())
-
-                for record in supp_records:
-                    week_number = get_week_of_month(record.created_at.date())
-                    if 0 <= week_number < 5:  # Validar que la semana esté en el rango
-                        counts_supp[week_number] += 1
-                        week_days[weeks[week_number]].append(record.created_at.date())
-
-                # Calcular el total combinado
-                counts_total = [
-                    counts_obamacare[i] + counts_supp[i] for i in range(len(weeks))
-                ]
-
-                print("Error al procesar la fecha:", e)
+    # Convertir los datos en un formato JSON-compatible
+    data = [{"agent": item['agent__username'], "totalPlans": item['total_plans']} for item in plans_by_agent]
 
     # Renderizar la respuesta
     return render(request, 'table/averageSales.html', {
