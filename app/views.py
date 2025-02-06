@@ -3656,8 +3656,6 @@ def getSalesForNewSite():
     return finalSummary, weekRanges
 
 def get_active_data_for_chart():
-    from datetime import datetime, timedelta
-    from django.utils.timezone import make_aware
 
     # Obtener la fecha actual
     today = datetime.today()
@@ -3689,7 +3687,7 @@ def get_active_data_for_chart():
 
     # Obtener la lista de agentes
     excludedUsernames = ['Calidad01', 'mariluz', 'MariaCaTi']  # Excluimos a gente que no debe aparecer en la vista
-    userRoles = ['A', 'C', 'S', 'Admin']
+    userRoles = ['A', 'C', 'S']
     users = User.objects.filter(role__in=userRoles, is_active=True).exclude(username__in=excludedUsernames)
 
     # Inicializar diccionario para almacenar los datos de la gráfica por agente

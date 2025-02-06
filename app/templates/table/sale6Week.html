@@ -1,108 +1,114 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Reporte de Ventas (Últimas 6 Semanas)</title>
-    <!-- Incluir ApexCharts -->
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <!-- Estilos para el modal -->
-    <style>
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 10% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 70%;
-            max-width: 800px;
-        }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        #activeChart {
-            width: 100%;
-            height: 400px;
-        }
-    </style>
-</head>
-<body>
-    <h1>Reporte de Ventas - Últimas 6 Semanas</h1>
+{% extends "dashboard/index.html" %}
+{% load static %}
+{% block head %}
+    <title>Sale 6 Week</title>
+	<!--plugins-->
+	<link href="{% static "assets/plugins/simplebar/css/simplebar.css" %}" rel="stylesheet" />
+	<link href="{% static "assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" %}" rel="stylesheet" />
+	<link href="{% static "assets/plugins/metismenu/css/metisMenu.min.css" %}" rel="stylesheet" />
+	<link href="{% static "assets/plugins/datatable/css/dataTables.bootstrap5.min.css" %}" rel="stylesheet" />
+	<!-- loader-->
+	<link href="{% static "assets/css/pace.min.css" %}" rel="stylesheet" />
+	<script src="{% static "assets/js/pace.min.js" %}"></script>
+	<!-- Bootstrap CSS -->
+	<link href="{% static "assets/css/bootstrap.min.css" %}" rel="stylesheet">
+	<link href="{% static "assets/css/bootstrap-extended.css" %}" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&amp;display=swap" rel="stylesheet">
+	<link href="{% static "assets/css/app.css" %}" rel="stylesheet">
+	<link href="{% static "assets/css/icons.css" %}" rel="stylesheet">
+	<!-- Theme Style CSS -->
+	<link rel="stylesheet" href="{% static "assets/css/dark-theme.css" %}" />
+	<link rel="stylesheet" href="{% static "assets/css/semi-dark.css" %}" />
+	<link rel="stylesheet" href="{% static "assets/css/header-colors.css" %}" />
+{% endblock %}
+{% block page_content %}
 
-    <!-- Botón para abrir el modal -->
-    <button onclick="openModal()">Ver Gráfica de Activos por Agente</button>
+<h4>Sales report for the last 6 weeks</h4>
+<hr>
+<!-- Botón para abrir el modal -->
+<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#chartModal">	View Chart of Assets by Agent </button>
+<br><br>
 
-    <!-- Modal -->
-    <div id="chartModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2>Gráfica de Pólizas Activas por Agente</h2>
-            <div id="activeChart"></div>
+<div class="card">
+    <div class="card-body">
+        <div class="table" >	
+            <table id="table1" width="100%" cellspacing="0" class="table table-striped table-bordered">				
+                <thead>					
+                    <tr>
+                        <th style="text-align: center; vertical-align: middle;">Agent</th>
+                        {% for week in weekRanges %}
+                            <th style="text-align: center; vertical-align: middle;">{{ week }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for agent, weeks in finalSummary.items %}
+                        <tr>
+                            <td style="text-align: center; vertical-align: middle;">{{ agent }}</td>
+                            {% for week, data in weeks.items %}
+                                <td style="text-align: center; vertical-align: middle;">
+                                    <strong>ObamaCare:</strong><br>
+                                    - Obama: {{ data.obama }}<br>
+                                    - Active Obama: {{ data.activeObama }}<br>
+                                    - Total Obama: {{ data.totalObama }}<br><br>
+                                    <strong>Supp:</strong><br>
+                                    - Supp: {{ data.supp }}<br>
+                                    - Active Supp: {{ data.activeSupp }}<br>
+                                    - Total Supp: {{ data.totalSupp }}<br><br>
+                                    <strong>Total: {{ data.total }}</strong>
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
+</div>
 
-    <!-- Tabla de ventas (código anterior) -->
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Agente</th>
-                {% for week in weekRanges %}
-                    <th>{{ week }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for agent, weeks in finalSummary.items %}
-                <tr>
-                    <td>{{ agent }}</td>
-                    {% for week, data in weeks.items %}
-                        <td>
-                            <strong>ObamaCare:</strong><br>
-                            - Obama: {{ data.obama }}<br>
-                            - Active Obama: {{ data.activeObama }}<br>
-                            - Total Obama: {{ data.totalObama }}<br><br>
-                            <strong>Supp:</strong><br>
-                            - Supp: {{ data.supp }}<br>
-                            - Active Supp: {{ data.activeSupp }}<br>
-                            - Total Supp: {{ data.totalSupp }}<br><br>
-                            <strong>Total General: {{ data.total }}</strong>
-                        </td>
-                    {% endfor %}
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<!-- Modal de Bootstrap -->
+<div class="modal fade" id="chartModal" tabindex="-1" aria-labelledby="chartModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="chartModalLabel">Chart of Active Policies by Agent</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="activeChart"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <!-- Script para manejar el modal y la gráfica -->
+{% endblock %}
+{% block end_js %}
+	<!-- Bootstrap JS -->
+	<script src="{% static "assets/js/bootstrap.bundle.min.js" %}"></script>
+	<!--plugins-->
+	<script src="{% static "assets/js/jquery.min.js" %}"></script>
+	<script src="{% static "assets/plugins/simplebar/js/simplebar.min.js" %}"></script>
+	<script src="{% static "assets/plugins/metismenu/js/metisMenu.min.js" %}"></script>
+	<script src="{% static "assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js" %}"></script>
+	<script src="{% static "assets/plugins/datatable/js/jquery.dataTables.min.js" %}"></script>
+	<script src="{% static "assets/plugins/datatable/js/dataTables.bootstrap5.min.js" %}"></script>
+	<script src="{% static "assets/js/modalTypification.js" %}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+	<script>	
+		$(document).ready(function() {
+			var table = $('#table1').DataTable( {lengthChange: false,buttons: [ 'excel','print']} );		 
+			table.buttons().container().appendTo( '#table1_wrapper .col-md-6:eq(0)' );
+		} );
+
+	</script>
+	<!--app JS-->
+	<script src="{% static "assets/js/app.js" %}"></script>
+
     <script>
-        // Funciones para abrir y cerrar el modal
-        function openModal() {
-            document.getElementById('chartModal').style.display = 'block';
-            renderChart();
-        }
-
-        function closeModal() {
-            document.getElementById('chartModal').style.display = 'none';
-        }
-
         // Renderizar la gráfica con ApexCharts
         function renderChart() {
             const chartData = {
@@ -135,12 +141,12 @@
                 xaxis: {
                     categories: chartData.labels,
                     title: {
-                        text: 'Semanas'
+                        text: 'Week'
                     }
                 },
                 yaxis: {
                     title: {
-                        text: 'Cantidad de Pólizas Activas'
+                        text: 'Number of active policies'
                     },
                     min: 0,
                     tickAmount: 5
@@ -154,6 +160,7 @@
                     size: 5
                 },
                 tooltip: {
+					theme: "dark",
                     enabled: true,
                     shared: true,
                     intersect: false
@@ -166,7 +173,12 @@
             const chart = new ApexCharts(document.querySelector("#activeChart"), options);
             chart.render();
         }
+
+        // Renderizar la gráfica cuando el modal se muestre
+        document.getElementById('chartModal').addEventListener('shown.bs.modal', function () {
+            renderChart();
+        });
     </script>
-	
-</body>
-</html>
+
+
+{% endblock %}
