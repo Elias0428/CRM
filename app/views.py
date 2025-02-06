@@ -3699,6 +3699,7 @@ def get_active_data_for_chart():
 
     # Procesar las pólizas activas de ObamaCare
     for policy in activeObamaPolicies:
+        if policy.agent.is_active:
             agentName = f"{policy.agent.first_name} {policy.agent.last_name}".strip()        
             policyWeek = (policy.created_at - startDate).days // 7  # Calcular la semana (0 a 5)
             if 0 <= policyWeek < numWeeks:
@@ -3711,6 +3712,7 @@ def get_active_data_for_chart():
 
     # Procesar las pólizas activas de Supp
     for policy in activeSuppPolicies:
+        if policy.agent.is_active:
             agentName = f"{policy.agent.first_name} {policy.agent.last_name}".strip()        
             policyWeek = (policy.created_at - startDate).days // 7  # Calcular la semana (0 a 5)
             if 0 <= policyWeek < numWeeks:

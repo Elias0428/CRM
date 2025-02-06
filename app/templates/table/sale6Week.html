@@ -116,8 +116,27 @@
                 series: {{ chart_data.series|safe }}   // Datos por agente
             };
 
+			// Función para generar colores HSL
+			function generarColoresPorAgente(numeroDeAgentes) {
+				const coloresObama = ['#FF4560', '#00E396', '#775DD0', '#FEB019', '#2E93FA'];
+				const coloresSupp = ['#00B8D9', '#FF8B3D', '#34D399', '#7C3AED', '#F43F5E'];
+				
+				const colores = [];
+				for (let i = 0; i < numeroDeAgentes; i++) {
+					colores.push(coloresObama[i % coloresObama.length]);
+					colores.push(coloresSupp[i % coloresSupp.length]);
+				}
+				
+				return colores;
+			}
+		
+
             // Preparar las series para ApexCharts
             const series = [];
+
+			const numAgentes = Object.keys(chartData.series).length;
+			const colores = generarColoresPorAgente(numAgentes);
+
             for (const [agentName, data] of Object.entries(chartData.series)) {
                 series.push({
                     name: `${agentName} - Active Obama`,
@@ -155,7 +174,7 @@
                     curve: 'smooth',
                     width: 2
                 },
-                colors: ['#00E396', '#FF4560', '#775DD0', '#FEB019', '#FF4560', '#00E396'],  // Colores para las series
+                colors: colores,  // Colores para las series
                 markers: {
                     size: 5
                 },
