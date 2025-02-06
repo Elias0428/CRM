@@ -118,18 +118,18 @@
 
 			// Función para generar colores HSL
 			function generarColoresPorAgente(numeroDeAgentes) {
-				const coloresObama = ['#FF4560', '#00E396', '#775DD0', '#FEB019', '#2E93FA'];
-				const coloresSupp = ['#00B8D9', '#FF8B3D', '#34D399', '#7C3AED', '#F43F5E'];
-				
 				const colores = [];
+				const paso = 360 / numeroDeAgentes;
+				
 				for (let i = 0; i < numeroDeAgentes; i++) {
-					colores.push(coloresObama[i % coloresObama.length]);
-					colores.push(coloresSupp[i % coloresSupp.length]);
+					// Color para Active Obama (más saturado)
+					colores.push(`hsl(${i * paso}, 75%, 45%)`);
+					// Color para Active Supp (menos saturado, mismo tono)
+					colores.push(`hsl(${i * paso}, 55%, 55%)`);
 				}
 				
 				return colores;
 			}
-		
 
             // Preparar las series para ApexCharts
             const series = [];
