@@ -3600,25 +3600,27 @@ def getSalesForNewSite():
     # Procesar las ventas de Obamacare y Supp para las últimas 6 semanas
     for sale in obamaSales:
         agentName = sale.agent.username
-        saleWeek = (sale.created_at - startDate).days // 7  # Calcular la semana (0 a 5)
-        if 0 <= saleWeek < numWeeks:
-            try:
-                salesSummary[agentName][f"Week{saleWeek + 1}"]["obama"] += 1
-                salesSummary[agentName][f"Week{saleWeek + 1}"]["totalObama"] += 1
-                salesSummary[agentName][f"Week{saleWeek + 1}"]["total"] += 1
-            except KeyError:
-                pass
+        if sale.agent.is_active:
+            saleWeek = (sale.created_at - startDate).days // 7  # Calcular la semana (0 a 5)
+            if 0 <= saleWeek < numWeeks:
+                try:
+                    salesSummary[agentName][f"Week{saleWeek + 1}"]["obama"] += 1
+                    salesSummary[agentName][f"Week{saleWeek + 1}"]["totalObama"] += 1
+                    salesSummary[agentName][f"Week{saleWeek + 1}"]["total"] += 1
+                except KeyError:
+                    pass
 
     for sale in suppSales:
         agentName = sale.agent.username
-        saleWeek = (sale.created_at - startDate).days // 7  # Calcular la semana (0 a 5)
-        if 0 <= saleWeek < numWeeks:
-            try:
-                salesSummary[agentName][f"Week{saleWeek + 1}"]["supp"] += 1
-                salesSummary[agentName][f"Week{saleWeek + 1}"]["totalSupp"] += 1
-                salesSummary[agentName][f"Week{saleWeek + 1}"]["total"] += 1
-            except KeyError:
-                pass
+        if sale.agent.is_active:
+            saleWeek = (sale.created_at - startDate).days // 7  # Calcular la semana (0 a 5)
+            if 0 <= saleWeek < numWeeks:
+                try:
+                    salesSummary[agentName][f"Week{saleWeek + 1}"]["supp"] += 1
+                    salesSummary[agentName][f"Week{saleWeek + 1}"]["totalSupp"] += 1
+                    salesSummary[agentName][f"Week{saleWeek + 1}"]["total"] += 1
+                except KeyError:
+                    pass
 
     # Agregar el conteo de pólizas activas para las últimas 6 semanas
     activeObamaPolicies = ObamaCare.objects.filter(status='Active', created_at__range=[startDate, endOfCurrentWeek],is_active = True)
@@ -3626,25 +3628,27 @@ def getSalesForNewSite():
 
     for policy in activeObamaPolicies:
         agentName = policy.agent.username
-        policyWeek = (policy.created_at - startDate).days // 7  # Calcular la semana (0 a 5)
-        if 0 <= policyWeek < numWeeks:
-            try:
-                salesSummary[agentName][f"Week{policyWeek + 1}"]["activeObama"] += 1
-                salesSummary[agentName][f"Week{policyWeek + 1}"]["totalObama"] += 1
-                salesSummary[agentName][f"Week{policyWeek + 1}"]["total"] += 1
-            except KeyError:
-                pass
+        if policy.agent.is_active:
+            policyWeek = (policy.created_at - startDate).days // 7  # Calcular la semana (0 a 5)
+            if 0 <= policyWeek < numWeeks:
+                try:
+                    salesSummary[agentName][f"Week{policyWeek + 1}"]["activeObama"] += 1
+                    salesSummary[agentName][f"Week{policyWeek + 1}"]["totalObama"] += 1
+                    salesSummary[agentName][f"Week{policyWeek + 1}"]["total"] += 1
+                except KeyError:
+                    pass
 
     for policy in activeSuppPolicies:
         agentName = policy.agent.username
-        policyWeek = (policy.created_at - startDate).days // 7  # Calcular la semana (0 a 5)
-        if 0 <= policyWeek < numWeeks:
-            try:
-                salesSummary[agentName][f"Week{policyWeek + 1}"]["activeSupp"] += 1
-                salesSummary[agentName][f"Week{policyWeek + 1}"]["totalSupp"] += 1
-                salesSummary[agentName][f"Week{policyWeek + 1}"]["total"] += 1
-            except KeyError:
-                pass
+        if policy.agent.is_active:
+            policyWeek = (policy.created_at - startDate).days // 7  # Calcular la semana (0 a 5)
+            if 0 <= policyWeek < numWeeks:
+                try:
+                    salesSummary[agentName][f"Week{policyWeek + 1}"]["activeSupp"] += 1
+                    salesSummary[agentName][f"Week{policyWeek + 1}"]["totalSupp"] += 1
+                    salesSummary[agentName][f"Week{policyWeek + 1}"]["total"] += 1
+                except KeyError:
+                    pass
 
     # Convertir el diccionario para usar "first_name last_name" como clave
     finalSummary = {}
@@ -3682,13 +3686,10 @@ def get_active_data_for_chart():
         weekRanges.append(weekRange)
 
     # Obtener los datos de pólizas activas para las últimas 6 semanas
-    activeObamaPolicies = ObamaCare.objects.filter(status='Active', created_at__range=[startDate, endOfCurrentWeek])
-    activeSuppPolicies = Supp.objects.filter(status='Active', created_at__range=[startDate, endOfCurrentWeek])
+    activeObamaPolicies = ObamaCare.objects.filter(status='Active', created_at__range=[startDate, endOfCurrentWeek],is_active = True)
+    activeSuppPolicies = Supp.objects.filter(status='Active', created_at__range=[startDate, endOfCurrentWeek], is_active= True)
 
-    # Obtener la lista de agentes
-    excludedUsernames = ['Calidad01', 'mariluz', 'MariaCaTi']  # Excluimos a gente que no debe aparecer en la vista
-    userRoles = ['A', 'C', 'S']
-    users = User.objects.filter(role__in=userRoles, is_active=True).exclude(username__in=excludedUsernames)
+
 
     # Inicializar diccionario para almacenar los datos de la gráfica por agente
     chart_data = {
@@ -3698,27 +3699,29 @@ def get_active_data_for_chart():
 
     # Procesar las pólizas activas de ObamaCare
     for policy in activeObamaPolicies:
-        agentName = f"{policy.agent.first_name} {policy.agent.last_name}".strip()
-        policyWeek = (policy.created_at - startDate).days // 7  # Calcular la semana (0 a 5)
-        if 0 <= policyWeek < numWeeks:
-            if agentName not in chart_data["series"]:
-                chart_data["series"][agentName] = {
-                    "activeObama": [0] * numWeeks,
-                    "activeSupp": [0] * numWeeks
-                }
-            chart_data["series"][agentName]["activeObama"][policyWeek] += 1
+        if policy.agent.is_active:
+            agentName = f"{policy.agent.first_name} {policy.agent.last_name}".strip()        
+            policyWeek = (policy.created_at - startDate).days // 7  # Calcular la semana (0 a 5)
+            if 0 <= policyWeek < numWeeks:
+                if agentName not in chart_data["series"]:
+                    chart_data["series"][agentName] = {
+                        "activeObama": [0] * numWeeks,
+                        "activeSupp": [0] * numWeeks
+                    }
+                chart_data["series"][agentName]["activeObama"][policyWeek] += 1
 
     # Procesar las pólizas activas de Supp
     for policy in activeSuppPolicies:
-        agentName = f"{policy.agent.first_name} {policy.agent.last_name}".strip()
-        policyWeek = (policy.created_at - startDate).days // 7  # Calcular la semana (0 a 5)
-        if 0 <= policyWeek < numWeeks:
-            if agentName not in chart_data["series"]:
-                chart_data["series"][agentName] = {
-                    "activeObama": [0] * numWeeks,
-                    "activeSupp": [0] * numWeeks
-                }
-            chart_data["series"][agentName]["activeSupp"][policyWeek] += 1
+        if policy.agent.is_active:
+            agentName = f"{policy.agent.first_name} {policy.agent.last_name}".strip()        
+            policyWeek = (policy.created_at - startDate).days // 7  # Calcular la semana (0 a 5)
+            if 0 <= policyWeek < numWeeks:
+                if agentName not in chart_data["series"]:
+                    chart_data["series"][agentName] = {
+                        "activeObama": [0] * numWeeks,
+                        "activeSupp": [0] * numWeeks
+                    }
+                chart_data["series"][agentName]["activeSupp"][policyWeek] += 1
 
     return chart_data
 
