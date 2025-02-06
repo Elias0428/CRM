@@ -3704,6 +3704,7 @@ def get_active_data_for_chart():
 
     # Procesar las pólizas activas de ObamaCare
     for policy in activeObamaPolicies:
+        agentName = policy.agent.username
         if policy.agent.is_active:
             if agentName not in excludedUsernames:
                 agentName = f"{policy.agent.first_name} {policy.agent.last_name}".strip()        
@@ -3718,6 +3719,7 @@ def get_active_data_for_chart():
 
     # Procesar las pólizas activas de Supp
     for policy in activeSuppPolicies:
+        agentName = policy.agent.username
         if policy.agent.is_active:
             if agentName not in excludedUsernames:
                 agentName = f"{policy.agent.first_name} {policy.agent.last_name}".strip()        
