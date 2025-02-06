@@ -69,11 +69,11 @@
 						<li> <a href="{% url "index" %}"><i class='bx bx-radio-circle'></i>Home</a>
 						</li>
 						{% if request.user.role == 'Admin' or request.user.role == 'S' or request.user.role == 'TV' %}
-						{% if toggle %}
-						<li> <a href="{% url "monthLiveView" %}"><i class='bx bx-radio-circle'></i>View TV</a></li>
-						{% else %}
-						<li> <a href="{% url "weeklyLiveView" %}"><i class='bx bx-radio-circle'></i>View TV</a></li>
-						{% endif %}
+							{% if toggle %}
+								<li> <a href="{% url "monthLiveView" %}"><i class='bx bx-radio-circle'></i>View TV</a></li>
+							{% else %}
+								<li> <a href="{% url "weeklyLiveView" %}"><i class='bx bx-radio-circle'></i>View TV</a></li>
+							{% endif %}
 						{% endif %}
 					</ul>
 				</li>
@@ -122,6 +122,8 @@
 						<li> <a href="{% url 'averageSales' %}"><i class='bx bx-radio-circle'></i>Average Sales</a>
 						</li>
 						<li> <a href="{% url 'customerTypification' %}"><i class='bx bx-radio-circle'></i>Typification customer</a>
+						</li>
+						<li> <a href="{% url 'sale6Week' %}"><i class='bx bx-radio-circle'></i>Sales for the last 6 weeks</a>
 						</li>
 					</ul>
 				</li>

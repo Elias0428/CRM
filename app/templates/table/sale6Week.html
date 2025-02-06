@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Ventas (Últimas 6 Semanas)</title>
+    <!-- Incluir ApexCharts -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <!-- Estilos para el modal -->
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 70%;
+            max-width: 800px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        #activeChart {
+            width: 100%;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Reporte de Ventas - Últimas 6 Semanas</h1>
+
+    <!-- Botón para abrir el modal -->
+    <button onclick="openModal()">Ver Gráfica de Activos por Agente</button>
+
+    <!-- Modal -->
+    <div id="chartModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Gráfica de Pólizas Activas por Agente</h2>
+            <div id="activeChart"></div>
+        </div>
+    </div>
+
+    <!-- Tabla de ventas (código anterior) -->
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Agente</th>
+                {% for week in weekRanges %}
+                    <th>{{ week }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for agent, weeks in finalSummary.items %}
+                <tr>
+                    <td>{{ agent }}</td>
+                    {% for week, data in weeks.items %}
+                        <td>
+                            <strong>ObamaCare:</strong><br>
+                            - Obama: {{ data.obama }}<br>
+                            - Active Obama: {{ data.activeObama }}<br>
+                            - Total Obama: {{ data.totalObama }}<br><br>
+                            <strong>Supp:</strong><br>
+                            - Supp: {{ data.supp }}<br>
+                            - Active Supp: {{ data.activeSupp }}<br>
+                            - Total Supp: {{ data.totalSupp }}<br><br>
+                            <strong>Total General: {{ data.total }}</strong>
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Script para manejar el modal y la gráfica -->
+    <script>
+        // Funciones para abrir y cerrar el modal
+        function openModal() {
+            document.getElementById('chartModal').style.display = 'block';
+            renderChart();
+        }
+
+        function closeModal() {
+            document.getElementById('chartModal').style.display = 'none';
+        }
+
+        // Renderizar la gráfica con ApexCharts
+        function renderChart() {
+            const chartData = {
+                labels: {{ chart_data.labels|safe }},  // Etiquetas de las semanas
+                series: {{ chart_data.series|safe }}   // Datos por agente
+            };
+
+            // Preparar las series para ApexCharts
+            const series = [];
+            for (const [agentName, data] of Object.entries(chartData.series)) {
+                series.push({
+                    name: `${agentName} - Active Obama`,
+                    data: data.activeObama
+                });
+                series.push({
+                    name: `${agentName} - Active Supp`,
+                    data: data.activeSupp
+                });
+            }
+
+            const options = {
+                chart: {
+                    type: 'line',
+                    height: 400,
+                    zoom: {
+                        enabled: false
+                    }
+                },
+                series: series,
+                xaxis: {
+                    categories: chartData.labels,
+                    title: {
+                        text: 'Semanas'
+                    }
+                },
+                yaxis: {
+                    title: {
+                        text: 'Cantidad de Pólizas Activas'
+                    },
+                    min: 0,
+                    tickAmount: 5
+                },
+                stroke: {
+                    curve: 'smooth',
+                    width: 2
+                },
+                colors: ['#00E396', '#FF4560', '#775DD0', '#FEB019', '#FF4560', '#00E396'],  // Colores para las series
+                markers: {
+                    size: 5
+                },
+                tooltip: {
+                    enabled: true,
+                    shared: true,
+                    intersect: false
+                },
+                legend: {
+                    position: 'top'
+                }
+            };
+
+            const chart = new ApexCharts(document.querySelector("#activeChart"), options);
+            chart.render();
+        }
+    </script>
+	
+</body>
+</html>

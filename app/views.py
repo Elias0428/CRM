@@ -3543,3 +3543,201 @@ def redirect_with_token(request, view_name, *args, **kwargs):
     query_params = urlencode({'token': token})
     return redirect(f'{url}?{query_params}')
 
+def getSalesForNewSite():
+
+    # Obtener la fecha actual
+    today = datetime.today()
+
+    # Calcular el domingo anterior (inicio de la semana actual)
+    startOfCurrentWeek = today - timedelta(days=today.weekday() + 1)
+
+    # Calcular el domingo siguiente (fin de la semana actual)
+    endOfCurrentWeek = startOfCurrentWeek + timedelta(days=6)
+
+    # Calcular el inicio de las 6 semanas (domingo anterior a 6 semanas atrás)
+    startDate = startOfCurrentWeek - timedelta(weeks=5)  # 5 semanas atrás desde el inicio de la semana actual
+
+    # Convertir las fechas a "offset-aware"
+    startDate = make_aware(startDate)
+    endOfCurrentWeek = make_aware(endOfCurrentWeek)
+
+    # Número total de semanas (6 semanas, incluyendo la semana actual)
+    numWeeks = 6
+
+    # Calcular los rangos de las semanas
+    weekRanges = []
+    for i in range(numWeeks):
+        weekStart = startDate + timedelta(weeks=i)
+        weekEnd = weekStart + timedelta(days=6)
+        weekRange = f"{weekStart.strftime('%d/%m')} - {weekEnd.strftime('%d/%m')}"
+        weekRanges.append(weekRange)
+
+    # Inicializar diccionario de ventas para las últimas 6 semanas
+    excludedUsernames = ['Calidad01', 'mariluz', 'MariaCaTi']  # Excluimos a gente que no debe aparecer en la vista
+    userRoles = ['A', 'C', 'S']
+
+    users = User.objects.filter(role__in=userRoles, is_active=True).exclude(username__in=excludedUsernames)
+
+    salesSummary = {
+        user.username: {
+            f"Week{i + 1}": {
+                "obama": 0, 
+                "activeObama": 0, 
+                "totalObama": 0,  # Total Obama = obama + activeObama
+                "supp": 0, 
+                "activeSupp": 0, 
+                "totalSupp": 0,   # Total Supp = supp + activeSupp
+                "total": 0        # Total General = totalObama + totalSupp
+            }
+            for i in range(numWeeks)
+        } for user in users
+    }
+
+    # Filtrar todas las ventas realizadas en las últimas 6 semanas
+    obamaSales = ObamaCare.objects.filter(created_at__range=[startDate, endOfCurrentWeek])
+    suppSales = Supp.objects.filter(created_at__range=[startDate, endOfCurrentWeek])
+
+    # Procesar las ventas de Obamacare y Supp para las últimas 6 semanas
+    for sale in obamaSales:
+        agentName = sale.agent.username
+        saleWeek = (sale.created_at - startDate).days // 7  # Calcular la semana (0 a 5)
+        if 0 <= saleWeek < numWeeks:
+            try:
+                salesSummary[agentName][f"Week{saleWeek + 1}"]["obama"] += 1
+                salesSummary[agentName][f"Week{saleWeek + 1}"]["totalObama"] += 1
+                salesSummary[agentName][f"Week{saleWeek + 1}"]["total"] += 1
+            except KeyError:
+                pass
+
+    for sale in suppSales:
+        agentName = sale.agent.username
+        saleWeek = (sale.created_at - startDate).days // 7  # Calcular la semana (0 a 5)
+        if 0 <= saleWeek < numWeeks:
+            try:
+                salesSummary[agentName][f"Week{saleWeek + 1}"]["supp"] += 1
+                salesSummary[agentName][f"Week{saleWeek + 1}"]["totalSupp"] += 1
+                salesSummary[agentName][f"Week{saleWeek + 1}"]["total"] += 1
+            except KeyError:
+                pass
+
+    # Agregar el conteo de pólizas activas para las últimas 6 semanas
+    activeObamaPolicies = ObamaCare.objects.filter(status='Active', created_at__range=[startDate, endOfCurrentWeek],is_active = True)
+    activeSuppPolicies = Supp.objects.filter(status='Active', created_at__range=[startDate, endOfCurrentWeek], is_active = True)
+
+    for policy in activeObamaPolicies:
+        agentName = policy.agent.username
+        policyWeek = (policy.created_at - startDate).days // 7  # Calcular la semana (0 a 5)
+        if 0 <= policyWeek < numWeeks:
+            try:
+                salesSummary[agentName][f"Week{policyWeek + 1}"]["activeObama"] += 1
+                salesSummary[agentName][f"Week{policyWeek + 1}"]["totalObama"] += 1
+                salesSummary[agentName][f"Week{policyWeek + 1}"]["total"] += 1
+            except KeyError:
+                pass
+
+    for policy in activeSuppPolicies:
+        agentName = policy.agent.username
+        policyWeek = (policy.created_at - startDate).days // 7  # Calcular la semana (0 a 5)
+        if 0 <= policyWeek < numWeeks:
+            try:
+                salesSummary[agentName][f"Week{policyWeek + 1}"]["activeSupp"] += 1
+                salesSummary[agentName][f"Week{policyWeek + 1}"]["totalSupp"] += 1
+                salesSummary[agentName][f"Week{policyWeek + 1}"]["total"] += 1
+            except KeyError:
+                pass
+
+    # Convertir el diccionario para usar "first_name last_name" como clave
+    finalSummary = {}
+
+    for user in users:
+        fullName = f"{user.first_name} {user.last_name}".strip()
+        finalSummary[fullName] = salesSummary[user.username]
+
+    return finalSummary, weekRanges
+
+def get_active_data_for_chart():
+    from datetime import datetime, timedelta
+    from django.utils.timezone import make_aware
+
+    # Obtener la fecha actual
+    today = datetime.today()
+
+    # Calcular el domingo anterior (inicio de la semana actual)
+    startOfCurrentWeek = today - timedelta(days=today.weekday() + 1)
+
+    # Calcular el inicio de las 6 semanas (domingo anterior a 6 semanas atrás)
+    startDate = startOfCurrentWeek - timedelta(weeks=5)  # 5 semanas atrás desde el inicio de la semana actual
+
+    # Convertir las fechas a "offset-aware"
+    startDate = make_aware(startDate)
+    endOfCurrentWeek = make_aware(startOfCurrentWeek + timedelta(days=6))
+
+    # Número total de semanas (6 semanas, incluyendo la semana actual)
+    numWeeks = 6
+
+    # Calcular los rangos de las semanas
+    weekRanges = []
+    for i in range(numWeeks):
+        weekStart = startDate + timedelta(weeks=i)
+        weekEnd = weekStart + timedelta(days=6)
+        weekRange = f"{weekStart.strftime('%d/%m')} - {weekEnd.strftime('%d/%m')}"
+        weekRanges.append(weekRange)
+
+    # Obtener los datos de pólizas activas para las últimas 6 semanas
+    activeObamaPolicies = ObamaCare.objects.filter(status='Active', created_at__range=[startDate, endOfCurrentWeek])
+    activeSuppPolicies = Supp.objects.filter(status='Active', created_at__range=[startDate, endOfCurrentWeek])
+
+    # Obtener la lista de agentes
+    excludedUsernames = ['Calidad01', 'mariluz', 'MariaCaTi']  # Excluimos a gente que no debe aparecer en la vista
+    userRoles = ['A', 'C', 'S', 'Admin']
+    users = User.objects.filter(role__in=userRoles, is_active=True).exclude(username__in=excludedUsernames)
+
+    # Inicializar diccionario para almacenar los datos de la gráfica por agente
+    chart_data = {
+        "labels": weekRanges,  # Etiquetas de las semanas
+        "series": {}  # Diccionario para almacenar series por agente
+    }
+
+    # Procesar las pólizas activas de ObamaCare
+    for policy in activeObamaPolicies:
+        agentName = f"{policy.agent.first_name} {policy.agent.last_name}".strip()
+        policyWeek = (policy.created_at - startDate).days // 7  # Calcular la semana (0 a 5)
+        if 0 <= policyWeek < numWeeks:
+            if agentName not in chart_data["series"]:
+                chart_data["series"][agentName] = {
+                    "activeObama": [0] * numWeeks,
+                    "activeSupp": [0] * numWeeks
+                }
+            chart_data["series"][agentName]["activeObama"][policyWeek] += 1
+
+    # Procesar las pólizas activas de Supp
+    for policy in activeSuppPolicies:
+        agentName = f"{policy.agent.first_name} {policy.agent.last_name}".strip()
+        policyWeek = (policy.created_at - startDate).days // 7  # Calcular la semana (0 a 5)
+        if 0 <= policyWeek < numWeeks:
+            if agentName not in chart_data["series"]:
+                chart_data["series"][agentName] = {
+                    "activeObama": [0] * numWeeks,
+                    "activeSupp": [0] * numWeeks
+                }
+            chart_data["series"][agentName]["activeSupp"][policyWeek] += 1
+
+    return chart_data
+
+def sales6WeekReport(request):
+    # Obtener el resumen de ventas para las últimas 6 semanas
+    finalSummary, weekRanges = getSalesForNewSite()
+
+    # Obtener los datos para la gráfica
+    chart_data = get_active_data_for_chart()
+
+    # Pasar los datos a la plantilla
+    context = {
+        'finalSummary': finalSummary,  # Resumen de ventas de las últimas 6 semanas
+        'weekRanges': weekRanges,      # Rangos de fechas de las últimas 6 semanas
+        'chart_data': chart_data,      # Datos para la gráfica
+    }
+
+    # Renderizar la plantilla con los datos
+    return render(request, 'table/sale6Week.html', context)
+
