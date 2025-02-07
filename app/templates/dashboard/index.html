@@ -506,7 +506,7 @@
 	{% if request.user.role != 'A' or request.user.role != 'AU'  %}
 	
 		<script>
-			const socket = new WebSocket('ws://blue.lapeira.com/ws/alerts/');
+			const socket = new WebSocket('ws://' + window.location.host + '/ws/alerts/');
 
 			socket.onmessage = function(event) {
 				const data = JSON.parse(event.data);

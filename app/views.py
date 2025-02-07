@@ -1617,6 +1617,7 @@ def chartSaleIndex(request):
 
     # Roles con acceso ampliado
     roleAuditar = ['S', 'Admin']
+    excludeUsername = ['admin','Calidad01','Calidad02','mariluz','MariaCaTi','StephanieMkt']
 
     # Construcción de la consulta basada en el rol del usuario
     if request.user.role in roleAuditar:
@@ -1644,7 +1645,7 @@ def chartSaleIndex(request):
                 agent_sale_supp__created_at__lt=end_of_month,
                 agent_sale_supp__is_active=True
             ), distinct=True), 0)
-        ).filter(is_active = True).exclude(username = 'mariluz').values('first_name', 'obamacare_count', 'obamacare_count_total', 'supp_count', 'supp_count_total')
+        ).filter(is_active = True).exclude(username__in=excludeUsername).values('first_name', 'obamacare_count', 'obamacare_count_total', 'supp_count', 'supp_count_total')
 
     elif request.user.role not in roleAuditar:
         # Para usuarios con rol 'A': consultar datos solo para el usuario actual
