@@ -3300,24 +3300,207 @@ def getIPClient(request):
     return ip
 
 @login_required(login_url='/login')
-def averageSales(request):
-    agents = User.objects.filter(is_active=True, role__in=['A', 'C'])
+def salesPerformance(request):
+    # Obtener la fecha actual
+    now = timezone.now()
 
-    # Obtener los datos de conteo por agente
-    plans_by_agent = ObamaCare.objects.values('agent__username').annotate(total_plans=Count('id')).order_by('-total_plans')
+    # Si se proporcionan fechas, filtrar por el rango de fechas
+    if request.method == 'POST':
+        startDatePost = request.POST['start_date']
+        endDatePost = request.POST['end_date']
+        startDate = timezone.make_aware(
+            datetime.strptime(startDatePost, '%Y-%m-%d').replace(hour=0, minute=0, second=0, microsecond=0)
+        )
+        endDate = timezone.make_aware(
+            datetime.strptime(endDatePost, '%Y-%m-%d').replace(hour=23, minute=59, second=59, microsecond=999999)
+        )
+    else:
+        startDate = timezone.make_aware(
+            datetime(now.year, now.month, 1, 0, 0, 0, 0)
+        )
+        endDate = timezone.make_aware(
+            datetime(now.year, now.month + 1, 1, 0, 0, 0, 0) - timezone.timedelta(microseconds=1)
+        )
 
-    # Convertir los datos en un formato JSON-compatible
-    data = [{"agent": item['agent__username'], "totalPlans": item['total_plans']} for item in plans_by_agent]
+
+    salesData = get_agent_sales(startDate, endDate)
+
+    # Preparar datos para la gráfica con nombres completos
+    agents = list(salesData.keys())
+    obamacareSales = [salesData[agent]['obamas'] for agent in agents]
+    suppSales = [salesData[agent]['supp'] for agent in agents]
+
+    users = User.objects.all()
+    for user in users:
+        print(f'{user.username} {get_weekly_counts(user)}')
+
+    context = {
+        'agents': agents,
+        'obamacareSales': obamacareSales,
+        'suppSales': suppSales,
+        'startDate':startDate,
+        'endDate':endDate,
+    }
 
     # Renderizar la respuesta
-    return render(request, 'table/averageSales.html', {
-        'agents': agents,
-        'weeks': weeks,
-        'counts_obamacare': counts_obamacare,
-        'counts_supp': counts_supp,
-        'counts_total': counts_total,
-        'nameChart' : nameChart
-    })
+    return render(request, 'table/averageSales.html', context)
+
+from datetime import datetime, timedelta
+from django.utils import timezone
+from dateutil.relativedelta import relativedelta
+
+def get_weekly_counts(user):
+    # Obtener la fecha actual
+    noww = timezone.now()
+
+    # Primer día del mes anterior
+    now = noww.replace(day=1) - relativedelta(months=1)
+    
+    # Obtener el primer día del mes actual
+    first_day_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    
+    # Obtener el último día del mes actual
+    if now.month == 12:
+        next_month = now.replace(year=now.year + 1, month=1, day=1)
+    else:
+        next_month = now.replace(month=now.month + 1, day=1)
+    last_day_of_month = next_month - timedelta(days=1)
+    
+    # Calcular las fechas de inicio de cada semana
+    week1_start = first_day_of_month
+    week2_start = week1_start + timedelta(days=7)
+    week3_start = week2_start + timedelta(days=7)
+    week4_start = week3_start + timedelta(days=7)
+    
+    # Inicializar el diccionario de resultados
+    result = {
+        "week1obama": 0,
+        "week2obama": 0,
+        "week3obama": 0,
+        "week4obama": 0,
+        "week1supp": 0,
+        "week2supp": 0,
+        "week3supp": 0,
+        "week4supp": 0,
+    }
+    
+    # Conteo de ObamaCare
+    obamacare_counts = ObamaCare.objects.filter(agent=user, created_at__range=(first_day_of_month, last_day_of_month))
+    for obamacare in obamacare_counts:
+        if week1_start <= obamacare.created_at < week2_start:
+            result["week1obama"] += 1
+        elif week2_start <= obamacare.created_at < week3_start:
+            result["week2obama"] += 1
+        elif week3_start <= obamacare.created_at < week4_start:
+            result["week3obama"] += 1
+        elif week4_start <= obamacare.created_at <= last_day_of_month:
+            result["week4obama"] += 1
+    
+    # Conteo de Supp
+    supp_counts = Supp.objects.filter(agent=user, created_at__range=(first_day_of_month, last_day_of_month))
+    for supp in supp_counts:
+        if week1_start <= supp.created_at < week2_start:
+            result["week1supp"] += 1
+        elif week2_start <= supp.created_at < week3_start:
+            result["week2supp"] += 1
+        elif week3_start <= supp.created_at < week4_start:
+            result["week3supp"] += 1
+        elif week4_start <= supp.created_at <= last_day_of_month:
+            result["week4supp"] += 1
+    
+    return result
+
+def get_agent_sales(start_date, end_date):
+    """
+    Obtiene el conteo de ObamaCare y Supp vendidos por cada agente en un rango de fechas.
+    
+    Parámetros:
+        start_date (date): Fecha de inicio del rango.
+        end_date (date): Fecha de fin del rango.
+    
+    Retorna:
+        dict: Un diccionario con el conteo de ventas por agente (nombre completo).
+    """
+
+    userExcludes = ['CarmenR', 'MariaCaTi']
+
+    # Obtener todos los agentes activos con roles 'A' y 'C'
+    allAgents = User.objects.filter(is_active=True, role__in=['A', 'C']).exclude(username__in=userExcludes).values('username', 'first_name', 'last_name')
+
+    # Crear un diccionario para mapear username a nombre completo
+    agentNameMap = {agent['username']: f"{agent['first_name']} {agent['last_name']}".strip() for agent in allAgents}
+
+    # Obtener todos los agentes que tienen ventas
+    obamaCareAgents = set(ObamaCare.objects.filter(
+        created_at__range=[start_date, end_date],
+        is_active=True
+    ).values_list('agent__username', flat=True))
+
+    suppAgents = set(Supp.objects.filter(
+        created_at__range=[start_date, end_date],
+        is_active=True
+    ).values_list('agent__username', flat=True))
+
+    # Unir todos los agentes que tienen ventas con los agentes filtrados inicialmente
+    allUsernames = set(agentNameMap.keys())
+    allUsernames.update(obamaCareAgents)
+    allUsernames.update(suppAgents)
+
+    # Obtener el conteo de ObamaCare dentro del rango de fechas
+    obamaCareCount = ObamaCare.objects.filter(
+        created_at__range=[start_date, end_date],
+        is_active=True
+    ).values('agent__username').annotate(obama_count=Count('id'))
+
+    # Obtener el conteo de Supp dentro del rango de fechas
+    suppCount = Supp.objects.filter(
+        created_at__range=[start_date, end_date],
+        is_active=True
+    ).values('agent__username').annotate(supp_count=Count('id'))
+
+    # Diccionario para almacenar los resultados con nombres completos
+    agentSales = {}
+
+    # Incluir a todos los agentes de allAgents, incluso si no tienen ventas
+    for agent in allAgents:
+        fullName = f"{agent['first_name']} {agent['last_name']}".strip()
+        agentSales[fullName] = {'obamas': 0, 'supp': 0}
+
+    # Agregar conteos de ObamaCare
+    for entry in obamaCareCount:
+        username = entry['agent__username']
+        if username not in agentNameMap:
+            # Si el agente no está en agentNameMap, obtener su nombre completo directamente
+            agent = User.objects.filter(username=username).values('first_name', 'last_name').first()
+            if agent:
+                fullName = f"{agent['first_name']} {agent['last_name']}".strip()
+            else:
+                fullName = username
+        else:
+            fullName = agentNameMap[username]
+        
+        if fullName not in agentSales:
+            agentSales[fullName] = {'obamas': 0, 'supp': 0}
+        agentSales[fullName]['obamas'] = entry['obama_count']
+
+    # Agregar conteos de Supp
+    for entry in suppCount:
+        username = entry['agent__username']
+        if username not in agentNameMap:
+            # Si el agente no está en agentNameMap, obtener su nombre completo directamente
+            agent = User.objects.filter(username=username).values('first_name', 'last_name').first()
+            if agent:
+                fullName = f"{agent['first_name']} {agent['last_name']}".strip()
+            else:
+                fullName = username
+        else:
+            fullName = agentNameMap[username]
+        
+        if fullName not in agentSales:
+            agentSales[fullName] = {'obamas': 0, 'supp': 0}
+        agentSales[fullName]['supp'] = entry['supp_count']
+
+    return agentSales
 
 # View para generar solo el token
 def generateTemporaryToken(obamacare):
