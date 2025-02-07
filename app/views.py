@@ -3701,7 +3701,29 @@ def averageCustomer(request):
 
 @login_required(login_url='/login')
 def customerTypification(request) :
-    agents = ObservationCustomer.objects.values('agent__username', 'agent__first_name', 'agent__last_name').distinct().filter(is_active = True)
+
+    # Obtener la fecha actual
+    now = timezone.now()
+
+    # Si se proporcionan fechas, filtrar por el rango de fechas
+    if request.method == 'POST':
+        startDatePost = request.POST['start_date']
+        endDatePost = request.POST['end_date']
+        startDate = timezone.make_aware(
+            datetime.strptime(startDatePost, '%Y-%m-%d').replace(hour=0, minute=0, second=0, microsecond=0)
+        )
+        endDate = timezone.make_aware(
+            datetime.strptime(endDatePost, '%Y-%m-%d').replace(hour=23, minute=59, second=59, microsecond=999999)
+        )
+    else:
+        startDate = timezone.make_aware(
+            datetime(now.year, now.month, 1, 0, 0, 0, 0)
+        )
+        endDate = timezone.make_aware(
+            datetime(now.year, now.month + 1, 1, 0, 0, 0, 0) - timezone.timedelta(microseconds=1)
+        )
+            
+    agents = ObservationCustomer.objects.values('agent__username', 'agent__first_name', 'agent__last_name').distinct().filter(created_at__range=[startDate, endDate],is_active = True)
     agent_data = []
 
     for agent in agents:
@@ -3728,9 +3750,15 @@ def customerTypification(request) :
             'typifications': type_count,
             'total': total
         })
+
+    context = {
+        'agent_data':agent_data,
+        'startDate':startDate,
+        'endDate':endDate
+    }   
     
     
-    return render(request, 'table/customerTypification.html', {'agent_data': agent_data})
+    return render(request, 'table/customerTypification.html', context)
 
 def redirect_with_token(request, view_name, *args, **kwargs):
     token = request.GET.get('token')
@@ -3738,7 +3766,7 @@ def redirect_with_token(request, view_name, *args, **kwargs):
     query_params = urlencode({'token': token})
     return redirect(f'{url}?{query_params}')
 
-def getSalesForNewSite():
+def table6Week():
 
     # Obtener la fecha actual
     today = datetime.today()
@@ -3858,7 +3886,7 @@ def getSalesForNewSite():
 
     return finalSummary, weekRanges
 
-def get_active_data_for_chart():
+def chart6Week():
 
     # Obtener la fecha actual
     today = datetime.today()
@@ -3932,10 +3960,10 @@ def get_active_data_for_chart():
 @login_required(login_url='/login')
 def sales6WeekReport(request):
     # Obtener el resumen de ventas para las últimas 6 semanas
-    finalSummary, weekRanges = getSalesForNewSite()
+    finalSummary, weekRanges = table6Week()
 
     # Obtener los datos para la gráfica
-    chart_data = get_active_data_for_chart()
+    chart_data = chart6Week()
 
     # Pasar los datos a la plantilla
     context = {
@@ -3951,7 +3979,7 @@ def sales6WeekReport(request):
 def chart6Week(request):
 
     # Obtener los datos para la gráfica
-    chart_data = get_active_data_for_chart()
+    chart_data = chart6Week()
 
     # Pasar los datos a la plantilla
     context = {

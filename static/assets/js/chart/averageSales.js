@@ -75,6 +75,12 @@ var options = {
     xaxis: {
         categories: agents,
     },
+    tooltip: {
+        theme: "dark",
+        enabled: true,
+        shared: true,
+        intersect: false
+    },
     legend: {
         position: 'right',
         offsetY: 40
