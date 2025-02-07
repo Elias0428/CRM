@@ -86,3 +86,26 @@ var options = {
 
 var chart = new ApexCharts(document.querySelector("#mainChart"), options);
 chart.render();
+
+// Estilos CSS para asegurar visibilidad en fondo oscuro
+const style = document.createElement('style');
+style.innerHTML = `
+    /* Cambiar color del ícono de los tres puntos */
+    .apexcharts-menu-icon {
+        color: white !important;
+    }
+    /* Fondo oscuro para el menú */
+    .apexcharts-menu {
+        background-color: #333 !important;
+        color: white !important;
+    }
+    /* Cambiar color de los ítems del menú */
+    .apexcharts-menu .apexcharts-menu-item {
+        color: white !important;
+    }
+    /* Resaltar ítems al pasar el mouse */
+    .apexcharts-menu .apexcharts-menu-item:hover {
+        background-color: #444 !important;
+    }
+`;
+document.head.appendChild(style);

@@ -3345,7 +3345,7 @@ def salesPerformance(request):
     }
 
     # Renderizar la respuesta
-    return render(request, 'table/averageSales.html', context)
+    return render(request, 'chart/averageSales.html', context)
 
 def get_weekly_counts(user):
     # Obtener la fecha actual

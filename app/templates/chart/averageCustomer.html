@@ -72,7 +72,7 @@
        const data = {{ data|safe }}; // Asegúrate de que sea JSON válido
 
            // Extraer nombres de agentes y valores
-           const agentes = data.map(item => item.agent__first_name || "Desconocido");
+           const agentes = data.map(item => item.agent__first_name + " " + item.agent__last_name || "Desconocido");
            const llamadas = data.map(item => item.total_llamadas || 0);
 
            // Configuración de ApexCharts
@@ -112,6 +112,29 @@
   
         var chart = new ApexCharts(document.querySelector("#average"), options);
         chart.render();
+
+        // Estilos CSS para asegurar visibilidad en fondo oscuro
+			const style = document.createElement('style');
+			style.innerHTML = `
+				/* Cambiar color del ícono de los tres puntos */
+				.apexcharts-menu-icon {
+					color: white !important;
+				}
+				/* Fondo oscuro para el menú */
+				.apexcharts-menu {
+					background-color: #333 !important;
+					color: white !important;
+				}
+				/* Cambiar color de los ítems del menú */
+				.apexcharts-menu .apexcharts-menu-item {
+					color: white !important;
+				}
+				/* Resaltar ítems al pasar el mouse */
+				.apexcharts-menu .apexcharts-menu-item:hover {
+					background-color: #444 !important;
+				}
+			`;
+			document.head.appendChild(style);
 
 	</script>
 {% endblock %}
