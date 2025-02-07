@@ -235,6 +235,18 @@ def fetchAca(request, client_id):
         )
         aca_plan = ObamaCare.objects.get(id=aca_plan_id)
         created = False
+
+        # Enviar alerta por WebSocket
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            'product_alerts',
+            {
+                'type': 'send_alert',
+                'message': f'New product Obamacare',
+            }
+        )
+
+
     else:
         # Si no hay ID, crea un nuevo registro
         aca_plan, created = ObamaCare.objects.update_or_create(

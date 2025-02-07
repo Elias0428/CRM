@@ -508,6 +508,8 @@
 		<script>
 			const socket = new WebSocket('ws://' + window.location.host + '/ws/alerts/');
 
+			console.log('buenas')
+
 			socket.onmessage = function(event) {
 				const data = JSON.parse(event.data);
 				Swal.fire({
