@@ -1,7 +1,7 @@
 {% extends "dashboard/index.html" %}
 {% load static %}
 {% block head %}
-    <title>Sale 6 Week</title>
+    <title>Sale 8 Week</title>
 	<!--plugins-->
 	<link href="{% static "assets/plugins/simplebar/css/simplebar.css" %}" rel="stylesheet" />
 	<link href="{% static "assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" %}" rel="stylesheet" />
@@ -26,14 +26,16 @@
 <h4>Sales report for the last 6 weeks</h4>
 <hr>
 <!-- Botón para abrir el modal -->
-<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#chartModal">	View Chart of Assets by Agent </button>
-<br><br>
-
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#chartModal">
+Ver Gráfica de Activos por Agente
+</button>
 <div class="card">
     <div class="card-body">
-        <div class="table" >	
-            <table id="table1" width="100%" cellspacing="0" class="table table-striped table-bordered">				
-                <thead>					
+        <div class="table" >
+
+            
+            <table id="table1" width="100%" cellspacing="0" class="table table-striped table-bordered">
+                <thead>
                     <tr>
                         <th style="text-align: center; vertical-align: middle;">Agent</th>
                         {% for week in weekRanges %}
@@ -62,6 +64,7 @@
                     {% endfor %}
                 </tbody>
             </table>
+
         </div>
     </div>
 </div>
@@ -71,14 +74,14 @@
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="chartModalLabel">Chart of Active Policies by Agent</h5>
+                <h5 class="modal-title" id="chartModalLabel">Gráfica de Pólizas Activas por Agente</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div id="activeChart"></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
@@ -96,7 +99,6 @@
 	<script src="{% static "assets/plugins/datatable/js/jquery.dataTables.min.js" %}"></script>
 	<script src="{% static "assets/plugins/datatable/js/dataTables.bootstrap5.min.js" %}"></script>
 	<script src="{% static "assets/js/modalTypification.js" %}"></script>
-	<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
 	<script>	
 		$(document).ready(function() {
@@ -116,27 +118,8 @@
                 series: {{ chart_data.series|safe }}   // Datos por agente
             };
 
-			// Función para generar colores HSL
-			function generarColoresPorAgente(numeroDeAgentes) {
-				const colores = [];
-				const paso = 360 / numeroDeAgentes;
-				
-				for (let i = 0; i < numeroDeAgentes; i++) {
-					// Color para Active Obama (más saturado)
-					colores.push(`hsl(${i * paso}, 75%, 45%)`);
-					// Color para Active Supp (menos saturado, mismo tono)
-					colores.push(`hsl(${i * paso}, 55%, 55%)`);
-				}
-				
-				return colores;
-			}
-
             // Preparar las series para ApexCharts
             const series = [];
-
-			const numAgentes = Object.keys(chartData.series).length;
-			const colores = generarColoresPorAgente(numAgentes);
-
             for (const [agentName, data] of Object.entries(chartData.series)) {
                 series.push({
                     name: `${agentName} - Active Obama`,
@@ -160,12 +143,12 @@
                 xaxis: {
                     categories: chartData.labels,
                     title: {
-                        text: 'Week'
+                        text: 'Semanas'
                     }
                 },
                 yaxis: {
                     title: {
-                        text: 'Number of active policies'
+                        text: 'Cantidad de Pólizas Activas'
                     },
                     min: 0,
                     tickAmount: 5
@@ -174,12 +157,11 @@
                     curve: 'smooth',
                     width: 2
                 },
-                colors: colores,  // Colores para las series
+                colors: ['#00E396', '#FF4560', '#775DD0', '#FEB019', '#FF4560', '#00E396'],  // Colores para las series
                 markers: {
                     size: 5
                 },
                 tooltip: {
-					theme: "dark",
                     enabled: true,
                     shared: true,
                     intersect: false
@@ -191,30 +173,6 @@
 
             const chart = new ApexCharts(document.querySelector("#activeChart"), options);
             chart.render();
-
-			// Estilos CSS para asegurar visibilidad en fondo oscuro
-			const style = document.createElement('style');
-			style.innerHTML = `
-				/* Cambiar color del ícono de los tres puntos */
-				.apexcharts-menu-icon {
-					color: white !important;
-				}
-				/* Fondo oscuro para el menú */
-				.apexcharts-menu {
-					background-color: #333 !important;
-					color: white !important;
-				}
-				/* Cambiar color de los ítems del menú */
-				.apexcharts-menu .apexcharts-menu-item {
-					color: white !important;
-				}
-				/* Resaltar ítems al pasar el mouse */
-				.apexcharts-menu .apexcharts-menu-item:hover {
-					background-color: #444 !important;
-				}
-			`;
-			document.head.appendChild(style);
-			
         }
 
         // Renderizar la gráfica cuando el modal se muestre

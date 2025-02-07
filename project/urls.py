@@ -100,6 +100,7 @@ urlpatterns = [
     path('detalle-agente/<agent_id>/', views.SaleModal, name='detalle_agente'),  
 
     path('sale6Week/', views.sales6WeekReport, name='sale6Week'),  
+    path('chart6Week/', views.chart6Week, name='chart6Week'), 
 
     ##path('exportUsers/', views.exportUsers, name='exportUsers'),
     ##path('testImportDb/', views.testExportDB, name='testExportDB'),

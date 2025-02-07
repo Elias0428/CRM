@@ -47,6 +47,8 @@ from app.models import *
 
 from datetime import datetime, timedelta
 
+from dateutil.relativedelta import relativedelta
+
 
 # Create your views here.
 def login_(request):
@@ -3345,10 +3347,6 @@ def salesPerformance(request):
     # Renderizar la respuesta
     return render(request, 'table/averageSales.html', context)
 
-from datetime import datetime, timedelta
-from django.utils import timezone
-from dateutil.relativedelta import relativedelta
-
 def get_weekly_counts(user):
     # Obtener la fecha actual
     noww = timezone.now()
@@ -3666,24 +3664,38 @@ def downloadBdExcelByCategory(filterBd, content_label):
 
 @login_required(login_url='/login')
 def averageCustomer(request):
+
     data = list(ObservationCustomer.objects.filter(
         typification__icontains="EFFECTIVE MANAGEMENT"
     ).values('agent__first_name', 'agent__last_name').annotate(total_llamadas=Count('id')).order_by('-total_llamadas'))
 
-    # Si se proporcionan fechas, filtrar por el rango de fechas
-    if request.method == 'POST':
-        start_date = timezone.make_aware(
-            datetime.strptime(start_date, '%Y-%m-%d').replace(hour=0, minute=0, second=0, microsecond=0)
-        )
-        end_date = timezone.make_aware(
-            datetime.strptime(end_date, '%Y-%m-%d').replace(hour=23, minute=59, second=59, microsecond=999999)
-        )
-
-        data = data.filter(created_at__range=[start_date, end_date])
-
     context = {
         'data': json.dumps(data)  # Convertir los datos a JSON válido
     }
+
+    # Si se proporcionan fechas, filtrar por el rango de fechas
+    if request.method == 'POST':
+
+        # Obtener parámetros de fecha del request
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+
+        start_date_new = timezone.make_aware(
+            datetime.strptime(start_date, '%Y-%m-%d').replace(hour=0, minute=0, second=0, microsecond=0)
+        )
+        end_date_new = timezone.make_aware(
+            datetime.strptime(end_date, '%Y-%m-%d').replace(hour=23, minute=59, second=59, microsecond=999999)
+        )
+
+        data = list(ObservationCustomer.objects.filter(created_at__range=[start_date_new, end_date_new],
+            typification__icontains="EFFECTIVE MANAGEMENT" ).values('agent__first_name', 'agent__last_name')
+            .annotate(total_llamadas=Count('id')).order_by('-total_llamadas'))
+
+        context = {
+            'data': json.dumps(data),  # Convertir los datos a JSON válido
+            'start_date': start_date,
+            'end_date': end_date
+        }    
 
     return render(request, 'chart/averageCustomer.html', context)
 
@@ -3917,6 +3929,7 @@ def get_active_data_for_chart():
 
     return chart_data
 
+@login_required(login_url='/login')
 def sales6WeekReport(request):
     # Obtener el resumen de ventas para las últimas 6 semanas
     finalSummary, weekRanges = getSalesForNewSite()
@@ -3933,4 +3946,20 @@ def sales6WeekReport(request):
 
     # Renderizar la plantilla con los datos
     return render(request, 'table/sale6Week.html', context)
+
+@login_required(login_url='/login')
+def chart6Week(request):
+
+    # Obtener los datos para la gráfica
+    chart_data = get_active_data_for_chart()
+
+    # Pasar los datos a la plantilla
+    context = {
+        'chart_data': chart_data   # Datos para la gráfica
+    }
+
+    # Renderizar la plantilla con los datos
+    return render(request, 'chart/chart6Week.html', context)
+
+
 
