@@ -506,9 +506,9 @@
 	{% if request.user.role != 'A' or request.user.role != 'AU'  %}
 	
 		<script>
-			const socket = new WebSocket('wss://' + window.location.host + '/ws/alerts/');
 
-			console.log('buenas porfa')
+			const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+			const socket = new WebSocket(protocol + window.location.host + '/ws/alerts/');
 
 			socket.onmessage = function(event) {
 				const data = JSON.parse(event.data);
