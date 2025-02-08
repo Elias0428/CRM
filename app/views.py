@@ -3887,7 +3887,7 @@ def table6Week():
 
     return finalSummary, weekRanges
 
-def chart6Week():
+def chart6WeekSale():
 
     # Obtener la fecha actual
     today = datetime.today()
@@ -3964,7 +3964,7 @@ def sales6WeekReport(request):
     finalSummary, weekRanges = table6Week()
 
     # Obtener los datos para la gráfica
-    chart_data = chart6Week()
+    chart_data = chart6WeekSale()
 
     # Pasar los datos a la plantilla
     context = {
@@ -3980,7 +3980,7 @@ def sales6WeekReport(request):
 def chart6Week(request):
 
     # Obtener los datos para la gráfica
-    chart_data = chart6Week()
+    chart_data = chart6WeekSale()
 
     # Pasar los datos a la plantilla
     context = {
