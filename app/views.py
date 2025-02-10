@@ -580,7 +580,7 @@ def addDepend(request):
 @login_required(login_url='/login')
 def clientObamacare(request):
     
-    roleAuditar = ['S', 'C',  'AU']
+    roleAuditar = ['S', 'C', 'SUPP', 'AU']
 
     borja = 'BORJA G CANTON HERRERA - NPN 20673324'
     daniel = 'DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958'
@@ -610,7 +610,7 @@ def clientObamacare(request):
 @login_required(login_url='/login')
 def clientSupp(request):
 
-    roleAuditar = ['S', 'SUPP',  'AU']
+    roleAuditar = ['S', 'C','SUPP', 'AU']
     
     if request.user.role in roleAuditar:
         supp = Supp.objects.select_related('agent','client').filter(is_active = True).exclude(status_color = 1).annotate(
