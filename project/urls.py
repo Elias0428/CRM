@@ -102,6 +102,16 @@ urlpatterns = [
     path('sale6Week/', views.sales6WeekReport, name='sale6Week'),  
     path('chart6Week/', views.chart6Week, name='chart6Week'), 
 
+    path('weekSalesWiew/',views.weekSalesWiew, name='weekSalesWiew'),
+    path('descargar-pdf/<int:week_number>/', views.downloadPdf, name='download_pdf'),
+
+    path('formCreateClientMedicare/', views.formCreateClientMedicare, name='formCreateClientMedicare'),
+    path('consetMedicare/<client_id>/<language>/', views.consetMedicare, name='consetMedicare'),
+    path('clientMedicare/', views.clientMedicare, name='clientMedicare'),
+    path('editClientMedicare/<medicare_id>/', views.editClientMedicare, name='editClientMedicare'),
+    path('save-customer-observation-medicare/', views.saveCustomerObservationMedicare, name='saveCustomerObservationMedicare'),
+    path('desactiveMedicare/<medicare_id>/', views.desactiveMedicare, name='desactiveMedicare'),
+
     ##path('exportUsers/', views.exportUsers, name='exportUsers'),
     ##path('testImportDb/', views.testExportDB, name='testExportDB'),
 ]

@@ -53,6 +53,34 @@ class Client(models.Model):
     class Meta:
         db_table = 'clients'
 
+class Medicare(models.Model):
+    agent = models.ForeignKey(User, on_delete=models.CASCADE)
+    agent_usa = models.CharField(max_length=100)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    phone_number = models.BigIntegerField()
+    email = models.EmailField()
+    created_at = models.DateTimeField(auto_now_add=True)    
+    address = models.CharField(max_length=255)
+    zipcode = models.IntegerField()
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=50)
+    county = models.CharField(max_length=100)
+    sex = models.CharField(max_length=1)
+    old = models.IntegerField()    
+    date_birth = models.DateField()
+    dateMedicare = models.DateTimeField()
+    migration_status = models.CharField(max_length=100)
+    social_security = models.CharField(max_length=9,null=True) 
+    nameAutorized = models.CharField(max_length=100, null= True)
+    relationship = models.CharField(max_length=100, null= True) 
+    status = models.CharField(max_length=100, null=True) 
+    status_color = models.IntegerField(null = True)    
+    is_active = models.BooleanField(default=True)  
+
+    class Meta:
+        db_table = 'medicare'
+
 class ContactClient(models.Model):
 
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
@@ -64,6 +92,19 @@ class ContactClient(models.Model):
 
     class Meta:
         db_table = 'ContactClient'
+
+class OptionMedicare(models.Model):
+
+    client = models.ForeignKey(Medicare, on_delete=models.CASCADE)
+    agent = models.ForeignKey(User, on_delete=models.CASCADE)
+    prescripcion  = models.BooleanField(default=True) 
+    advantage = models.BooleanField(default=True) 
+    dental = models.BooleanField(default=True) 
+    complementarios  = models.BooleanField(default=True)  
+    suplementarios = models.BooleanField(default=True)     
+
+    class Meta:
+        db_table = 'OptionMedicare'
 
 class Call(models.Model):
     id_client = models.ForeignKey(Client, on_delete=models.CASCADE)
@@ -176,6 +217,17 @@ class ObservationCustomer(models.Model):
 
     class Meta:
         db_table = 'observations_customers'
+
+class ObservationCustomerMedicare(models.Model):
+    medicare = models.ForeignKey(Medicare, on_delete=models.CASCADE)
+    agent = models.ForeignKey(User, on_delete=models.CASCADE)  
+    typeCall = models.CharField(max_length=20, null=True)   
+    created_at = models.DateTimeField(auto_now_add=True) 
+    typification = models.TextField(null=True)
+    content = models.TextField()
+
+    class Meta:
+        db_table = 'observations_customers_medicare'
 
 class CustomerTracking(models.Model):
     id_obama = models.ForeignKey(ObamaCare, on_delete=models.CASCADE, null=True)
@@ -301,7 +353,8 @@ class Consents(models.Model):
         upload_to='DocumentsClient',
         storage=S3Boto3Storage(),
         null=True)
-    obamacare = models.ForeignKey(ObamaCare, on_delete=models.CASCADE)
+    obamacare = models.ForeignKey(ObamaCare, on_delete=models.CASCADE, null = True)
+    medicare = models.ForeignKey(Medicare, on_delete=models.CASCADE, null = True)
     signature = models.FileField(
         upload_to='SignatureConsents',
         storage=S3Boto3Storage(),
@@ -327,7 +380,8 @@ class IncomeLetter(models.Model):
 
 
 class TemporaryToken(models.Model):
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, null = True)
+    medicare = models.ForeignKey(Medicare, on_delete=models.CASCADE, null = True)
     token = models.TextField()  # Guardar el token firmado
     expiration = models.DateTimeField()
     is_active = models.BooleanField(default=True)  # Para invalidar manualmente

@@ -8,6 +8,12 @@ class ClientForm(forms.ModelForm):
         fields = '__all__'
         exclude = ['agent','date_birth','social_security','old']
 
+class ClientMedicareForm(forms.ModelForm):
+    class Meta:
+        model = Medicare
+        fields = '__all__'
+        exclude = ['agent','date_birth','social_security','old','dateMedicare','status','status_color']
+
 
 class ObamaForm(forms.ModelForm):
     class Meta:

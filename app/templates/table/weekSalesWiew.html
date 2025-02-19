@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filtro de Semana</title>
+    <!-- Bootstrap CSS (opcional, para estilos) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Seleccionar Semana</h1>
+
+        <!-- Formulario para seleccionar la semana -->
+        <form method="post" action="{% url 'weekSalesWiew' %}">
+            {% csrf_token %}  <!-- Token CSRF para seguridad en Django -->
+
+            <div class="mb-3">
+                <label for="week_number" class="form-label">Número de la Semana:</label>
+                <input type="number" id="week_number" name="week_number" class="form-control" min="1" max="53" required>
+                <small class="form-text text-muted">Ingresa un número entre 1 y 53.</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+        </form>
+
+        <!-- Mostrar los resultados aquí -->
+        {% if resumen_semana %}
+            <h2 class="mt-5">Resultados para la Semana {{ week_number }}</h2>
+            <p>Rango de fechas: {{ rango_fechas }}</p>
+
+            <!-- Tabla resumen de ventas -->
+            <table class="table table-bordered mt-3">
+                <thead>
+                    <tr>
+                        <th>Nombre del Agente</th>
+                        <th>Obama</th>
+                        <th>Active Obama</th>
+                        <th>Total Obama</th>
+                        <th>Supp</th>
+                        <th>Active Supp</th>
+                        <th>Total Supp</th>
+                        <th>Total General</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for nombre, datos in resumen_semana.items %}
+                        <tr>
+                            <td>{{ nombre }}</td>
+                            <td>{{ datos.obama }}</td>
+                            <td>{{ datos.activeObama }}</td>
+                            <td>{{ datos.totalObama }}</td>
+                            <td>{{ datos.supp }}</td>
+                            <td>{{ datos.activeSupp }}</td>
+                            <td>{{ datos.totalSupp }}</td>
+                            <td>{{ datos.total }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Detalles de los clientes -->
+            <h3 class="mt-5">Detalles de los Clientes</h3>
+            {% for nombre, datos in resumen_semana.items %}
+                <h4 class="mt-4">{{ nombre }}</h4>
+
+                <!-- Clientes de ObamaCare -->
+                {% if datos.clientes_obama %}
+                    <h5>Clientes de ObamaCare</h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Nombre del Cliente</th>
+                                <th>Fecha de la Póliza</th>
+                                <th>Estatus</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cliente in datos.clientes_obama %}
+                                <tr>
+                                    <td>{{ cliente.nombre }}</td>
+                                    <td>{{ cliente.fecha_poliza }}</td>
+                                    <td>{{ cliente.estatus }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>No hay clientes de ObamaCare para este agente.</p>
+                {% endif %}
+
+                <!-- Clientes de Supp -->
+                {% if datos.clientes_supp %}
+                    <h5>Clientes de Supp</h5>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Nombre del Cliente</th>
+                                <th>Fecha de la Póliza</th>
+                                <th>Estatus</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cliente in datos.clientes_supp %}
+                                <tr>
+                                    <td>{{ cliente.nombre }}</td>
+                                    <td>{{ cliente.fecha_poliza }}</td>
+                                    <td>{{ cliente.estatus }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>No hay clientes de Supp para este agente.</p>
+                {% endif %}
+            {% endfor %}
+
+            <!-- Botón para descargar el PDF -->
+            <a href="{% url 'download_pdf' week_number %}" class="btn btn-success mt-3">
+                Descargar Reporte en PDF
+            </a>
+        {% endif %}
+    </div>
+
+    <!-- Bootstrap JS (opcional, para funcionalidades de Bootstrap) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

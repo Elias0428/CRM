@@ -46,8 +46,9 @@ from app.forms import *
 from app.models import *
 
 from datetime import datetime, timedelta
-
 from dateutil.relativedelta import relativedelta
+from weasyprint import HTML
+from weasyprint.text.fonts import FontConfiguration
 
 
 # Create your views here.
@@ -148,7 +149,94 @@ def formCreateClient(request):
             return render(request, 'forms/formCreateClient.html', {'error_message': form.errors})
     else:
         return render(request, 'forms/formCreateClient.html')
+
+@login_required(login_url='/login') 
+def formCreateClientMedicare(request):
+    if request.method == 'POST':
+
+        date_births = request.POST.get('date_birth')
+        language = request.POST.get('language')
+        fecha_obj = datetime.strptime(date_births, '%m/%d/%Y').date()
+        fecha_formateada = fecha_obj.strftime('%Y-%m-%d')
+
+        date_medicare = request.POST.get('dateMedicare')
+        fecha_medicare = datetime.strptime(date_medicare, '%m/%d/%Y %H:%M')
+        fecha_formateada_medicare = fecha_medicare.strftime('%Y-%m-%d %H:%M')
+
+        # Obtener la fecha actual
+        hoy = datetime.today().date()
+        # Calcular la edad
+        edad = hoy.year - fecha_obj.year - ((hoy.month, hoy.day) < (fecha_obj.month, fecha_obj.day))
+
+        social = request.POST.get('social_security')
+
+        if social: formatSocial = social.replace('-','')
+        else: formatSocial = None
+
+        form = ClientMedicareForm(request.POST)
+        if form.is_valid():
+            client = form.save(commit=False)
+            client.agent = request.user
+            client.is_active = 1
+            client.old = edad
+            client.date_birth = fecha_formateada
+            client.dateMedicare = fecha_formateada_medicare
+            client.social_security = formatSocial
+            client.save()
+
+            contact = OptionMedicare.objects.create(client=client,agent=request.user)
             
+            # Redirección a la nueva página en otra pestaña
+            new_page_url = reverse('consetMedicare', args=[client.id, language])
+            
+            # Redirección de la página actual al index
+            return render(request, 'redirect_template.html', {'new_page_url': new_page_url})
+        
+            
+        else:
+            return render(request, 'forms/formCreateClientMedicare.html', {'error_message': form.errors})
+    else:
+        return render(request, 'forms/formCreateClientMedicare.html')
+
+def consetMedicare(request, client_id, language):
+
+    medicare = Medicare.objects.get(id=client_id)
+    contact = OptionMedicare.objects.filter(client = medicare.id).first()
+    temporalyURL = None
+
+    typeToken = False
+
+    activate(language)
+    # Validar si el usuario no está logueado y verificar el token
+    if isinstance(request.user, AnonymousUser):
+        result = validateTemporaryToken(request, typeToken)
+        is_valid_token, *note = result
+        if not is_valid_token:
+            return HttpResponse(note)
+    elif request.user.is_authenticated:
+        temporalyURL = f"{request.build_absolute_uri('/consetMedicare/')}{client_id}/{language}/?token={generateTemporaryToken(medicare, typeToken)}"
+        print('Usuario autenticado')
+    else:
+        # Si el usuario no está logueado y no hay token válido
+        return HttpResponse('Acceso denegado. Por favor, inicie sesión o use un enlace válido.')
+    
+    if request.method == 'POST':
+        
+        # Usamos la nueva función para guardar los checkboxes en ContactClient
+        objectContact = save_contact_medicare_checkboxes(request.POST, contact)
+
+        return generateMedicarePdf(request, medicare ,language)
+
+
+    context = {
+        'medicare':medicare,
+        'contact':contact,
+        'company':getCompanyPerAgent(medicare.agent_usa),
+        'temporalyURL': temporalyURL
+    }
+
+    return render(request, 'consent/consetMedicare.html',context)
+
 @login_required(login_url='/login') 
 def formEditClient(request, client_id):
     
@@ -334,7 +422,7 @@ def fetchSupp(request, client_id):
                     'product_alerts',
                     {
                         'type': 'send_alert',
-                        'message': f'New product Supplemental',
+                        'message': f'New product Supplemental added',
                     }
                 )
 
@@ -580,7 +668,6 @@ def addDepend(request):
 @login_required(login_url='/login')
 def clientObamacare(request):
     
-    roleAuditar = ['S', 'C', 'SUPP', 'AU']
 
     borja = 'BORJA G CANTON HERRERA - NPN 20673324'
     daniel = 'DANIEL SANTIAGO LAPEIRA ACEVEDO - NPN 19904958'
@@ -589,22 +676,19 @@ def clientObamacare(request):
     evelyn = 'EVELYN BEATRIZ HERRERA - NPN 20671818'
     danieska = 'DANIESKA LOPEZ SEQUEIRA - NPN 20134539'
     rodrigo = 'RODRIGO G CANTON - NPN 20670005'
+    zohira = 'ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295'
     
-    if request.user.role in roleAuditar:
-       
+    if request.user.role == 'Admin':       
         obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
-            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True).order_by('-created_at')
-
-    elif request.user.role == 'Admin':
-
-        obamaCare = ObamaCare.objects.select_related('agent', 'client').annotate(
             truncated_agent_usa=Substr('agent_usa', 1, 8)).order_by('-created_at')
-        
-    elif request.user.role in ['A', 'SUPP']:
-        obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
-            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(agent = request.user.id, is_active = True ).order_by('-created_at')
+    elif request.user.username == 'zohiraDuarte':
+       obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
+            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active  = True, agent_usa = '').order_by('-created_at') 
+    else:
+        obamaCare = ObamaCare.objects.select_related('agent', 'client').annotate(
+            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True).order_by('-created_at')      
 
-    
+
     return render(request, 'table/clientObamacare.html', {'obamacares':obamaCare})
 
 @login_required(login_url='/login')
@@ -2727,7 +2811,7 @@ def upload_excel(request):
                 excel_metadata = ExcelFileMetadata.objects.create(
                     file_name=file_name,
                     description=description,
-                    uploaded_at=datetime.datetime.now()
+                    uploaded_at=datetime.now()
                 )
 
                 # Guardar el DataFrame en la sesión para usarlo después
@@ -3026,18 +3110,19 @@ def consent(request, obamacare_id):
     obamacare = ObamaCare.objects.select_related('client').get(id=obamacare_id)
     temporalyURL = None
 
+    typeToken = True
+
     if request.method == 'GET':
         language = request.GET.get('lenguaje', 'es')  # Idioma predeterminado si no se pasa
-        print(language)
         activate(language)
     # Validar si el usuario no está logueado y verificar el token
     if isinstance(request.user, AnonymousUser):
-        result = validateTemporaryToken(request)
+        result = validateTemporaryToken(request, typeToken)
         is_valid_token, *note = result
         if not is_valid_token:
             return HttpResponse(note)
     elif request.user.is_authenticated:
-        temporalyURL = f"{request.build_absolute_uri('/viewConsent/')}{obamacare_id}?token={generateTemporaryToken(obamacare)}&lenguaje={language}"
+        temporalyURL = f"{request.build_absolute_uri('/viewConsent/')}{obamacare_id}?token={generateTemporaryToken(obamacare.client , typeToken)}&lenguaje={language}"
         print('Usuario autenticado')
     else:
         # Si el usuario no está logueado y no hay token válido
@@ -3180,6 +3265,66 @@ def generateConsentPdf(request, obamacare, dependents, supps, language):
 
     return redirect(url)
 
+def generateMedicarePdf(request, medicare ,language):
+    token = request.GET.get('token')
+
+    current_date = datetime.now().strftime("%A, %B %d, %Y %I:%M")
+
+    contact = OptionMedicare.objects.filter(client = medicare.id).first()
+
+    # Obtener los campos con valor True
+    true_fields = []
+
+    if contact.prescripcion: true_fields.append('Planes de Prescripción de Medicare Parte D')
+    if contact.advantage: true_fields.append('Planes de Medicare Advantage (Parte C) y Planes de Costo')
+    if contact.dental: true_fields.append('Productos Dental-Visión-Oescucha')
+    if contact.complementarios: true_fields.append('Productos de Complementarios de Hospitalización')
+    if contact.suplementarios: true_fields.append('Planes Suplementarios de Medicare (Medigap)')
+
+    # Variable con los nombres de los campos
+    var = ", ".join(true_fields)    
+
+    consent = Consents.objects.create(
+        medicare=medicare,
+    )
+
+    signature_data = request.POST.get('signature')
+    format, imgstr = signature_data.split(';base64,')
+    ext = format.split('/')[-1]
+    image = ContentFile(base64.b64decode(imgstr), name=f'firma.{ext}')
+
+    consent.signature = image
+    consent.save()
+
+    context = {
+        'medicare':medicare,
+        'consent':consent,
+        'company':getCompanyPerAgent(medicare.agent_usa),
+        'ip':getIPClient(request),
+        'current_date':current_date,
+        'var':var
+    }
+
+    activate(language)
+    # Renderiza la plantilla HTML a un string
+    html_content = render_to_string('consent/templatePdfConsentMedicare.html', context)
+
+    # Genera el PDF
+    pdf_file = HTML(string=html_content).write_pdf()
+
+    # Usa BytesIO para convertir el PDF en un archivo
+    pdf_io = io.BytesIO(pdf_file)
+    pdf_io.seek(0)  # Asegúrate de que el cursor esté al principio del archivo
+
+    # Guarda el PDF en el modelo usando un ContentFile
+    pdf_name = f'Consent-medicare{medicare.first_name}_{medicare.last_name}#{medicare.phone_number} {datetime.now().strftime("%m-%d-%Y-%H:%M")}.pdf'  # Nombre del archivo
+
+    consent.pdf.save(pdf_name, ContentFile(pdf_io.read()), save=True)
+
+
+
+    return render(request, 'consent/endView.html')
+
 def generateIncomeLetterPDF(request, obamacare, language):
     current_date = datetime.now().strftime("%A, %B %d, %Y %I:%M")
 
@@ -3269,6 +3414,30 @@ def save_contact_client_checkboxes(post_data, contact_instance):
         ContactClient: Instancia de ContactClient actualizada.
     """
     checkbox_fields = ['phone', 'email', 'sms', 'whatsapp']
+    
+    # Asegúrate de que solo los campos seleccionados se marquen como True
+    for field in checkbox_fields:
+        # Si el checkbox está marcado (enviará 'on'), lo asignamos como True
+        if post_data.get(field) == 'on':
+            setattr(contact_instance, field, True)
+        else:
+            setattr(contact_instance, field, False)
+    
+    contact_instance.save()  # Guardar la instancia actualizada
+    return contact_instance
+
+def save_contact_medicare_checkboxes(post_data, contact_instance):
+    """
+    Guarda o actualiza los campos de tipo checkbox en ContactClient (phone, email, sms, whatsapp).
+    
+    Args:
+        post_data (QueryDict): Datos enviados en el request.POST.
+        contact_instance (ContactClient): Instancia de ContactClient a actualizar.
+
+    Returns:
+        ContactClient: Instancia de ContactClient actualizada.
+    """
+    checkbox_fields = ['prescripcion', 'advantage', 'dental', 'complementarios','suplementarios']
     
     # Asegúrate de que solo los campos seleccionados se marquen como True
     for field in checkbox_fields:
@@ -3502,31 +3671,38 @@ def get_agent_sales(start_date, end_date):
     return agentSales
 
 # View para generar solo el token
-def generateTemporaryToken(obamacare):
+def generateTemporaryToken(client, typeToken):
     signer = Signer()
 
     expiration_time = timezone.now() + timedelta(minutes=90)
 
     # Crear el token con la fecha de expiración usando JSON
     data = {
-        'client_id': obamacare.client.id,
+        'client_id': client.id,
         'expiration': expiration_time.isoformat(),
     }
     signed_data = signer.sign(json.dumps(data))  # Firmar los datos serializados
     token = urlsafe_base64_encode(force_bytes(signed_data))  # Codificar seguro para URL
 
     # Guardar solo el token en la base de datos
-    TemporaryToken.objects.create(
-        client=obamacare.client,
-        token=token,
-        expiration=expiration_time
-    )
+    if typeToken:
+        TemporaryToken.objects.create(
+            client=client,
+            token=token,
+            expiration=expiration_time
+        )
+    else:
+        TemporaryToken.objects.create(
+            medicare = client,
+            token=token,
+            expiration=expiration_time
+        )
 
     # Retornar solo el token (no se genera ni guarda la URL temporal)
     return token
 
 # Vista para verificar y procesar la URL temporal
-def validateTemporaryToken(request):
+def validateTemporaryToken(request, typeToken):
     token = request.POST.get('token') or request.GET.get('token')
 
     if not token:
@@ -3538,10 +3714,16 @@ def validateTemporaryToken(request):
         signed_data = force_str(urlsafe_base64_decode(token))
         data = json.loads(signer.unsign(signed_data))
 
-        client_id = data.get('client_id')
-        expiration_time = timezone.datetime.fromisoformat(data['expiration'])
-        # Verificar si el token está activo y no ha expirado
-        tempToken = TemporaryToken.objects.get(token=token, client_id=client_id)
+        if typeToken:
+            client_id = data.get('client_id')
+            expiration_time = timezone.datetime.fromisoformat(data['expiration'])
+            # Verificar si el token está activo y no ha expirado
+            tempToken = TemporaryToken.objects.get(token=token, client_id=client_id)
+        else:
+            medicare_id = data.get('client_id')
+            expiration_time = timezone.datetime.fromisoformat(data['expiration'])
+            # Verificar si el token está activo y no ha expirado
+            tempToken = TemporaryToken.objects.get(token=token, medicare_id=medicare_id)
 
         if not tempToken.is_active:
             return False, 'Enlace desactivado. Link deactivated.'
@@ -3549,8 +3731,6 @@ def validateTemporaryToken(request):
         if tempToken.is_expired():
             return False, 'Enlace ha expirado. Link expired.'
 
-        # Procesar si la URL es válida
-        client = tempToken.client
         
         return True, 'Success'
     
@@ -3990,5 +4170,294 @@ def chart6Week(request):
     # Renderizar la plantilla con los datos
     return render(request, 'chart/chart6Week.html', context)
 
+def weekSalesSummary(week_number):
+    # Obtener el año actual
+    current_year = datetime.today().year
+
+    # Calcular el lunes de la semana seleccionada
+    startOfWeek = datetime.fromisocalendar(current_year, week_number, 1)  # 1 = Lunes
+    # Calcular el sábado de la semana seleccionada
+    endOfWeek = startOfWeek + timedelta(days=5)  # Lunes + 5 días = Sábado
+
+    # Convertir las fechas a "offset-aware" (si es necesario)
+    startOfWeek = make_aware(startOfWeek)
+    endOfWeek = make_aware(endOfWeek)
+
+    # Inicializar diccionario de ventas para la semana seleccionada
+    excludedUsernames = ['Calidad01', 'mariluz', 'MariaCaTi', 'StephanieMkt', 'CarmenR','admin']  # Excluimos a gente que no debe aparecer en la vista
+    userRoles = ['A', 'C', 'S']
+
+    users = User.objects.filter(role__in=userRoles, is_active=True).exclude(username__in=excludedUsernames)
+
+    salesSummary = {
+        user.username: {
+            "obama": 0,
+            "activeObama": 0,
+            "totalObama": 0,  # Total Obama = obama + activeObama
+            "supp": 0,
+            "activeSupp": 0,
+            "totalSupp": 0,   # Total Supp = supp + activeSupp
+            "total": 0,       # Total General = totalObama + totalSupp
+            "clientes_obama": [],  # Lista de clientes de ObamaCare
+            "clientes_supp": []    # Lista de clientes de Supp
+        } for user in users
+    }
+
+    # Filtrar todas las ventas realizadas en la semana seleccionada
+    obamaSales = ObamaCare.objects.filter(created_at__range=[startOfWeek, endOfWeek])
+    suppSales = Supp.objects.filter(created_at__range=[startOfWeek, endOfWeek])
+
+    # Procesar las ventas de Obamacare para la semana seleccionada
+    for sale in obamaSales:
+        agentName = sale.agent.username
+        if sale.agent.is_active and agentName not in excludedUsernames:
+            salesSummary[agentName]["obama"] += 1
+            salesSummary[agentName]["totalObama"] += 1
+            salesSummary[agentName]["total"] += 1
+
+            # Agregar detalles del cliente
+            cliente_info = {
+                "nombre": f"{sale.client.first_name} {sale.client.last_name}",
+                "fecha_poliza": sale.created_at.strftime('%d/%m/%Y'),
+                "estatus": sale.status
+            }
+            salesSummary[agentName]["clientes_obama"].append(cliente_info)
+
+    # Procesar las ventas de Supp para la semana seleccionada
+    for sale in suppSales:
+        agentName = sale.agent.username
+        if sale.agent.is_active and agentName not in excludedUsernames:
+            salesSummary[agentName]["supp"] += 1
+            salesSummary[agentName]["totalSupp"] += 1
+            salesSummary[agentName]["total"] += 1
+
+            # Agregar detalles del cliente
+            cliente_info = {
+                "nombre": f"{sale.client.first_name} {sale.client.last_name}",
+                "fecha_poliza": sale.created_at.strftime('%d/%m/%Y'),
+                "estatus": sale.status
+            }
+            salesSummary[agentName]["clientes_supp"].append(cliente_info)
+
+    # Agregar el conteo de pólizas activas para la semana seleccionada
+    activeObamaPolicies = ObamaCare.objects.filter(status='Active', created_at__range=[startOfWeek, endOfWeek], is_active=True)
+    activeSuppPolicies = Supp.objects.filter(status='Active', created_at__range=[startOfWeek, endOfWeek], is_active=True)
+
+    for policy in activeObamaPolicies:
+        agentName = policy.agent.username
+        if policy.agent.is_active and agentName not in excludedUsernames:
+            salesSummary[agentName]["activeObama"] += 1
+            salesSummary[agentName]["totalObama"] += 1
+            salesSummary[agentName]["total"] += 1
+
+    for policy in activeSuppPolicies:
+        agentName = policy.agent.username
+        if policy.agent.is_active and agentName not in excludedUsernames:
+            salesSummary[agentName]["activeSupp"] += 1
+            salesSummary[agentName]["totalSupp"] += 1
+            salesSummary[agentName]["total"] += 1
+
+    # Convertir el diccionario para usar "first_name last_name" como clave
+    finalSummary = {}
+    for user in users:
+        fullName = f"{user.first_name} {user.last_name}".strip()
+        finalSummary[fullName] = salesSummary[user.username]
+
+    # Rango de fechas de la semana seleccionada
+    weekRange = f"{startOfWeek.strftime('%d/%m')} - {endOfWeek.strftime('%d/%m')}"
+
+    return finalSummary, weekRange
+
+def downloadPdf(request, week_number):
+    # Obtener el resumen de la semana seleccionada
+    resumen_semana, rango_fechas = weekSalesSummary(week_number)
+
+    # Renderizar la plantilla específica para el PDF
+    html_string = render_to_string('reporte_pdf.html', {
+        'resumen_semana': resumen_semana,
+        'rango_fechas': rango_fechas,
+        'week_number': week_number
+    })
+
+    # Crear un objeto HTML de WeasyPrint
+    font_config = FontConfiguration()
+    html = HTML(string=html_string)
+    
+    # Generar el PDF
+    pdf = html.write_pdf(font_config=font_config)
+
+    # Crear una respuesta HTTP con el PDF
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="reporte_semana_{week_number}.pdf"'
+    return response
+
+def weekSalesWiew(request):
+    if request.method == 'POST':
+        # Obtener el número de la semana del formulario
+        week_number = int(request.POST.get('week_number'))
+
+        # Llamar a la función de lógica para obtener el resumen
+        resumen_semana, rango_fechas = weekSalesSummary(week_number)
+
+        # Renderizar la plantilla con los resultados
+        return render(request, 'table/weekSalesWiew.html', {
+            'resumen_semana': resumen_semana,
+            'rango_fechas': rango_fechas,
+            'week_number': week_number
+        })
+
+    # Si no es POST, mostrar el formulario vacío
+    return render(request, 'Table/weekSalesWiew.html')
+
+@login_required(login_url='/login')
+def clientMedicare(request):
+    
+    roleAuditor = ['S','AU']
+    
+    if request.user.role == 'Admin':       
+        medicare = Medicare.objects.select_related('agent').annotate(
+            truncated_agent_usa=Substr('agent_usa', 1, 8)).order_by('-created_at')
+    elif request.user.role in roleAuditor:
+        medicare = Medicare.objects.select_related('agent').annotate(
+            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True).order_by('-created_at')   
+    else:
+        medicare = Medicare.objects.select_related('agent').annotate(
+            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True, agent_id = request.user.id).order_by('-created_at')   
 
 
+    return render(request, 'table/clientMedicare.html', {'medicares':medicare})
+
+@login_required(login_url='/login')
+def editClientMedicare(request, medicare_id):
+    
+    medicare = Medicare.objects.select_related('agent').filter(id=medicare_id).first()
+
+    if medicare and medicare:
+        social_number = medicare.social_security  # Campo real del modelo
+        # Asegurarse de que social_number no sea None antes de formatear
+        if social_number:
+            formatted_social = f"xxx-xx-{social_number[-4:]}"  # Obtener el formato deseado
+        else:
+            formatted_social = "N/A"  # Valor predeterminado si no hay número disponible
+    else:
+        formatted_social = "N/A"
+        social_number = None
+
+    obsCus = ObservationCustomerMedicare.objects.select_related('agent').filter(medicare=medicare.id)
+    list_drow = DropDownList.objects.filter(profiling_supp__isnull=False)
+
+    if request.method == 'POST' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        action = request.POST.get('action')
+        if action == 'validate_key':
+            provided_key = request.POST.get('key')
+            correct_key = 'Sseguros22@'  # Cambia por tu lógica segura
+
+            if provided_key == correct_key and social_number:
+                return JsonResponse({'status': 'success', 'social': social_number})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Clave incorrecta o no hay número disponible'})
+    
+
+    consent = Consents.objects.filter(medicare = medicare_id )
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        # Campos de Client
+        client_fields = [
+            'agent_usa', 'first_name', 'last_name', 'phone_number', 'email', 'address', 'zipcode',
+            'city', 'state', 'county', 'sex', 'migration_status', 'statusMedicare'
+        ]        
+        
+        #formateo de fecha para guardalar como se debe en BD ya que la obtengo USA
+        fecha_str = request.POST.get('date_birth')  # Formato MM/DD/YYYY
+        # Conversión solo si los valores no son nulos o vacíos
+        if fecha_str not in [None, '']:
+            dateNew = datetime.strptime(fecha_str, '%m/%d/%Y').date()
+        else:
+            dateNew = None
+        
+
+        # Limpiar los campos de Client convirtiendo los vacíos en None
+        cleaned_client_data = clean_fields_to_null(request, client_fields)
+
+        # Convierte a mayúsculas los campos necesarios
+        fields_to_uppercase = ['first_name', 'last_name', 'address', 'city', 'county']
+        for field in fields_to_uppercase:
+            if field in cleaned_client_data and cleaned_client_data[field]:
+                cleaned_client_data[field] = cleaned_client_data[field].upper()
+
+        # Actualizar Client
+        client = Medicare.objects.filter(id=medicare_id).update(
+            agent_usa=cleaned_client_data['agent_usa'],
+            first_name=cleaned_client_data['first_name'],
+            last_name=cleaned_client_data['last_name'],
+            phone_number=cleaned_client_data['phone_number'],
+            email=cleaned_client_data['email'],
+            address=cleaned_client_data['address'],
+            zipcode=cleaned_client_data['zipcode'],
+            city=cleaned_client_data['city'],
+            state=cleaned_client_data['state'],
+            county=cleaned_client_data['county'],
+            sex=cleaned_client_data['sex'],
+            date_birth=dateNew,
+            migration_status=cleaned_client_data['migration_status'],
+            status=cleaned_client_data['statusMedicare']
+        )
+
+        return redirect('clientMedicare')   
+
+    context = {
+        'medicare': medicare,
+        'formatted_social':formatted_social,
+        'consent': consent,
+        'obsCustomer': obsCus,
+        'list_drow': list_drow,
+
+    }
+
+    return render(request, 'edit/editClientMedicare.html', context)
+
+@login_required(login_url='/login') 
+def saveCustomerObservationMedicare(request):
+    if request.method == "POST":
+        content = request.POST.get('textoIngresado')
+        medicare_id = request.POST.get('plan_id')
+        typeCall = request.POST.get('typeCall')        
+
+        # Obtenemos las observaciones seleccionadas
+        observations = request.POST.getlist('observaciones[]')  # Lista de valores seleccionados
+        
+        # Convertir las observaciones a una cadena (por ejemplo, separada por comas o saltos de línea)
+        typification_text = ", ".join(observations)  # Puedes usar "\n".join(observations) si prefieres saltos de línea
+
+        medicare = Medicare.objects.filter(id = medicare_id).first()
+
+        if content.strip():  # Validar que el texto no esté vacío
+            ObservationCustomerMedicare.objects.create(
+                medicare=medicare,
+                agent=request.user,
+                typeCall=typeCall,
+                typification=typification_text, # Guardamos las observaciones en el campo 'typification'
+                content=content
+            )
+            messages.success(request, "Observación guardada exitosamente.")
+        else:
+            messages.error(request, "El contenido de la observación no puede estar vacío.")
+
+        return redirect('editClientMedicare', medicare_id)       
+        
+    else:
+        return HttpResponse("Método no permitido.", status=405)
+
+def desactiveMedicare(request, medicare_id):
+    # Obtener el cliente por su ID
+    medicare = get_object_or_404(Medicare, id=medicare_id)
+    
+    # Cambiar el estado de is_active (True a False o viceversa)
+    medicare.is_active = not medicare.is_active
+    medicare.save()  # Guardar los cambios en la base de datos
+    
+    # Redirigir de nuevo a la página actual con un parámetro de éxito
+    return redirect('clientMedicare')
+ 

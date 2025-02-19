@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Ventas - Semana {{ week_number }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1, h2, h3, h4, h5 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .section-title {
+            margin-top: 30px;
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #555;
+        }
+        .agent-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Reporte de Ventas - Semana {{ week_number }}</h1>
+    <p><strong>Rango de fechas:</strong> {{ rango_fechas }}</p>
+
+    <!-- Tabla resumen de ventas -->
+    <h2>Resumen de Ventas</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre del Agente</th>
+                <th>Obama</th>
+                <th>Active Obama</th>
+                <th>Total Obama</th>
+                <th>Supp</th>
+                <th>Active Supp</th>
+                <th>Total Supp</th>
+                <th>Total General</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for nombre, datos in resumen_semana.items %}
+                <tr>
+                    <td>{{ nombre }}</td>
+                    <td>{{ datos.obama }}</td>
+                    <td>{{ datos.activeObama }}</td>
+                    <td>{{ datos.totalObama }}</td>
+                    <td>{{ datos.supp }}</td>
+                    <td>{{ datos.activeSupp }}</td>
+                    <td>{{ datos.totalSupp }}</td>
+                    <td>{{ datos.total }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Detalles de los clientes -->
+    <h2>Detalles de los Clientes</h2>
+    {% for nombre, datos in resumen_semana.items %}
+        <div class="agent-name">{{ nombre }}</div>
+
+        <!-- Clientes de ObamaCare -->
+        {% if datos.clientes_obama %}
+            <div class="section-title">Clientes de ObamaCare</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre del Cliente</th>
+                        <th>Fecha de la Póliza</th>
+                        <th>Estatus</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cliente in datos.clientes_obama %}
+                        <tr>
+                            <td>{{ cliente.nombre }}</td>
+                            <td>{{ cliente.fecha_poliza }}</td>
+                            <td>{{ cliente.estatus }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No hay clientes de ObamaCare para este agente.</p>
+        {% endif %}
+
+        <!-- Clientes de Supp -->
+        {% if datos.clientes_supp %}
+            <div class="section-title">Clientes de Supp</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre del Cliente</th>
+                        <th>Fecha de la Póliza</th>
+                        <th>Estatus</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cliente in datos.clientes_supp %}
+                        <tr>
+                            <td>{{ cliente.nombre }}</td>
+                            <td>{{ cliente.fecha_poliza }}</td>
+                            <td>{{ cliente.estatus }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No hay clientes de Supp para este agente.</p>
+        {% endif %}
+    {% endfor %}
+</body>
+</html>
