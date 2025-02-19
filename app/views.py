@@ -683,7 +683,7 @@ def clientObamacare(request):
             truncated_agent_usa=Substr('agent_usa', 1, 8)).order_by('-created_at')
     elif request.user.username == 'zohiraDuarte':
        obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
-            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active  = True, agent_usa = '').order_by('-created_at') 
+            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active  = True, agent_usa = zohira).order_by('-created_at') 
     else:
         obamaCare = ObamaCare.objects.select_related('agent', 'client').annotate(
             truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True).order_by('-created_at')      
