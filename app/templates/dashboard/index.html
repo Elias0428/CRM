@@ -60,7 +60,7 @@
 			 </div>
 			<!--navigation-->
 
-			{% if request.user.username != 'zohiraDuarte'%} 
+			{% if request.user.username != 'zohiraDuarte' and request.user.role != 'TV' %} 
 				<ul class="metismenu" id="menu">					
 					<li>
 						<a href="javascript:;" class="has-arrow">
