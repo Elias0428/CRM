@@ -1787,7 +1787,7 @@ def tableStatusObama(request):
     start_of_month = timezone.make_aware(datetime(current_year, current_month, 1), timezone.get_current_timezone())
     end_of_month = timezone.make_aware(datetime(current_year, current_month + 1, 1), timezone.get_current_timezone()) if current_month < 12 else timezone.make_aware(datetime(current_year + 1, 1, 1), timezone.get_current_timezone())
 
-    roleAuditar = ['S', 'C', 'AU', 'Admin']
+    roleAuditar = ['S', 'C', 'AU', 'Admin','TV']
 
     # Construcción de la consulta basada en el rol del usuario
     if request.user.role in roleAuditar:
@@ -1815,7 +1815,7 @@ def tableStatusSupp(request):
     end_of_month = timezone.make_aware(datetime(current_year, current_month + 1, 1), timezone.get_current_timezone()) if current_month < 12 else timezone.make_aware(datetime(current_year + 1, 1, 1), timezone.get_current_timezone())
 
     # Roles con acceso ampliado
-    roleAuditar = ['S', 'C', 'AU', 'Admin']
+    roleAuditar = ['S', 'C', 'AU', 'Admin','TV']
 
     # Construcción de la consulta basada en el rol del usuario
     if request.user.role in roleAuditar:
