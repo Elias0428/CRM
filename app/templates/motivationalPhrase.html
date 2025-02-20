@@ -35,6 +35,8 @@
 								<div class="mt-5"> 
 									{% if request.user.username == 'zohiraDuarte' %}
 										<a href="{% url "clientObamacare" %}" class="btn btn-primary btn-lg px-md-5 radius-30">Go Home</a>
+									{% elif request.user.username == 'tv' %}
+										<a href="{% url "clientObamacare" %}" class="btn btn-primary btn-lg px-md-5 radius-30">Go Home</a>
 									{% else %}
 										<a href="{% url "index" %}" class="btn btn-primary btn-lg px-md-5 radius-30">Go Home</a>
 									{% endif %}

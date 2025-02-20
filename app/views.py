@@ -1629,7 +1629,7 @@ def countSalesObama(request):
     last_day = calendar.monthrange(now.year, now.month)[1]  # Obtiene el último día del mes
     end_of_month = now.replace(day=last_day, hour=23, minute=59, second=59, microsecond=999999)
 
-    roleAuditar = ['S', 'C',  'AU', 'Admin','TV']
+    roleAuditar = ['S', 'C',  'AU', 'Admin']
     
     if request.user.role in roleAuditar:        
         all = ObamaCare.objects.filter(created_at__gte=start_of_month,created_at__lte=end_of_month,is_active = True).count()
@@ -1787,7 +1787,7 @@ def tableStatusObama(request):
     start_of_month = timezone.make_aware(datetime(current_year, current_month, 1), timezone.get_current_timezone())
     end_of_month = timezone.make_aware(datetime(current_year, current_month + 1, 1), timezone.get_current_timezone()) if current_month < 12 else timezone.make_aware(datetime(current_year + 1, 1, 1), timezone.get_current_timezone())
 
-    roleAuditar = ['S', 'C', 'AU', 'Admin','TV']
+    roleAuditar = ['S', 'C', 'AU', 'Admin']
 
     # Construcción de la consulta basada en el rol del usuario
     if request.user.role in roleAuditar:
@@ -1815,7 +1815,7 @@ def tableStatusSupp(request):
     end_of_month = timezone.make_aware(datetime(current_year, current_month + 1, 1), timezone.get_current_timezone()) if current_month < 12 else timezone.make_aware(datetime(current_year + 1, 1, 1), timezone.get_current_timezone())
 
     # Roles con acceso ampliado
-    roleAuditar = ['S', 'C', 'AU', 'Admin','TV']
+    roleAuditar = ['S', 'C', 'AU', 'Admin']
 
     # Construcción de la consulta basada en el rol del usuario
     if request.user.role in roleAuditar:
