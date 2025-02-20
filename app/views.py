@@ -1629,7 +1629,7 @@ def countSalesObama(request):
     last_day = calendar.monthrange(now.year, now.month)[1]  # Obtiene el último día del mes
     end_of_month = now.replace(day=last_day, hour=23, minute=59, second=59, microsecond=999999)
 
-    roleAuditar = ['S', 'C',  'AU', 'Admin']
+    roleAuditar = ['S', 'C',  'AU', 'Admin','TV']
     
     if request.user.role in roleAuditar:        
         all = ObamaCare.objects.filter(created_at__gte=start_of_month,created_at__lte=end_of_month,is_active = True).count()
