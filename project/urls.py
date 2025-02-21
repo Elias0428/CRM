@@ -28,6 +28,9 @@ urlpatterns = [
     path('weeklyLiveView/',views.weeklyLiveView,name='weeklyLiveView'),
     path('monthLiveView/',views.monthLiveView,name='monthLiveView'),
 
+    path('weeklyLiveViewTV/',views.weeklyLiveView,name='weeklyLiveViewTV'),
+    path('monthLiveViewTV/',views.monthLiveView,name='monthLiveViewTV'),
+
     path('formCreateClient/', views.formCreateClient, name='formCreateClient'),
     path('formEditClient/<client_id>/', views.formEditClient, name='formEditClient'),
 
@@ -103,7 +106,7 @@ urlpatterns = [
     path('chart6Week/', views.chart6Week, name='chart6Week'), 
 
     path('weekSalesWiew/',views.weekSalesWiew, name='weekSalesWiew'),
-    path('descargar-pdf/<int:week_number>/', views.downloadPdf, name='download_pdf'),
+    path('descargarPdf/<int:week_number>/', views.downloadPdf, name='downloadPdf'),
 
     path('formCreateClientMedicare/', views.formCreateClientMedicare, name='formCreateClientMedicare'),
     path('consetMedicare/<client_id>/<language>/', views.consetMedicare, name='consetMedicare'),
@@ -111,6 +114,7 @@ urlpatterns = [
     path('editClientMedicare/<medicare_id>/', views.editClientMedicare, name='editClientMedicare'),
     path('save-customer-observation-medicare/', views.saveCustomerObservationMedicare, name='saveCustomerObservationMedicare'),
     path('desactiveMedicare/<medicare_id>/', views.desactiveMedicare, name='desactiveMedicare'),
+    path('validarCita/', views.validarCita, name='validarCita'),
 
     ##path('exportUsers/', views.exportUsers, name='exportUsers'),
     ##path('testImportDb/', views.testExportDB, name='testExportDB'),

@@ -160,8 +160,10 @@ def formCreateClientMedicare(request):
         fecha_formateada = fecha_obj.strftime('%Y-%m-%d')
 
         date_medicare = request.POST.get('dateMedicare')
-        fecha_medicare = datetime.strptime(date_medicare, '%m/%d/%Y %H:%M')
-        fecha_formateada_medicare = fecha_medicare.strftime('%Y-%m-%d %H:%M')
+        # Convertir a objeto datetime
+        fecha_medicare = datetime.strptime(date_medicare, '%m/%d/%Y %H')
+        # Asegurar compatibilidad con zona horaria
+        fecha_formateada_medicare = make_aware(fecha_medicare)
 
         # Obtener la fecha actual
         hoy = datetime.today().date()
@@ -683,7 +685,7 @@ def clientObamacare(request):
             truncated_agent_usa=Substr('agent_usa', 1, 8)).order_by('-created_at')
     elif request.user.username == 'zohiraDuarte':
        obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
-            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active  = True, agent_usa = zohira).order_by('-created_at') 
+            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True, agent_usa = zohira).order_by('-created_at') 
     else:
         obamaCare = ObamaCare.objects.select_related('agent', 'client').annotate(
             truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True).order_by('-created_at')      
@@ -2425,7 +2427,8 @@ def weeklyLiveView(request):
     context = {
         'weeklySales': getSalesForWeekly(),
     }
-    return render(request, 'dashboard/weeklyLiveView.html', context)
+    if request.user.role == 'TV': return render(request, 'dashboard/weeklyLiveViewTV.html', context)
+    else: return render(request, 'dashboard/weeklyLiveView.html', context)
 
 def getSalesForWeekly():
     # Obtener la fecha de hoy y calcular el inicio de la semana (asumiendo que empieza el lunes)
@@ -2549,7 +2552,9 @@ def monthLiveView(request):
         'weekRanges': weekRanges,
         'toggle': True
     }
-    return render(request, 'dashboard/monthLiveView.html', context)
+    
+    if request.user.role == 'TV': return render(request, 'dashboard/monthLiveViewTV.html', context)
+    else: return render(request, 'dashboard/monthLiveView.html', context)
 
 from django.utils.timezone import make_aware
 
@@ -4184,7 +4189,7 @@ def weekSalesSummary(week_number):
     endOfWeek = make_aware(endOfWeek)
 
     # Inicializar diccionario de ventas para la semana seleccionada
-    excludedUsernames = ['Calidad01', 'mariluz', 'MariaCaTi', 'StephanieMkt', 'CarmenR','admin']  # Excluimos a gente que no debe aparecer en la vista
+    excludedUsernames = ['Calidad01', 'mariluz', 'MariaCaTi', 'StephanieMkt', 'CarmenR','admin','tv']  # Excluimos a gente que no debe aparecer en la vista
     userRoles = ['A', 'C', 'S']
 
     users = User.objects.filter(role__in=userRoles, is_active=True).exclude(username__in=excludedUsernames)
@@ -4273,7 +4278,7 @@ def downloadPdf(request, week_number):
     resumen_semana, rango_fechas = weekSalesSummary(week_number)
 
     # Renderizar la plantilla específica para el PDF
-    html_string = render_to_string('reporte_pdf.html', {
+    html_string = render_to_string('pdf/reportePdf.html', {
         'resumen_semana': resumen_semana,
         'rango_fechas': rango_fechas,
         'week_number': week_number
@@ -4291,6 +4296,7 @@ def downloadPdf(request, week_number):
     response['Content-Disposition'] = f'attachment; filename="reporte_semana_{week_number}.pdf"'
     return response
 
+@login_required(login_url='/login')
 def weekSalesWiew(request):
     if request.method == 'POST':
         # Obtener el número de la semana del formulario
@@ -4461,3 +4467,19 @@ def desactiveMedicare(request, medicare_id):
     # Redirigir de nuevo a la página actual con un parámetro de éxito
     return redirect('clientMedicare')
  
+def validarCita(request):
+    fecha_str = request.GET.get('fecha')
+    agente = request.GET.get('agente')
+
+    try:
+        # Convertir la fecha recibida en un objeto datetime
+        fecha = datetime.strptime(fecha_str, "%Y-%m-%d %H:%M")
+        fecha = make_aware(fecha)  # Asegurar que tenga zona horaria
+
+        # Verificar si ya hay una cita en esa fecha y hora para el mismo agente
+        cita_existente = Medicare.objects.filter(dateMedicare=fecha, agent_usa=agente).exists()
+
+        return JsonResponse({"ocupado": cita_existente})
+    
+    except ValueError:
+        return JsonResponse({"error": "Fecha no válida"}, status=400)

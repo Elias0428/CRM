@@ -60,7 +60,7 @@
 			 </div>
 			<!--navigation-->
 
-			{% if request.user.username != 'zohiraDuarte' and request.user.role != 'TV' %} 
+			{% if request.user.username != 'zohiraDuarte'%} 
 				<ul class="metismenu" id="menu">					
 					<li>
 						<a href="javascript:;" class="has-arrow">
@@ -194,6 +194,14 @@
 					</li>
 					{% endif %}					
 				</ul>
+			{% else %}
+				<ul class="metismenu" id="menu">	
+					<li class="menu-label">Information Client</li>
+					<li>
+						<li> 
+							<a href="{% url "clientObamacare" %}"><i class='bx bx-radio-circle'></i>Clients Obama</a>
+						</li>
+					</li>
 			{% endif %}
 
 				

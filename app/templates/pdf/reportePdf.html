@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Sales Report - Week {{ week_number }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: -20px;
+        }
+        h1, h2, h3, h4, h5 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .section-title {
+            margin-top: 30px;
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #555;
+        }
+        .agent-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sales Report - Week {{ week_number }}</h1>
+    <p><strong>Date range:</strong> {{ rango_fechas }}.</p>
+    <p><strong>Date of Creation:</strong> {% now "Y-m-d H:i:s" %}.</p>
+
+    <!-- Tabla resumen de ventas -->
+    <h3>Sales Summary</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Name the Agent</th>
+                <th>Obama</th>
+                <th>Active Obama</th>
+                <th>Total Obama</th>
+                <th>Supp</th>
+                <th>Active Supp</th>
+                <th>Total Supp</th>
+                <th>Total General</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for nombre, datos in resumen_semana.items %}
+                <tr>
+                    <td>{{ nombre }}</td>
+                    <td>{{ datos.obama }}</td>
+                    <td>{{ datos.activeObama }}</td>
+                    <td>{{ datos.totalObama }}</td>
+                    <td>{{ datos.supp }}</td>
+                    <td>{{ datos.activeSupp }}</td>
+                    <td>{{ datos.totalSupp }}</td>
+                    <td>{{ datos.total }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Detalles de los clientes -->
+    <h2 class="mt-2">Customer Details</h2>
+        <hr>
+        {% for nombre, datos in resumen_semana.items %}
+            {% if datos.clientes_obama or datos.activeSupp %}
+                <h3 class="mt-4">{{ nombre }}:</h3>
+            {% endif %}
+
+            <!-- Clientes de ObamaCare -->
+            {% if datos.clientes_obama %}
+                {% for cliente in datos.clientes_obama %}
+                    <li><strong>Name:</strong> {{ cliente.nombre }}, <strong>Policy Date:</strong> {{ cliente.fecha_poliza }}, <strong>Status:</strong> {{ cliente.estatus }} (Obamacare)</li>
+                {% endfor %}
+            {% endif %}
+
+            <br>
+
+            <!-- Clientes de Supp -->            
+            {% if datos.clientes_supp %}
+                {% for cliente in datos.clientes_supp %}
+                    <li><strong>Name:</strong> {{ cliente.nombre }}, <strong>Policy Date:</strong> {{ cliente.fecha_poliza }}, <strong>Status:</strong> {{ cliente.estatus }} (Supp)</li>
+                {% endfor %}
+            {% endif %}
+
+            {% if datos.clientes_obama or datos.activeSupp %}
+                <hr>
+            {% endif %}            
+            
+        {% endfor %}
+</body>
+</html>

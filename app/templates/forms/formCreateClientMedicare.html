@@ -191,32 +191,6 @@
 	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 	<script>
-		// Usar Flatpickr para formatear el campo de fecha
-		document.addEventListener('DOMContentLoaded', function () {
-			flatpickr("#date_birth", {
-				dateFormat: "m/d/Y", // Formato MM/DD/YYYY
-			});
-
-			// Obtener la fecha actual
-			const fechaActual = new Date();
-			// Sumar 72 horas (3 días) a la fecha actual
-			const fechaMinima = new Date(fechaActual.getTime() + 42 * 60 * 60 * 1000);
-	
-			flatpickr("#dateMedicare", {
-				enableTime: true, // Habilitar la selección de hora
-				dateFormat: "m/d/Y H:i", // Formato de fecha y hora
-				time_24hr: true, // Usar formato de 24 horas
-				minDate: fechaMinima, // Establecer la fecha mínima permitida
-				defaultDate: fechaMinima, // Opcional: Establecer la fecha por defecto
-				onReady: function(selectedDates, dateStr, instance) {
-					// Mostrar un mensaje o realizar acciones adicionales al inicializar
-					console.log("Solo puedes seleccionar fechas después de:", fechaMinima);
-				}
-			});		
-		});
-	</script>
-
-	<script>
         function formatInput(input) {
             // Remover cualquier caracter que no sea un dígito
             let value = input.value.replace(/\D/g, '');

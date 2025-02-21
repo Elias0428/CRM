@@ -207,6 +207,8 @@ inputs.forEach(input => {
 // Actualizar el span con los valores de los inputs
 function updateSpan() {
     changeSpan('textName', `${inputName.value} ${inputLastName.value}`);
+    changeSpan('textName2', `${inputName.value} ${inputLastName.value}`);
+    changeSpan('textName3', `${inputName.value} ${inputLastName.value}`);
 }
 
 // Agregar evento al cambio del selectAgent
@@ -215,6 +217,7 @@ selectAgent.addEventListener('change', function () {
     const selectedText = selectAgent.options[selectAgent.selectedIndex].text;
     changeSpan('textAgent', selectedText);
     changeSpan('textAgent2', selectedText);
+    changeSpan('textAgent3', selectedText);
 
     updateCarrierByAgent(selectedText);
 });
@@ -234,6 +237,10 @@ function changeCarrierSpans(carrier) {
     changeSpan('textCarrier', carrier);
     changeSpan('textCarrier2', carrier);
     changeSpan('textCarrier3', carrier);
+    changeSpan('textCarrier4', carrier);
+    changeSpan('textCarrier5', carrier);
+    changeSpan('textCarrier5', carrier);
+    changeSpan('textCarrier6', carrier);
 }
 
 // Función para determinar y actualizar los spans del carrier según el agente
