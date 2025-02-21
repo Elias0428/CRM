@@ -4189,7 +4189,7 @@ def weekSalesSummary(week_number):
     endOfWeek = make_aware(endOfWeek)
 
     # Inicializar diccionario de ventas para la semana seleccionada
-    excludedUsernames = ['Calidad01', 'mariluz', 'MariaCaTi', 'StephanieMkt', 'CarmenR','admin','tv']  # Excluimos a gente que no debe aparecer en la vista
+    excludedUsernames = ['Calidad01', 'mariluz', 'MariaCaTi', 'StephanieMkt', 'CarmenR','admin','tv','zohiraDuarte']  # Excluimos a gente que no debe aparecer en la vista
     userRoles = ['A', 'C', 'S']
 
     users = User.objects.filter(role__in=userRoles, is_active=True).exclude(username__in=excludedUsernames)
