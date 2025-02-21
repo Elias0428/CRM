@@ -85,7 +85,9 @@
             <!-- Clientes de ObamaCare -->
             {% if datos.clientes_obama %}
                 {% for cliente in datos.clientes_obama %}
-                    <li><strong>Name:</strong> {{ cliente.nombre }}, <strong>Policy Date:</strong> {{ cliente.fecha_poliza }}, <strong>Status:</strong> {{ cliente.estatus }} (Obamacare)</li>
+                    {% if cliente.estatus_color != 3 %}
+                        <li><strong>Name:</strong> {{ cliente.nombre }}, <strong>Policy Date:</strong> {{ cliente.fecha_poliza }}, <strong>Status:</strong> {{ cliente.estatus }} <mark>(Obamacare)</mark>  </li>
+                    {% endif %}
                 {% endfor %}
             {% endif %}
 
@@ -94,7 +96,9 @@
             <!-- Clientes de Supp -->            
             {% if datos.clientes_supp %}
                 {% for cliente in datos.clientes_supp %}
-                    <li><strong>Name:</strong> {{ cliente.nombre }}, <strong>Policy Date:</strong> {{ cliente.fecha_poliza }}, <strong>Status:</strong> {{ cliente.estatus }} (Supp)</li>
+                    {% if cliente.estatus_color != 3 %}
+                        <li><strong>Name:</strong> {{ cliente.nombre }}, <strong>Policy Date:</strong> {{ cliente.fecha_poliza }}, <strong>Status:</strong> {{ cliente.estatus }} <mark>(Supp)</mark> </li>
+                    {% endif %}
                 {% endfor %}
             {% endif %}
 

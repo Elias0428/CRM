@@ -4192,7 +4192,7 @@ def weekSalesSummary(week_number):
     excludedUsernames = ['Calidad01', 'mariluz', 'MariaCaTi', 'StephanieMkt', 'CarmenR','admin','tv','zohiraDuarte']  # Excluimos a gente que no debe aparecer en la vista
     userRoles = ['A', 'C', 'S','SUPP']
 
-    users = User.objects.filter(role__in=userRoles, is_active=True).exclude(username__in=excludedUsernames)
+    users = User.objects.exclude(username__in=excludedUsernames).filter(role__in=userRoles, is_active=True)
 
     salesSummary = {
         user.username: {
@@ -4224,7 +4224,8 @@ def weekSalesSummary(week_number):
             cliente_info = {
                 "nombre": f"{sale.client.first_name} {sale.client.last_name}",
                 "fecha_poliza": sale.created_at.strftime('%d/%m/%Y'),
-                "estatus": sale.status
+                "estatus": sale.status,
+                "estatus_color": sale.status_color
             }
             salesSummary[agentName]["clientes_obama"].append(cliente_info)
 
@@ -4240,7 +4241,8 @@ def weekSalesSummary(week_number):
             cliente_info = {
                 "nombre": f"{sale.client.first_name} {sale.client.last_name}",
                 "fecha_poliza": sale.created_at.strftime('%d/%m/%Y'),
-                "estatus": sale.status
+                "estatus": sale.status,
+                "estatus_color": sale.status_color
             }
             salesSummary[agentName]["clientes_supp"].append(cliente_info)
 
