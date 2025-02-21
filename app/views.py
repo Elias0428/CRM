@@ -4313,7 +4313,7 @@ def weekSalesWiew(request):
         })
 
     # Si no es POST, mostrar el formulario vacío
-    return render(request, 'Table/weekSalesWiew.html')
+    return render(request, 'table/weekSalesWiew.html')
 
 @login_required(login_url='/login')
 def clientMedicare(request):
