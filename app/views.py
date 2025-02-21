@@ -4189,10 +4189,9 @@ def weekSalesSummary(week_number):
     endOfWeek = make_aware(endOfWeek)
 
     # Inicializar diccionario de ventas para la semana seleccionada
-    excludedUsernames = ['Calidad01', 'mariluz', 'MariaCaTi', 'StephanieMkt', 'CarmenR','admin','tv','zohiraDuarte']  # Excluimos a gente que no debe aparecer en la vista
     userRoles = ['A', 'C', 'S']
 
-    users = User.objects.filter(role__in=userRoles, is_active=True).exclude(username__in=excludedUsernames)
+    users = User.objects.filter(role__in=userRoles, is_active=True)
 
     salesSummary = {
         user.username: {
@@ -4215,7 +4214,7 @@ def weekSalesSummary(week_number):
     # Procesar las ventas de Obamacare para la semana seleccionada
     for sale in obamaSales:
         agentName = sale.agent.username
-        if sale.agent.is_active and agentName not in excludedUsernames:
+        if sale.agent.is_active and agentName:
             salesSummary[agentName]["obama"] += 1
             salesSummary[agentName]["totalObama"] += 1
             salesSummary[agentName]["total"] += 1
@@ -4231,7 +4230,7 @@ def weekSalesSummary(week_number):
     # Procesar las ventas de Supp para la semana seleccionada
     for sale in suppSales:
         agentName = sale.agent.username
-        if sale.agent.is_active and agentName not in excludedUsernames:
+        if sale.agent.is_active and agentName:
             salesSummary[agentName]["supp"] += 1
             salesSummary[agentName]["totalSupp"] += 1
             salesSummary[agentName]["total"] += 1
@@ -4250,14 +4249,14 @@ def weekSalesSummary(week_number):
 
     for policy in activeObamaPolicies:
         agentName = policy.agent.username
-        if policy.agent.is_active and agentName not in excludedUsernames:
+        if policy.agent.is_active and agentName:
             salesSummary[agentName]["activeObama"] += 1
             salesSummary[agentName]["totalObama"] += 1
             salesSummary[agentName]["total"] += 1
 
     for policy in activeSuppPolicies:
         agentName = policy.agent.username
-        if policy.agent.is_active and agentName not in excludedUsernames:
+        if policy.agent.is_active and agentName:
             salesSummary[agentName]["activeSupp"] += 1
             salesSummary[agentName]["totalSupp"] += 1
             salesSummary[agentName]["total"] += 1
