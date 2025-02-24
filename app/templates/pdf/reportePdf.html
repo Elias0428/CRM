@@ -55,19 +55,34 @@
                 <th>Active Supp</th>
                 <th>Total General</th>
             </tr>
-        </thead>
+        </thead>          
         <tbody>
             {% for nombre, datos in resumen_semana.items %}
-                <tr>
-                    <td>{{ nombre }}</td>
-                    <td>{{ datos.obama }}</td>
-                    <td>{{ datos.activeObama }}</td>
-                    <td>{{ datos.supp }}</td>
-                    <td>{{ datos.activeSupp }}</td>
-                    <td>{{ datos.total }}</td>
-                </tr>
+                {% if nombre != "TOTAL_GENERAL" %}
+                    <tr>
+                        <td>{{ nombre }}</td>
+                        <td>{{ datos.obama }}</td>
+                        <td>{{ datos.activeObama }}</td>
+                        <td>{{ datos.supp }}</td>
+                        <td>{{ datos.activeSupp }}</td>
+                        <td>{{ datos.total }}</td>
+                    </tr>
+                {% endif %}  
             {% endfor %}
         </tbody>
+        <!-- Fila con Totales Generales -->
+        {% if "TOTAL_GENERAL" in resumen_semana %}
+            <tfoot>
+                <tr class="total-row">
+                    <td>Total General</td>
+                    <td>{{ resumen_semana.TOTAL_GENERAL.total_aca }}</td>
+                    <td>{{ resumen_semana.TOTAL_GENERAL.totalActiveAca }}</td>
+                    <td>{{ resumen_semana.TOTAL_GENERAL.total_supp }}</td>
+                    <td>{{ resumen_semana.TOTAL_GENERAL.totalActiveSupp }}</td>
+                    <td>{{ resumen_semana.TOTAL_GENERAL.total_general }}</td>
+                </tr>
+            </tfoot>
+        {% endif %}  
     </table>
 
     <!-- Detalles de los clientes -->

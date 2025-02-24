@@ -64,7 +64,7 @@
                     <th>Active Supp</th>
                     <th>Overall total</th>
                 </tr>
-            </thead>
+            </thead>                    
             <tbody>
                 {% for nombre, datos in resumen_semana.items %}
                     {% if nombre != "TOTAL_GENERAL" %}
@@ -78,18 +78,20 @@
                         </tr>
                     {% endif %}
                 {% endfor %}
-                <!-- Fila con Totales Generales -->
-                {% if "TOTAL_GENERAL" in resumen_semana %}
-                    <tr class="total-row">
-                        <td>Overall total</td>
+            </tbody>
+            <!-- Fila con Totales Generales -->
+            {% if "TOTAL_GENERAL" in resumen_semana %}
+                <tfoot>
+                    <tr>
+                        <td>Total General</td>
                         <td>{{ resumen_semana.TOTAL_GENERAL.total_aca }}</td>
                         <td>{{ resumen_semana.TOTAL_GENERAL.totalActiveAca }}</td>
                         <td>{{ resumen_semana.TOTAL_GENERAL.total_supp }}</td>
                         <td>{{ resumen_semana.TOTAL_GENERAL.totalActiveSupp }}</td>
                         <td>{{ resumen_semana.TOTAL_GENERAL.total_general }}</td>
                     </tr>
-                {% endif %}
-            </tbody>
+                </tfoot>
+            {% endif %}   
         </table>   
 
     </div>
