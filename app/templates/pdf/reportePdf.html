@@ -89,7 +89,7 @@
     <h2 class="mt-2">Customer Details</h2>
         <hr>
         {% for nombre, datos in resumen_semana.items %}
-            {% if datos.clientes_obama or datos.activeSupp %}
+            {% if datos.clientes_obama or datos.clientes_supp %}
                 <h3 class="mt-4">{{ nombre }}:</h3>
             {% endif %}
 
