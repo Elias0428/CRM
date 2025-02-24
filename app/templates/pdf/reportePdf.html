@@ -73,13 +73,13 @@
         <!-- Fila con Totales Generales -->
         {% if "TOTAL_GENERAL" in resumen_semana %}
             <tfoot>
-                <tr class="total-row">
-                    <td>Total General</td>
-                    <td>{{ resumen_semana.TOTAL_GENERAL.total_aca }}</td>
-                    <td>{{ resumen_semana.TOTAL_GENERAL.totalActiveAca }}</td>
-                    <td>{{ resumen_semana.TOTAL_GENERAL.total_supp }}</td>
-                    <td>{{ resumen_semana.TOTAL_GENERAL.totalActiveSupp }}</td>
-                    <td>{{ resumen_semana.TOTAL_GENERAL.total_general }}</td>
+                <tr>
+                    <th>Total General</th>
+                    <th>{{ resumen_semana.TOTAL_GENERAL.total_aca }}</th>
+                    <th>{{ resumen_semana.TOTAL_GENERAL.totalActiveAca }}</th>
+                    <th>{{ resumen_semana.TOTAL_GENERAL.total_supp }}</th>
+                    <th>{{ resumen_semana.TOTAL_GENERAL.totalActiveSupp }}</th>
+                    <th>{{ resumen_semana.TOTAL_GENERAL.total_general }}</th>
                 </tr>
             </tfoot>
         {% endif %}  
