@@ -4198,10 +4198,8 @@ def weekSalesSummary(week_number):
         user.username: {
             "obama": 0,
             "activeObama": 0,
-            "totalObama": 0,  # Total Obama = obama + activeObama
             "supp": 0,
             "activeSupp": 0,
-            "totalSupp": 0,   # Total Supp = supp + activeSupp
             "total": 0,       # Total General = totalObama + totalSupp
             "clientes_obama": [],  # Lista de clientes de ObamaCare
             "clientes_supp": []    # Lista de clientes de Supp
@@ -4217,7 +4215,6 @@ def weekSalesSummary(week_number):
         agentName = sale.agent.username
         if sale.agent.is_active and agentName not in excludedUsernames:
             salesSummary[agentName]["obama"] += 1
-            salesSummary[agentName]["totalObama"] += 1
             salesSummary[agentName]["total"] += 1
 
             # Agregar detalles del cliente
@@ -4234,7 +4231,6 @@ def weekSalesSummary(week_number):
         agentName = sale.agent.username
         if sale.agent.is_active and agentName not in excludedUsernames:
             salesSummary[agentName]["supp"] += 1
-            salesSummary[agentName]["totalSupp"] += 1
             salesSummary[agentName]["total"] += 1
 
             # Agregar detalles del cliente
@@ -4254,15 +4250,11 @@ def weekSalesSummary(week_number):
         agentName = policy.agent.username
         if policy.agent.is_active and agentName not in excludedUsernames:
             salesSummary[agentName]["activeObama"] += 1
-            salesSummary[agentName]["totalObama"] += 1
-            salesSummary[agentName]["total"] += 1
 
     for policy in activeSuppPolicies:
         agentName = policy.agent.username
         if policy.agent.is_active and agentName not in excludedUsernames:
             salesSummary[agentName]["activeSupp"] += 1
-            salesSummary[agentName]["totalSupp"] += 1
-            salesSummary[agentName]["total"] += 1
 
     # Convertir el diccionario para usar "first_name last_name" como clave
     finalSummary = {}
