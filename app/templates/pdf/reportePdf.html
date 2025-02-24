@@ -102,7 +102,9 @@
                 {% endfor %}
             {% endif %}
 
-            <br>
+            {% if datos.clientes_obama or datos.clientes_supp %}
+                <br>
+            {% endif %}
 
             <!-- Clientes de Supp -->            
             {% if datos.clientes_supp %}
