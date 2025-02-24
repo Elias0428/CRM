@@ -3117,9 +3117,9 @@ def consent(request, obamacare_id):
 
     typeToken = True
 
-    if request.method == 'GET':
-        language = request.GET.get('lenguaje', 'es')  # Idioma predeterminado si no se pasa
-        activate(language)
+   
+    language = request.GET.get('lenguage', 'es')  # Idioma predeterminado si no se pasa
+    activate(language)
     # Validar si el usuario no está logueado y verificar el token
     if isinstance(request.user, AnonymousUser):
         result = validateTemporaryToken(request, typeToken)
@@ -4188,6 +4188,12 @@ def weekSalesSummary(week_number):
     startOfWeek = make_aware(startOfWeek)
     endOfWeek = make_aware(endOfWeek)
 
+    # Inicializar variables de totales generales
+    total_aca = 0
+    total_supp = 0
+    totalActiveAca = 0
+    totalActiveSupp = 0
+
     # Inicializar diccionario de ventas para la semana seleccionada
     excludedUsernames = ['Calidad01', 'mariluz', 'MariaCaTi', 'StephanieMkt', 'CarmenR','admin','tv','zohiraDuarte']  # Excluimos a gente que no debe aparecer en la vista
     userRoles = ['A', 'C', 'S','SUPP']
@@ -4216,6 +4222,7 @@ def weekSalesSummary(week_number):
         if sale.agent.is_active and agentName not in excludedUsernames:
             salesSummary[agentName]["obama"] += 1
             salesSummary[agentName]["total"] += 1
+            total_aca += 1  # Incrementar total general de ACA
 
             # Agregar detalles del cliente
             cliente_info = {
@@ -4232,6 +4239,7 @@ def weekSalesSummary(week_number):
         if sale.agent.is_active and agentName not in excludedUsernames:
             salesSummary[agentName]["supp"] += 1
             salesSummary[agentName]["total"] += 1
+            total_supp += 1  # Incrementar total general de SUPP
 
             # Agregar detalles del cliente
             cliente_info = {
@@ -4250,17 +4258,28 @@ def weekSalesSummary(week_number):
         agentName = policy.agent.username
         if policy.agent.is_active and agentName not in excludedUsernames:
             salesSummary[agentName]["activeObama"] += 1
+            totalActiveAca += 1  # Incrementar total general de ACA
 
     for policy in activeSuppPolicies:
         agentName = policy.agent.username
         if policy.agent.is_active and agentName not in excludedUsernames:
             salesSummary[agentName]["activeSupp"] += 1
+            totalActiveSupp += 1  # Incrementar total general de SUPP
 
     # Convertir el diccionario para usar "first_name last_name" como clave
     finalSummary = {}
     for user in users:
         fullName = f"{user.first_name} {user.last_name}".strip()
         finalSummary[fullName] = salesSummary[user.username]
+
+    # Agregar los totales generales al resumen
+    finalSummary["TOTAL_GENERAL"] = {
+        "total_aca": total_aca,
+        "total_supp": total_supp,
+        "totalActiveAca": totalActiveAca,
+        "totalActiveSupp": totalActiveSupp,
+        "total_general": total_aca + total_supp
+    }
 
     # Rango de fechas de la semana seleccionada
     weekRange = f"{startOfWeek.strftime('%d/%m')} - {endOfWeek.strftime('%d/%m')}"
