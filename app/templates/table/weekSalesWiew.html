@@ -114,6 +114,7 @@
             {% if datos.clientes_obama %}
                 <h6>ObamaCare Clients</h6>
                 {% for cliente in datos.clientes_obama %}
+                <p> 📌 Amount: {{ forloop.counter }}</p>
                     <li><strong>Name:</strong> {{ cliente.nombre }}, <strong>Policy Date:</strong> {{ cliente.fecha_poliza }}, <strong>Status:</strong> {{ cliente.estatus }}</li>
                 {% endfor %}
             {% endif %}
