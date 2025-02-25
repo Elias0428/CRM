@@ -175,12 +175,14 @@
                     <div class="bg-info p-3 rounded">
                         <label class="form-label">{% trans "Teléfono" %}<span class="text-danger">*</span></label>
                         <input id="inputPhone" name="phone_number" type="number" class="form-control" value="{{obamacare.client.phone_number}}" required>
+                        <p id="error" style="color: red; display: none;">{% blocktrans %}Número no válido. Debe ser un número de 10 o 11 dígitos.{% endblocktrans %}</p>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="bg-lila p-3 rounded">
                         <label class="form-label">Email</label>
                         <input id="inputEmail" name="email" type="email" class="form-control" value="{{obamacare.client.email}}">
+                        <p id="errorEmail" style="color: red; display: none;">{% blocktrans %}Email no valido.{% endblocktrans %}</p>
                     </div>
                 </div>
             </div>

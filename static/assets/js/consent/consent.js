@@ -87,29 +87,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 function validateSelects() {
-const idsSelectWithValidation = ['apply', 'work', 'migration_status', 'selectAgent']
-console.log(idsSelectWithValidation)
-let isValid = true;
-const phoneNumber = document.getElementById('phone_number')
+    const idsSelectWithValidation = ['apply', 'work', 'migration_status', 'selectAgent']
+    console.log(idsSelectWithValidation)
+    let isValid = true;
+    const phoneNumber = document.getElementById('phone_number')
 
 
-// Función para validar los Select
-for (let i = 0; i < idsSelectWithValidation.length; i++) {
-    var idSelect = idsSelectWithValidation[i];
-    console.log(idSelect)
-    var select = document.getElementById(idSelect);
-    console.log(select)
-    if (select.value == 'no_valid') {
-    isValid = false;
-    select.focus(); // Hace foco en el select inválido
-    break; // Detiene la iteración
+    // Función para validar los Select
+    for (let i = 0; i < idsSelectWithValidation.length; i++) {
+        var idSelect = idsSelectWithValidation[i];
+        console.log(idSelect)
+        var select = document.getElementById(idSelect);
+        console.log(select)
+        if (select.value == 'no_valid') {
+        isValid = false;
+        select.focus(); // Hace foco en el select inválido
+        break; // Detiene la iteración
+        }
     }
-}
 
-if (!isValid){
-    return false;
-}
-return true;
+    if (!isValid){
+        return false;
+    }
+    return true;
 }
 
 
@@ -316,6 +316,12 @@ document.addEventListener("DOMContentLoaded", function () {
         if (isCanvasEmpty()) {
             alert("Debe firmar antes de revisar.");
             return;
+        }else if (!validatePhoneNumber()){
+            alert("Valide su numero de telefono.");
+            return;
+        }else if (!validateEmail()){
+            alert("Valide su Email.");
+            return;
         }
 
         toggleFields();
@@ -435,3 +441,72 @@ function changeinputsValue(id, text) {
     const input = document.getElementById(id)
     input.value = text 
 }
+
+// Funcion para validar el numero de telefono:
+const phoneInput = document.getElementById('inputPhone');
+const errorDisplay = document.getElementById('error');
+
+// Función de validación
+function validatePhoneNumber() {
+    let value = phoneInput.value;
+    // Filtrar solo números
+    value = value.replace(/[^0-9]/g, '');
+    // Limitar a 11 caracteres
+    if (value.length > 11) {
+        value = value.slice(0, 11);
+    }
+    phoneInput.value = value;
+    errorDisplay.style.display = 'none'; // Esconder mensaje de error al cambiar input
+
+    if (phoneInput === document.activeElement) {
+        return null; // Evitar validación completa mientras se escribe
+    }
+    
+    // Validar al perder el enfoque
+    if (value.length === 10) {
+        // Si tiene 10 dígitos, agregar '1' al inicio
+        phoneInput.value = '1' + value;
+        return true;
+    } else if (value.length === 11 && value.startsWith('1')) {
+        return true;
+    } else {
+        // Si la longitud es incorrecta o no empieza con '1', mostrar error
+        errorDisplay.style.display = 'block';
+        phoneInput.focus()
+        return false;
+    }
+}
+
+// Asignar la función a eventos de input y blur
+phoneInput.addEventListener('input', validatePhoneNumber);
+phoneInput.addEventListener('blur', validatePhoneNumber);
+
+const emailInput = document.getElementById('inputEmail');
+const errorDisplayEmail = document.getElementById('errorEmail');
+
+// Función de validación de email
+function validateEmail() {
+    const value = emailInput.value;
+    errorDisplayEmail.style.display = 'none'; // Esconder mensaje de error al cambiar input
+    
+    // Expresión regular para validar email
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    
+    if (emailInput === document.activeElement) {
+        return null; // Evitar validación completa mientras se escribe
+    }
+
+    // Validar email
+    if (emailRegex.test(value)) {
+        return true;
+    } else {
+        // Mostrar error si el correo es inválido
+        errorDisplayEmail.style.display = 'block';
+        emailInput.focus()
+        return false;
+    }
+}
+
+// Asignar la función a eventos de input y blur
+emailInput.addEventListener('input', validateEmail);
+emailInput.addEventListener('blur', validateEmail);
