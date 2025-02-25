@@ -105,7 +105,9 @@
         {% for nombre, datos in resumen_semana.items %}
             {% if datos.clientes_obama or datos.clientes_supp %}
                 <h4 class="mt-4">{{ nombre }}: </h4>
-                <p> 📌 Amount: {{ resumen_semana.TOTAL_GENERAL.Amount }}</p>
+                {% for cliente in datos.clientes_obama %}
+                    <p> 📌 Amount: {{ forloop.counter }}</p>
+                {% endfor %}
             {% endif %}
 
             <!-- Clientes de ObamaCare -->
