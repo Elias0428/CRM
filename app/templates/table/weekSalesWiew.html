@@ -105,17 +105,13 @@
         {% for nombre, datos in resumen_semana.items %}
             {% if datos.clientes_obama or datos.clientes_supp %}
                 <h4 class="mt-4">{{ nombre }}: </h4>
-                {% for cliente in datos.clientes_obama %}
-                    <p> 📌 Amount: {{ forloop.counter }}</p>
-                {% endfor %}
             {% endif %}
 
             <!-- Clientes de ObamaCare -->
             {% if datos.clientes_obama %}
                 <h6>ObamaCare Clients</h6>
                 {% for cliente in datos.clientes_obama %}
-                <p> 📌 Amount: {{ forloop.counter }}</p>
-                    <li><strong>Name:</strong> {{ cliente.nombre }}, <strong>Policy Date:</strong> {{ cliente.fecha_poliza }}, <strong>Status:</strong> {{ cliente.estatus }}</li>
+                    <p> 📌{{ forloop.counter }} <strong>Name:</strong> {{ cliente.nombre }}, <strong>Policy Date:</strong> {{ cliente.fecha_poliza }}, <strong>Status:</strong> {{ cliente.estatus }} </p>
                 {% endfor %}
             {% endif %}
 
@@ -127,7 +123,7 @@
             {% if datos.clientes_supp %}
             <h5>Supp Client</h5>
                 {% for cliente in datos.clientes_supp %}
-                    <li><strong>Name:</strong> {{ cliente.nombre }}, <strong>Policy Date:</strong> {{ cliente.fecha_poliza }}, <strong>Status:</strong> {{ cliente.estatus }}</li>
+                    <p> 📌{{ forloop.counter }} <strong>Name:</strong> {{ cliente.nombre }}, <strong>Policy Date:</strong> {{ cliente.fecha_poliza }}, <strong>Status:</strong> {{ cliente.estatus }} </p>
                 {% endfor %}
             {% endif %}
 
