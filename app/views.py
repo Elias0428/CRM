@@ -3116,7 +3116,6 @@ def consent(request, obamacare_id):
     temporalyURL = None
 
     typeToken = True
-
    
     language = request.GET.get('lenguaje', 'es')  # Idioma predeterminado si no se pasa
     activate(language)
@@ -3172,7 +3171,8 @@ def consent(request, obamacare_id):
 def incomeLetter(request, obamacare_id):
     # Validar si el usuario no está logueado y verificar el token
     if isinstance(request.user, AnonymousUser):
-        result = validateTemporaryToken(request)
+        typeToken = True #Aqui le indico si buscar el token temporal por el medicare o client_id
+        result = validateTemporaryToken(request, typeToken)
         is_valid_token, *note = result
         if not is_valid_token:
             return HttpResponse(note)
