@@ -3118,7 +3118,7 @@ def consent(request, obamacare_id):
     typeToken = True
 
    
-    language = request.GET.get('lenguage', 'es')  # Idioma predeterminado si no se pasa
+    language = request.GET.get('lenguaje', 'es')  # Idioma predeterminado si no se pasa
     activate(language)
     # Validar si el usuario no está logueado y verificar el token
     if isinstance(request.user, AnonymousUser):
