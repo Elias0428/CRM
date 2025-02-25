@@ -4278,7 +4278,8 @@ def weekSalesSummary(week_number):
         "total_supp": total_supp,
         "totalActiveAca": totalActiveAca,
         "totalActiveSupp": totalActiveSupp,
-        "total_general": total_aca + total_supp
+        "total_general": total_aca + total_supp,
+        "Amount" : (total_aca - totalActiveAca) + (total_supp - totalActiveSupp)
     }
 
     # Rango de fechas de la semana seleccionada
