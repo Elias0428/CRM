@@ -149,6 +149,7 @@ class ObamaCare(models.Model):
     date_effective_coverage_end = models.DateField(null=True)
     username_carrier = models.CharField(max_length=200,null=True)
     password_carrier = models.CharField(max_length=200,null=True)
+    date_username = models.DateField(null=True)
     observation = models.TextField(null=True)
     is_active = models.BooleanField(default=True)
 
@@ -326,7 +327,6 @@ class ControlCall(models.Model):
     class Meta:
         db_table = 'ControlCall'
 
-
 class CommentBD(models.Model):
     bd_excel = models.ForeignKey(BdExcel, on_delete=models.CASCADE)
     agent_create = models.ForeignKey(User,on_delete=models.CASCADE )
@@ -337,7 +337,6 @@ class CommentBD(models.Model):
     class Meta:
         db_table = 'CommentBD'
 
-    
 class DocumentsClient(models.Model):
     file = models.FileField(
         upload_to='consents',
@@ -378,7 +377,6 @@ class IncomeLetter(models.Model):
     class Meta:
         db_table = 'IncomeLetter'
 
-
 class TemporaryToken(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null = True)
     medicare = models.ForeignKey(Medicare, on_delete=models.CASCADE, null = True)
@@ -394,3 +392,45 @@ class TemporaryToken(models.Model):
 
     class Meta:
         db_table = 'TemporaryToken'
+
+class DocumentObama(models.Model):
+    file = models.FileField(
+        upload_to='DocumentObama',
+        storage=S3Boto3Storage())
+    obama = models.ForeignKey(ObamaCare, on_delete=models.CASCADE)
+    agent_create = models.ForeignKey(User,on_delete=models.CASCADE )    
+
+    class Meta:
+        db_table = 'DocumentObama'
+
+class LettersCard(models.Model):
+    obama = models.ForeignKey(ObamaCare, on_delete=models.CASCADE)
+    agent_create = models.ForeignKey(User,on_delete=models.CASCADE )    
+    letters = models.BooleanField(default=False) 
+    dateLetters = models.DateField(null=True)
+    card = models.BooleanField(default=False) 
+    dateCard = models.DateField(null=True)
+
+    class Meta:
+        db_table = 'LettersCard'
+
+class AppointmentClient(models.Model):
+    obama = models.ForeignKey(ObamaCare, on_delete=models.CASCADE)
+    agent_create = models.ForeignKey(User,on_delete=models.CASCADE )    
+    appointment = models.TextField() 
+    dateAppointment = models.DateField()
+    timeAppointment = models.TimeField()
+    create_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'AppointmentClient'
+
+class UserCarrier(models.Model):
+    obama = models.ForeignKey(ObamaCare, on_delete=models.CASCADE)
+    agent_create = models.ForeignKey(User,on_delete=models.CASCADE)    
+    username_carrier = models.CharField(max_length=200,null=True)
+    password_carrier = models.CharField(max_length=200,null=True)
+    dateUserCarrier = models.DateField(null=True)
+
+    class Meta:
+        db_table = 'UserCarrier'

@@ -835,6 +835,30 @@ def editClient(request,client_id):
 def editClientObama(request, obamacare_id):
     obamacare = ObamaCare.objects.select_related('agent', 'client').filter(id=obamacare_id).first()
     dependents = Dependent.objects.select_related('obamacare').filter(obamacare=obamacare)
+    letterCard = LettersCard.objects.filter(obama = obamacare_id).first()
+    apppointment = AppointmentClient.objects.select_related('obama','agent_create').filter(obama = obamacare_id)
+    userCarrier = UserCarrier.objects.filter(obama = obamacare_id).first()
+
+    if letterCard.letters and letterCard.card:  newLetterCard = True
+    else: newLetterCard = False
+
+    newApppointment = True if apppointment else False
+    
+    RoleAuditar = [
+        obamacare.policyNumber, 
+        obamacare.status, 
+        obamacare.doc_migration, 
+        userCarrier,
+        newLetterCard,
+        newApppointment
+    ]
+
+    c = 0
+    for item in RoleAuditar: 
+        if item and item != 'None':
+            c += 1
+
+    percentage = int(c/7*100)
 
     if obamacare and obamacare.client:
         social_number = obamacare.client.social_security  # Campo real del modelo
@@ -858,17 +882,14 @@ def editClientObama(request, obamacare_id):
             else:
                 return JsonResponse({'status': 'error', 'message': 'Clave incorrecta o no hay número disponible'})
     
-
-    obsObama = ObservationAgent.objects.filter(id_obamaCare=obamacare_id)
-  
+    obsObama = ObservationAgent.objects.filter(id_obamaCare=obamacare_id)  
     users = User.objects.filter(role='C')
     list_drow = DropDownList.objects.filter(profiling_obama__isnull=False)
-
     obsCus = ObservationCustomer.objects.select_related('agent').filter(client_id=obamacare.client.id)
-
     consent = Consents.objects.filter(obamacare = obamacare_id )
     income = IncomeLetter.objects.filter(obamacare = obamacare_id)
     document = DocumentsClient.objects.filter(client = obamacare.client)
+    documentObama = DocumentObama.objects.filter(obama = obamacare_id)
 
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -878,13 +899,13 @@ def editClientObama(request, obamacare_id):
             editClient(request, obamacare.client.id)
             dependents= editDepentsObama(request, obamacare_id)
 
+            usernameCarrier(request, obamacare.id)
 
             # Campos de ObamaCare
             obamacare_fields = [
                 'taxes', 'planName', 'carrierObama', 'profiling', 'subsidy', 'ffm', 'required_bearing',
                 'doc_income', 'doc_migration', 'statusObama', 'work', 'date_effective_coverage',
-                'date_effective_coverage_end', 'observationObama', 'agent_usa_obamacare','usernameCarrier',
-                'passwordCarrier','policyNumber','premium'
+                'date_effective_coverage_end', 'observationObama', 'agent_usa_obamacare','policyNumber','premium'
             ]
             
             # Limpiar los campos de ObamaCare convirtiendo los vacíos en None
@@ -916,7 +937,6 @@ def editClientObama(request, obamacare_id):
                 date_effective_coverage_end_new = datetime.strptime(date_effective_coverage_end, '%m/%d/%Y').date()
             else:
                 date_effective_coverage_end_new = None
-
 
             # Recibir el valor seleccionado del formulario
             selected_profiling = request.POST.get('statusObama')
@@ -962,8 +982,6 @@ def editClientObama(request, obamacare_id):
             if sw :
                 color = 1   
 
-
-
             # Actualizar ObamaCare
             ObamaCare.objects.filter(id=obamacare_id).update(
                 taxes=cleaned_obamacare_data['taxes'],
@@ -985,10 +1003,49 @@ def editClientObama(request, obamacare_id):
                 premium=cleaned_obamacare_data['premium'],
                 date_effective_coverage=date_effective_coverage_new,
                 date_effective_coverage_end=date_effective_coverage_end_new,
-                observation=cleaned_obamacare_data['observationObama'],
-                username_carrier=cleaned_obamacare_data['usernameCarrier'],
-                password_carrier=cleaned_obamacare_data['passwordCarrier']
+                observation=cleaned_obamacare_data['observationObama']
             )
+
+           
+            #obtener informacion para guardarla en modelo de cartas y tarjetas del cliente
+            lettersPost = request.POST.get('letters')  
+            cardsPost = request.POST.get('card')  
+            idPost = request.POST.get('letterCardID') 
+
+            if lettersPost: 
+                dateLetters = letterCard.dateLetters
+                letters = letterCard.letters
+            else:
+                dateLetters = timezone.now().date() 
+                letters = request.POST.get('letters')
+
+            if cardsPost: 
+                dateCard = letterCard.dateCard
+                cards = letterCard.card
+            else:
+                dateCard = timezone.now().date()
+                cards = request.POST.get('cards')  
+
+            if idPost:
+
+                LettersCard.objects.filter(id = idPost).update(
+                obama=obamacare,
+                agent_create=request.user,
+                letters=letters,
+                dateLetters = dateLetters,
+                card=cards,
+                dateCard = dateCard )
+
+            else:
+
+                LettersCard.objects.create(
+                obama=obamacare,
+                agent_create=request.user,
+                letters=letters,
+                dateLetters = dateLetters,
+                card=cards,
+                dateCard = dateCard )
+
 
             return redirect('clientObamacare')
 
@@ -1025,10 +1082,51 @@ def editClientObama(request, obamacare_id):
         'dependents' : dependents,
         'consent': consent,
         'income': income,
-        'document' : document
+        'document' : document,
+        'documentObama' : documentObama,
+        'percentage': percentage,
+        'letterCard': letterCard,
+        'apppointment' : apppointment,
+        'userCarrier': userCarrier
     }
 
     return render(request, 'edit/editClientObama.html', context)
+
+def usernameCarrier(request, obamacare):
+
+    obama = ObamaCare.objects.filter(id=obamacare).first()
+    userrCarrier = UserCarrier.objects.filter(id = id)
+    id = request.POST.get('usernameCarrierID') 
+    username_carrier = request.POST.get('usernameCarrier') 
+    password_carrier = request.POST.get('passwordCarrier')  
+
+    if username_carrier is not None and password_carrier is not None:
+
+        # Conversión solo si los valores no son nulos o vacíos
+        if username_carrier is not None and password_carrier is not None:
+            date = timezone.now().date()
+        else:
+            username_carrier = userrCarrier.username_carrier
+            password_carrier = userrCarrier.password_carrier
+            date = userrCarrier.dateUserCarrier
+
+        if id:
+            UserCarrier.objects.filter(id = id).update(
+            obama = obama,
+            agent_create=request.user,
+            username_carrier=username_carrier,
+            password_carrier = password_carrier,
+            dateUserCarrier=date )
+
+        else:
+
+            UserCarrier.objects.create(
+            obama=obama,
+            agent_create=request.user,
+            username_carrier=username_carrier,
+            password_carrier = password_carrier,
+            dateUserCarrier=date  )
+
 
 @login_required(login_url='/login')
 def editClientSupp(request, supp_id):
@@ -4496,3 +4594,39 @@ def validarCita(request):
     
     except ValueError:
         return JsonResponse({"error": "Fecha no válida"}, status=400)
+
+@login_required(login_url='/login')
+def saveDocumentClient(request, obamacare_id):
+    
+    obama = ObamaCare.objects.get(id = obamacare_id)
+    documents = request.FILES.getlist('documents')  # Lista de archivos subidos
+
+    for document in documents:
+        photo = DocumentObama(
+            file=document,
+            obama=obama,
+            agent_create=request.user)  # Crear una nueva instancia de Foto
+        photo.save()  # Guardar el archivo en la base de datos
+
+    return redirect('editClientObama', obamacare_id)   
+
+@login_required(login_url='/login')
+def saveAppointment(request, obamacare_id):
+    
+    obama = ObamaCare.objects.get(id = obamacare_id)
+    appointment = request.POST.get('appointment') 
+    dateAppointment = request.POST.get('dateAppointment') 
+    timeAppointment = request.POST.get('timeAppointment') 
+
+    # Conversión de date a la BD requerido
+    dateAppointmentNew = datetime.strptime(dateAppointment, '%m/%d/%Y').date()          
+
+    AppointmentClient.objects.create(
+        obama=obama,
+        agent_create=request.user,
+        appointment=appointment,
+        dateAppointment = dateAppointmentNew,
+        timeAppointment=timeAppointment,
+    )
+
+    return redirect('editClientObama', obamacare_id)   

@@ -56,6 +56,8 @@ urlpatterns = [
     path('sale/', views.sale, name='sale'),
 
     path('editClientObama/<obamacare_id>/', views.editClientObama, name='editClientObama'),
+    path('saveDocumentClient/<int:obamacare_id>/', views.saveDocumentClient, name='saveDocumentClient'),
+    path('saveAppointment/<int:obamacare_id>/', views.saveAppointment, name='saveAppointment'),
     path('editClientSupp/<supp_id>/', views.editClientSupp, name='editClientSupp'),
     
     path('formCreateAlert/', views.formCreateAlert, name='formCreateAlert'),
