@@ -202,6 +202,9 @@ class Payments(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     # amount = models.DecimalField(max_digits=6, decimal_places=2) esto lo guardo aqui para un futuro
 
+    class Meta:
+        db_table = 'payments'
+
 class ObservationAgent(models.Model):
     id_client = models.ForeignKey(Client, on_delete=models.CASCADE)
     id_obamaCare = models.ForeignKey(ObamaCare, on_delete=models.CASCADE, null=True, blank=True)
