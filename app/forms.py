@@ -33,6 +33,12 @@ class DepentForm(forms.ModelForm):
         fields = '__all__'
         exclude = ['client','obamacare','date_birth']
 
+class PaymentsForm(forms.ModelForm):
+    class Meta:
+        model = Payments
+        fields = '__all__'
+        exclude = ['agent']
+
 class ClientAlertForm(forms.ModelForm):
     class Meta:
         model = ClientAlert

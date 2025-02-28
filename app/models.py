@@ -195,6 +195,13 @@ class Supp(models.Model):
     class Meta:
         db_table = 'supp'
 
+class Payments(models.Model):
+    obamaCare = models.ForeignKey(ObamaCare, on_delete=models.CASCADE)
+    agent = models.ForeignKey(User, on_delete=models.CASCADE)
+    month = models.CharField(max_length=20)
+    created_at = models.DateTimeField(auto_now_add=True)
+    # amount = models.DecimalField(max_digits=6, decimal_places=2) esto lo guardo aqui para un futuro
+
 class ObservationAgent(models.Model):
     id_client = models.ForeignKey(Client, on_delete=models.CASCADE)
     id_obamaCare = models.ForeignKey(ObamaCare, on_delete=models.CASCADE, null=True, blank=True)

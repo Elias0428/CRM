@@ -75,6 +75,8 @@ urlpatterns = [
     path('fetchSupp/<client_id>/', views.fetchSupp, name='fetchSupp'),
     path('fetchDependent/<client_id>/', views.fetchDependent, name='fetchDependent'),
 
+    path('fetchPaymentsMonth/', views.fetchPaymentsMonth, name='fetchPaymentsMonth'),
+
     path('formCreatePlan/deleteDependent/<int:dependent_id>/', views.delete_dependent, name='delete_dependent'),
     path('formCreatePlan/deleteSupp/<int:supp_id>/', views.delete_supp, name='delete_supp'),
 

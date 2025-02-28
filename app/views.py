@@ -34,6 +34,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 from urllib.parse import urlencode
 
 # Third-party libraries
@@ -844,6 +845,12 @@ def editClientObama(request, obamacare_id):
     else: 
         newLetterCard = False
 
+    #Obtener todos los registros de meses pagados de la poliza
+    monthsPaid = Payments.objects.filter(obamaCare_id=obamacare.id)
+
+    #Obtener todo los meses en ingles
+    monthInEnglish = [calendar.month_name[i] for i in range(1, 13)]
+
     newApppointment = True if apppointment else False
     
     RoleAuditar = [
@@ -1090,10 +1097,24 @@ def editClientObama(request, obamacare_id):
         'letterCard': letterCard,
         'apppointment' : apppointment,
         'userCarrier': userCarrier,
-        'c':c
+        'c':c,
+        'monthInEnglish':monthInEnglish,
+        'monthsPaid':monthsPaid,
     }
 
     return render(request, 'edit/editClientObama.html', context)
+
+@csrf_exempt
+def fetchPaymentsMonth(request):
+    form = PaymentsForm(request.POST)
+    if form.is_valid():
+        payment = form.save(commit=False)
+        payment.agent = request.user
+        payment.save()
+        return JsonResponse({'success': True, 'message': 'Payment creado correctamente'})
+    else:
+        # Si el formulario no es válido, devolvemos los errores en formato JSON
+        return JsonResponse({'success': False, 'errors': form.errors}, status=400)
 
 def usernameCarrier(request, obamacare):
 

@@ -67,6 +67,23 @@
 			100% { transform: rotate(360deg); }
 		}
 
+		.modal-content {
+			border-radius: 10px;
+			box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+		}
+
+		.table td {
+			font-weight: 450;
+			color: #333;
+		}
+
+		/* Centrar la columna Option y moverla un poco a la derecha */
+		.table th:nth-child(2), 
+		.table td:nth-child(2) {
+			text-align: center; /* Centra el texto y el switch */
+			padding-left: 20px; /* Ajusta según lo necesario */
+		}
+
 	</style>
 	
 {% endblock %}
@@ -582,6 +599,9 @@
 						<button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#modalAppointment">
 							Enter Appointment
 						</button>
+						<button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#modalPayments">
+							Enter Payments
+						</button>
 					{% endif %} 
 					<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalVerTexto">
 						See Observations
@@ -876,6 +896,48 @@
 						</div>
 					</div>
 
+					<!-- Modal para ver los pagos -->
+					<div class="modal fade" id="modalPayments" tabindex="-1" aria-labelledby="modalPayments" aria-hidden="true">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="verAppointment">Enter Payments</h5>
+									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+								</div>
+								<div class="modal-body">
+									<div class="table-responsive" >
+										<table id="paymentsTable" class="table" >
+											<thead>
+												<tr>
+													<th scope="col">Month</th>
+													<th scope="col">Option</th>
+												</tr>
+											</thead>
+											<tbody>
+												{% for month in monthInEnglish %}
+												<tr class="">
+													<td scope="row">{{month}}</td>
+													<td>
+														<label class="switch">
+															<input value="{{month}}" type="checkbox" 
+															{% for payMonth in monthsPaid %}
+															{% if month == payMonth.month %}checked disabled{% endif %}
+															{% endfor %}
+															>
+															<span class="slider round"></span>
+														</label>
+													</td>
+												</tr>
+												{% endfor %}
+											</tbody>
+										</table>
+									</div>
+									
+								</div>
+							</div>
+						</div>
+					</div>
+
 				</div>							
             </div>			
         </div>
@@ -935,6 +997,12 @@
 	<!--app JS-->
 	<script src="{% static "assets/js/app.js" %}"></script>
 	<script src="{% static "assets/js/blockSocial.js" %}"></script>
+
+	<!-- Scripts Payments -->
+	<script>
+		var obamacare_id = '{{obamacare.id}}'
+	</script>
+	<script src="{% static 'assets/js/fetchPayments.js' %}"></script>
 	{% if request.user.role == 'A' %}
 		<script>
 			document.addEventListener('DOMContentLoaded', function () {
