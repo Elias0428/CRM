@@ -839,8 +839,10 @@ def editClientObama(request, obamacare_id):
     apppointment = AppointmentClient.objects.select_related('obama','agent_create').filter(obama = obamacare_id)
     userCarrier = UserCarrier.objects.filter(obama = obamacare_id).first()
 
-    if letterCard.letters and letterCard.card:  newLetterCard = True
-    else: newLetterCard = False
+    if letterCard and letterCard.letters and letterCard.card: 
+        newLetterCard = True
+    else: 
+        newLetterCard = False
 
     newApppointment = True if apppointment else False
     
@@ -1087,7 +1089,8 @@ def editClientObama(request, obamacare_id):
         'percentage': percentage,
         'letterCard': letterCard,
         'apppointment' : apppointment,
-        'userCarrier': userCarrier
+        'userCarrier': userCarrier,
+        'c':c
     }
 
     return render(request, 'edit/editClientObama.html', context)

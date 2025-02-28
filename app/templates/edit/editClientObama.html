@@ -976,23 +976,33 @@
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
 
-			Swal.fire({
-			title: "Action required.",
-			width: 500,
-			padding: "2em",
-			icon:"error",
-			text: "You won't be able to revert this!",
-			text: "You won't be able to revert this!",
-			confirmButtonColor: "#3085d6",
-			confirmButtonText: "OK",
-			background: "#fff url(https://sweetalert2.github.io/images/trees.png)",
-			backdrop: `
-				rgba(255,0,0,0.28)
-				url("https://sweetalert2.github.io/images/nyan-cat.gif")
-				left top
-				no-repeat
-			`
-			});
+			let limit = parseInt('{{ c }}');
+			console.log(limit); // Ahora es un número
+
+			if (limit < 6){
+				Swal.fire({
+				title: "Action required.",
+				width: 500,
+				padding: "2em",
+				icon:"error",
+				html: `
+					{% if not letterCard.letters %} <p style="line-height: 0.6;">❌ <b>Letters</b> </p> {% endif %}
+					{% if not letterCard.card %} <p style="line-height: 0.6;"> ❌ <b>Card</b> </p>  {% endif %}
+					{% if not userCarrier.username_carrier %} <p style="line-height: 0.6;">❌ <b>Username Carrier</b> </p>  {% endif %}				
+					{% if not obamacare.status == 'ACTIVE'  %} <p style="line-height: 0.6;">❌ <b>Status</b> </p>  {% endif %}
+					{% if not obamacare.doc_migration %} <p style="line-height: 0.6;">❌ <b>Migration Document</b> </p>  {% endif %}
+					{% if not obamacare.doc_income %} <p style="line-height: 0.6;">❌ <b>Income Document</b> </p>  {% endif %}
+					{% if obamacare.policyNumber == '' or obamacare.policyNumber == Null or obamacare.policyNumber == 'None'  %}  <p style="line-height: 0.6;">❌ <b>Policy Number</b> </p>  {% endif %}
+					{% if not apppointment %} <p style="line-height: 0.6;">❌ <b>Apppointment</b> </p>  {% endif %}
+					
+				`,
+				confirmButtonColor: "#3085d6",
+				confirmButtonText: "OK",
+				background: "#fff url(https://sweetalert2.github.io/images/trees.png)",
+				backdrop: `	rgba(255,0,0,0.28)`
+				});
+
+			}
 		
 
 
