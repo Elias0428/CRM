@@ -97,7 +97,7 @@
             {% if datos.clientes_obama %}
                 {% for cliente in datos.clientes_obama %}
                     {% if cliente.estatus_color != 3 %}
-                        <p> 📌{{ forloop.counter }} <strong>Name:</strong> {{ cliente.nombre }}, <strong>Policy Date:</strong> {{ cliente.fecha_poliza }}, <strong>Status:</strong> {{ cliente.estatus }} </p>
+                        <p> 📌 <strong>Name:</strong> {{ cliente.nombre }}, <strong>Policy Date:</strong> {{ cliente.fecha_poliza }}, <strong>Status:</strong> {{ cliente.estatus }} </p>
                     {% endif %}
                 {% endfor %}
             {% endif %}
@@ -110,7 +110,7 @@
             {% if datos.clientes_supp %}
                 {% for cliente in datos.clientes_supp %}
                     {% if cliente.estatus_color != 3 %}
-                        <p> 📌{{ forloop.counter }} <strong>Name:</strong> {{ cliente.nombre }}, <strong>Policy Date:</strong> {{ cliente.fecha_poliza }}, <strong>Status:</strong> {{ cliente.estatus }} </p>
+                        <p> 📌 <strong>Name:</strong> {{ cliente.nombre }}, <strong>Policy Date:</strong> {{ cliente.fecha_poliza }}, <strong>Status:</strong> {{ cliente.estatus }} </p>
                     {% endif %}
                 {% endfor %}
             {% endif %}

@@ -680,6 +680,7 @@ def clientObamacare(request):
     danieska = 'DANIESKA LOPEZ SEQUEIRA - NPN 20134539'
     rodrigo = 'RODRIGO G CANTON - NPN 20670005'
     zohira = 'ZOHIRA RAQUEL DUARTE AGUILAR - NPN 19582295'
+    vladimir = 'VLADIMIR DE LA HOZ FONTALVO - NPN 19915005'
     
     if request.user.role == 'Admin':       
         obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
@@ -687,6 +688,9 @@ def clientObamacare(request):
     elif request.user.username == 'zohiraDuarte':
        obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
             truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True, agent_usa = zohira).order_by('-created_at') 
+    elif request.user.username == 'vladimirDeLaHoz':
+        obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
+            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True, agent_usa = vladimir).order_by('-created_at')
     else:
         obamaCare = ObamaCare.objects.select_related('agent', 'client').annotate(
             truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True).order_by('-created_at')      
@@ -848,6 +852,9 @@ def editClientObama(request, obamacare_id):
     #Obtener todos los registros de meses pagados de la poliza
     monthsPaid = Payments.objects.filter(obamaCare_id=obamacare.id)
 
+    #calculo de Status
+    obamaStatus = True if obamacare.status == 'ACTIVE' else False
+
     #Obtener todo los meses en ingles
     monthInEnglish = [calendar.month_name[i] for i in range(1, 13)]
 
@@ -855,7 +862,7 @@ def editClientObama(request, obamacare_id):
     
     RoleAuditar = [
         obamacare.policyNumber, 
-        obamacare.status, 
+        obamaStatus, 
         obamacare.doc_migration, 
         userCarrier,
         newLetterCard,
@@ -866,6 +873,8 @@ def editClientObama(request, obamacare_id):
     for item in RoleAuditar: 
         if item and item != 'None':
             c += 1
+            print(c)
+            print(item)
 
     percentage = int(c/7*100)
 
