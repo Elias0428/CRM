@@ -147,8 +147,6 @@ class ObamaCare(models.Model):
     work = models.CharField(max_length=50)
     date_effective_coverage = models.DateField(null=True)
     date_effective_coverage_end = models.DateField(null=True)
-    username_carrier = models.CharField(max_length=200,null=True)
-    password_carrier = models.CharField(max_length=200,null=True)
     date_username = models.DateField(null=True)
     observation = models.TextField(null=True)
     is_active = models.BooleanField(default=True)
