@@ -1800,12 +1800,15 @@ def customerPerformance(request):
         agent_performance[full_name]['payments'] = payments.filter(agent=agent).count()
 
         #Meta personal
-        if percentageEnroledActiveCms > 89.9 and percentageEnroledActiveCms > 89.9:
+        if percentageEnroledActiveCms == 100 and percentageEnroledActiveCms == 100:
             agent_performance[full_name]['personalGoal'] = 1
-        elif percentageEnroledActiveCms > 79.9 and percentageEnroledActiveCms > 79.9:
+        elif percentageEnroledActiveCms > 89.9 and percentageEnroledActiveCms > 89.9:
             agent_performance[full_name]['personalGoal'] = 2
-        else:
+        elif percentageEnroledActiveCms > 79.9 and percentageEnroledActiveCms > 79.9:
             agent_performance[full_name]['personalGoal'] = 3
+        else:
+            agent_performance[full_name]['personalGoal'] = 4
+            
 
 
     # Evitar divisiones por cero en todos los cálculos

@@ -53,32 +53,37 @@
             margin: 0;
             padding-left: 20px;
         }
-        .note-success {
+        .note {
+            padding: 10px;
+            border-left: 5px solid;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+
+        .performance-perfect {
+            background: #e0f7fa;
+            border-left-color: #00acc1;
+            color: #006064;
+        }
+
+        .performance-excellent {
             background: #d4edda;
-            padding: 10px;
-            border-left: 5px solid #28a745;
-            border-radius: 5px;
+            border-left-color: #28a745;
             color: #155724;
-            margin-top: 15px;
         }
 
-        .note-warning {
+        .performance-regular {
             background: #fff3cd;
-            padding: 10px;
-            border-left: 5px solid #ffc107;
-            border-radius: 5px;
+            border-left-color: #ffc107;
             color: #856404;
-            margin-top: 15px;
         }
 
-        .note-danger {
+        .performance-low {
             background: #f8d7da;
-            padding: 10px;
-            border-left: 5px solid #dc3545;
-            border-radius: 5px;
+            border-left-color: #dc3545;
             color: #721c24;
-            margin-top: 15px;
         }
+
 
     </style>
 {% endblock %}
@@ -189,17 +194,21 @@
             </div>
 
             {% if details.personalGoal == 1 %}
-            <div class="note-success">
-                ✅ <strong>Nota:</strong> Desempeño sobresaliente. Este agente ha superado el 90% de efectividad, demostrando un alto nivel de compromiso y eficiencia. Se recomienda reconocer su esfuerzo y tomarlo como referencia para el equipo.
-            </div>
+                <div class="note performance-perfect">
+                    🏆 <strong>Nota:</strong> Desempeño impecable. Este agente ha logrado un <strong>100% de efectividad</strong>, demostrando un dominio absoluto de sus funciones. Se recomienda reconocer su rendimiento y analizar sus estrategias para replicarlas en el equipo. ¡Un verdadero referente!
+                </div>
             {% elif details.personalGoal == 2 %}
-            <div class="note-warning">
-                ⚠️ <strong>Nota:</strong> Desempeño aceptable, pero con margen de mejora. El agente ha alcanzado la meta mínima, aunque aún hay oportunidades para optimizar su rendimiento. Se sugiere seguimiento para reforzar sus puntos débiles.
-            </div>
+                <div class="note performance-excellent">
+                    ✅ <strong>Nota:</strong> Desempeño sobresaliente. Este agente ha superado el <strong>90% de efectividad</strong>, demostrando un alto nivel de compromiso y eficiencia. Se recomienda reconocer su esfuerzo y tomarlo como referencia para el equipo.
+                </div>
+            {% elif details.personalGoal == 3 %}
+                <div class="note performance-regular">
+                    ⚠️ <strong>Nota:</strong> Desempeño aceptable, pero con margen de mejora. El agente ha alcanzado la meta mínima, aunque aún hay oportunidades para optimizar su rendimiento. Se sugiere seguimiento para reforzar sus puntos débiles.
+                </div>
             {% else %}
-            <div class="note-danger">
-                ❌ <strong>Nota:</strong> Bajo desempeño, requiere revisión. El agente no ha alcanzado el 80% de efectividad. Es necesario analizar las causas y tomar acciones correctivas, ya sea con capacitación o ajuste de estrategias.
-            </div>
+                <div class="note performance-low">
+                    ❌ <strong>Nota:</strong> Bajo desempeño, requiere revisión. El agente no ha alcanzado el <strong>80% de efectividad</strong>. Es necesario analizar las causas y tomar acciones correctivas, ya sea con capacitación o ajuste de estrategias.
+                </div>
             {% endif %}
         </div>
     </div>
