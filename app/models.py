@@ -406,7 +406,9 @@ class DocumentObama(models.Model):
         upload_to='DocumentObama',
         storage=S3Boto3Storage())
     obama = models.ForeignKey(ObamaCare, on_delete=models.CASCADE)
-    agent_create = models.ForeignKey(User,on_delete=models.CASCADE )    
+    agent_create = models.ForeignKey(User,on_delete=models.CASCADE )   
+    name =  models.CharField(max_length=255, default="Unnamed Document")
+    create_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'DocumentObama'
