@@ -53,14 +53,33 @@
             margin: 0;
             padding-left: 20px;
         }
-        .note {
-            background: #ffe0e0;
+        .note-success {
+            background: #d4edda;
             padding: 10px;
-            border-left: 5px solid red;
+            border-left: 5px solid #28a745;
             border-radius: 5px;
-            color: #a00;
+            color: #155724;
             margin-top: 15px;
         }
+
+        .note-warning {
+            background: #fff3cd;
+            padding: 10px;
+            border-left: 5px solid #ffc107;
+            border-radius: 5px;
+            color: #856404;
+            margin-top: 15px;
+        }
+
+        .note-danger {
+            background: #f8d7da;
+            padding: 10px;
+            border-left: 5px solid #dc3545;
+            border-radius: 5px;
+            color: #721c24;
+            margin-top: 15px;
+        }
+
     </style>
 {% endblock %}
 {% block page_content %}
@@ -122,9 +141,19 @@
             </ul>
         </div>
 
-        <div class="note">
-            ⚠️ <strong>Nota:</strong> Un(a) Customer Service con estos números debe hablar con el abogado.
+        {% if groupGoal == 1 %}
+        <div class="note-success">
+            ✅ <strong>Nota:</strong> ¡Felicidades! El equipo ha logrado un desempeño excepcional con más del 90% de enrolamiento y activación en CMS. Sigamos manteniendo este nivel de eficiencia y calidad en el servicio.
         </div>
+        {% elif groupGoal == 2 %}
+        <div class="note-warning">
+            ⚠️ <strong>Nota:</strong> El equipo ha cumplido con la meta mínima establecida, pero hay oportunidad de mejora. Se recomienda analizar posibles optimizaciones en los procesos para aumentar la eficiencia.
+        </div>
+        {% else %}
+        <div class="note-danger">
+            ❌ <strong>Nota:</strong> El equipo no ha cumplido con la meta establecida. Se recomienda revisar las estrategias de enrolamiento y activación, así como evaluar el desempeño del departamento de Customer Service para tomar acciones correctivas.
+        </div>
+        {% endif %}
     </div>
 </div>
 <div class="row">
@@ -159,9 +188,19 @@
                 </ul>
             </div>
 
-            <div class="note">
-                ⚠️ <strong>Nota:</strong> Un(a) Customer Service con estos números debe hablar con el abogado. (Esta nota esta por definirse con Jhonfer)
+            {% if details.personalGoal == 1 %}
+            <div class="note-success">
+                ✅ <strong>Nota:</strong> Desempeño sobresaliente. Este agente ha superado el 90% de efectividad, demostrando un alto nivel de compromiso y eficiencia. Se recomienda reconocer su esfuerzo y tomarlo como referencia para el equipo.
             </div>
+            {% elif details.personalGoal == 2 %}
+            <div class="note-warning">
+                ⚠️ <strong>Nota:</strong> Desempeño aceptable, pero con margen de mejora. El agente ha alcanzado la meta mínima, aunque aún hay oportunidades para optimizar su rendimiento. Se sugiere seguimiento para reforzar sus puntos débiles.
+            </div>
+            {% else %}
+            <div class="note-danger">
+                ❌ <strong>Nota:</strong> Bajo desempeño, requiere revisión. El agente no ha alcanzado el 80% de efectividad. Es necesario analizar las causas y tomar acciones correctivas, ya sea con capacitación o ajuste de estrategias.
+            </div>
+            {% endif %}
         </div>
     </div>
     {% endfor %}

@@ -1734,7 +1734,7 @@ def customerPerformance(request):
         next_month = now.replace(day=28) + timedelta(days=4)  # Garantiza que pasamos al siguiente mes
         end_date = next_month.replace(day=1, hour=23, minute=59, second=59, microsecond=999999) - timedelta(days=1)
 
-    obamacare = ObamaCare.objects.filter(created_at__range=(start_date, end_date))
+    obamacare = ObamaCare.objects.filter(created_at__range=(start_date, end_date), is_active=1)
     totalEnroled = obamacare.exclude(profiling='NO')
     totalNoEnroled = obamacare.filter(profiling='NO').count()
     totalOtherParty = obamacare.filter(status__in=('OTHER PARTY', 'OTHER AGENT')).count()
@@ -1747,10 +1747,8 @@ def customerPerformance(request):
     appointments = AppointmentClient.objects.select_related('agent_create').filter(created_at__range=(start_date, end_date))
     payments = Payments.objects.select_related('agent').filter(created_at__range=(start_date, end_date))
 
-    print(payments)
-
-    # Obtener agentes con rol 'C'
-    agents = User.objects.filter(role='C')
+    # Obtener agentes Customer, excluyendo a Maria Tinoco y Carmen Rodriguez
+    agents = User.objects.filter(role='C', is_active=1).exclude(username__in=('MariaCaTi', 'CarmenR'))
     agent_performance = {}
 
     for agent in agents:
@@ -1758,6 +1756,9 @@ def customerPerformance(request):
         profilingAgent = obamacare.filter(profiling=full_name)
         enroledActiveCmsPerAgent = profilingAgent.filter(status='ACTIVE').count()
         enroledNoActiveCmsPerAgent = profilingAgent.exclude(status='ACTIVE').count()
+        percentageEnroledActiveCms = format_decimal(
+            (enroledActiveCmsPerAgent / profilingAgent.count()) * 100
+        ) if profilingAgent.count() else 0
 
         # Inicializar la clave si no existe
         if full_name not in agent_performance:
@@ -1772,7 +1773,8 @@ def customerPerformance(request):
                 'percentageTotalNoActiveCms': 0,
                 'documents': 0,
                 'appointments': 0,
-                'payments': 0
+                'payments': 0,
+                'personalGoal': 0
             }
 
         # Asignar valores con validación de división por cero
@@ -1781,9 +1783,7 @@ def customerPerformance(request):
             (profilingAgent.count() / obamacare.count()) * 100
         ) if obamacare.count() else 0
         agent_performance[full_name]['enroledActiveCms'] = enroledActiveCmsPerAgent
-        agent_performance[full_name]['percentageEnroledActiveCms'] = format_decimal(
-            (enroledActiveCmsPerAgent / profilingAgent.count()) * 100
-        ) if profilingAgent.count() else 0
+        agent_performance[full_name]['percentageEnroledActiveCms'] = percentageEnroledActiveCms
         agent_performance[full_name]['enroledNoActiveCms'] = enroledNoActiveCmsPerAgent
         agent_performance[full_name]['percentageEnroledNoActiveCms'] = format_decimal(
             (enroledNoActiveCmsPerAgent / profilingAgent.count()) * 100
@@ -1799,23 +1799,46 @@ def customerPerformance(request):
         agent_performance[full_name]['appointments'] = appointments.filter(agent_create=agent).count()
         agent_performance[full_name]['payments'] = payments.filter(agent=agent).count()
 
+        #Meta personal
+        if percentageEnroledActiveCms > 89.9 and percentageEnroledActiveCms > 89.9:
+            agent_performance[full_name]['personalGoal'] = 1
+        elif percentageEnroledActiveCms > 79.9 and percentageEnroledActiveCms > 79.9:
+            agent_performance[full_name]['personalGoal'] = 2
+        else:
+            agent_performance[full_name]['personalGoal'] = 3
+
 
     # Evitar divisiones por cero en todos los cálculos
     obamacare_count = obamacare.count() if obamacare.exists() else 1
     totalEnroled_count = totalEnroled.count() if totalEnroled.exists() else 1
+
+    #Verificacion de bono:
+    percentageEnroled = (totalEnroled.count() / obamacare_count) * 100
+    percentageEnroledActiveCms = (enroledActiveCms / totalEnroled_count) * 100
+    if percentageEnroled > 89.9 and percentageEnroledActiveCms > 89.9:
+        groupGoal = 1
+    elif percentageEnroled > 79.9 and percentageEnroledActiveCms > 79.9:
+        groupGoal = 2
+    else:
+        groupGoal = 3
+
+    #Diferencia entre total
+    totalAgentsPayments = 0
+    for agent, details in agent_performance.items():
+        totalAgentsPayments += details['payments']
 
     context = {
         'start_date': start_date,
         'end_date': end_date,
         'totalObamacare': obamacare.count(),
         'totalEnroled': totalEnroled.count(),
-        'percentageEnroled': format_decimal((totalEnroled.count() / obamacare_count) * 100),
-        'totalNoEnroled': totalNoEnroled,
+        'percentageEnroled': format_decimal(percentageEnroled),
+        'totalNoEnroled': format_decimal(totalNoEnroled),
         'percentageNoEnroled': format_decimal((totalNoEnroled / obamacare_count) * 100),
         'totalOtherParty': totalOtherParty,
         'percentageOtherParty': format_decimal((totalOtherParty / obamacare_count) * 100),
         'enroledActiveCms': enroledActiveCms,
-        'percentageEnroledActiveCms': format_decimal((enroledActiveCms / totalEnroled_count) * 100),
+        'percentageEnroledActiveCms': format_decimal(percentageEnroledActiveCms),
         'totalEnroledNoActiveCms': totalEnroledNoActiveCms,
         'percentageNoActiveCms': format_decimal((totalEnroledNoActiveCms / totalEnroled_count) * 100),
         'totalActiveCms': totalActiveCms,
@@ -1826,6 +1849,10 @@ def customerPerformance(request):
         'documentsTotal': documents.count(),
         'paymentsTotal':payments.count(),
         'agentPerformance': agent_performance,
+
+        #Messages
+        'totalAgentsPayments':totalAgentsPayments,
+        'groupGoal':groupGoal
     }
     return render(request, 'reports/customerPerformance.html', context)
 
