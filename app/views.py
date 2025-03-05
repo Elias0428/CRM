@@ -20,6 +20,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.text import Truncator  # Importar herramienta para truncar textos
 from django.utils.translation import activate
+from distutils.util import strtobool
 
 
 # Django core libraries
@@ -873,10 +874,8 @@ def editClientObama(request, obamacare_id):
     for item in RoleAuditar: 
         if item and item != 'None':
             c += 1
-            print(c)
-            print(item)
 
-    percentage = int(c/7*100)
+    percentage = int(c/6*100)
 
     if obamacare and obamacare.client:
         social_number = obamacare.client.social_security  # Campo real del modelo
@@ -1026,8 +1025,8 @@ def editClientObama(request, obamacare_id):
 
            
             #obtener informacion para guardarla en modelo de cartas y tarjetas del cliente
-            lettersPost = request.POST.get('letters')  
-            cardsPost = request.POST.get('card')  
+            lettersPost = strtobool(request.POST.get('letters', 'False'))
+            cardsPost = strtobool(request.POST.get('card', 'False'))
             idPost = request.POST.get('letterCardID') 
 
             if lettersPost: 
@@ -1127,9 +1126,9 @@ def fetchPaymentsMonth(request):
 
 def usernameCarrier(request, obamacare):
 
-    obama = ObamaCare.objects.filter(id=obamacare).first()
-    userrCarrier = UserCarrier.objects.filter(id = id)
+    obama = ObamaCare.objects.filter(id=obamacare).first()   
     id = request.POST.get('usernameCarrierID') 
+    if id: userrCarrier = UserCarrier.objects.filter(id = id)
     username_carrier = request.POST.get('usernameCarrier') 
     password_carrier = request.POST.get('passwordCarrier')  
 
@@ -1150,6 +1149,8 @@ def usernameCarrier(request, obamacare):
             username_carrier=username_carrier,
             password_carrier = password_carrier,
             dateUserCarrier=date )
+        
+        
 
         else:
 
