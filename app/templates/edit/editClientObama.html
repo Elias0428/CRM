@@ -848,7 +848,7 @@
 
 											{% for documents in document %}													
 												<li class="list-group-item">
-													<strong>Documents #{{forloop.counter}}:</strong> <a href="{{ documents.file.url }}" target="_blank" >View  <i class="lni lni-display"></i></a> 
+													<strong>Documents Consent #{{forloop.counter}}:</strong> <a href="{{ documents.file.url }}" target="_blank" >View  <i class="lni lni-display"></i></a> 
 												</li>
 											{% endfor %}
 
@@ -858,7 +858,7 @@
 
 											{% for documents in documentObama %}															
 												<li class="list-group-item">
-													<strong>Documents #{{forloop.counter}}:</strong> <a href="{{ documents.file.url }}" target="_blank" >View  <i class="lni lni-display"></i></a> 
+													<strong>{{documents.name}}:</strong> <a href="{{ documents.file.url }}" target="_blank" >View  <i class="lni lni-display"></i></a> 
 												</li>
 											{% endfor %}
 
@@ -961,9 +961,6 @@
 	<script src="{% static "assets/plugins/datatable/js/dataTables.bootstrap5.min.js" %}"></script>
 
 
-
- 
-
 	<!-- Agregar Flatpickr -->
 	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -1060,9 +1057,6 @@
 				});
 
 			}
-		
-
-
 
 			const selectElement = document.querySelector('#textoIngresados');
 			const choices = new Choices(selectElement, {
@@ -1092,12 +1086,6 @@
 			});
 		});	
 	</script>
-
-
-
-
-
-
 	
 
 {% endblock %}

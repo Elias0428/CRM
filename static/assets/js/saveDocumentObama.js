@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!error) {
                 const input = document.createElement("input");
                 input.type = "text";
-                input.placeholder = `Nombre para ${fileItem.filename}`;
+                input.placeholder = `Name for ${fileItem.filename}`;
                 input.name = "filenames"; // ✅ Se almacena en una lista en el backend
                 input.className = "form-control mt-2";
                 input.dataset.fileId = fileItem.id;
@@ -45,8 +45,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // 🚀 Mostrar un mensaje de "Subiendo archivos..."
             Swal.fire({
-                title: "Subiendo archivos...",
-                text: "Por favor, espera un momento.",
+                title: "Uploading files...",
+                text: "Please wait a moment.",
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading();
@@ -73,10 +73,10 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(res => {
                 if (res.success) {
                     Swal.fire({
-                        title: "¡Éxito!",
+                        title: "Success!",
                         text: res.message,
                         icon: "success",
-                        confirmButtonText: "Continuar"
+                        confirmButtonText: "Continue"
                     }).then(() => {
                         window.location.href = res.redirect_url;
                     });
@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => {
                 console.error("Error:", error);
-                Swal.fire("Error", "Ocurrió un problema al subir los archivos", "error");
+                Swal.fire("Error", "A problem occurred while uploading files", "error");
             });
         });
 
@@ -94,6 +94,6 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Error en FilePond:", error);
         });
     } else {
-        console.error("El elemento #pdfUploader no se encontró.");
+        console.error("The element #pdfUploader was not found.");
     }
 });

@@ -20,7 +20,6 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.text import Truncator  # Importar herramienta para truncar textos
 from django.utils.translation import activate
-from distutils.util import strtobool
 
 
 # Django core libraries
@@ -1022,11 +1021,10 @@ def editClientObama(request, obamacare_id):
                 date_effective_coverage_end=date_effective_coverage_end_new,
                 observation=cleaned_obamacare_data['observationObama']
             )
-
            
             #obtener informacion para guardarla en modelo de cartas y tarjetas del cliente
-            lettersPost = strtobool(request.POST.get('letters', 'False'))
-            cardsPost = strtobool(request.POST.get('card', 'False'))
+            lettersPost = request.POST.get('letters', 'false').lower() == "true"
+            cardsPost = request.POST.get('card', 'false').lower() == "true"
             idPost = request.POST.get('letterCardID') 
 
             if lettersPost: 
@@ -1178,7 +1176,6 @@ def usernameCarrier(request, obamacare):
             username_carrier=username_carrier,
             password_carrier = password_carrier,
             dateUserCarrier=date  )
-
 
 @login_required(login_url='/login')
 def editClientSupp(request, supp_id):
@@ -4796,7 +4793,6 @@ def saveDocumentClient(request, obamacare_id):
         return JsonResponse({"success": True, "message": "Archivos subidos correctamente.", "redirect_url": f"/editClientObama/{obamacare_id}/"})
     
     return JsonResponse({"success": False, "message": "Método no permitido."}, status=405)
-
 
 @login_required(login_url='/login')
 def saveAppointment(request, obamacare_id):
