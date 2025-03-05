@@ -34,6 +34,7 @@
                         <th>Name Client</th>
 						<th>Date</th>
 						<th>Obs</th>
+						{% if request.user.role == 'Admin' %} <th>Is Active</th> {% endif %}
 						<th>Option</th>
                     </tr>
                 </thead>
@@ -43,7 +44,8 @@
                         <td>{{alertClient.agent.first_name}} {{alertClient.agent.last_name}}</td>
                         <td>{{alertClient.name_client}}</td>
                         <td>{{alertClient.datetime}}</td>
-						<td>{{alertClient.truncated_contect}}</td>
+						<td>{{alertClient.truncated_contect}}</td> 
+						{% if request.user.role == 'Admin' %} <td>{{alertClient.is_active}}</td> {% endif %}						
 						<td>
 							<div class="d-flex order-actions">
 								<a href="{% url 'editAlert' alertClient.id %}" class=""><i class='bx bxs-edit'></i></a>

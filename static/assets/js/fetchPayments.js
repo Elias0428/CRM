@@ -22,7 +22,7 @@ function sendDataPayments() {
                 }
             });
         }else{
-            console.log(data.errors);
+            //console.log(data.errors);
             let messages = data.errors; // Obtenemos directamente el objeto de errores
                         
             let formattedMessage = "There seems to be some problems with the form:\n\n";
@@ -64,18 +64,46 @@ function toggleUserStatus(checkbox) {
     const formData = new FormData();
     formData.append('obamaCare', obamacare_id);
     formData.append('month', checkbox.value);
-    fetch(`/fetchPaymentsMonth/`, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())  // Procesar la respuesta (si es JSON)
-    .then(data => {
-        console.log(data.success)
-        if (data.success){
-            checkbox.disabled = true;
-        }
-    })
-    .catch(error => console.error('Error:', error));  // Manejo de errores
+
+    if (checkbox.checked) {
+
+        fetch(`/fetchPaymentsMonth/`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())  // Procesar la respuesta (si es JSON)
+        .then(data => {
+            //console.log(data.success)
+            if (data.success){
+                //console.log("User role:", data.role); // Debugging
+                if (data.success && data.role != "Admin") {
+                    checkbox.disabled = true;
+                }
+            }
+        })
+        .catch(error => console.error('Error:', error));  // Manejo de errores
+    } else {
+        // Si se desmarca el checkbox, eliminar el pago
+        fetch(`/fetchPaymentsMonth/`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                obamaCare: obamacare_id,
+                month: checkbox.value
+            })
+        })
+        .then(response => response.json())  
+        .then(data => {
+            if (data.success) {
+                console.log("Payment deleted successfully");
+            } else {
+                console.error("Error deleting payment:", data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
 }
 
 document.addEventListener('DOMContentLoaded', listenAllCheckInput);

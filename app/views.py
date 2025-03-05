@@ -1115,14 +1115,32 @@ def editClientObama(request, obamacare_id):
 @csrf_exempt
 def fetchPaymentsMonth(request):
     form = PaymentsForm(request.POST)
-    if form.is_valid():
-        payment = form.save(commit=False)
-        payment.agent = request.user
-        payment.save()
-        return JsonResponse({'success': True, 'message': 'Payment creado correctamente'})
-    else:
-        # Si el formulario no es válido, devolvemos los errores en formato JSON
-        return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+    if request.method == 'POST':
+        if form.is_valid():
+            payment = form.save(commit=False)
+            payment.agent = request.user
+            payment.save()
+            return JsonResponse({'success': True, 'message': 'Payment creado correctamente', 'role': request.user.role})
+        else:
+            # Si el formulario no es válido, devolvemos los errores en formato JSON
+            return JsonResponse({'success': False, 'errors': form.errors}, status=400)
+    elif request.method == 'DELETE':
+        try:
+            data = json.loads(request.body)
+            obamaCare = data.get('obamaCare')
+            month = data.get('month')
+
+            # Buscar y eliminar el pago
+            payment = Payments.objects.filter(obamaCare=obamaCare, month=month).first()
+            if payment:
+                payment.delete()
+                return JsonResponse({'success': True, 'message': 'Payment eliminado correctamente'})
+            else:
+                return JsonResponse({'success': False, 'message': 'Payment no encontrado'}, status=404)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'message': 'Invalid JSON'}, status=400)
+    return JsonResponse({'success': False, 'message': 'Método no permitido'}, status=405)
 
 def usernameCarrier(request, obamacare):
 
@@ -4754,18 +4772,31 @@ def validarCita(request):
 
 @login_required(login_url='/login')
 def saveDocumentClient(request, obamacare_id):
+    if request.method == "POST":
+        obama = get_object_or_404(ObamaCare, id=obamacare_id)
+        documents = request.FILES.getlist("documents")  # 📌 Recibe la lista de archivos
+        filenames = request.POST.getlist("filenames")  # 📌 Recibe la lista de nombres
+
+        if not documents:
+            return JsonResponse({"success": False, "message": "No se han subido archivos."})
+
+        for index, document in enumerate(documents):
+            # ✅ Usa el nombre si existe, si no, asigna "Documento sin nombre"
+            document_name = filenames[index].strip() if index < len(filenames) and filenames[index].strip() else document.name
+
+            # ✅ Guarda el documento con el nombre en la BD
+            DocumentObama.objects.create(
+                file=document,
+                name=document_name,  # ✅ Guardar nombre del documento
+                obama=obama,
+                agent_create=request.user
+            )
+
+        messages.success(request, "Archivos subidos correctamente.")
+        return JsonResponse({"success": True, "message": "Archivos subidos correctamente.", "redirect_url": f"/editClientObama/{obamacare_id}/"})
     
-    obama = ObamaCare.objects.get(id = obamacare_id)
-    documents = request.FILES.getlist('documents')  # Lista de archivos subidos
+    return JsonResponse({"success": False, "message": "Método no permitido."}, status=405)
 
-    for document in documents:
-        photo = DocumentObama(
-            file=document,
-            obama=obama,
-            agent_create=request.user)  # Crear una nueva instancia de Foto
-        photo.save()  # Guardar el archivo en la base de datos
-
-    return redirect('editClientObama', obamacare_id)   
 
 @login_required(login_url='/login')
 def saveAppointment(request, obamacare_id):
@@ -4787,3 +4818,15 @@ def saveAppointment(request, obamacare_id):
     )
 
     return redirect('editClientObama', obamacare_id)   
+
+
+def paymentClients(request):
+
+    payments = Payments.objects.values('month').annotate(total=Count('id')).order_by('month')
+
+
+    context = {
+        'payments' : payments
+    }
+
+    return render(request, 'table/paymentClients.html',context)

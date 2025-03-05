@@ -120,4 +120,9 @@ urlpatterns = [
     path('save-customer-observation-medicare/', views.saveCustomerObservationMedicare, name='saveCustomerObservationMedicare'),
     path('desactiveMedicare/<medicare_id>/', views.desactiveMedicare, name='desactiveMedicare'),
     path('validarCita/', views.validarCita, name='validarCita'),
+
+    path('paymentClients/', views.paymentClients, name='paymentClients'),
+
+    ##path('exportUsers/', views.exportUsers, name='exportUsers'),
+    ##path('testImportDb/', views.testExportDB, name='testExportDB'),
 ]
