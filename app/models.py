@@ -408,7 +408,7 @@ class DocumentObama(models.Model):
     obama = models.ForeignKey(ObamaCare, on_delete=models.CASCADE)
     agent_create = models.ForeignKey(User,on_delete=models.CASCADE )   
     name =  models.CharField(max_length=255, default="Unnamed Document")
-    create_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'DocumentObama'
@@ -430,7 +430,7 @@ class AppointmentClient(models.Model):
     appointment = models.TextField() 
     dateAppointment = models.DateField()
     timeAppointment = models.TimeField()
-    create_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'AppointmentClient'

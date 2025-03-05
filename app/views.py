@@ -1699,6 +1699,129 @@ def typification(request):
             'agents' : agent
         })
 
+def customerPerformance(request):
+
+    if request.method == 'POST':
+        # Convertir fechas a objetos datetime con zona horaria
+        start_date = timezone.make_aware(
+            datetime.strptime(request.POST.get('start_date'), '%Y-%m-%d').replace(hour=0, minute=0, second=0, microsecond=0)
+        )
+        end_date = timezone.make_aware(
+            datetime.strptime(request.POST.get('end_date'), '%Y-%m-%d').replace(hour=23, minute=59, second=59, microsecond=999999)
+        )
+    else:
+        now = datetime.now()
+
+        # Primer día del mes actual
+        start_date = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+        # Último día del mes actual
+        next_month = now.replace(day=28) + timedelta(days=4)  # Garantiza que pasamos al siguiente mes
+        end_date = next_month.replace(day=1, hour=23, minute=59, second=59, microsecond=999999) - timedelta(days=1)
+
+    obamacare = ObamaCare.objects.filter(created_at__range=(start_date, end_date))
+    totalEnroled = obamacare.exclude(profiling='NO')
+    totalNoEnroled = obamacare.filter(profiling='NO').count()
+    totalOtherParty = obamacare.filter(status__in=('OTHER PARTY', 'OTHER AGENT')).count()
+    enroledActiveCms = totalEnroled.filter(status='ACTIVE').count()
+    totalEnroledNoActiveCms = totalEnroled.exclude(status='ACTIVE').count()
+    totalActiveCms = obamacare.filter(status='ACTIVE').count()
+    totalNoActiveCms = obamacare.exclude(status='ACTIVE').count()
+
+    documents = DocumentObama.objects.select_related('agent_create').filter(created_at__range=(start_date, end_date))
+    appointments = AppointmentClient.objects.select_related('agent_create').filter(created_at__range=(start_date, end_date))
+    payments = Payments.objects.select_related('agent').filter(created_at__range=(start_date, end_date))
+
+    print(payments)
+
+    # Obtener agentes con rol 'C'
+    agents = User.objects.filter(role='C')
+    agent_performance = {}
+
+    for agent in agents:
+        full_name = f"{agent.first_name} {agent.last_name}".strip()
+        profilingAgent = obamacare.filter(profiling=full_name)
+        enroledActiveCmsPerAgent = profilingAgent.filter(status='ACTIVE').count()
+        enroledNoActiveCmsPerAgent = profilingAgent.exclude(status='ACTIVE').count()
+
+        # Inicializar la clave si no existe
+        if full_name not in agent_performance:
+            agent_performance[full_name] = {
+                'totalEnroled': 0,
+                'percentageEnroled': 0,
+                'enroledActiveCms': 0,
+                'percentageEnroledActiveCms': 0,
+                'enroledNoActiveCms': 0,
+                'percentageEnroledNoActiveCms': 0,
+                'percentageTotalActiveCms': 0,
+                'percentageTotalNoActiveCms': 0,
+                'documents': 0,
+                'appointments': 0,
+                'payments': 0
+            }
+
+        # Asignar valores con validación de división por cero
+        agent_performance[full_name]['totalEnroled'] = profilingAgent.count()
+        agent_performance[full_name]['percentageEnroled'] = format_decimal(
+            (profilingAgent.count() / obamacare.count()) * 100
+        ) if obamacare.count() else 0
+        agent_performance[full_name]['enroledActiveCms'] = enroledActiveCmsPerAgent
+        agent_performance[full_name]['percentageEnroledActiveCms'] = format_decimal(
+            (enroledActiveCmsPerAgent / profilingAgent.count()) * 100
+        ) if profilingAgent.count() else 0
+        agent_performance[full_name]['enroledNoActiveCms'] = enroledNoActiveCmsPerAgent
+        agent_performance[full_name]['percentageEnroledNoActiveCms'] = format_decimal(
+            (enroledNoActiveCmsPerAgent / profilingAgent.count()) * 100
+        ) if profilingAgent.count() else 0
+        agent_performance[full_name]['percentageTotalActiveCms'] = format_decimal(
+            (enroledActiveCmsPerAgent / obamacare.count()) * 100
+        ) if obamacare.count() else 0
+        agent_performance[full_name]['percentageTotalNoActiveCms'] = format_decimal(
+            (enroledNoActiveCmsPerAgent / obamacare.count()) * 100
+        ) if obamacare.count() else 0
+
+        agent_performance[full_name]['documents'] = documents.filter(agent_create=agent).count()
+        agent_performance[full_name]['appointments'] = appointments.filter(agent_create=agent).count()
+        agent_performance[full_name]['payments'] = payments.filter(agent=agent).count()
+
+
+    # Evitar divisiones por cero en todos los cálculos
+    obamacare_count = obamacare.count() if obamacare.exists() else 1
+    totalEnroled_count = totalEnroled.count() if totalEnroled.exists() else 1
+
+    context = {
+        'start_date': start_date,
+        'end_date': end_date,
+        'totalObamacare': obamacare.count(),
+        'totalEnroled': totalEnroled.count(),
+        'percentageEnroled': format_decimal((totalEnroled.count() / obamacare_count) * 100),
+        'totalNoEnroled': totalNoEnroled,
+        'percentageNoEnroled': format_decimal((totalNoEnroled / obamacare_count) * 100),
+        'totalOtherParty': totalOtherParty,
+        'percentageOtherParty': format_decimal((totalOtherParty / obamacare_count) * 100),
+        'enroledActiveCms': enroledActiveCms,
+        'percentageEnroledActiveCms': format_decimal((enroledActiveCms / totalEnroled_count) * 100),
+        'totalEnroledNoActiveCms': totalEnroledNoActiveCms,
+        'percentageNoActiveCms': format_decimal((totalEnroledNoActiveCms / totalEnroled_count) * 100),
+        'totalActiveCms': totalActiveCms,
+        'percentageTotalActiveCms': format_decimal((totalActiveCms / obamacare_count) * 100),
+        'totalNoActiveCms': totalNoActiveCms,
+        'percentageTotalNoActiveCms': format_decimal((totalNoActiveCms / obamacare_count) * 100),
+        'appointmentsTotal':appointments.count(),
+        'documentsTotal': documents.count(),
+        'paymentsTotal':payments.count(),
+        'agentPerformance': agent_performance,
+    }
+    return render(request, 'reports/customerPerformance.html', context)
+
+def format_decimal(number):
+    # Revisa si el numero es entero y lo devuelve entero
+    if number.is_integer():
+        return int(number)
+    
+    # Si es decimal lo devuelve con dos numeros despues del punto
+    return round(number, 2)
+
 def get_observation_detail(request, observation_id):
     try:
         # Obtener el registro específico

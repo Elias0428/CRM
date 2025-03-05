@@ -50,6 +50,7 @@ urlpatterns = [
     path('save-customer-observation-supp/', views.saveCustomerObservationSupp, name='saveCustomerObservationSupp'),
 
     path('typification/', views.typification, name='typification'),
+    path('customerPerformance/', views.customerPerformance, name='customerPerformance'),
     path('get-observation-detail/<observation_id>/', views.get_observation_detail, name='get_observation_detail'),
     path('toggleTypification/<typifications_id>/', views.toggleTypification, name='toggleTypification'),
 
@@ -119,7 +120,4 @@ urlpatterns = [
     path('save-customer-observation-medicare/', views.saveCustomerObservationMedicare, name='saveCustomerObservationMedicare'),
     path('desactiveMedicare/<medicare_id>/', views.desactiveMedicare, name='desactiveMedicare'),
     path('validarCita/', views.validarCita, name='validarCita'),
-
-    ##path('exportUsers/', views.exportUsers, name='exportUsers'),
-    ##path('testImportDb/', views.testExportDB, name='testExportDB'),
 ]

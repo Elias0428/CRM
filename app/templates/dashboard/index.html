@@ -121,15 +121,25 @@
 							<div class="menu-title">Sales Reports</div>
 						</a>
 						<ul>
-							<li> <a href="{% url 'typification' %}"><i class='bx bx-radio-circle'></i>Typification</a>
-							</li>
 							<li> <a href="{% url 'sale' %}"><i class='bx bx-radio-circle'></i>Sale</a>
-							</li>
-							<li> <a href="{% url 'customerTypification' %}"><i class='bx bx-radio-circle'></i>Typification customer</a>
 							</li>
 							<li> <a href="{% url 'sale6Week' %}"><i class='bx bx-radio-circle'></i>Sales for the last 6 weeks</a>
 							</li>
 							<li> <a href="{% url 'weekSalesWiew' %}"><i class='bx bx-radio-circle'></i>Sales Week</a>
+							</li>
+						</ul>
+					</li>
+					<li>
+						<a class="has-arrow" href="javascript:;">
+							<div class="parent-icon"> <i class="fadeIn animated bx bx-user-pin"></i></div>
+							<div class="menu-title">Customer Reports</div>
+						</a>
+						<ul>
+							<li> <a href="{% url 'customerPerformance' %}"><i class='bx bx-radio-circle'></i>Customer performance</a>
+							</li>
+							<li> <a href="{% url 'typification' %}"><i class='bx bx-radio-circle'></i>Typification</a>
+							</li>
+							<li> <a href="{% url 'customerTypification' %}"><i class='bx bx-radio-circle'></i>Typification customer</a>
 							</li>
 						</ul>
 					</li>
