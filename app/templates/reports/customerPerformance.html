@@ -147,15 +147,15 @@
         </div>
 
         {% if groupGoal == 1 %}
-        <div class="note-success">
+        <div class="note performance-excellent">
             ✅ <strong>Nota:</strong> ¡Felicidades! El equipo ha logrado un desempeño excepcional con más del 90% de enrolamiento y activación en CMS. Sigamos manteniendo este nivel de eficiencia y calidad en el servicio.
         </div>
         {% elif groupGoal == 2 %}
-        <div class="note-warning">
+        <div class="note performance-regular">
             ⚠️ <strong>Nota:</strong> El equipo ha cumplido con la meta mínima establecida, pero hay oportunidad de mejora. Se recomienda analizar posibles optimizaciones en los procesos para aumentar la eficiencia.
         </div>
         {% else %}
-        <div class="note-danger">
+        <div class="note performance-low">
             ❌ <strong>Nota:</strong> El equipo no ha cumplido con la meta establecida. Se recomienda revisar las estrategias de enrolamiento y activación, así como evaluar el desempeño del departamento de Customer Service para tomar acciones correctivas.
         </div>
         {% endif %}
