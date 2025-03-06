@@ -587,7 +587,7 @@
 					<div class="row row-cols-auto g-3">
 
 						<!-- Botones para abrir los modales -->
-						{% if request.user.is_staff == '1' or request.user.role == 'Admin' or request.user.role == 'C' %}
+						{% if request.user.role != 'A' %}
 							<button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#modalIngresarTexto">
 								Enter Observation
 							</button>
