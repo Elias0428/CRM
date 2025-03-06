@@ -1024,8 +1024,9 @@ def editClientObama(request, obamacare_id):
             )
            
             #obtener informacion para guardarla en modelo de cartas y tarjetas del cliente
-            lettersPost = request.POST.get('letters', 'false').lower() == "true"
-            cardsPost = request.POST.get('card', 'false').lower() == "true"
+            lettersPost = json.loads(request.POST.get('letters', 'false').lower())
+            cardsPost = json.loads(request.POST.get('card', 'false').lower())
+
             idPost = request.POST.get('letterCardID') 
 
             if lettersPost: 
