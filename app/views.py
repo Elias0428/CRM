@@ -9,6 +9,7 @@ import csv
 import random
 from collections import defaultdict
 from datetime import timedelta
+import openpyxl
 
 import pandas as pd
 
@@ -4845,14 +4846,49 @@ def saveAppointment(request, obamacare_id):
 
     return redirect('editClientObama', obamacare_id)   
 
-
+@login_required(login_url='/login')
 def paymentClients(request):
 
     payments = Payments.objects.values('month').annotate(total=Count('id')).order_by('month')
 
+    if request.method == "POST":       
 
-    context = {
-        'payments' : payments
-    }
+        months = request.POST.getlist("months")  # Capturar lista de meses seleccionados
+        # Obtener pagos que correspondan a los meses seleccionados
+        clients = Payments.objects.select_related("obamaCare").filter(month__in=months)
+
+        # ✅ Crear un nuevo archivo Excel
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Clientes"
+
+        # ✅ Encabezados
+        headers = ["First Name", "Last Name", "Plan", "Carrier", "Profiling", "Date-Profiling", "Status", "Created At","Month","Date payment was marked"]
+        ws.append(headers)
+
+        # ✅ Agregar datos al archivo Excel
+        for client in clients:
+            if client.obamaCare.is_active:
+                ws.append([
+                    client.obamaCare.client.first_name,
+                    client.obamaCare.client.last_name,
+                    client.obamaCare.plan_name,
+                    client.obamaCare.carrier,
+                    client.obamaCare.profiling,
+                    client.obamaCare.profiling_date.strftime("%m-%d-%Y") if client.obamaCare.profiling_date else '',
+                    client.obamaCare.status,
+                    client.obamaCare.created_at.strftime("%m-%d-%Y") if client.obamaCare.created_at else '',  # Convertir fecha a string legible
+                    client.month,
+                    client.created_at.strftime("%m-%d-%Y")
+                ])
+
+        # ✅ Preparar la respuesta HTTP
+        response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        response["Content-Disposition"] = f'attachment; filename="clientes.xlsx"'
+        wb.save(response)
+
+        return response 
+
+    context = {'payments' : payments }
 
     return render(request, 'table/paymentClients.html',context)
