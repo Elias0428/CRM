@@ -114,49 +114,49 @@
         <h2>📊 Customer Service Report</h2>
 
         <div class="section">
-            <h3>Total Clientes Perfilados</h3>
+            <h3>Profiled Clients Total</h3>
             <p><strong>{{totalObamacare}}</strong></p>
         </div>
 
         <div class="section">
-            <h3>📌 Enrolamiento</h3>
+            <h3>📌 Enrollment</h3>
             <ul>
-                <li><strong>Clientes enrolados:</strong> {{totalEnroled}} ({{percentageEnroled}}%)</li>
-                <li><strong>Clientes sin enrolar:</strong> {{totalNoEnroled}} ({{percentageNoEnroled}}%)</li>
-                <li><strong>Clientes en Other Party:</strong> {{totalOtherParty}} ({{percentageOtherParty}}%)</li>
+                <li><strong>Enrolled:</strong> {{totalEnroled}} ({{percentageEnroled}}%)</li>
+                <li><strong>Not Enrolled:</strong> {{totalNoEnroled}} ({{percentageNoEnroled}}%)</li>
+                <li><strong>Other Party:</strong> {{totalOtherParty}} ({{percentageOtherParty}}%)</li>
             </ul>
         </div>
 
         <div class="section">
-            <h3>📌 Activación en CMS</h3>
+            <h3>📌 CMS Activation</h3>
             <ul>
-                <li><strong>Clientes activos en CMS:</strong> {{enroledActiveCms}} de {{totalEnroled}} ({{percentageEnroledActiveCms}}%)</li>
-                <li><strong>Clientes sin activar en Carrier:</strong> {{totalEnroledNoActiveCms}} de {{totalEnroled}} ({{percentageNoActiveCms}}%)</li>
-                <li><strong>Clientes activos en CMS respecto al total perfilado:</strong> {{totalActiveCms}} de {{totalObamacare}} ({{percentageTotalActiveCms}}%)</li>
-                <li><strong>Clientes sin activar en Carrier respecto al total perfilado:</strong> {{totalNoActiveCms}} de {{totalObamacare}} ({{percentageTotalNoActiveCms}}%)</li>
+                <li><strong>Active in CMS:</strong> {{enroledActiveCms}} of  {{totalEnroled}} ({{percentageEnroledActiveCms}}%)</li>
+                <li><strong>Not Active on Carrier:</strong> {{totalEnroledNoActiveCms}} of  {{totalEnroled}} ({{percentageNoActiveCms}}%)</li>
+                <li><strong>Active vs Profiled:</strong> {{totalActiveCms}} of  {{totalObamacare}} ({{percentageTotalActiveCms}}%)</li>
+                <li><strong>ctive on Carrier vs Profiled:</strong> {{totalNoActiveCms}} of  {{totalObamacare}} ({{percentageTotalNoActiveCms}}%)</li>
             </ul>
         </div>
 
         <div class="section">
-            <h3>📌 Otros datos</h3>
+            <h3>📌 Other information</h3>
             <ul>
-                <li><strong>Cantidad total de documentos subidos:</strong> {{documentsTotal}}</li>
-                <li><strong>Cantidad total de citas medicas hechas:</strong> {{appointmentsTotal}}</li>
-                <li><strong>Cantidad total de pagos confirmados:</strong> {{paymentsTotal}}</li>
+                <li><strong>Uploaded Docs:</strong> {{documentsTotal}}</li>
+                <li><strong>Medical Appointments:</strong> {{appointmentsTotal}}</li>
+                <li><strong>Total number of confirmed payments:</strong> {{paymentsTotal}}</li>
             </ul>
         </div>
 
         {% if groupGoal == 1 %}
         <div class="note performance-excellent">
-            ✅ <strong>Nota:</strong> ¡Felicidades! El equipo ha logrado un desempeño excepcional con más del 90% de enrolamiento y activación en CMS. Sigamos manteniendo este nivel de eficiencia y calidad en el servicio.
+            ✅ <strong>Nota:</strong> Congratulations! The team has achieved exceptional performance with over 90% enrollment and activation in CMS. Let's continue to maintain this level of efficiency and quality service.
         </div>
         {% elif groupGoal == 2 %}
         <div class="note performance-regular">
-            ⚠️ <strong>Nota:</strong> El equipo ha cumplido con la meta mínima establecida, pero hay oportunidad de mejora. Se recomienda analizar posibles optimizaciones en los procesos para aumentar la eficiencia.
+            ⚠️ <strong>Nota:</strong> The team has met the minimum established goal, but there are opportunities for improvement. It is recommended to analyze possible process optimizations to increase efficiency.
         </div>
         {% else %}
         <div class="note performance-low">
-            ❌ <strong>Nota:</strong> El equipo no ha cumplido con la meta establecida. Se recomienda revisar las estrategias de enrolamiento y activación, así como evaluar el desempeño del departamento de Customer Service para tomar acciones correctivas.
+            ❌ <strong>Nota:</strong> The team has not met the established goal. It is recommended to review the enrollment and activation strategies, as well as to evaluate the performance of the Customer Service department in order to take corrective actions.
         </div>
         {% endif %}
     </div>
@@ -168,46 +168,46 @@
             <h2>📊 {{name}}'s PERFORMANCE</h2>
 
             <div class="section">
-                <h3>📌 Enrolamiento</h3>
+                <h3>📌 Enrolment</h3>
                 <ul>
-                    <li><strong>Clientes enrolados:</strong> {{details.totalEnroled}} ({{details.percentageEnroled}}%)</li>
+                    <li><strong>Customers enrolled:</strong> {{details.totalEnroled}} ({{details.percentageEnroled}}%)</li>
                 </ul>
             </div>
 
             <div class="section">
-                <h3>📌 Activación en CMS</h3>
+                <h3>📌 Activation in CMS</h3>
                 <ul>
-                    <li><strong>Clientes activos en CMS:</strong> {{details.enroledActiveCms}} de {{details.totalEnroled}} ({{details.percentageEnroledActiveCms}}%)</li>
-                    <li><strong>Clientes sin activar en Carrier:</strong> {{details.enroledNoActiveCms}} de {{details.totalEnroled}} ({{details.percentageEnroledNoActiveCms}}%)</li>
-                    <li><strong>Clientes activos en CMS respecto al total perfilado:</strong> {{details.enroledActiveCms}} de {{totalObamacare}} ({{details.percentageTotalActiveCms}}%)</li>
-                    <li><strong>Clientes sin activar en Carrier respecto al total perfilado:</strong> {{details.enroledNoActiveCms}} de {{totalObamacare}} ({{details.percentageTotalNoActiveCms}}%)</li>
+                    <li><strong>Active CMS customers:</strong> {{details.enroledActiveCms}} de {{details.totalEnroled}} ({{details.percentageEnroledActiveCms}}%)</li>
+                    <li><strong>Customers not activated at Carrier:</strong> {{details.enroledNoActiveCms}} de {{details.totalEnroled}} ({{details.percentageEnroledNoActiveCms}}%)</li>
+                    <li><strong>Active clients in CMS with respect to total profiled:</strong> {{details.enroledActiveCms}} de {{totalObamacare}} ({{details.percentageTotalActiveCms}}%)</li>
+                    <li><strong>Customers not activated in Carrier compared to the total profiled:</strong> {{details.enroledNoActiveCms}} de {{totalObamacare}} ({{details.percentageTotalNoActiveCms}}%)</li>
                 </ul>
             </div>
 
             <div class="section">
-                <h3>📌 Otros datos</h3>
+                <h3>📌 Other information</h3>
                 <ul>
-                    <li><strong>Cantidad total de documentos subidos:</strong> {{details.documents}}</li>
-                    <li><strong>Cantidad total de citas medicas hechas:</strong> {{details.appointments}}</li>
-                    <li><strong>Cantidad total de pagos confirmados:</strong> {{details.payments}}</li>
+                    <li><strong>Total number of documents uploaded:</strong> {{details.documents}}</li>
+                    <li><strong>Total number of medical appointments made:</strong> {{details.appointments}}</li>
+                    <li><strong>Total number of confirmed payments:</strong> {{details.payments}}</li>
                 </ul>
             </div>
 
             {% if details.personalGoal == 1 %}
                 <div class="note performance-perfect">
-                    🏆 <strong>Nota:</strong> Desempeño impecable. Este agente ha logrado un <strong>100% de efectividad</strong>, demostrando un dominio absoluto de sus funciones. Se recomienda reconocer su rendimiento y analizar sus estrategias para replicarlas en el equipo. ¡Un verdadero referente!
+                    🏆 <strong>Note:</strong> Impeccable performance. This agent has achieved <strong>100% effectiveness</strong>, demonstrating absolute mastery of his functions. It is recommended to recognize his performance and analyze his strategies in order to replicate them in the team. A true benchmark!
                 </div>
             {% elif details.personalGoal == 2 %}
                 <div class="note performance-excellent">
-                    ✅ <strong>Nota:</strong> Desempeño sobresaliente. Este agente ha superado el <strong>90% de efectividad</strong>, demostrando un alto nivel de compromiso y eficiencia. Se recomienda reconocer su esfuerzo y tomarlo como referencia para el equipo.
+                    ✅ <strong>Note:</strong> Outstanding Performance. This agent has exceeded <strong>90% effectiveness</strong>, demonstrating a high level of commitment and efficiency. It is recommended to recognize his effort and take him as a reference for the team.
                 </div>
             {% elif details.personalGoal == 3 %}
                 <div class="note performance-regular">
-                    ⚠️ <strong>Nota:</strong> Desempeño aceptable, pero con margen de mejora. El agente ha alcanzado la meta mínima, aunque aún hay oportunidades para optimizar su rendimiento. Se sugiere seguimiento para reforzar sus puntos débiles.
+                    ⚠️ <strong>Note:</strong> Acceptable performance, but with room for improvement. The agent has reached the minimum goal, although there are still opportunities to optimize performance. Follow-up is suggested to reinforce weak points.
                 </div>
             {% else %}
                 <div class="note performance-low">
-                    ❌ <strong>Nota:</strong> Bajo desempeño, requiere revisión. El agente no ha alcanzado el <strong>80% de efectividad</strong>. Es necesario analizar las causas y tomar acciones correctivas, ya sea con capacitación o ajuste de estrategias.
+                    ❌ <strong>Nota:</strong> Low performance, requires review. The agent has not reached <strong>80% effectiveness</strong>. It is necessary to analyze the causes and take corrective actions, either with training or adjustment of strategies.
                 </div>
             {% endif %}
         </div>
