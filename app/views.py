@@ -1723,6 +1723,7 @@ def typification(request):
             'agents' : agent
         })
 
+@login_required(login_url='/login') 
 def customerPerformance(request):
 
     if request.method == 'POST':
@@ -1747,10 +1748,10 @@ def customerPerformance(request):
     totalEnroled = obamacare.exclude(profiling='NO')
     totalNoEnroled = obamacare.filter(profiling='NO').count()
     totalOtherParty = obamacare.filter(status__in=('OTHER PARTY', 'OTHER AGENT')).count()
-    enroledActiveCms = totalEnroled.filter(status='ACTIVE').count()
-    totalEnroledNoActiveCms = totalEnroled.exclude(status='ACTIVE').count()
-    totalActiveCms = obamacare.filter(status='ACTIVE').count()
-    totalNoActiveCms = obamacare.exclude(status='ACTIVE').count()
+    enroledActiveCms = totalEnroled.filter(Q(status='ACTIVE') | Q(status='SELF-ENROLMENT')).count()
+    totalEnroledNoActiveCms = totalEnroled.exclude(Q(status='ACTIVE') | Q(status='SELF-ENROLMENT')).count()
+    totalActiveCms = obamacare.filter(Q(status='ACTIVE') | Q(status='SELF-ENROLMENT')).count()
+    totalNoActiveCms = obamacare.exclude(Q(status='ACTIVE') | Q(status='SELF-ENROLMENT')).count()
 
     documents = DocumentObama.objects.select_related('agent_create').filter(created_at__range=(start_date, end_date))
     appointments = AppointmentClient.objects.select_related('agent_create').filter(created_at__range=(start_date, end_date))
@@ -1763,8 +1764,8 @@ def customerPerformance(request):
     for agent in agents:
         full_name = f"{agent.first_name} {agent.last_name}".strip()
         profilingAgent = obamacare.filter(profiling=full_name)
-        enroledActiveCmsPerAgent = profilingAgent.filter(status='ACTIVE').count()
-        enroledNoActiveCmsPerAgent = profilingAgent.exclude(status='ACTIVE').count()
+        enroledActiveCmsPerAgent = profilingAgent.filter(Q(status='ACTIVE') | Q(status='SELF-ENROLMENT')).count()
+        enroledNoActiveCmsPerAgent = profilingAgent.exclude(Q(status='ACTIVE') | Q(status='SELF-ENROLMENT')).count()
         percentageEnroledActiveCms = format_decimal(
             (enroledActiveCmsPerAgent / profilingAgent.count()) * 100
         ) if profilingAgent.count() else 0
