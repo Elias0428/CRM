@@ -105,7 +105,7 @@
                                             <input type="hidden" name="route" id="DEPEND" value="DEPEND">
                                         </form>
                                     </li>                                    
-                                {% elif client.type_sales == "ACA/SUPLEMENTARIO" %}
+                                {% elif client.type_sales == "ACA/SUPLEMENTARIO" or  client.type_sales == "ACA / SUPPLEMENTARY"%}
                                     <!-- Solo mostrar ACA/SUPP si ya tiene ACA/SUPP -->
                                     <li>
                                         <form method="POST" action="{% url 'update_type_sales' client.id %}">
