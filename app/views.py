@@ -1095,7 +1095,7 @@ def editClientObama(request, obamacare_id, way):
                 dateLetters = timezone.now().date() 
                 letters = json.loads(request.POST.get('letters', 'false').lower())
 
-            if not banderaCard and banderaLetters:
+            if not banderaCard or banderaLetters:
                 idPost = request.POST.get('letterCardID')  
 
             if not newLetterCard:      

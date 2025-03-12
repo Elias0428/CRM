@@ -627,9 +627,11 @@
 										<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalIngresarTexto" data-bs-dismiss="modal">
 											Ingresar Observación
 										</button>
+										{% if request.user.role == 'Admin' %}
 										<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalActionrequired" data-bs-dismiss="modal">
 											Ingresar Acción Requerida
 										</button>
+										{% endif %}
 									</div>
 								</div>
 							</div>
