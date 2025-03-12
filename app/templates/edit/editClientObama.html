@@ -604,7 +604,7 @@
 						<button type="button" class="btn btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#modalVerTexto">
 							See Observations
 						</button>
-						{% if request.user.role == 'Admin' %}{% endif %}
+						{% if request.user.role == 'Admin' %}
 						{% comment %} {% if accionRequired %} {% endcomment %}
 							<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalAccionRequired">
 								See Accion Required
