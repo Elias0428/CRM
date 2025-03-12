@@ -863,8 +863,11 @@ def editClientObama(request, obamacare_id):
     #Obtener todos los registros de meses pagados de la poliza
     monthsPaid = Payments.objects.filter(obamaCare_id=obamacare.id)
 
-    #calculo de Status
-    obamaStatus = True if obamacare.status == 'ACTIVE' else False
+    #calculo de documente
+    obamaDocumente = True if obamacare.doc_migration and obamacare.doc_income else False 
+
+    #calculo de status
+    obamaStatus = True if obamacare.status_color == 3 else False
 
     #Obtener todo los meses en ingles
     monthInEnglish = [calendar.month_name[i] for i in range(1, 13)]
@@ -872,17 +875,14 @@ def editClientObama(request, obamacare_id):
     newApppointment = True if apppointment else False
     
     RoleAuditar = [
-        obamacare.policyNumber, 
-        obamaStatus, 
-        obamacare.doc_migration, 
-        userCarrier,
         newLetterCard,
+        userCarrier,
         newApppointment
     ]
 
     c = 0
     for item in RoleAuditar: 
-        if item and item != 'None':
+        if item and item != 'None' and item is not None:
             c += 1
 
     percentage = int(c/6*100)
@@ -973,7 +973,7 @@ def editClientObama(request, obamacare_id):
             # Recorrer los usuarios
             for list_drows in list_drow:
                 # Comparar el valor seleccionado con el username de cada usuario
-                if selected_profiling == 'ACTIVE':
+                if selected_profiling == 'ACTIVE' or selected_profiling == 'SELF-ENROLMENT':
                     color = 3
                     sw = False
                     break  # Si solo te interesa el primer match, puedes salir del bucle
@@ -1041,37 +1041,41 @@ def editClientObama(request, obamacare_id):
                 cards = json.loads(request.POST.get('card', 'false').lower())  
 
             if banderaLetters:
-                dateCard = letterCard.dateLetters
-                cards = letterCard.letters 
+                dateLetters = letterCard.dateLetters
+                letters = letterCard.letters 
             else:
                 dateLetters = timezone.now().date() 
                 letters = json.loads(request.POST.get('letters', 'false').lower())
 
-            if not banderaCard or banderaLetters:
-                idPost = request.POST.get('letterCardID')         
+            if not banderaCard and banderaLetters:
+                idPost = request.POST.get('letterCardID')  
 
-            if idPost:
+            if not newLetterCard:      
 
-                LettersCard.objects.filter(id = idPost).update(
-                obama=obamacare,
-                agent_create=request.user,
-                letters=letters,
-                dateLetters = dateLetters,
-                card=cards,
-                dateCard = dateCard )
+                if idPost:
 
+                    LettersCard.objects.filter(id = idPost).update(
+                    obama=obamacare,
+                    agent_create=request.user,
+                    letters=letters,
+                    dateLetters = dateLetters,
+                    card=cards,
+                    dateCard = dateCard )
+
+                else:
+
+                    LettersCard.objects.create(
+                    obama=obamacare,
+                    agent_create=request.user,
+                    letters=letters,
+                    dateLetters = dateLetters,
+                    card=cards,
+                    dateCard = dateCard )
+
+            if way == 1:
+                return redirect('clientObamacare')
             else:
-
-                LettersCard.objects.create(
-                obama=obamacare,
-                agent_create=request.user,
-                letters=letters,
-                dateLetters = dateLetters,
-                card=cards,
-                dateCard = dateCard )
-
-
-            return redirect('clientObamacare')
+                return redirect('clientAccionRequired')
 
         elif action == 'save_observation_agent':
             
