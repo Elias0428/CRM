@@ -777,6 +777,7 @@
 										<div class="card-body">
 											<form  method="POST" enctype="multipart/form-data">
 												{% csrf_token %}
+												<input type="hidden" name="way" value="{{way}}">
 												<input type="file" id="pdfUploader" name="documents" multiple>
 												<div id="fileNamesContainer"></div>												
 												<button id="loadDocument" type="submit" class="btn" data-upload-url="{% url 'saveDocumentClient' obamacare.id %}" > <i class="fa-solid fa-floppy-disk"></i></button>

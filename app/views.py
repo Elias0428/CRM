@@ -4892,6 +4892,7 @@ def saveDocumentClient(request, obamacare_id):
         obama = get_object_or_404(ObamaCare, id=obamacare_id)
         documents = request.FILES.getlist("documents")  # 📌 Recibe la lista de archivos
         filenames = request.POST.getlist("filenames")  # 📌 Recibe la lista de nombres
+        way = request.POST.get('way')  
 
         if not documents:
             return JsonResponse({"success": False, "message": "No se han subido archivos."})
@@ -4909,7 +4910,7 @@ def saveDocumentClient(request, obamacare_id):
             )
 
         messages.success(request, "Archivos subidos correctamente.")
-        return JsonResponse({"success": True, "message": "Archivos subidos correctamente.", "redirect_url": f"/editClientObama/{obamacare_id}/"})
+        return JsonResponse({"success": True, "message": "Archivos subidos correctamente.", "redirect_url": f"/editClientObama/{obamacare_id}/{way}/"})
     
     return JsonResponse({"success": False, "message": "Método no permitido."}, status=405)
 
