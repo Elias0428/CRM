@@ -4887,12 +4887,11 @@ def validarCita(request):
         return JsonResponse({"error": "Fecha no válida"}, status=400)
 
 @login_required(login_url='/login')
-def saveDocumentClient(request, obamacare_id):
+def saveDocumentClient(request, obamacare_id, way):
     if request.method == "POST":
         obama = get_object_or_404(ObamaCare, id=obamacare_id)
         documents = request.FILES.getlist("documents")  # 📌 Recibe la lista de archivos
         filenames = request.POST.getlist("filenames")  # 📌 Recibe la lista de nombres
-        way = request.POST.get('way')  
 
         if not documents:
             return JsonResponse({"success": False, "message": "No se han subido archivos."})
@@ -4958,6 +4957,7 @@ def saveAppointment(request, obamacare_id):
     appointment = request.POST.get('appointment') 
     dateAppointment = request.POST.get('dateAppointment') 
     timeAppointment = request.POST.get('timeAppointment') 
+    way = request.POST.get('way')  
 
     # Conversión de date a la BD requerido
     dateAppointmentNew = datetime.strptime(dateAppointment, '%m/%d/%Y').date()          
@@ -4970,7 +4970,7 @@ def saveAppointment(request, obamacare_id):
         timeAppointment=timeAppointment,
     )
 
-    return redirect('editClientObama', obamacare_id)   
+    return redirect('editClientObama', obamacare_id, way)   
 
 @login_required(login_url='/login')
 def paymentClients(request):
