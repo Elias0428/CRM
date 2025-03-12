@@ -1667,7 +1667,9 @@ def saveCustomerObservationACA(request):
         content = request.POST.get('textoIngresado')
         plan_id = request.POST.get('plan_id')
         type_plan = request.POST.get('type_plan')
-        typeCall = request.POST.get('typeCall')        
+        typeCall = request.POST.get('typeCall')  
+        way = request.POST.get('way')        
+
 
         # Obtenemos las observaciones seleccionadas
         observations = request.POST.getlist('observaciones[]')  # Lista de valores seleccionados
@@ -1692,7 +1694,7 @@ def saveCustomerObservationACA(request):
         else:
             messages.error(request, "El contenido de la observación no puede estar vacío.")
 
-        return redirect('editClientObama', plan.id)       
+        return redirect('editClientObama', plan.id, way)       
         
     else:
         return HttpResponse("Método no permitido.", status=405)

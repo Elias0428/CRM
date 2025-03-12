@@ -651,6 +651,7 @@
 										{% csrf_token %}
 										<input type="hidden" name="plan_id" value="{{ obamacare.id }}">
 										<input type="hidden" name="type_plan" value="ACA">
+										<input type="hidden" name="way" value="{{way}}">
 										<div class="mb-3">
 											<label for="textoIngresado" class="form-label">Text:</label>
 											<textarea class="form-control" id="textoIngresado" name="textoIngresado" rows="4" required></textarea>
@@ -859,7 +860,8 @@
 							</div>
 						</div>
 					</div>
-
+					
+		
 					<!-- Modal para ver las consent -->
 					<div class="modal fade" id="verConsent" tabindex="-1" aria-labelledby="verConsentLabel" aria-hidden="true">
 						<div class="modal-dialog">
