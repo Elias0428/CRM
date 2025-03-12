@@ -1,7 +1,7 @@
 {% extends "dashboard/index.html" %}
 {% load static %}
 {% block head %}
-    <title>Client Obamacare</title>
+    <title>Client Accion Required</title>
 	<!--plugins-->
 	<link href="{% static "assets/plugins/simplebar/css/simplebar.css" %}" rel="stylesheet" />
 	<link href="{% static "assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" %}" rel="stylesheet" />
@@ -22,7 +22,7 @@
 	<link rel="stylesheet" href="{% static "assets/css/header-colors.css" %}" />
 {% endblock %}
 {% block page_content %}
-<h6 class="mb-0 text-uppercase">Client obamacare</h6>
+<h6 class="mb-0 text-uppercase">Client Accion Required</h6>
 <hr/>
 <div class="card">
     <div class="card-body">
@@ -92,7 +92,7 @@
 										</form>
 									</li>
 								</ul>
-								<a href="{% url 'editClientObama' obamacare.id 1 %}" class="ms-3"><i class='bx bxs-edit'></i></a>					
+								<a href="{% url 'editClientObama' obamacare.id 2 %}" class="ms-3"><i class='bx bxs-edit'></i></a>					
 								{% if request.user.is_superuser %}
 								<a href="{% url 'toggleObamaStatus' obamacare.id %}" class="ms-3">
 									<i class="bx bxs-trash"></i>

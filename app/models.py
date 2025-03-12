@@ -280,6 +280,8 @@ class DropDownList(models.Model):
     profiling_obama = models.CharField(max_length=255,null=True)
     profiling_supp = models.CharField(max_length=255,null=True)
     status_bd = models.CharField(max_length=255,null=True)
+    clave = models.TextField(null=True)  
+    description = models.TextField(null=True) 
 
     class Meta:
         db_table = 'drop_down_list'
@@ -444,3 +446,16 @@ class UserCarrier(models.Model):
 
     class Meta:
         db_table = 'UserCarrier'
+
+class CustomerRedFlag(models.Model):
+
+    obama = models.ForeignKey(ObamaCare, on_delete=models.CASCADE)
+    agent_create = models.ForeignKey(User,on_delete=models.CASCADE, related_name='created_flags')    
+    clave = models.CharField(max_length=100)  
+    description = models.TextField() 
+    created_at = models.DateTimeField(auto_now_add=True)
+    agent_completed = models.ForeignKey(User,on_delete=models.CASCADE, related_name='completed_flags', null=True)    
+    date_completed = models.DateField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'CustomerRedFlag'

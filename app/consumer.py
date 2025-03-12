@@ -1,6 +1,7 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 class UserUpdateConsumer(AsyncWebsocketConsumer):
@@ -56,8 +57,33 @@ class UserUpdateConsumer(AsyncWebsocketConsumer):
 
 class ProductAlertConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.group_name = 'product_alerts'
-        await self.channel_layer.group_add(self.group_name, self.channel_name)
+        #asi estaba antes
+        #self.group_name = 'product_alerts'
+        #await self.channel_layer.group_add(self.group_name, self.channel_name)
+        #await self.accept()
+
+        # Obtener la dirección del host del WebSocket
+        raw_host = self.scope["headers"]
+        host = None
+        for header in raw_host:
+            if header[0] == b'host':
+                host = header[1].decode("utf-8")
+                break
+
+        if not host:
+            host = "default"
+
+        # Limpiar el host para que sea un nombre de grupo válido
+        safe_host = re.sub(r'[^a-zA-Z0-9_.-]', '_', host)
+        self.group_name = f'product_alerts_{safe_host}'
+
+        print(f"Conectando WebSocket al grupo: {self.group_name}")
+
+        # Unirse al grupo
+        await self.channel_layer.group_add(
+            self.group_name,
+            self.channel_name
+        )
         await self.accept()
 
     async def disconnect(self, close_code):
@@ -65,17 +91,28 @@ class ProductAlertConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         data = json.loads(text_data)
-        message = data['message']
+        event_type = data.get('event_type', 'general')  # Tipo de evento
+        message = data.get('message', '')
 
-        # Enviar el mensaje a todos los clientes conectados
+
+       # Enviar el mensaje a todos los clientes conectados con el event_type
         await self.channel_layer.group_send(
             self.group_name,
             {
                 'type': 'send_alert',
+                'event_type': event_type,
                 'message': message,
             }
         )
 
     async def send_alert(self, event):
+        event_type = event.get('event_type', 'general')
         message = event['message']
-        await self.send(text_data=json.dumps({'message': message}))
+        extra_info = event.get('extra_info')  # Si no hay extra_info, se pone vacío
+
+        await self.send(text_data=json.dumps({
+            'event_type': event_type,
+            'message': message,
+            'extra_info': extra_info  # Enviar extra_info al frontend
+        }))
+

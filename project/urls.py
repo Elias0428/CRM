@@ -42,6 +42,7 @@ urlpatterns = [
 
     path('clientObamacare/', views.clientObamacare, name='clientObamacare'),
     path('clientSupp/', views.clientSupp, name='clientSupp'),
+    path('clientAccionRequired/', views.clientAccionRequired, name='clientAccionRequired'),
     
     path('toggleObamaStatus/<obamacare_id>/', views.toggleObamaStatus, name='toggleObamaStatus'),
     path('toggleSuppStatus/<supp_id>/', views.toggleSuppStatus, name='toggleSuppStatus'),
@@ -56,10 +57,11 @@ urlpatterns = [
 
     path('sale/', views.sale, name='sale'),
 
-    path('editClientObama/<obamacare_id>/', views.editClientObama, name='editClientObama'),
+    path('editClientObama/<int:obamacare_id>/<int:way>/', views.editClientObama, name='editClientObama'),
     path('saveDocumentClient/<int:obamacare_id>/', views.saveDocumentClient, name='saveDocumentClient'),
     path('saveAppointment/<int:obamacare_id>/', views.saveAppointment, name='saveAppointment'),
     path('editClientSupp/<supp_id>/', views.editClientSupp, name='editClientSupp'),
+    path('saveAccionRequired/', views.saveAccionRequired, name='saveAccionRequired'),
     
     path('formCreateAlert/', views.formCreateAlert, name='formCreateAlert'),
     path('alert/', views.tableAlert, name='alert'),
@@ -77,6 +79,7 @@ urlpatterns = [
     path('fetchDependent/<client_id>/', views.fetchDependent, name='fetchDependent'),
 
     path('fetchPaymentsMonth/', views.fetchPaymentsMonth, name='fetchPaymentsMonth'),
+    path('fetchActionRequired/', views.fetchActionRequired, name='fetchActionRequired'),
 
     path('formCreatePlan/deleteDependent/<int:dependent_id>/', views.delete_dependent, name='delete_dependent'),
     path('formCreatePlan/deleteSupp/<int:supp_id>/', views.delete_supp, name='delete_supp'),

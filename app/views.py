@@ -10,6 +10,7 @@ import random
 from collections import defaultdict
 from datetime import timedelta
 import openpyxl
+import re
 
 import pandas as pd
 
@@ -327,6 +328,7 @@ def fetchAca(request, client_id):
         )
         aca_plan = ObamaCare.objects.get(id=aca_plan_id)
         created = False
+
     else:
         # Si no hay ID, crea un nuevo registro
         aca_plan, created = ObamaCare.objects.update_or_create(
@@ -349,12 +351,20 @@ def fetchAca(request, client_id):
             }
         )
 
-        # Enviar alerta por WebSocket
+        #Aqui inicia el websocket
+        app_name = request.get_host()  # Obtener el host (ej. "127.0.0.1:8000" o "miapp.com")
+    
+        # Reemplazar ":" y otros caracteres inválidos con "_" para hacer un nombre válido
+        app_name = re.sub(r'[^a-zA-Z0-9_.-]', '_', app_name)
+
+        group_name = f'product_alerts_{app_name}'
+
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
-            'product_alerts',
+            group_name,
             {
                 'type': 'send_alert',
+                'event_type': 'new_client',
                 'message': f'New product Obamacare added',
             }
         )
@@ -420,12 +430,21 @@ def fetchSupp(request, client_id):
                 )
                 updated_supp_ids.append(new_supp.id)  # Agregar el ID creado a la lista
 
-                # Enviar alerta por WebSocket
+
+                #Aqui inicia el websocket
+                app_name = request.get_host()  # Obtener el host (ej. "127.0.0.1:8000" o "miapp.com")
+    
+                # Reemplazar ":" y otros caracteres inválidos con "_" para hacer un nombre válido
+                app_name = re.sub(r'[^a-zA-Z0-9_.-]', '_', app_name)
+
+                group_name = f'product_alerts_{app_name}'
+
                 channel_layer = get_channel_layer()
                 async_to_sync(channel_layer.group_send)(
-                    'product_alerts',
+                    group_name,
                     {
                         'type': 'send_alert',
+                        'event_type': 'new_client',
                         'message': f'New product Supplemental added',
                     }
                 )
@@ -685,19 +704,44 @@ def clientObamacare(request):
     
     if request.user.role == 'Admin':       
         obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
-            truncated_agent_usa=Substr('agent_usa', 1, 8)).order_by('-created_at')
+            truncated_agent_usa=Substr('agent_usa', 1, 8)).exclude(
+                id__in=CustomerRedFlag.objects.filter(date_completed__isnull=True).values_list(
+                    'obama_id', flat=True)).order_by('-created_at')    
     elif request.user.username == 'zohiraDuarte':
        obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
-            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True, agent_usa = zohira).order_by('-created_at') 
+            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True, agent_usa = zohira).exclude(
+                id__in=CustomerRedFlag.objects.filter(date_completed__isnull=True).values_list(
+                    'obama_id', flat=True)).order_by('-created_at') 
     elif request.user.username == 'vladimirDeLaHoz':
         obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
-            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True, agent_usa = vladimir).order_by('-created_at')
+            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True, agent_usa = vladimir).exclude(
+                id__in=CustomerRedFlag.objects.filter(date_completed__isnull=True).values_list(
+                    'obama_id', flat=True)).order_by('-created_at')
     else:
         obamaCare = ObamaCare.objects.select_related('agent', 'client').annotate(
-            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True).order_by('-created_at')      
+            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(is_active = True).exclude(
+                id__in=CustomerRedFlag.objects.filter(date_completed__isnull=True).values_list(
+                    'obama_id', flat=True)).order_by('-created_at')      
 
 
     return render(request, 'table/clientObamacare.html', {'obamacares':obamaCare})
+
+@login_required(login_url='/login')
+def clientAccionRequired(request):
+    
+    if request.user.role == 'Admin':       
+        obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
+            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(
+               id__in=CustomerRedFlag.objects.filter(date_completed__isnull=True
+                    ).values_list('obama_id', flat=True)).order_by('-created_at')
+    else:
+        obamaCare = ObamaCare.objects.select_related('agent', 'client').annotate(
+            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(
+                id__in=CustomerRedFlag.objects.filter(date_completed__isnull=True
+                    ).values_list('obama_id', flat=True), is_active = True).order_by('-created_at')  
+
+
+    return render(request, 'table/clientAccionRequired.html', {'obamacares':obamaCare})
 
 @login_required(login_url='/login')
 def clientSupp(request):
@@ -838,12 +882,13 @@ def editClient(request,client_id):
     return client
 
 @login_required(login_url='/login')
-def editClientObama(request, obamacare_id):
+def editClientObama(request, obamacare_id, way):
     obamacare = ObamaCare.objects.select_related('agent', 'client').filter(id=obamacare_id).first()
     dependents = Dependent.objects.select_related('obamacare').filter(obamacare=obamacare)
     letterCard = LettersCard.objects.filter(obama = obamacare_id).first()
     apppointment = AppointmentClient.objects.select_related('obama','agent_create').filter(obama = obamacare_id)
     userCarrier = UserCarrier.objects.filter(obama = obamacare_id).first()
+    accionRequired = CustomerRedFlag.objects.filter(obama = obamacare)
 
     if letterCard and letterCard.letters and letterCard.card: 
         newLetterCard = True
@@ -877,6 +922,9 @@ def editClientObama(request, obamacare_id):
     RoleAuditar = [
         newLetterCard,
         userCarrier,
+        obamaStatus,         
+        obamaDocumente,
+        obamacare.policyNumber, 
         newApppointment
     ]
 
@@ -1095,7 +1143,10 @@ def editClientObama(request, obamacare_id):
                     content=obs
                 )
             
-            return redirect('clientObamacare')      
+            if way == 1:
+                return redirect('clientObamacare')
+            else:
+                return redirect('clientAccionRequired')      
         
     obamacare.subsidy = f"{float(obamacare.subsidy):.2f}"
     obamacare.premium = f"{float(obamacare.premium):.2f}"
@@ -1119,6 +1170,8 @@ def editClientObama(request, obamacare_id):
         'c':c,
         'monthInEnglish':monthInEnglish,
         'monthsPaid':monthsPaid,
+        'accionRequired': accionRequired,
+        'way': way
     }
 
     return render(request, 'edit/editClientObama.html', context)
@@ -1152,6 +1205,26 @@ def fetchPaymentsMonth(request):
         except json.JSONDecodeError:
             return JsonResponse({'success': False, 'message': 'Invalid JSON'}, status=400)
     return JsonResponse({'success': False, 'message': 'Método no permitido'}, status=405)
+
+
+
+@csrf_exempt
+def fetchActionRequired(request):
+    if request.method == 'POST':
+        try:
+            obama_value = request.POST.get('obama')
+
+            print(f"Valor de 'obama' recibido: {obama_value}")
+
+            return JsonResponse({'success': True, 'message': 'Acción POST procesada', 'obama': obama_value})
+
+        except Exception as e:
+            print("Error al procesar la solicitud POST.")
+            return JsonResponse({'success': False, 'message': f'Error interno del servidor: {str(e)}'}, status=500)
+
+    print(f"Método no permitido: {request.method}")
+    return JsonResponse({'success': False, 'message': 'Método no permitido'}, status=405)
+
 
 def usernameCarrier(request, obamacare):
 
@@ -4839,6 +4912,43 @@ def saveDocumentClient(request, obamacare_id):
     return JsonResponse({"success": False, "message": "Método no permitido."}, status=405)
 
 @login_required(login_url='/login')
+def saveAccionRequired(request):
+
+    description = request.POST.get('description') 
+    plan_id = request.POST.get('plan_id') 
+
+    opcion = DropDownList.objects.filter( description = description).first()
+    obama = ObamaCare.objects.select_related('client').get(id = plan_id)
+
+    CustomerRedFlag.objects.create(
+        obama=obama,
+        agent_create=request.user,
+        description=description,
+        clave = opcion.clave
+    )
+
+    #Aqui inicia el websocket
+    app_name = request.get_host()  # Obtener el host (ej. "127.0.0.1:8000" o "miapp.com")
+
+    # Reemplazar ":" y otros caracteres inválidos con "_" para hacer un nombre válido
+    app_name = re.sub(r'[^a-zA-Z0-9_.-]', '_', app_name)
+
+    group_name = f'product_alerts_{app_name}'
+
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        group_name,
+        {
+            'type': 'send_alert',
+            'event_type': 'new_accion_required',
+            'message': f'New action required for the customer: {obama.client.first_name} {obama.client.last_name}',
+            'extra_info': f'editClientObama/{obama.id}/2/'
+        }
+    )
+    
+    return redirect('editClientObama', obama.id, 1 )  
+
+@login_required(login_url='/login')
 def saveAppointment(request, obamacare_id):
     
     obama = ObamaCare.objects.get(id = obamacare_id)
@@ -4907,3 +5017,4 @@ def paymentClients(request):
     context = {'payments' : payments, 'total' : total_general }
 
     return render(request, 'table/paymentClients.html',context)
+

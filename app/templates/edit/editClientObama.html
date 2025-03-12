@@ -84,13 +84,9 @@
 			padding-left: 20px; /* Ajusta según lo necesario */
 		}
 
-		
-		
-		
-		
-		
-
 	</style>
+
+
 	
 {% endblock %}
 {% block page_content %}
@@ -200,7 +196,7 @@
     <div class="col-xl-10 mx-auto">
         <div class="card">
             <div class="card-body p-4">
-                <form class="row g-3 needs-validation" method="POST" Action="{% url 'editClientObama' obamacare.id  %}">
+                <form class="row g-3 needs-validation" method="POST">
                     <h4>Client</h4>						
 						<div class="col-12 col-lg-4">
 							<label for="first_name" class="form-label">First Name</label>
@@ -558,7 +554,11 @@
 							<div class="d-md-flex d-grid align-items-center gap-3">
 								<button type="submit" name="action" value="save_obamacare" id="enviar" class="btn btn-primary px-4"  >Submit</button>
 								<button type="submit" name="action" id="enviar2" value="save_observation_agent" class="btn btn-primary px-4" style="display: none;">Submits</button>
-								<a href="{% url 'clientObamacare' %}" class="btn btn-light px-4">Back</a>
+								{% if way == 1 %}
+									<a href="{% url 'clientObamacare' %}" class="btn btn-light px-4">Back</a>								
+								{% elif way == 2 %}
+									<a href="{% url 'clientAccionRequired' %}" class="btn btn-light px-4">Back</a>
+								{% endif %}
 								{% if request.user.role != 'A' %}
 									<a class="btn btn-light px-4" data-bs-toggle="modal" data-bs-target="#verConsent">View Consent</a>
 									<a class="btn btn-light px-4" data-bs-toggle="modal" data-bs-target="#verIncomeLetter">View Income Letter</a>
@@ -588,7 +588,7 @@
 
 						<!-- Botones para abrir los modales -->
 						{% if request.user.role != 'A' %}
-							<button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#modalIngresarTexto">
+							<button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#modalSelector">
 								Enter Observation
 							</button>
 							<button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#modalDocument">
@@ -601,10 +601,39 @@
 								Enter Payments
 							</button>
 						{% endif %} 
-						<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalVerTexto">
+						<button type="button" class="btn btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#modalVerTexto">
 							See Observations
 						</button>
+						{% if request.user.role == 'Admin' %}{% endif %}
+						{% comment %} {% if accionRequired %} {% endcomment %}
+							<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalAccionRequired">
+								See Accion Required
+							</button>
+						{% endif %}
 						
+					</div>
+
+					<!-- Modal de selección inicial -->
+					<div class="modal fade" id="modalSelector" tabindex="-1" aria-labelledby="modalSelectorLabel" aria-hidden="true">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="modalSelectorLabel">Seleccionar Acción</h5>
+									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+								</div>
+								<div class="modal-body text-center">
+									<h6 class="mb-4">¿Qué acción deseas realizar?</h6>
+									<div class="d-grid gap-3">
+										<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalIngresarTexto" data-bs-dismiss="modal">
+											Ingresar Observación
+										</button>
+										<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalActionrequired" data-bs-dismiss="modal">
+											Ingresar Acción Requerida
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 			
 					<!-- Modal para ingresar texto -->
@@ -688,7 +717,12 @@
 												<option value="SHERPA" >Sherpa</option>
 											</select>
 										</div>
-										<button type="submit" class="btn btn-primary">Guardar</button>
+										<div class="d-flex justify-content-between">
+											<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalSelector" data-bs-dismiss="modal">
+												Atrás
+											</button>
+											<button type="submit" class="btn btn-primary">Guardar</button>
+										</div>
 									</form>
 									
 								</div>
@@ -778,6 +812,48 @@
 										<p>There are no saved remarks.</p>
 									{% endif %}
 								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Modal para ver las Accion Required -->
+					<div class="modal fade" id="modalAccionRequired" tabindex="-1" aria-labelledby="modalAccionRequired" aria-hidden="true">
+						<div class="modal-dialog modal-lg">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="modalAccionRequired">Actions required</h5>
+									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+								</div>
+
+								<div class="modal-body">
+									<div class="table-responsive" >
+										<table id="actionRequiredTable" class="table table-hover" >
+											<thead>
+												<tr>
+													<th scope="col">Action</th>
+													<th scope="col">State</th>
+												</tr>
+											</thead>
+											<tbody>
+												{% for accionRequired in accionRequired %}
+													{%if  not accionRequired.date_completed%}
+														<tr class="">
+															<td scope="row">{{accionRequired.clave}}</td>
+															<td>
+																<label class="switch">
+																	<input value="{{month}}" type="checkbox" {% for payMonth in monthsPaid %} {% if month == payMonth.month %}checked disabled{% endif %}{% endfor %}>
+																	<span class="slider round"></span>
+																</label>
+															</td>
+														</tr>
+													{% endif %}
+												{% endfor %}
+											</tbody>
+										</table>
+									</div>
+								</div>
+
+
 							</div>
 						</div>
 					</div>
@@ -942,6 +1018,40 @@
 						</div>
 					</div>
 
+					<!-- Modal para ingresar las accion required -->
+					<div class="modal fade" id="modalActionrequired" tabindex="-1" aria-labelledby="modalActionrequired" aria-hidden="true">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="Actionrequired">Enter Action required</h5>
+									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+								</div>
+								<div class="modal-body">
+									<form id="formIngresarTexto" action="{% url 'saveAccionRequired'  %}" method="POST">
+										{% csrf_token %}
+										<input type="hidden" name="plan_id" value="{{ obamacare.id }}">
+										<div class="mb-3">
+											<label for="description" class="form-label">Typification the Call:</label>
+											<select class="form-select"  id="description" name="description" >
+												<option></option>
+												{% for list_drow in list_drow %}
+													<option value="{{ list_drow.description }}">{{ list_drow.description|title }}</option>
+												{% endfor %}
+											</select>
+										</div>
+										<div class="d-flex justify-content-between">
+											<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalSelector" data-bs-dismiss="modal">
+												Atrás
+											</button>
+											<button type="submit" class="btn btn-primary">Guardar</button>
+										</div>
+									</form>
+									
+								</div>
+							</div>
+						</div>
+					</div>
+
 				</div>							
             </div>			
         </div>
@@ -1026,7 +1136,7 @@
 			});
 		</script>	
 	{% endif %} 
-	
+
 	<script>
 		document.addEventListener('DOMContentLoaded', function() {
 

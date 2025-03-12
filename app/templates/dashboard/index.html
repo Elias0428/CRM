@@ -42,7 +42,7 @@
 </head>
 
 
-<body>
+<body data-user-role="{{ request.user.role }}">
 	<!--wrapper-->
 	<div class="wrapper">
 		<!--sidebar wrapper -->
@@ -104,6 +104,8 @@
 						</a>
 						<ul>
 							<li> <a href="{% url "clientObamacare" %}"><i class='bx bx-radio-circle'></i>Clients Obama</a>
+							</li>
+							<li> <a href="{% url "clientAccionRequired" %}"><i class='bx bx-radio-circle'></i>Clients Accion Required </a>
 							</li>
 							<li> <a href="{% url "clientSupp" %}"><i class='bx bx-radio-circle'></i>Clients Supp</a>
 							</li>
@@ -534,28 +536,9 @@
 
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-	{% if request.user.role != 'A' or request.user.role != 'AU'  %}
 	
-		<script>
-
-			const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
-			const socket = new WebSocket(protocol + window.location.host + '/ws/alerts/');
-
-			socket.onmessage = function(event) {
-				const data = JSON.parse(event.data);
-				Swal.fire({
-					title: 'New Client!',
-					text: data.message,
-					icon: 'success',
-					confirmButtonText: 'Aceptar',
-					timer: 5000
-				});
-			};
-		</script>
-
-	{% endif %}
-
 	<script src="{% static 'assets/js/sessionTimeout.js' %}"></script>
+	<script src="{% static "assets/js/websocketAlert.js" %}"></script>
 
 	<!--end switcher-->
 	{% block end_js %}
@@ -596,6 +579,7 @@
 	</script>
 	
 	<script src="{% static "assets/js/chart/index.js" %}"></script>	
+	
 
 	{% endblock %}	
 

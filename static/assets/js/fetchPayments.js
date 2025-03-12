@@ -1,61 +1,20 @@
-function sendDataPayments() {
-    form = document.getElementById('formUser')
-    console.log(form)
-
-    const formData = new FormData(form);  // Obtiene los datos del formulario
-
-    fetch('/fetchCreateUser/', {
-      method: 'POST',
-      body: formData,
-    })
-    .then(response => response.json())  // Procesar la respuesta (si es JSON)
-    .then(data => {
-        if (data.success){
-            Swal.fire({
-                title: "Good job!",
-                text: "User successfully saved!",
-                icon: "success",
-                confirmButtonText: "Save",
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    location.reload();
-                }
-            });
-        }else{
-            //console.log(data.errors);
-            let messages = data.errors; // Obtenemos directamente el objeto de errores
-                        
-            let formattedMessage = "There seems to be some problems with the form:\n\n";
-
-            for (const [field, errors] of Object.entries(messages)) {
-                formattedMessage += `<li><strong>${capitalizeFirstLetter(field)}</strong>:`;
-                errors.forEach(error => {
-                    formattedMessage += `  ${error}</li>`;
-                });
-            }
-
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                html: formattedMessage,
-            });
-        }
-    })
-    // .catch(error => console.error('Error:', error));  // Manejo de errores
-}
-
-function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
 function listenAllCheckInput() {
     let paymentsTable = document.getElementById('paymentsTable')
     let checkboxes = paymentsTable.querySelectorAll('input[type="checkbox"]');
+
+    let actionRequiredTable = document.getElementById('actionRequiredTable')
+    let checkboxesActionRequired = actionRequiredTable.querySelectorAll('input[type="checkbox"]');
 
     // Para cada checkbox, agregar un oyente de eventos que se dispare al cambiar el estado del checkbox
     checkboxes.forEach(function(checkbox) {
         checkbox.addEventListener('change', function(event) {            
             toggleUserStatus(checkbox)
+        });
+    });
+
+    checkboxesActionRequired.forEach(function(checkbox) {
+        checkbox.addEventListener('change', function(event) {            
+            toogleActionRequired(checkbox)
         });
     });
 }
@@ -104,6 +63,39 @@ function toggleUserStatus(checkbox) {
         })
         .catch(error => console.error('Error:', error));
     }
+}
+
+// fetch para Action Required
+function toogleActionRequired(checkbox) {
+    const formData = new FormData();
+    formData.append('obama', obamacare_id); // Asegúrate de que obamacare_id esté definido
+
+    console.log(obamacare_id,'********')
+
+    fetch('/fetchActionRequired/', {
+        method: 'POST',
+        body: formData,
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data, '************');
+        if (data && data.success) { // Verifica si data y data.success existen
+            console.log('User role:', data.role);
+            checkbox.disabled = true;
+        } else {
+          console.error("Error en la respuesta del servidor:", data)
+          alert("Ocurrio un error al procesar la solicitud.")
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert("Ocurrio un error de red o en el servidor.");
+    });
 }
 
 document.addEventListener('DOMContentLoaded', listenAllCheckInput);
