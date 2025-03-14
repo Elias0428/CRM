@@ -124,7 +124,7 @@ urlpatterns = [
     path('desactiveMedicare/<medicare_id>/', views.desactiveMedicare, name='desactiveMedicare'),
     path('validarCita/', views.validarCita, name='validarCita'),
 
-    path('reports/', views.reports, name='reports'),
+    path('reporteVarios/', views.reports, name='reporteVarios'),
     path('downloadAccionRequired/', views.downloadAccionRequired, name='downloadAccionRequired'),
     path('paymentClients/', views.paymentClients, name='paymentClients'),
 
