@@ -4929,7 +4929,7 @@ def saveAccionRequired(request):
     description = request.POST.get('description') 
     plan_id = request.POST.get('plan_id') 
 
-    opcion = DropDownList.objects.filter( description = description).first()
+    opcion = DropDownList.objects.filter( description = description).exclude(description = None).first()
     obama = ObamaCare.objects.select_related('client').get(id = plan_id)
 
     CustomerRedFlag.objects.create(
