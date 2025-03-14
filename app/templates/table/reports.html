@@ -70,7 +70,7 @@
             <div class="card-body">
                 <div class="card-header">
                     <h4>Download data</h4>
-                    <form method="POST" class="row">
+                    <form method="POST" class="row" action="{% url 'paymentClients' %}" >
                         <div class="col-md-4">
                             <label for="start_date"> <strong>Select a month:</strong> </label>
                             <select name="months" id="months" class="form-select" aria-label="Default select example" multiple required>
@@ -89,8 +89,8 @@
                             </select>
                         </div>
                         <div class="col-md-4 align-self-end">
-                            <button type="submit" {% url "reports" %} class="btn btn-success mb-2">Download</button>
-                            <a href="{% url 'reporteVarios' %}" class="btn btn-secondary">Reset</a>
+                            <button type="submit" class="btn btn-success mb-2">Download</button>
+                            <a href="{% url 'reports' %}" class="btn btn-secondary">Reset</a>
                         </div>
                         <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
                         {% csrf_token %}
@@ -150,7 +150,7 @@
                         </div>
 
                         <div class="col-md-4 ">
-                            <a href="{% url 'reporteVarios' %}" class="btn btn-secondary">Reset</a>
+                            <a href="{% url 'reports' %}" class="btn btn-secondary">Reset</a>
                         </div>
                         
                         <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">

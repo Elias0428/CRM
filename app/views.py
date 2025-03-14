@@ -5075,7 +5075,7 @@ def reports(request):
         'total_count' : total_count
         }
     
-    return render(request, 'table/reporteVarios.html', context)
+    return render(request, 'table/reports.html', context)
 
 @login_required(login_url='/login')
 def paymentClients(request):       
