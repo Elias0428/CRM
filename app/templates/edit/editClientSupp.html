@@ -384,130 +384,132 @@
 					</div>
 				</div>
 
-				{% if request.user.role != 'A' %}
-					<h5>Type Entry:</h5>
-					<div class="col-12 col-lg-12">
+				<h5>Type Entry:</h5>
+				<div class="col-12 col-lg-12">
+					{% if request.user.role != 'A' %}
 						<!-- Botones para abrir los modales -->
 						<button type="button" class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#modalIngresarTexto">
 							Enter Observation
 						</button>
-						<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalVerTexto">
-							See Observations
-						</button>
-				
-						<!-- Modal para ingresar texto -->
-						<div class="modal fade" id="modalIngresarTexto" tabindex="-1" aria-labelledby="modalIngresarTextoLabel" aria-hidden="true">
-							<div class="modal-dialog">
-								<div class="modal-content">
-									<div class="modal-header">
-										<h5 class="modal-title" id="modalIngresarTextoLabel">Enter Observation</h5>
-										<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-									</div>
-									<div class="modal-body">
-										<form id="formIngresarTexto" action="{% url 'saveCustomerObservationSupp' %}" method="POST">
-											{% csrf_token %}
-											<input type="hidden" name="plan_id" value="{{ supps.id }}">
-											<input type="hidden" name="type_plan" value="SUPP">
-											<div class="mb-3">
-												<label for="textoIngresado" class="form-label">Text:</label>
-												<textarea class="form-control" id="textoIngresado" name="textoIngresado" rows="4" required></textarea>
-											</div>
-											<div class="mb-3">
-												<label for="textoIngresado" class="form-label">Typification:</label>
-												<select class="form-select"  name="observaciones[]"  id="textoIngresados" multiple required>
-													<option value="1095-A">1095-A</option>
-													<option value="AUDITED">Audited</option>
-													<option value="ACTIVE">Active</option>
-													<option value="CANCEL">Cancel</option>
-													<option value="PLAN CHANGE">Plan Change</option>
-													<option value="AGENT CHANGE">Agent Change</option>
-													<option value="T/C CHANGE">T/C Change</option>
-													<option value="CARRIER">Carrier</option>
-													<option value="APPOINTMENTS">Appointments</option>
-													<option value="SATISFIED CUSTOMER">Satisfied Customer</option>
-													<option value="CORRECTION">Correction</option>
-													<option value="PAYMENT ERROR CORRECTION">Payment Error Correction</option>
-													<option value="PORTAL CREATION">Portal/Member ID/Brochure Creation</option>
-													<option value="DEMOGRAPHIC DATA">Demographic Data</option>
-													<option value="DOCUMENTS IN SHERPA">Documents in Sherpa</option>
-													<option value="DOCUMENTS RECEIVED">Documents Received</option>
-													<option value="ID CARD SEND">ID Card Send</option>
-													<option value="DENTIST LISTING">Dentist listing</option>
-													<option value="OPTOMETER LISTING">Optometer Listing</option>
-													<option value="PLAN EXPLANATION">Plan Explanation</option>
-													<option value="OUT OF SERVICE">Out of Service</option>
-													<option value="HEALTHSAFE ID">HEALTHSAFE ID</option>
-													<option value="ID MEMBER">ID Member</option>
-													<option value="ID SUPERVISOR">ID Supervisor</option>
-													<option value="CARRIER SUP CALL">Carrier Supervisor Call</option>
-													<option value="EFFECTIVE MANAGEMENT">Effective Management</option>
-													<option value="WELCOME MESSAGE">Welcome Message</option>
-													<option value="INFORMATIVE MESSAGE">Informative Message</option>
-													<option value="NO ANSWER">No Answer</option>
-													<option value="OTHER PARTY">Other Party</option>
-													<option value="DENTAL PAYMENT UHC">Dental Payment via UHC</option>
-													<option value="VISION PAYMENT UHC">Vision Payment via UHC</option>
-													<option value="CARRIER ACA PORTAL">Carrier ACA Portal</option>
-													<option value="CARD RECEIPT">Card Receipt</option>
-													<option value="RECOVERED">Recovered</option>
-													<option value="REFERAL">Referal</option>
-													<option value="ROLLED OVER">Rolled Over</option>
-													<option value="PREMIUM PAYMENT">Premium Payment</option>
-													<option value="PCP">PCP</option>
-													<option value="REQUEST DOCUMENTS">Request Documents</option>
-													<option value="SUPPLEMENTARY">Supplemental</option>
-													<option value="TRANSFER">Transfer</option>
-													<option value="UHC ID READY">UHC ID Ready</option>
-													<option value="CALL BACK">Call Back</option>
-													<option value="INFORMATIVE CALLS ACA SUP">Informative Calls ACA/Supplementaries</option>
-													<option value="HANGS UP">Hangs Up</option>
-												</select>
-											</div>
-											<div class="mb-3">
-												<label for="textoIngresado" class="form-label">Typification the Call:</label>
-												<select class="form-select"  name="typeCall" required >
-													<option></option>
-													<option value="INBOUND" >Inbound </option>
-													<option value="OUTBOUND" >Outbound </option>
-													<option value="WHATSAPP" >WhatsApp</option>
-													<option value="TXT MESSAGE" >Txt Message</option>
-													<option value="SHERPA" >Sherpa</option>
-												</select>
-											</div>
-											<button type="submit" class="btn btn-primary">Guardar</button>
-										</form>
-										
-									</div>
+					{% endif %} 
+
+					<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalVerTexto">
+						See Observations
+					</button>
+			
+					<!-- Modal para ingresar texto -->
+					<div class="modal fade" id="modalIngresarTexto" tabindex="-1" aria-labelledby="modalIngresarTextoLabel" aria-hidden="true">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="modalIngresarTextoLabel">Enter Observation</h5>
+									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 								</div>
-							</div>
-						</div>
-				
-						<!-- Modal para ver las observaciones -->
-						<div class="modal fade" id="modalVerTexto" tabindex="-1" aria-labelledby="modalVerTextoLabel" aria-hidden="true">
-							<div class="modal-dialog">
-								<div class="modal-content">
-									<div class="modal-header">
-										<h5 class="modal-title" id="modalVerTextoLabel">Saved Remarks</h5>
-										<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-									</div>
-									<div class="modal-body">
-										{% if obsCustomer %}
-											<ul class="list-group">
-												{% for observation in obsCustomer %}
-													<li class="list-group-item">
-														<strong>{{ observation.agent }}:</strong> {{ observation.content }} <strong>Date:</strong> {{ observation.created_at }}
-													</li>
-												{% endfor %}
-											</ul>
-										{% else %}
-											<p>No hay observaciones guardadas.</p>
-										{% endif %}
-									</div>
+								<div class="modal-body">
+									<form id="formIngresarTexto" action="{% url 'saveCustomerObservationSupp' %}" method="POST">
+										{% csrf_token %}
+										<input type="hidden" name="plan_id" value="{{ supps.id }}">
+										<input type="hidden" name="type_plan" value="SUPP">
+										<div class="mb-3">
+											<label for="textoIngresado" class="form-label">Text:</label>
+											<textarea class="form-control" id="textoIngresado" name="textoIngresado" rows="4" required></textarea>
+										</div>
+										<div class="mb-3">
+											<label for="textoIngresado" class="form-label">Typification:</label>
+											<select class="form-select"  name="observaciones[]"  id="textoIngresados" multiple required>
+												<option value="1095-A">1095-A</option>
+												<option value="AUDITED">Audited</option>
+												<option value="ACTIVE">Active</option>
+												<option value="CANCEL">Cancel</option>
+												<option value="PLAN CHANGE">Plan Change</option>
+												<option value="AGENT CHANGE">Agent Change</option>
+												<option value="T/C CHANGE">T/C Change</option>
+												<option value="CARRIER">Carrier</option>
+												<option value="APPOINTMENTS">Appointments</option>
+												<option value="SATISFIED CUSTOMER">Satisfied Customer</option>
+												<option value="CORRECTION">Correction</option>
+												<option value="PAYMENT ERROR CORRECTION">Payment Error Correction</option>
+												<option value="PORTAL CREATION">Portal/Member ID/Brochure Creation</option>
+												<option value="DEMOGRAPHIC DATA">Demographic Data</option>
+												<option value="DOCUMENTS IN SHERPA">Documents in Sherpa</option>
+												<option value="DOCUMENTS RECEIVED">Documents Received</option>
+												<option value="ID CARD SEND">ID Card Send</option>
+												<option value="DENTIST LISTING">Dentist listing</option>
+												<option value="OPTOMETER LISTING">Optometer Listing</option>
+												<option value="PLAN EXPLANATION">Plan Explanation</option>
+												<option value="OUT OF SERVICE">Out of Service</option>
+												<option value="HEALTHSAFE ID">HEALTHSAFE ID</option>
+												<option value="ID MEMBER">ID Member</option>
+												<option value="ID SUPERVISOR">ID Supervisor</option>
+												<option value="CARRIER SUP CALL">Carrier Supervisor Call</option>
+												<option value="EFFECTIVE MANAGEMENT">Effective Management</option>
+												<option value="WELCOME MESSAGE">Welcome Message</option>
+												<option value="INFORMATIVE MESSAGE">Informative Message</option>
+												<option value="NO ANSWER">No Answer</option>
+												<option value="OTHER PARTY">Other Party</option>
+												<option value="DENTAL PAYMENT UHC">Dental Payment via UHC</option>
+												<option value="VISION PAYMENT UHC">Vision Payment via UHC</option>
+												<option value="CARRIER ACA PORTAL">Carrier ACA Portal</option>
+												<option value="CARD RECEIPT">Card Receipt</option>
+												<option value="RECOVERED">Recovered</option>
+												<option value="REFERAL">Referal</option>
+												<option value="ROLLED OVER">Rolled Over</option>
+												<option value="PREMIUM PAYMENT">Premium Payment</option>
+												<option value="PCP">PCP</option>
+												<option value="REQUEST DOCUMENTS">Request Documents</option>
+												<option value="SUPPLEMENTARY">Supplemental</option>
+												<option value="TRANSFER">Transfer</option>
+												<option value="UHC ID READY">UHC ID Ready</option>
+												<option value="CALL BACK">Call Back</option>
+												<option value="INFORMATIVE CALLS ACA SUP">Informative Calls ACA/Supplementaries</option>
+												<option value="HANGS UP">Hangs Up</option>
+											</select>
+										</div>
+										<div class="mb-3">
+											<label for="textoIngresado" class="form-label">Typification the Call:</label>
+											<select class="form-select"  name="typeCall" required >
+												<option></option>
+												<option value="INBOUND" >Inbound </option>
+												<option value="OUTBOUND" >Outbound </option>
+												<option value="WHATSAPP" >WhatsApp</option>
+												<option value="TXT MESSAGE" >Txt Message</option>
+												<option value="SHERPA" >Sherpa</option>
+											</select>
+										</div>
+										<button type="submit" class="btn btn-primary">Guardar</button>
+									</form>
+									
 								</div>
 							</div>
 						</div>
 					</div>
-				{% endif %} 
+			
+					<!-- Modal para ver las observaciones -->
+					<div class="modal fade" id="modalVerTexto" tabindex="-1" aria-labelledby="modalVerTextoLabel" aria-hidden="true">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="modalVerTextoLabel">Saved Remarks</h5>
+									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+								</div>
+								<div class="modal-body">
+									{% if obsCustomer %}
+										<ul class="list-group">
+											{% for observation in obsCustomer %}
+												<li class="list-group-item">
+													<strong>{{ observation.agent }}:</strong> {{ observation.content }} <strong>Date:</strong> {{ observation.created_at }}
+												</li>
+											{% endfor %}
+										</ul>
+									{% else %}
+										<p>No hay observaciones guardadas.</p>
+									{% endif %}
+								</div>
+							</div>
+						</div>
+					</div>
+					
+				</div>
             </div>
         </div>
     </div>
