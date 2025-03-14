@@ -25,25 +25,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
         }
 
-        if ( user == data.agent.username && data.event_type === 'new_accion_required' ) {
+        if ( userRole === "A" && data.event_type === 'new_accion_required' ) {
 
-            
-            Swal.fire({
-                title: "Action Required!",
-                text: data.message,
-                icon: "warning",
-                showCancelButton: "OK",
-                confirmButtonColor: "#19e207",
-                cancelButtonColor: "#ea0907",
-                confirmButtonText: "Go to customer with required action.", // Cambiamos el texto del botón
-                cancelButtonText:"Ignore"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                window.open(data.extra_info, '_blank'); // Abre la URL en una nueva pestaña
-                }
-            });             
+            if (user == data.agent.username) {
+                
+                Swal.fire({
+                    title: "Action Required!",
+                    text: data.message,
+                    icon: "warning",
+                    showCancelButton: "OK",
+                    confirmButtonColor: "#19e207",
+                    cancelButtonColor: "#ea0907",
+                    confirmButtonText: "Go to customer with required action.", // Cambiamos el texto del botón
+                    cancelButtonText:"Ignore"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                    window.open(data.extra_info, '_blank'); // Abre la URL en una nueva pestaña
+                    }
+                });        
 
-
+            }          
         }
     };
 });
