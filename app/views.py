@@ -971,6 +971,7 @@ def editClientObama(request, obamacare_id, way):
     obsObama = ObservationAgent.objects.filter(id_obamaCare=obamacare_id)  
     users = User.objects.filter(role='C')
     list_drow = DropDownList.objects.filter(profiling_obama__isnull=False)
+    description = DropDownList.objects.filter(description__isnull=False)
     obsCus = ObservationCustomer.objects.select_related('agent').filter(client_id=obamacare.client.id)
     consent = Consents.objects.filter(obamacare = obamacare_id )
     income = IncomeLetter.objects.filter(obamacare = obamacare_id)
@@ -1182,7 +1183,8 @@ def editClientObama(request, obamacare_id, way):
         'monthInEnglish':monthInEnglish,
         'monthsPaid':monthsPaid,
         'accionRequired': accionRequired,
-        'way': way
+        'way': way,
+        'description' : description
     }
 
     return render(request, 'edit/editClientObama.html', context)
@@ -4929,7 +4931,7 @@ def saveAccionRequired(request):
     description = request.POST.get('description') 
     plan_id = request.POST.get('plan_id') 
 
-    opcion = DropDownList.objects.filter( description = description).exclude(description = None).first()
+    opcion = DropDownList.objects.filter( description = description).first()
     obama = ObamaCare.objects.select_related('client').get(id = plan_id)
 
     CustomerRedFlag.objects.create(

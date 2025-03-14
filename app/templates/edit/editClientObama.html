@@ -1048,7 +1048,7 @@
 											<label for="description" class="form-label">Typification the Call:</label>
 											<select class="form-select"  id="description" name="description" >
 												<option></option>
-												{% for list_drow in list_drow %}
+												{% for list_drow in description %}
 													<option value="{{ list_drow.description }}">{{ list_drow.description|title }}</option>
 												{% endfor %}
 											</select>
