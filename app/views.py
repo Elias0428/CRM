@@ -30,7 +30,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AnonymousUser
-from django.db.models import Count, Q, Sum, Value, TextField, F
+from django.db.models import Count, Q, Sum, Value, TextField, F, Subquery, OuterRef
 from django.db.models.functions import Coalesce, Substr
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.encoding import force_bytes, force_str
@@ -730,15 +730,26 @@ def clientObamacare(request):
 def clientAccionRequired(request):
     
     if request.user.role == 'Admin':       
-        obamaCare = ObamaCare.objects.select_related('agent','client').annotate(
-            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(
-               id__in=CustomerRedFlag.objects.filter(date_completed__isnull=True
-                    ).values_list('obama_id', flat=True)).order_by('-created_at')
-    else:
         obamaCare = ObamaCare.objects.select_related('agent', 'client').annotate(
-            truncated_agent_usa=Substr('agent_usa', 1, 8)).filter(
-                id__in=CustomerRedFlag.objects.filter(date_completed__isnull=True
-                    ).values_list('obama_id', flat=True), is_active = True).order_by('-created_at')  
+            truncated_agent_usa=Substr('agent_usa', 1, 8),customer_red_flag_clave=Subquery(
+                CustomerRedFlag.objects.filter(obama_id=OuterRef('id'), date_completed__isnull=True
+                    ).values('clave')[:1] )).filter( id__in=CustomerRedFlag.objects.filter(
+                        date_completed__isnull=True ).values_list('obama_id', flat=True) ).order_by('-created_at')
+        
+    elif request.user.role == 'S' :   
+
+        obamaCare = ObamaCare.objects.select_related('agent', 'client').annotate(
+            truncated_agent_usa=Substr('agent_usa', 1, 8),customer_red_flag_clave=Subquery(
+                CustomerRedFlag.objects.filter(obama_id=OuterRef('id'), date_completed__isnull=True
+                    ).values('clave')[:1] )).filter( id__in=CustomerRedFlag.objects.filter(
+                        date_completed__isnull=True ).values_list('obama_id', flat=True), is_active = True ).order_by('-created_at')    
+
+    else:        
+        obamaCare = ObamaCare.objects.select_related('agent', 'client').annotate(
+            truncated_agent_usa=Substr('agent_usa', 1, 8),customer_red_flag_clave=Subquery(
+                CustomerRedFlag.objects.filter(obama_id=OuterRef('id'), date_completed__isnull=True
+                    ).values('clave')[:1] )).filter( id__in=CustomerRedFlag.objects.filter(
+                        date_completed__isnull=True ).values_list('obama_id', flat=True), is_active = True, agent_id = request.user.id ).order_by('-created_at')
 
 
     return render(request, 'table/clientAccionRequired.html', {'obamacares':obamaCare})
@@ -1206,23 +1217,22 @@ def fetchPaymentsMonth(request):
             return JsonResponse({'success': False, 'message': 'Invalid JSON'}, status=400)
     return JsonResponse({'success': False, 'message': 'Método no permitido'}, status=405)
 
-
-
 @csrf_exempt
 def fetchActionRequired(request):
+    print("Vista fetchActionRequired llamada")
+
     if request.method == 'POST':
-        try:
-            obama_value = request.POST.get('obama')
+        id_value = request.POST.get('id')
 
-            print(f"Valor de 'obama' recibido: {obama_value}")
+        CustomerRedFlag.objects.filter(id=id_value).update(
+            agent_completed=request.user,
+            date_completed=timezone.now().date(),
+        )
 
-            return JsonResponse({'success': True, 'message': 'Acción POST procesada', 'obama': obama_value})
+        print(f"POST recibido con id: {id_value}")
 
-        except Exception as e:
-            print("Error al procesar la solicitud POST.")
-            return JsonResponse({'success': False, 'message': f'Error interno del servidor: {str(e)}'}, status=500)
+        return JsonResponse({'success': True, 'message': 'Acción POST procesada', 'id': id_value})
 
-    print(f"Método no permitido: {request.method}")
     return JsonResponse({'success': False, 'message': 'Método no permitido'}, status=405)
 
 
@@ -4938,17 +4948,82 @@ def saveAccionRequired(request):
     group_name = f'product_alerts_{app_name}'
 
     channel_layer = get_channel_layer()
+
+    # Construir la URL absoluta
+    url_relativa = reverse('editClientObama', args=[obama.id, 2])
+    url_absoluta = request.build_absolute_uri(url_relativa)
+
     async_to_sync(channel_layer.group_send)(
         group_name,
         {
             'type': 'send_alert',
             'event_type': 'new_accion_required',
             'message': f'New action required for the customer: {obama.client.first_name} {obama.client.last_name}',
-            'extra_info': f'editClientObama/{obama.id}/2/'
+            'extra_info': url_absoluta
         }
     )
     
     return redirect('editClientObama', obama.id, 1 )  
+
+@login_required(login_url='/login')
+def downloadAccionRequired(request):
+
+    accionRequired = request.POST.get("accionRequired")
+    start_date = request.POST.get("start_date")
+    end_date = request.POST.get("end_date")
+
+    pending_filter = Q()
+    completed_filter = Q()
+    date_filter = Q()
+
+    if accionRequired == 'PENDING':
+        pending_filter = Q(date_completed=None)
+    elif accionRequired == 'COMPLETED':
+        completed_filter = ~Q(date_completed=None)
+
+    # Ajustar filtros de fecha si están definidos
+    if start_date and end_date:  # Asegurarse de que las fechas no sean None
+        date_filter = Q(created_at__range=[start_date, end_date])
+    elif start_date:
+        date_filter = Q(created_at__gte=start_date)
+    elif end_date:
+        date_filter = Q(created_at__lte=end_date)
+
+    # Obtener las Acciones requeridas que correspondan a los filtros aplicados
+    actionRequireds = CustomerRedFlag.objects.select_related("obama__client", "agent_create","agent_completed").filter(
+        pending_filter & completed_filter & date_filter
+    )
+
+
+    # ✅ Crear un nuevo archivo Excel
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Clientes Action Required"
+
+    # ✅ Encabezados
+    headers = ["First Name (Clients)", "Last Name (Clients)", "Status Client","Action Required", "Solution", "Date", "Agent Created", "Date Completed","Agent Completed"]
+    ws.append(headers)
+
+    # ✅ Agregar datos al archivo Excel
+    for i in actionRequireds:
+        ws.append([
+            i.obama.client.first_name,
+            i.obama.client.last_name,
+            i.obama.status,
+            i.description,
+            i.clave,
+            i.created_at.strftime("%m-%d-%Y") if i.created_at else '',
+            f"{i.agent_create.first_name } {i.agent_create.last_name}" if i.agent_create else '',
+            i.date_completed.strftime("%m-%d-%Y") if i.date_completed else '',  # Convertir fecha a string legible
+            f"{i.agent_completed.first_name} {i.agent_completed.last_name}" if i.agent_completed else ''
+        ])
+
+    # ✅ Preparar la respuesta HTTP
+    response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    response["Content-Disposition"] = f'attachment; filename="clientes Ation Required.xlsx"'
+    wb.save(response)
+
+    return response 
 
 @login_required(login_url='/login')
 def saveAppointment(request, obamacare_id):
@@ -4972,52 +5047,71 @@ def saveAppointment(request, obamacare_id):
 
     return redirect('editClientObama', obamacare_id, way)   
 
-@login_required(login_url='/login')
-def paymentClients(request):
+def reports(request):
 
+    #Reports de Paymet!
     payments = Payments.objects.values('month').annotate(total=Count('id')).order_by('month')
     # Calcular el total general de todos los meses
     total_general = Payments.objects.aggregate(total=Count('id'))['total']
 
-    if request.method == "POST":       
+    #Reports de Action Required
+    # Cantidad de registros donde agent_completed es NULL
+    pending_count = CustomerRedFlag.objects.filter(agent_completed__isnull=True).count()
 
-        months = request.POST.getlist("months")  # Capturar lista de meses seleccionados
-        # Obtener pagos que correspondan a los meses seleccionados
-        clients = Payments.objects.select_related("obamaCare").filter(month__in=months)
+    # Cantidad de registros donde agent_completed NO es NULL
+    completed_count = CustomerRedFlag.objects.filter(agent_completed__isnull=False).count()
 
-        # ✅ Crear un nuevo archivo Excel
-        wb = openpyxl.Workbook()
-        ws = wb.active
-        ws.title = "Clientes"
+    # Total de registros en CustomerRedFlag
+    total_count = CustomerRedFlag.objects.count()
 
-        # ✅ Encabezados
-        headers = ["First Name", "Last Name", "Plan", "Carrier", "Profiling", "Date-Profiling", "Status", "Created At","Month","Date payment was marked"]
-        ws.append(headers)
 
-        # ✅ Agregar datos al archivo Excel
-        for client in clients:
-            if client.obamaCare.is_active:
-                ws.append([
-                    client.obamaCare.client.first_name,
-                    client.obamaCare.client.last_name,
-                    client.obamaCare.plan_name,
-                    client.obamaCare.carrier,
-                    client.obamaCare.profiling,
-                    client.obamaCare.profiling_date.strftime("%m-%d-%Y") if client.obamaCare.profiling_date else '',
-                    client.obamaCare.status,
-                    client.obamaCare.created_at.strftime("%m-%d-%Y") if client.obamaCare.created_at else '',  # Convertir fecha a string legible
-                    client.month,
-                    client.created_at.strftime("%m-%d-%Y")
-                ])
+    context = {
+        'payments' : payments, 
+        'total' : total_general,
+        'pending_count' : pending_count,
+        'completed_count' : completed_count,
+        'total_count' : total_count
+        }
+    return render(request, 'table/reports.html',context)
 
-        # ✅ Preparar la respuesta HTTP
-        response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-        response["Content-Disposition"] = f'attachment; filename="clientes.xlsx"'
-        wb.save(response)
+@login_required(login_url='/login')
+def paymentClients(request):       
 
-        return response 
+    months = request.POST.getlist("months")  # Capturar lista de meses seleccionados
+    # Obtener pagos que correspondan a los meses seleccionados
+    clients = Payments.objects.select_related("obamaCare").filter(month__in=months)
 
-    context = {'payments' : payments, 'total' : total_general }
+    # ✅ Crear un nuevo archivo Excel
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Clientes_PAYMENT"
 
-    return render(request, 'table/paymentClients.html',context)
+    # ✅ Encabezados
+    headers = ["First Name", "Last Name", "Plan", "Carrier", "Profiling", "Date-Profiling", "Status", "Created At","Month","Date payment was marked"]
+    ws.append(headers)
+
+    # ✅ Agregar datos al archivo Excel
+    for client in clients:
+        if client.obamaCare.is_active:
+            ws.append([
+                client.obamaCare.client.first_name,
+                client.obamaCare.client.last_name,
+                client.obamaCare.plan_name,
+                client.obamaCare.carrier,
+                client.obamaCare.profiling,
+                client.obamaCare.profiling_date.strftime("%m-%d-%Y") if client.obamaCare.profiling_date else '',
+                client.obamaCare.status,
+                client.obamaCare.created_at.strftime("%m-%d-%Y") if client.obamaCare.created_at else '',  # Convertir fecha a string legible
+                client.month,
+                client.created_at.strftime("%m-%d-%Y")
+            ])
+
+    # ✅ Preparar la respuesta HTTP
+    response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    response["Content-Disposition"] = f'attachment; filename="clientes.xlsx"'
+    wb.save(response)
+
+    return response 
+
+
 

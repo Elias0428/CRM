@@ -1,7 +1,7 @@
 {% extends "dashboard/index.html" %}
 {% load static %}
 {% block head %}
-    <title>Payments Clients</title>
+    <title>Reports Payment / Action Required</title>
 	<!--plugins-->
 	<link href="{% static "assets/plugins/simplebar/css/simplebar.css" %}" rel="stylesheet" />
 	<link href="{% static "assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" %}" rel="stylesheet" />
@@ -26,9 +26,7 @@
 {% block page_content %}
 
 
-<h4>Filter Data</h4>
- <hr>
-
+<h4>Payment Data</h4>
  <div class="row row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2" >
 
     <div class="col">
@@ -91,9 +89,70 @@
                             </select>
                         </div>
                         <div class="col-md-4 align-self-end">
-                            <button type="submit" class="btn btn-success">Download</button>
-                            <a href="{% url 'paymentClients' %}" class="btn btn-secondary">Reset</a>
+                            <button type="submit" {% url "reports" %} class="btn btn-success mb-2">Download</button>
+                            <a href="{% url 'reports' %}" class="btn btn-secondary">Reset</a>
                         </div>
+                        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                        {% csrf_token %}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<hr>
+
+<h4>Accion Required Data</h4>
+
+ <div class="row row-cols-1 row-cols-md-1 row-cols-lg-2 row-cols-xl-2" >
+
+    <div class="col">
+		<div class="card mb-3">
+            <div class="card-body">
+                <div class="table" >	
+                    <H4>Summary of required actions</H4>
+                    <p> 📌 There are a total of <strong> {{total_count}} </strong>  required actions loaded in the system and <strong> {{pending_count}} </strong> 
+                        of them are pending and <strong> {{completed_count}} </strong>  are completed, for more information, you can download the file where you can find one of them.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+    <div class="col">
+	    <div class="card mb-3">
+            <div class="card-body">
+                <div class="card-header">
+                    <h4>Download data</h4>
+                    <form method="POST" class="row" action="{% url 'downloadAccionRequired' %}">
+                        <div class="col-md-4">
+                            <label for="accionRequired"> <strong>Select option:</strong> </label>
+                            <select name="accionRequired" id="accionRequired" class="form-select" aria-label="Default select example" required>
+                                <option disabled selected value="">Please Select</option>
+                                <option value="ALL">ALL</option>
+                                <option value="PENDING">PENDING</option>
+                                <option value="COMPLETED">COMPLETED</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4 mb-2">
+                            <label for="start_date">Start date:</label>
+                            <input type="date" name="start_date" id="start_date" class="form-control" value="{{ start_date }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="end_date">End date: </label>
+                            <input type="date" name="end_date" id="end_date" class="form-control" value="{{ end_date}}">
+                        </div>
+                        
+                        <div class="col-md-2 me-3 ">
+                            <button type="submit" class="btn btn-success mb-2">Download</button>
+                        </div>
+
+                        <div class="col-md-4 ">
+                            <a href="{% url 'reports' %}" class="btn btn-secondary">Reset</a>
+                        </div>
+                        
                         <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
                         {% csrf_token %}
                     </form>
@@ -126,7 +185,6 @@
 			var table = $('#table1').DataTable( {lengthChange: false,buttons: [ 'excel','print']} );		 
 			table.buttons().container().appendTo( '#table1_wrapper .col-md-6:eq(0)' );
 		} );
-
 	</script>
 	<!--app JS-->
 	<script src="{% static "assets/js/app.js" %}"></script>

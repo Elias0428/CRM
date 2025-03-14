@@ -110,6 +110,8 @@
 </div>
 {% endblock %}
 {% block end_js %}
+
+	<script src="{% static "assets/js/stylesTable.js" %}"></script>
 	<!-- Bootstrap JS -->
 	<script src="{% static "assets/js/bootstrap.bundle.min.js" %}"></script>
 	<!--plugins-->
@@ -119,9 +121,10 @@
 	<script src="{% static "assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js" %}"></script>
 	<script src="{% static "assets/plugins/datatable/js/jquery.dataTables.min.js" %}"></script>
 	<script src="{% static "assets/plugins/datatable/js/dataTables.bootstrap5.min.js" %}"></script>
-	<script>
-		$(document).ready(function() {$('#tableClient').DataTable();} );		
-	</script>
+
+
+
+	
 	<!--app JS-->
 	<script src="{% static "assets/js/app.js" %}"></script>
 {% endblock %}

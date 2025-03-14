@@ -125,6 +125,7 @@
 {% block end_js %}
 	<!-- Bootstrap JS -->
 	<script src="{% static "assets/js/bootstrap.bundle.min.js" %}"></script>
+	<script src="{% static "assets/js/stylesTable.js" %}"></script>
 	<!--plugins-->
 	<script src="{% static "assets/js/jquery.min.js" %}"></script>
 	<script src="{% static "assets/plugins/simplebar/js/simplebar.min.js" %}"></script>
@@ -132,10 +133,9 @@
 	<script src="{% static "assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js" %}"></script>
 	<script src="{% static "assets/plugins/datatable/js/jquery.dataTables.min.js" %}"></script>
 	<script src="{% static "assets/plugins/datatable/js/dataTables.bootstrap5.min.js" %}"></script>
-	<script>
-		$(document).ready(function() {$('#tableClient').DataTable();} );
-		$(document).ready(function() {$('#tableClient2').DataTable();} );
-	</script>
+
+
+	
 	<!--app JS-->
 	<script src="{% static "assets/js/app.js" %}"></script>
 {% endblock %}

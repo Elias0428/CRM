@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         }
 
-        if ( userRole === "Admin" && data.event_type === 'new_accion_required' ) {
+        if ( userRole === "A" && data.event_type === 'new_accion_required' ) {
 
             
             Swal.fire({

@@ -1,23 +1,27 @@
 function listenAllCheckInput() {
-    let paymentsTable = document.getElementById('paymentsTable')
+    let paymentsTable = document.getElementById('paymentsTable');
     let checkboxes = paymentsTable.querySelectorAll('input[type="checkbox"]');
 
-    let actionRequiredTable = document.getElementById('actionRequiredTable')
+    let actionRequiredTable = document.getElementById('actionRequiredTable');
     let checkboxesActionRequired = actionRequiredTable.querySelectorAll('input[type="checkbox"]');
 
-    // Para cada checkbox, agregar un oyente de eventos que se dispare al cambiar el estado del checkbox
     checkboxes.forEach(function(checkbox) {
         checkbox.addEventListener('change', function(event) {            
-            toggleUserStatus(checkbox)
+            toggleUserStatus(checkbox);
         });
     });
 
     checkboxesActionRequired.forEach(function(checkbox) {
-        checkbox.addEventListener('change', function(event) {            
-            toogleActionRequired(checkbox)
+        // Elimina el evento anterior solo si ya existe
+        checkbox.removeEventListener('change', toogleActionRequired);
+
+        checkbox.addEventListener('change', function(event) {  
+            console.log("Checkbox cambiado:", checkbox.value);          
+            toogleActionRequired(checkbox);
         });
     });
 }
+
 
 function toggleUserStatus(checkbox) {
     const formData = new FormData();
@@ -66,36 +70,38 @@ function toggleUserStatus(checkbox) {
 }
 
 // fetch para Action Required
-function toogleActionRequired(checkbox) {
-    const formData = new FormData();
-    formData.append('obama', obamacare_id); // Asegúrate de que obamacare_id esté definido
+let isRequestPending = false;
 
-    console.log(obamacare_id,'********')
+function toogleActionRequired(checkbox) {
+    if (isRequestPending) return; // Evita enviar otra petición si ya hay una en curso
+    isRequestPending = true;
+
+    console.log("Ejecutando toogleActionRequired con checkbox ID:", checkbox.value);
+
+    const checkboxId = checkbox.value;
+    const formData = new FormData();
+    formData.append('id', checkboxId);
 
     fetch('/fetchActionRequired/', {
         method: 'POST',
         body: formData,
     })
     .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+        console.log("Respuesta recibida del servidor");
         return response.json();
     })
     .then(data => {
-        console.log(data, '************');
-        if (data && data.success) { // Verifica si data y data.success existen
-            console.log('User role:', data.role);
-            checkbox.disabled = true;
-        } else {
-          console.error("Error en la respuesta del servidor:", data)
-          alert("Ocurrio un error al procesar la solicitud.")
-        }
+        console.log("Datos recibidos:", data);
+        checkbox.disabled = true;
     })
     .catch(error => {
         console.error('Error:', error);
-        alert("Ocurrio un error de red o en el servidor.");
+    })
+    .finally(() => {
+        isRequestPending = false; // Habilita de nuevo las peticiones
     });
 }
+
+
 
 document.addEventListener('DOMContentLoaded', listenAllCheckInput);

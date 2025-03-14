@@ -604,8 +604,7 @@
 						<button type="button" class="btn btn-secondary me-2" data-bs-toggle="modal" data-bs-target="#modalVerTexto">
 							See Observations
 						</button>
-						{% if request.user.role == 'Admin' %}
-						{% comment %} {% if accionRequired %} {% endcomment %}
+						{% if accionRequired %}
 							<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalAccionRequired">
 								See Accion Required
 							</button>
@@ -618,20 +617,18 @@
 						<div class="modal-dialog">
 							<div class="modal-content">
 								<div class="modal-header">
-									<h5 class="modal-title" id="modalSelectorLabel">Seleccionar Acción</h5>
+									<h5 class="modal-title" id="modalSelectorLabel">Select action</h5>
 									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 								</div>
 								<div class="modal-body text-center">
-									<h6 class="mb-4">¿Qué acción deseas realizar?</h6>
+									<h6 class="mb-4">What action do you wish to take?</h6>
 									<div class="d-grid gap-3">
 										<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalIngresarTexto" data-bs-dismiss="modal">
-											Ingresar Observación
+											Enter Observation
 										</button>
-										{% if request.user.role == 'Admin' %}
 										<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalActionrequired" data-bs-dismiss="modal">
-											Ingresar Acción Requerida
+											Enter Action Required
 										</button>
-										{% endif %}
 									</div>
 								</div>
 							</div>
@@ -722,9 +719,9 @@
 										</div>
 										<div class="d-flex justify-content-between">
 											<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalSelector" data-bs-dismiss="modal">
-												Atrás
+												Back
 											</button>
-											<button type="submit" class="btn btn-primary">Guardar</button>
+											<button type="submit" class="btn btn-primary">Saved</button>
 										</div>
 									</form>
 									
@@ -845,11 +842,24 @@
 															<td scope="row">{{accionRequired.clave}}</td>
 															<td>
 																<label class="switch">
-																	<input value="{{month}}" type="checkbox" {% for payMonth in monthsPaid %} {% if month == payMonth.month %}checked disabled{% endif %}{% endfor %}>
+																	<input id="checkbox_{{ accionRequired.id }}" value="{{accionRequired.id}}" type="checkbox" onchange="toogleActionRequired(this)" >
 																	<span class="slider round"></span>
 																</label>
 															</td>
 														</tr>
+													{% endif %}
+													{% if request.user.role == 'Admin' or request.user.role == 'S' %}
+														{%if  accionRequired.date_completed%}
+															<tr class="">
+																<td scope="row">{{accionRequired.clave}}</td>
+																<td>
+																	<label class="switch">
+																		<input disabled id="checkbox_{{ accionRequired.id }}" value="{{accionRequired.id}}" type="checkbox" checked >
+																		<span class="slider round"></span>
+																	</label>
+																</td>
+															</tr>													
+														{% endif %}
 													{% endif %}
 												{% endfor %}
 											</tbody>
@@ -861,7 +871,6 @@
 							</div>
 						</div>
 					</div>
-					
 		
 					<!-- Modal para ver las consent -->
 					<div class="modal fade" id="verConsent" tabindex="-1" aria-labelledby="verConsentLabel" aria-hidden="true">
@@ -1046,9 +1055,9 @@
 										</div>
 										<div class="d-flex justify-content-between">
 											<button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modalSelector" data-bs-dismiss="modal">
-												Atrás
+												Back
 											</button>
-											<button type="submit" class="btn btn-primary">Guardar</button>
+											<button type="submit" class="btn btn-primary">Saved</button>
 										</div>
 									</form>
 									
