@@ -57,9 +57,5 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     };
 
-    // Manejo de reconexión en caso de cierre del WebSocket
-    socketUser.onclose = function () {
-        console.log("WebSocket cerrado. Intentando reconectar...");
-        setTimeout(() => location.reload(), 5000);
-    };
+
 });
