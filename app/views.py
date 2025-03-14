@@ -4947,7 +4947,7 @@ def saveAccionRequired(request):
     # Reemplazar ":" y otros caracteres inválidos con "_" para hacer un nombre válido
     app_name = re.sub(r'[^a-zA-Z0-9_.-]', '_', app_name)
 
-    group_name = f'product_alerts_{app_name}'
+    group_name = f'user_alerts_{obama.agent}'
 
     channel_layer = get_channel_layer()
 
