@@ -972,7 +972,7 @@ def editClientObama(request, obamacare_id, way):
     users = User.objects.filter(role='C')
     list_drow = DropDownList.objects.filter(profiling_obama__isnull=False)
     description = DropDownList.objects.filter(description__isnull=False)
-    obsCus = ObservationCustomer.objects.select_related('agent').filter(client_id=obamacare.client.id)
+    obsCus = ObservationCustomer.objects.select_related('agent').filter(client_id=obamacare.client.id, type_police = 'ACA')
     consent = Consents.objects.filter(obamacare = obamacare_id )
     income = IncomeLetter.objects.filter(obamacare = obamacare_id)
     document = DocumentsClient.objects.filter(client = obamacare.client)
@@ -1280,7 +1280,7 @@ def editClientSupp(request, supp_id):
 
     supp = Supp.objects.select_related('client','agent').filter(id=supp_id).first()
     obsSupp = ObservationAgent.objects.filter(id_supp=supp_id)
-    obsCus = ObservationCustomer.objects.select_related('agent').filter(client_id=supp.client.id)
+    obsCus = ObservationCustomer.objects.select_related('agent').filter(client_id=supp.client.id, type_police = 'SUPP')
     list_drow = DropDownList.objects.filter(profiling_supp__isnull=False)
 
     # Obtener el objeto Supp que tiene el id `supp_id`
