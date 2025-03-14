@@ -4962,7 +4962,10 @@ def saveAccionRequired(request):
             'event_type': 'new_accion_required',
             'message': f'New action required for the customer: {obama.client.first_name} {obama.client.last_name}',
             'extra_info': url_absoluta,
-            'agent' : obama.agent
+            'agent': {
+                'id': obama.agent.id,
+                'username': obama.agent.username
+            }
         }
     )
     

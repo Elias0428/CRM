@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         }
 
-        if ( user == data.agent && data.event_type === 'new_accion_required' ) {
+        if ( user == data.agent.username && data.event_type === 'new_accion_required' ) {
 
             
             Swal.fire({
