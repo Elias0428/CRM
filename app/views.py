@@ -4947,7 +4947,7 @@ def saveAccionRequired(request):
     # Reemplazar ":" y otros caracteres inválidos con "_" para hacer un nombre válido
     app_name = re.sub(r'[^a-zA-Z0-9_.-]', '_', app_name)
 
-    group_name = f'user_alerts_{obama.agent}'
+    group_name = f'product_alerts_{app_name}'
 
     channel_layer = get_channel_layer()
 
@@ -4961,7 +4961,8 @@ def saveAccionRequired(request):
             'type': 'send_alert',
             'event_type': 'new_accion_required',
             'message': f'New action required for the customer: {obama.client.first_name} {obama.client.last_name}',
-            'extra_info': url_absoluta
+            'extra_info': url_absoluta,
+            'agent' : obama.agent
         }
     )
     

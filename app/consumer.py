@@ -102,17 +102,20 @@ class ProductAlertConsumer(AsyncWebsocketConsumer):
                 'type': 'send_alert',
                 'event_type': event_type,
                 'message': message,
+                'agent': data.get('agent', '')
             }
         )
 
     async def send_alert(self, event):
         event_type = event.get('event_type', 'general')
         message = event['message']
-        extra_info = event.get('extra_info')  # Si no hay extra_info, se pone vacío
+        extra_info = event.get('extra_info', '')  # Si no hay extra_info, se pone vacío
+        agent = event.get('agent', '')
 
         await self.send(text_data=json.dumps({
             'event_type': event_type,
             'message': message,
-            'extra_info': extra_info  # Enviar extra_info al frontend
+            'extra_info': extra_info,
+            'agent': agent # Enviar extra_info al frontend
         }))
 
