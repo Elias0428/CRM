@@ -25,9 +25,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         }
 
-        if ( userRole === "A" && data.event_type === 'new_accion_required' ) {
+        if ( userRole === "A" || userRole === "Admin" && data.event_type === 'new_accion_required' ) {
 
-            if (user == data.agent.username) {
+            if (user == data.agent.username || userRole === "Admin" ) {
                 
                 Swal.fire({
                     title: "Action Required!",
@@ -46,5 +46,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
             }          
         }
+
+        if (userRole === "S" || userRole === "C" || userRole === "Admin" && data.event_type === 'action_completed') {
+
+            Swal.fire({
+                title: "Action Required!",
+                text: data.message,
+                icon: "warning",
+                showCancelButton: "OK",
+                confirmButtonColor: "#19e207",
+                cancelButtonColor: "#ea0907",
+                confirmButtonText: "Go to customer with required action.", // Cambiamos el texto del botón
+                cancelButtonText:"Ignore"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                window.open(data.extra_info, '_blank'); // Abre la URL en una nueva pestaña
+                }
+            });  
+            
+        }
+
     };
 });

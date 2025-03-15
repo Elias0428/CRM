@@ -559,12 +559,10 @@
 								{% elif way == 2 %}
 									<a href="{% url 'clientAccionRequired' %}" class="btn btn-light px-4">Back</a>
 								{% endif %}
-								{% if request.user.role != 'A' %}
-									<a class="btn btn-light px-4" data-bs-toggle="modal" data-bs-target="#verConsent">View Consent</a>
-									<a class="btn btn-light px-4" data-bs-toggle="modal" data-bs-target="#verIncomeLetter">View Income Letter</a>
-									<a class="btn btn-light px-4" data-bs-toggle="modal" data-bs-target="#verDocument">View Document</a>
-									<a class="btn btn-light px-4" data-bs-toggle="modal" data-bs-target="#verAppointment">View Appointment</a>
-								{% endif %}
+								<a class="btn btn-light px-4" data-bs-toggle="modal" data-bs-target="#verConsent">View Consent</a>
+								<a class="btn btn-light px-4" data-bs-toggle="modal" data-bs-target="#verIncomeLetter">View Income Letter</a>
+								<a class="btn btn-light px-4" data-bs-toggle="modal" data-bs-target="#verDocument">View Document</a>
+								<a class="btn btn-light px-4" data-bs-toggle="modal" data-bs-target="#verAppointment">View Appointment</a>
 							</div>
 						</div>
                     {% csrf_token %}	

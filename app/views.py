@@ -351,6 +351,15 @@ def fetchAca(request, client_id):
             }
         )
 
+        if not aca_plan.doc_income and aca_plan.doc_migration:
+            users = User.objects.filter(id = 1)
+            CustomerRedFlag.objects.create(
+                obama = aca_plan,
+                agent_create = users,
+                description = 'MISSING DOCUMENTS',
+                clave = 'UPLOAD DOCUMENTS'
+            )
+
         #Aqui inicia el websocket
         app_name = request.get_host()  # Obtener el host (ej. "127.0.0.1:8000" o "miapp.com")
     
@@ -1221,14 +1230,40 @@ def fetchPaymentsMonth(request):
 
 @csrf_exempt
 def fetchActionRequired(request):
-    print("Vista fetchActionRequired llamada")
 
     if request.method == 'POST':
         id_value = request.POST.get('id')
 
+        customerRedFlag = CustomerRedFlag.objects.get(id = id_value)
+        obama = customerRedFlag.obama
+        clients = obama.client
+
         CustomerRedFlag.objects.filter(id=id_value).update(
             agent_completed=request.user,
             date_completed=timezone.now().date(),
+        )
+
+        #Aqui inicia el websocket
+        app_name = request.get_host()  # Obtener el host (ej. "127.0.0.1:8000" o "miapp.com")
+
+        # Reemplazar ":" y otros caracteres inválidos con "_" para hacer un nombre válido
+        app_name = re.sub(r'[^a-zA-Z0-9_.-]', '_', app_name)
+
+        # Construir la URL absoluta
+        url_relativa = reverse('editClientObama', args=[obama.id, 1])
+        url_absoluta = request.build_absolute_uri(url_relativa)
+
+        group_name = f'product_alerts_{app_name}'
+
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            group_name,
+            {
+                'type': 'send_alert',
+                'event_type': 'action_completed',
+                'message': f'The required action ({customerRedFlag.description}) of the client {clients.first_name} {clients.last_name} has already been performed.',
+                'extra_info': url_absoluta
+            }
         )
 
         print(f"POST recibido con id: {id_value}")
@@ -1236,7 +1271,6 @@ def fetchActionRequired(request):
         return JsonResponse({'success': True, 'message': 'Acción POST procesada', 'id': id_value})
 
     return JsonResponse({'success': False, 'message': 'Método no permitido'}, status=405)
-
 
 def usernameCarrier(request, obamacare):
 

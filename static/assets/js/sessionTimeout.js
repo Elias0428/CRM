@@ -2,7 +2,7 @@
 function setupSessionTimeout() {
     
     // Configuraciones de tiempo
-    const TIMEOUT_DURATION = 15 * 60 * 1000; // 15 minutos
+    const TIMEOUT_DURATION = 30 * 60 * 1000; // 30 minutos
     const WARNING_TIME = 2 * 60 * 1000; // 2 minutos antes del cierre
     const AUTO_LOGOUT_AFTER_WARNING = 1 * 60 * 1000; // 1 minuto después de la alerta
 
