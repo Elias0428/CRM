@@ -5120,7 +5120,7 @@ def paymentClients(request):
 
     months = request.POST.getlist("months")  # Capturar lista de meses seleccionados
     # Obtener pagos que correspondan a los meses seleccionados
-    clients = Payments.objects.select_related("obamaCare").filter(month__in=months)
+    clients = Payments.objects.select_related("obamaCare","agent").filter(month__in=months)
 
     # ✅ Crear un nuevo archivo Excel
     wb = openpyxl.Workbook()
@@ -5128,13 +5128,14 @@ def paymentClients(request):
     ws.title = "Clientes_PAYMENT"
 
     # ✅ Encabezados
-    headers = ["First Name", "Last Name", "Plan", "Carrier", "Profiling", "Date-Profiling", "Status", "Created At","Month","Date payment was marked"]
+    headers = ["Agent Col","First Name", "Last Name", "Plan", "Carrier", "Profiling", "Date-Profiling", "Status", "Created At","Month","Date payment was marked"]
     ws.append(headers)
 
     # ✅ Agregar datos al archivo Excel
     for client in clients:
         if client.obamaCare.is_active:
             ws.append([
+                f"{client.agent.first_name} {client.agent.last_name}" ,
                 client.obamaCare.client.first_name,
                 client.obamaCare.client.last_name,
                 client.obamaCare.plan_name,
