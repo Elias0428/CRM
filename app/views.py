@@ -121,7 +121,6 @@ def formCreateClient(request):
 
         date_births = request.POST.get('date_birth')
         fecha_obj = datetime.strptime(date_births, '%m/%d/%Y').date()
-        fecha_formateada = fecha_obj.strftime('%Y-%m-%d')
 
         # Obtener la fecha actual
         hoy = datetime.today().date()
@@ -139,7 +138,7 @@ def formCreateClient(request):
             client.agent = request.user
             client.is_active = 1
             client.old = edad
-            client.date_birth = fecha_formateada
+            client.date_birth = fecha_obj
             client.social_security = formatSocial
             client.save()
 
@@ -160,7 +159,6 @@ def formCreateClientMedicare(request):
         date_births = request.POST.get('date_birth')
         language = request.POST.get('language')
         fecha_obj = datetime.strptime(date_births, '%m/%d/%Y').date()
-        fecha_formateada = fecha_obj.strftime('%Y-%m-%d')
 
         date_medicare = request.POST.get('dateMedicare')
         # Convertir a objeto datetime
@@ -184,7 +182,7 @@ def formCreateClientMedicare(request):
             client.agent = request.user
             client.is_active = 1
             client.old = edad
-            client.date_birth = fecha_formateada
+            client.date_birth = fecha_obj
             client.dateMedicare = fecha_formateada_medicare
             client.social_security = formatSocial
             client.save()
@@ -251,7 +249,6 @@ def formEditClient(request, client_id):
 
         date_births = request.POST.get('date_birth')
         fecha_obj = datetime.strptime(date_births, '%m/%d/%Y').date()
-        fecha_formateada = fecha_obj.strftime('%Y-%m-%d')
 
         # Obtener la fecha actual
         hoy = datetime.today().date()
@@ -267,7 +264,7 @@ def formEditClient(request, client_id):
         if form.is_valid():
             client = form.save(commit=False)
             client.is_active = 1
-            client.date_birth = fecha_formateada
+            client.date_birth = fecha_obj
             client.social_security = formatSocial
             client.old = edad
             
