@@ -3567,7 +3567,7 @@ def consent(request, obamacare_id):
     dependents = Dependent.objects.filter(client=obamacare.client)
     supps = Supp.objects.filter(client_id=obamacare.client.id)
     consent = Consents.objects.select_related('obamacare').filter(obamacare = obamacare_id ).last()
-    contact = ContactClient.objects.filter(client = obamacare.id).first()
+    contact = ContactClient.objects.filter(client = obamacare.client.id).first()
 
 
     if request.method == 'POST':
